@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
-import catmoe.fallencrystal.moefilter.api.command.CommandList
+import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.util.MessageUtil
 import net.md_5.bungee.api.CommandSender
@@ -15,7 +15,7 @@ class HelpCommand : ICommand {
     override fun permission(): String { return "moefilter.list" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        val subCommand = args?.get(1)?.let { CommandList.getICommand(it) }
+        val subCommand = args?.get(1)?.let { OCommand.getICommand(it) }
         if (subCommand != null) {
             val description = subCommand.description()
             val command = subCommand.command()
@@ -24,13 +24,13 @@ class HelpCommand : ICommand {
         }
         val line = "&b&m&l                                                            "
         sendMessage(sender,line)
-        CommandList.iCommandList().forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
+        OCommand.iCommandList().forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
         sendMessage(sender,line)
     }
 
     override fun tabComplete(): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = HashMap()
-        map[1] = CommandList.commandList()
+        map[1] = OCommand.commandList()
         return map
     }
 

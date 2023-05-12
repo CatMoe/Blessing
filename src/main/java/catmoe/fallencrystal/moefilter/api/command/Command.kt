@@ -7,12 +7,10 @@ import net.md_5.bungee.api.plugin.TabExecutor
 
 class Command(name: String?, permission: String?, vararg aliases: String?) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
 
-    val plugin = MoeFilter()
-
     override fun execute(sender: CommandSender?, args: Array<out String>?) {
         // 当玩家没有权限或未输入任何子命令时  详见 infoCommand 方法.
         if (args.isNullOrEmpty() || !sender!!.hasPermission("moefilter")) { infoCommand(sender!!); return }
-        val command = CommandList.getICommand(args[0])
+        val command = OCommand.getICommand(args[0])
         if (command != null) {
             val permission = command.permission()
             if (!sender.hasPermission(permission)) { MessageUtil.sendMessage(sender, "  &c缺少权限: $permission") } else { command.execute(sender, args) }
@@ -20,8 +18,8 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
-        if (args!!.size == 1) return CommandList.commandList()
-        val command = CommandList.getICommand(args[1])
+        if (args!!.size == 1) return OCommand.commandList()
+        val command = OCommand.getICommand(args[1])
         return if (args.size == 2 && command != null) {
             val map = command.tabComplete()
             map[args.size - 1] ?: listOf()

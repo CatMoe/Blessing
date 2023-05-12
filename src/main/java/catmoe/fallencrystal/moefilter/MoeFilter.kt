@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.moefilter.api.command.Command
-import catmoe.fallencrystal.moefilter.api.command.CommandList
+import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.util.ExceptionCatcher
@@ -25,7 +25,7 @@ class MoeFilter : Plugin() {
     private fun registerCommand() {
         val command = Command("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf")
         proxy.pluginManager.registerCommand(this, command)
-        CommandList.register(HelpCommand())
+        OCommand.register(HelpCommand())
     }
 
     private fun registerLogger() {

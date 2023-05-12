@@ -2,7 +2,7 @@ package catmoe.fallencrystal.moefilter.api.command
 
 import com.github.benmanes.caffeine.cache.Caffeine
 
-object CommandList {
+object OCommand {
     private val commandList = Caffeine.newBuilder().build<String, ICommand>()
     private val iCommand: MutableList<ICommand>
     private val commands: MutableList<String>
