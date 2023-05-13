@@ -1,13 +1,19 @@
 package catmoe.fallencrystal.moefilter.api.event
 
+import catmoe.fallencrystal.moefilter.MoeFilter
+import net.md_5.bungee.api.ProxyServer
+
 object EventManager {
     private val listeners: MutableList<EventListener> = ArrayList()
 
     fun triggerEvent(event: Any) {
-        for (it in listeners) {
-            for (method in it.javaClass.declaredMethods) {
-                if (method.isAnnotationPresent(FilterEvent().javaClass) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
-                    try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() }
+        ProxyServer.getInstance().scheduler.runAsync(MoeFilter()) {
+            if (listeners.isEmpty()) return@runAsync
+            for (it in listeners) {
+                for (method in it.javaClass.declaredMethods) {
+                    if (method.isAnnotationPresent(FilterEvent().javaClass) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
+                        try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() }
+                    }
                 }
             }
         }
