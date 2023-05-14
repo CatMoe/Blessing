@@ -1,3 +1,3 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
-class OnAttackEndedEvent
+class WhitelistEvent(val profileId: String)

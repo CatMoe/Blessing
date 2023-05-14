@@ -1,3 +1,3 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
-class OnAttackStartEvent
+class BlockedJoinEvent(val ip: String)

@@ -15,17 +15,23 @@ class HelpCommand : ICommand {
     override fun permission(): String { return "moefilter.list" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        val subCommand = args?.get(1)?.let { OCommand.getICommand(it) }
-        if (subCommand != null) {
-            val description = subCommand.description()
-            val command = subCommand.command()
-            sendMessage(sender, "  &f/moefilter $command &b- &f$description")
-            return
-        }
         val line = "&b&m&l                                                            "
-        sendMessage(sender,line)
-        OCommand.iCommandList().forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
-        sendMessage(sender,line)
+        if (args!!.size < 2) {
+            sendMessage(sender,line)
+            OCommand.iCommandList().forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
+            sendMessage(sender,line)
+            return
+        } else {
+            try {
+                val subCommand = args[1].let { OCommand.getICommand(it) }
+                val description = subCommand!!.description()
+                val command = subCommand.command()
+                sendMessage(sender, "  &f/moefilter $command &b- &f$description")
+            } catch (_: ArrayIndexOutOfBoundsException) {
+            } catch (_: NullPointerException) {
+                MessageUtil.sendMessage(sender, "COMMAND_NOT_FOUND")
+            }
+        }
     }
 
     override fun tabComplete(): MutableMap<Int, List<String>> {

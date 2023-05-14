@@ -8,11 +8,18 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 object MessageUtil {
+
+    private val logger = ProxyServer.getInstance().logger
+
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
 
     fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message)} }
 
     fun sendMessage(player: ProxiedPlayer, message: String) { player.sendMessage(ChatMessageType.CHAT, TextComponent(colorize(message))) }
 
-    fun logInfo(text: String) { ProxyServer.getInstance().logger.info(colorize((text))) }
+    fun sendActionbar(player: ProxiedPlayer, message: String) { player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent(colorize(message))) }
+
+    fun logInfo(text: String) { logger.info(colorize((text))) }
+
+    fun logWarn(text: String) { logger.warning(colorize(text)) }
 }
