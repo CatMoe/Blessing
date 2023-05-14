@@ -22,8 +22,9 @@ object LoadConfig {
 
     val defaultConfig = """
                 version="$version"
-                test {
-                }
+                # 启用调试? 启用后可以获得更多的用法用于调试
+                # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
+                debug=true
             """.trimIndent()
 
     val defaultMessage = """
@@ -36,6 +37,9 @@ object LoadConfig {
                 blacklist-reason {
                     ADMIN="被管理员列入黑名单"
                     PROXY="疑似使用代理或VPN"
+                    PING-LIMIT="短时间内Ping次数过多"
+                    JOIN-LIMIT="短时间内尝试加入次数过多"
+                    ALTS="同地址有太多账户"
                 }
             """.trimIndent()
 

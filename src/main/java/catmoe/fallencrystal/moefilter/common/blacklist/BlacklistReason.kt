@@ -8,5 +8,9 @@ import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
  */
 enum class BlacklistReason(@JvmField val reason: String) {
     ADMIN(ObjectConfig.getMessage().getString("blacklist-reason.ADMIN")),
-    PROXY(ObjectConfig.getMessage().getString("blacklist-reason.PROXY"))
+    PROXY(ObjectConfig.getMessage().getString("blacklist-reason.PROXY")),
+    PING_LIMIT(ObjectConfig.getMessage().getString("blacklist-reason.PING-LIMIT")),
+    JOIN_LIMIT(ObjectConfig.getMessage().getString("blacklist-reason.JOIN-LIMIT")),
+    ALTS(ObjectConfig.getMessage().getString("blacklist-reason.ALTS")),
+    UNKNOWN_PROTOCOL("") // that should be client join/ping server version when they protocol is invalid.
 }

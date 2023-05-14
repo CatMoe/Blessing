@@ -1,9 +1,6 @@
 package catmoe.fallencrystal.moefilter
 
-import catmoe.fallencrystal.moefilter.api.command.Command
-import catmoe.fallencrystal.moefilter.api.command.OCommand
-import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
-import catmoe.fallencrystal.moefilter.api.command.impl.log.LogCommand
+import catmoe.fallencrystal.moefilter.api.command.LoadCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
@@ -24,18 +21,11 @@ class MoeFilter : Plugin() {
 
         EventManager // 初始化
 
-        registerCommand()
+        LoadCommand(this).load()
         registerLogger()
     }
 
     override fun onDisable() {
-    }
-
-    private fun registerCommand() {
-        val command = Command("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf")
-        proxy.pluginManager.registerCommand(this, command)
-        OCommand.register(HelpCommand())
-        OCommand.register(LogCommand())
     }
 
     private fun registerLogger() {

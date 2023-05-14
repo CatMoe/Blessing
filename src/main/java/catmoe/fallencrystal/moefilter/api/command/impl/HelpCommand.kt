@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.OCommand
+import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.util.MessageUtil
 import net.md_5.bungee.api.CommandSender
 
@@ -13,6 +14,9 @@ class HelpCommand : ICommand {
     override fun description(): String { return "列出所有已注册的命令" }
 
     override fun permission(): String { return "moefilter.list" }
+
+    val config = ObjectConfig.getMessage()
+    val prefix = config.getString("prefix")
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
         val line = "&b&m&l                                                            "
@@ -29,7 +33,8 @@ class HelpCommand : ICommand {
                 sendMessage(sender, "  &f/moefilter $command &b- &f$description")
             } catch (_: ArrayIndexOutOfBoundsException) {
             } catch (_: NullPointerException) {
-                MessageUtil.sendMessage(sender, "COMMAND_NOT_FOUND")
+                val message = config.getString("command.not-found")
+                MessageUtil.sendMessage(sender, "$prefix$message")
             }
         }
     }
