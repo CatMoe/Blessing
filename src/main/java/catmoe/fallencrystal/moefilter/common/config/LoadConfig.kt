@@ -70,10 +70,12 @@ object LoadConfig {
     private fun createDefaultConfig() {
         var createConfig = false
         var createMessage = false
+        val pluginFolder = FilterPlugin.getDataFolder()!!
+        if (!pluginFolder.exists()) { pluginFolder.mkdirs() }
         if (!configFile.exists()) { createConfig = true }
         if (!messageFile.exists()) { createMessage = true }
-        if (createConfig) { configFile.mkdirs() ;configFile.writeText(defaultConfig) }
-        if (createMessage) { messageFile.mkdirs() ;messageFile.writeText(defaultMessage) }
+        if (createConfig) { configFile.createNewFile(); configFile.writeText(defaultConfig) }
+        if (createMessage) { messageFile.createNewFile(); messageFile.writeText(defaultMessage) }
     }
 
     fun getConfigFile(): File { return configFile }
