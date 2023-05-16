@@ -15,7 +15,7 @@ object MessageUtil {
 
     fun messageBuilder(startIndex: Int, args: Array<out String>?): StringBuilder {
         val message = StringBuilder()
-        if (args != null) { for (i in startIndex until args.size) { message.append(args.get(i)).append(" ") } }
+        if (args != null) { for (i in startIndex until args.size) { message.append(args[i]).append(" ") } }
         return message
     }
 

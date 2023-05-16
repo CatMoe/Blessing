@@ -13,7 +13,7 @@ import net.md_5.bungee.api.plugin.Plugin
 
 class LoadCommand(private val plugin: Plugin) {
 
-    val proxy = ProxyServer.getInstance().pluginManager
+    private val proxy = ProxyServer.getInstance().pluginManager
 
     fun load(){
         proxy.registerCommand(plugin, Command("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))

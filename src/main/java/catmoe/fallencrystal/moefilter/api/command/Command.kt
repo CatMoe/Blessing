@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.TabExecutor
 class Command(name: String?, permission: String?, vararg aliases: String?) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
 
     val messageConfig = ObjectConfig.getMessage()
-    val prefix = messageConfig.getString("prefix")
+    val prefix: String = messageConfig.getString("prefix")
 
     override fun execute(sender: CommandSender?, args: Array<out String>?) {
         // 当玩家没有权限或未输入任何子命令时  详见 infoCommand 方法.

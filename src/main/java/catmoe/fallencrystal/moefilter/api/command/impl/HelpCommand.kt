@@ -16,7 +16,7 @@ class HelpCommand : ICommand {
     override fun permission(): String { return "moefilter.list" }
 
     val config = ObjectConfig.getMessage()
-    val prefix = config.getString("prefix")
+    val prefix: String = config.getString("prefix")
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
         val line = "&b&m&l                                                            "
