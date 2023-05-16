@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.moefilter.api.command.LoadCommand
-import catmoe.fallencrystal.moefilter.api.command.impl.log.LogHandler
+import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
@@ -17,7 +17,7 @@ class MoeFilter : Plugin() {
         FilterPlugin.setPlugin(this)
         FilterPlugin.setDataFolder(dataFolder)
 
-        LoadConfig
+        LoadConfig.loadConfig()
 
         EventManager // 初始化
 
@@ -32,7 +32,5 @@ class MoeFilter : Plugin() {
         proxy.logger.filter = LoggerManager
         LoggerManager.registerFilter(LogHandler())
     }
-
-    fun getInstance():MoeFilter { return this }
 
 }

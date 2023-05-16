@@ -13,6 +13,12 @@ object MessageUtil {
 
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
 
+    fun messageBuilder(startIndex: Int, args: Array<out String>?): StringBuilder {
+        val message = StringBuilder()
+        if (args != null) { for (i in startIndex until args.size) { message.append(args.get(i)).append(" ") } }
+        return message
+    }
+
     fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message)} }
 
     fun sendMessage(player: ProxiedPlayer, message: String) { player.sendMessage(ChatMessageType.CHAT, TextComponent(colorize(message))) }

@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.api.command.impl.log
+package catmoe.fallencrystal.moefilter.api.command.impl.test.log
 
 import catmoe.fallencrystal.moefilter.api.logger.ILogger
 import java.util.logging.LogRecord

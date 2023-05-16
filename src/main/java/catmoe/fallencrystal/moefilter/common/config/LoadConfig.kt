@@ -20,14 +20,14 @@ object LoadConfig {
 
     private val proxy = ProxyServer.getInstance()
 
-    val defaultConfig = """
+    private val defaultConfig = """
                 version="$version"
                 # 启用调试? 启用后可以获得更多的用法用于调试
                 # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
                 debug=true
             """.trimIndent()
 
-    val defaultMessage = """
+    private val defaultMessage = """
                 version="$version"
                 prefix="&bMoe&fFilter &7>> "
                 command {
@@ -39,7 +39,7 @@ object LoadConfig {
                     PROXY="疑似使用代理或VPN"
                     PING-LIMIT="短时间内Ping次数过多"
                     JOIN-LIMIT="短时间内尝试加入次数过多"
-                    ALTS="同地址有太多账户"
+                    ALTS="同地址拥有太多账户"
                 }
             """.trimIndent()
 
@@ -80,7 +80,7 @@ object LoadConfig {
 
     fun getMessage(): File { return messageFile }
 
-    fun broadcastUpdate(newFile: Path) {
+    private fun broadcastUpdate(newFile: Path) {
         val message: List<String> = listOf(
             "-------------------- MoeFilter --------------------",
             "您的配置文件或语言文件版本不同于您当前使用的MoeFilter版本.",
