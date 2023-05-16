@@ -21,9 +21,11 @@ object MessageUtil {
 
     fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message)} }
 
-    fun sendMessage(player: ProxiedPlayer, message: String) { player.sendMessage(ChatMessageType.CHAT, TextComponent(colorize(message))) }
+    fun sendMessage(player: ProxiedPlayer, type: ChatMessageType, message: String) { player.sendMessage(type, TextComponent(colorize(message))) }
 
-    fun sendActionbar(player: ProxiedPlayer, message: String) { player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent(colorize(message))) }
+    fun sendMessage(player: ProxiedPlayer, message: String) { sendMessage(player, ChatMessageType.CHAT, message) }
+
+    fun sendActionbar(player: ProxiedPlayer, message: String) { sendMessage(player, ChatMessageType.ACTION_BAR, message) }
 
     fun logInfo(text: String) { logger.info(colorize((text))) }
 
