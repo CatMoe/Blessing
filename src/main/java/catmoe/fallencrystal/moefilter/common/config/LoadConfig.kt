@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.MessageUtil
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 import java.io.File
 import java.nio.file.Files
@@ -72,8 +72,8 @@ object LoadConfig {
         var createMessage = false
         if (!configFile.exists()) { createConfig = true }
         if (!messageFile.exists()) { createMessage = true }
-        if (createConfig) { configFile.writeText(defaultConfig) }
-        if (createMessage) { messageFile.writeText(defaultMessage) }
+        if (createConfig) { configFile.mkdirs() ;configFile.writeText(defaultConfig) }
+        if (createMessage) { messageFile.mkdirs() ;messageFile.writeText(defaultMessage) }
     }
 
     fun getConfigFile(): File { return configFile }
