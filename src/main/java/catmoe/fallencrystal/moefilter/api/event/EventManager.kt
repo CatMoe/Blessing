@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.event
 
-import catmoe.fallencrystal.moefilter.util.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 
 object EventManager {

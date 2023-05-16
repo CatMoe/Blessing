@@ -1,5 +1,7 @@
 package catmoe.fallencrystal.moefilter.common.whitelist
 
+import catmoe.fallencrystal.moefilter.api.event.EventManager
+import catmoe.fallencrystal.moefilter.api.event.events.WhitelistEvent
 import com.github.benmanes.caffeine.cache.Caffeine
 
 object WhitelistObject {
@@ -8,20 +10,12 @@ object WhitelistObject {
 
     fun getWhitelist(address: String) { cache.getIfPresent(address) ?: false }
 
-    fun addWhitelist(address: String) {
-        val whitelisted = cache.getIfPresent(address)
-        if (whitelisted != null) return
-        cache.put(address, true)
-        ips.add(address)
-    }
-
-    fun removeWhitelist(address: String) {
-        val whitelisted = cache.getIfPresent(address)
-        if (whitelisted != null) {
-            cache.invalidate(address)
-            ips.remove(address)
-        }
+    fun setWhitelist(address: String, type: WhitelistType) {
+        if (type == WhitelistType.ADD && cache.getIfPresent(address) == null) { cache.put(address, true); triggerEvent(address, type) }
+        if (type == WhitelistType.REMOVE && cache.getIfPresent(address) != null) { cache.invalidate(address); triggerEvent(address, type) }
     }
 
     fun getAllWhitelist(): List<String> { return ips }
+
+    private fun triggerEvent(address: String, type: WhitelistType) { EventManager.triggerEvent(WhitelistEvent(address, type)) }
 }

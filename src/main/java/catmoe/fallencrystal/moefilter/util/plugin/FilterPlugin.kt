@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.util
+package catmoe.fallencrystal.moefilter.util.plugin
 
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File

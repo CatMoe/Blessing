@@ -1,3 +1,5 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
-class WhitelistEvent(val profileId: String)
+import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistType
+
+class WhitelistEvent(val address: String, val type: WhitelistType)

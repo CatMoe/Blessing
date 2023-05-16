@@ -1,7 +1,10 @@
-package catmoe.fallencrystal.moefilter.api.command
+package catmoe.fallencrystal.moefilter.util.plugin
 
+import catmoe.fallencrystal.moefilter.api.command.Command
+import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.MessageEvent
+import catmoe.fallencrystal.moefilter.api.command.impl.test.event.TestEventCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogCommand
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
@@ -23,5 +26,6 @@ class LoadCommand(private val plugin: Plugin) {
         if (!ObjectConfig.getConfig().getBoolean("debug")) return
         EventManager.registerListener(MessageEvent())
         OCommand.register(LogCommand())
+        OCommand.register(TestEventCommand())
     }
 }

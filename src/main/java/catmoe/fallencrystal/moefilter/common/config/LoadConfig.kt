@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.util.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.MessageUtil
 import net.md_5.bungee.api.ProxyServer
 import java.io.File

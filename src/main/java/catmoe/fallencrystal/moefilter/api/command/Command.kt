@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.command
 
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
-import catmoe.fallencrystal.moefilter.util.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.MessageUtil
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
