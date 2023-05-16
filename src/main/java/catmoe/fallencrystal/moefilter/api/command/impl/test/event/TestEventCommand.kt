@@ -18,11 +18,10 @@ class TestEventCommand : ICommand {
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
         if (args!!.size < 2) {
-            EventManager.triggerEvent(TestMessageEvent(sender, ChatMessageType.ACTION_BAR, ""))
+            EventManager.triggerEvent(TestMessageEvent(sender, ChatMessageType.ACTION_BAR, "test"))
         } else {
             EventManager.triggerEvent(TestMessageEvent(sender, ChatMessageType.ACTION_BAR,
-                MessageUtil.messageBuilder(2, args).toString()
-            ))
+                MessageUtil.messageBuilder(2, args).toString()))
         }
     }
 

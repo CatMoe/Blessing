@@ -31,7 +31,7 @@ object LoadConfig {
                 version="$version"
                 prefix="&bMoe&fFilter &7>> "
                 command {
-                    not-found="&c未找到消息."
+                    not-found="&c未找到命令."
                     no-permission="&c缺少权限: [permission]"
                 }
                 blacklist-reason {
@@ -96,6 +96,6 @@ object LoadConfig {
             "-------------------- MoeFilter --------------------"
         )
         message.forEach { MessageUtil.logWarn(it) }
-        Timer().schedule(100000L) { proxy.stop() }
+        Timer().schedule(10000L) { proxy.stop() }
     }
 }

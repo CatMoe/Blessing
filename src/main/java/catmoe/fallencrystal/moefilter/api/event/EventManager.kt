@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 
 object EventManager {
+
     private val listeners: MutableList<EventListener> = ArrayList()
 
     fun triggerEvent(event: Any) {
@@ -13,8 +14,8 @@ object EventManager {
                 val methods = it.javaClass.declaredMethods
                 if (methods.isNullOrEmpty()) return@runAsync
                 for (method in methods) {
-                    if (method.isAnnotationPresent(FilterEvent().javaClass) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
-                        try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() }
+                    if (method.isAnnotationPresent(FilterEvent::class.java) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
+                        method.invoke(it, event)
                     }
                 }
             }
