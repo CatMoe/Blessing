@@ -3,7 +3,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
-import catmoe.fallencrystal.moefilter.util.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import net.md_5.bungee.api.CommandSender
 
 class HelpCommand : ICommand {

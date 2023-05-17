@@ -3,7 +3,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl.test.event
 import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.TestMessageEvent
-import catmoe.fallencrystal.moefilter.util.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 class MessageEvent : EventListener {

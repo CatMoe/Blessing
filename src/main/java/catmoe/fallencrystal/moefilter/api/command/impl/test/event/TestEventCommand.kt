@@ -3,7 +3,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl.test.event
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.TestMessageEvent
-import catmoe.fallencrystal.moefilter.util.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.CommandSender
 

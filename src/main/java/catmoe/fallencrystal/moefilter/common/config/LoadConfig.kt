@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.util.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 import java.io.File
@@ -56,6 +56,29 @@ object LoadConfig {
                     PING-LIMIT="短时间内Ping次数过多"
                     JOIN-LIMIT="短时间内尝试加入次数过多"
                     ALTS="同地址拥有太多账户"
+                }
+                kick {
+                    placeholders {
+                        custom1="这个是属于你的占位符! 在消息中使用[custom1]来使用它."
+                        custom2="你可以增加无限行占位符 来使你的消息模板化更加轻松!"
+                    }
+                    # 在此处指定占位符格式. %[placeholder]% 就是为 %placeholder% 例如%custom1%就会返回上面的值
+                    placeholder-pattern="%[placeholder]%"
+                    blacklisted = [
+                        "",
+                        "BLACKLISTED",
+                        ""
+                    ]
+                    first-join = [
+                        "",
+                        "REJOIN",
+                        ""
+                    ]
+                    ping-join = [
+                        "",
+                        "If u want join server. Ping server first.",
+                        ""
+                    ]
                 }
             """.trimIndent()
 
