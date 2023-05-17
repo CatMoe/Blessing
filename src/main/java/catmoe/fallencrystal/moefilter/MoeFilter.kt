@@ -1,11 +1,13 @@
 package catmoe.fallencrystal.moefilter
 
-import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
+import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
+import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
@@ -20,6 +22,7 @@ class MoeFilter : Plugin() {
         LoadConfig.loadConfig()
 
         EventManager // 初始化
+        registerListener()
 
         LoadCommand(this).load()
         registerLogger()
@@ -31,6 +34,11 @@ class MoeFilter : Plugin() {
     private fun registerLogger() {
         proxy.logger.filter = LoggerManager
         LoggerManager.registerFilter(LogHandler())
+    }
+
+    private fun registerListener() {
+        EventManager.registerListener(ReloadConfig())
+        EventManager.registerListener(WhitelistListener())
     }
 
 }

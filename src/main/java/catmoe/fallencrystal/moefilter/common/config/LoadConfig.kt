@@ -25,14 +25,30 @@ object LoadConfig {
                 # 启用调试? 启用后可以获得更多的用法用于调试
                 # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
                 debug=true
+                # 配置模块应该怎么样工作
+                # 
+                #  ALWAYS: 始终启用
+                #  DURING-ATTACK: 仅在攻击时启用
+                #  DISABLED: 始终禁用
+                # 
+                # 如果您填入了意外的值 则默认开启.
+                checks-type {
+                    FIRST-JOIN=ALWAYS
+                    PING-JOIN=DURING-ATTACK
+                }
             """.trimIndent()
 
     private val defaultMessage = """
                 version="$version"
                 prefix="&bMoe&fFilter &7>> "
+                reload-warn="&e您可以使用重载命令重载配置文件. 但实际上这可能会意外地破坏某些东西. 如果可以 请尽快重启代理而非使用reload命令."
                 command {
                     not-found="&c未找到命令."
                     no-permission="&c缺少权限: [permission]"
+                    description {
+                        reload="快速重载MoeFilter配置文件(不推荐)"
+                        help="列出所有已注册的命令 并针对指定命令提供帮助"
+                    }
                 }
                 blacklist-reason {
                     ADMIN="被管理员列入黑名单"
@@ -65,6 +81,7 @@ object LoadConfig {
             createDefaultConfig()
             broadcastUpdate(newFile)
         }
+        ObjectConfig.reloadConfig()
     }
 
     private fun createDefaultConfig() {

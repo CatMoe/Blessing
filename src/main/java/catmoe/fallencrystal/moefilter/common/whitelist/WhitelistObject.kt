@@ -11,11 +11,25 @@ object WhitelistObject {
     fun getWhitelist(address: String) { cache.getIfPresent(address) ?: false }
 
     fun setWhitelist(address: String, type: WhitelistType) {
-        if (type == WhitelistType.ADD && cache.getIfPresent(address) == null) { cache.put(address, true); triggerEvent(address, type) }
-        if (type == WhitelistType.REMOVE && cache.getIfPresent(address) != null) { cache.invalidate(address); triggerEvent(address, type) }
+        when (type) {
+            WhitelistType.ADD -> { addWhitelist(address) }
+            WhitelistType.REMOVE -> { removeWhitelist(address) }
+        }
     }
 
     fun getAllWhitelist(): List<String> { return ips }
+
+    private fun addWhitelist(address: String) {
+        if (cache.getIfPresent(address) != null && ips.contains(address)) return
+        cache.put(address, true)
+        ips.add(address)
+    }
+
+    private fun removeWhitelist(address: String) {
+        if (cache.getIfPresent(address) == null && !ips.contains(address)) return
+        cache.invalidate(address)
+        ips.remove(address)
+    }
 
     private fun triggerEvent(address: String, type: WhitelistType) { EventManager.triggerEvent(WhitelistEvent(address, type)) }
 }

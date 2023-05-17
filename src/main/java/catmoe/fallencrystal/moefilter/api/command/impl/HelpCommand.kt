@@ -11,7 +11,7 @@ class HelpCommand : ICommand {
 
     override fun allowedConsole(): Boolean { return true }
 
-    override fun description(): String { return "列出所有已注册的命令" }
+    override fun description(): String { return ObjectConfig.getMessage().getString("command.description.help") }
 
     override fun permission(): String { return "moefilter.list" }
 

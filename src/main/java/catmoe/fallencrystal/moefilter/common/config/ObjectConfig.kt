@@ -4,10 +4,15 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
 object ObjectConfig {
-    private val config: Config = ConfigFactory.parseFile(LoadConfig.getConfigFile())
-    private val message: Config = ConfigFactory.parseFile(LoadConfig.getMessage())
+    private var config: Config = ConfigFactory.parseFile(LoadConfig.getConfigFile())
+    private var message: Config = ConfigFactory.parseFile(LoadConfig.getMessage())
 
-    fun getConfig(): Config { return config!! }
+    fun getConfig(): Config { return config }
 
-    fun getMessage(): Config { return message!! }
+    fun getMessage(): Config { return message }
+
+    fun reloadConfig() {
+        config = ConfigFactory.parseFile(LoadConfig.getConfigFile())
+        message = ConfigFactory.parseFile(LoadConfig.getMessage())
+    }
 }
