@@ -4,9 +4,10 @@ import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
-import catmoe.fallencrystal.moefilter.common.check.reason.LoadReason
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
+import catmoe.fallencrystal.moefilter.listener.PingListener
+import catmoe.fallencrystal.moefilter.listener.PreJoinListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import net.md_5.bungee.api.ProxyServer
@@ -38,8 +39,13 @@ class MoeFilter : Plugin() {
     private fun registerListener() {
         EventManager.registerListener(ReloadConfig())
         EventManager.registerListener(WhitelistListener())
-        EventManager.registerListener(LoadReason())
+        EventManager.registerListener(ReloadConfig())
         EventManager.triggerEvent(PluginReloadEvent(null))
+    }
+
+    private fun registerBungeeListener() {
+        proxy.pluginManager.registerListener(this, PreJoinListener())
+        proxy.pluginManager.registerListener(this, PingListener())
     }
 
 }

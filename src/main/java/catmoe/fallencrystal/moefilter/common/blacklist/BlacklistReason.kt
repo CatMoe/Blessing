@@ -12,5 +12,6 @@ enum class BlacklistReason(@JvmField val reason: String) {
     PING_LIMIT(ObjectConfig.getMessage().getString("blacklist-reason.PING-LIMIT")),
     JOIN_LIMIT(ObjectConfig.getMessage().getString("blacklist-reason.JOIN-LIMIT")),
     ALTS(ObjectConfig.getMessage().getString("blacklist-reason.ALTS")),
+    CHECK_FAILED(ObjectConfig.getMessage().getString("blacklist-reason")),
     UNKNOWN_PROTOCOL("") // that should be client join/ping server version when they protocol is invalid.
 }

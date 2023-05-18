@@ -25,16 +25,35 @@ object LoadConfig {
                 # 启用调试? 启用后可以获得更多的用法用于调试
                 # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
                 debug=true
-                # 配置模块应该怎么样工作
-                # 
-                #  ALWAYS: 始终启用
-                #  DURING-ATTACK: 仅在攻击时启用
-                #  DISABLED: 始终禁用
-                # 
-                # 如果您填入了意外的值 则默认开启.
-                checks-type {
-                    FIRST-JOIN=ALWAYS
-                    PING-JOIN=DURING-ATTACK
+                
+                #
+                # Join & Ping 检查.
+                # 此模块可以阻止绝大愚蠢的机器人 但这取决于您的配置.
+                #
+                ping-and-join {
+                    # 以下是可用的模式:
+                    #
+                    # DISABLED  关闭模块
+                    # STABLE  两个模块作为独立工作的模块 即客户端可以随时Ping和重新连接 而不会因为顺序不对或用户名之类而判定未通过检查
+                    # ONLY_JOIN  玩家只需要重新连接即可加入服务器
+                    # ONLY_PING  玩家只需要刷新服务器列表 就可以加入服务器了
+                    # PING_FIRST  玩家需要先刷新服务器列表 然后再加入两次服务器 才可以进入服务器
+                    # JOIN_FIRST  玩家需要先进入服务器 然后再刷新服务器列表并进入 才可以进入服务器
+                    # PING_FIRST_REST  跟PING_FIRST不同的是 如果玩家以同地址不同用户名加入服务器 则判定未通过
+                    # JOIN_FIRST_REST  跟PING_FIRST差不多 都会检查玩家的用户名在通过检查时是否保持他们进行检查前的地址和玩家名
+                    # 
+                    # AUTO (仅在攻击时有效 & 启用后以下两项模式选择均无效)
+                    # 当没有任何攻击时 使用JOIN_FIRST_REST
+                    # 当攻击模式为"仅加入一次"或"Ping和加入"时 则使用JOIN_FIRST_REST
+                    # 当攻击模式为"重新加入时" 则使用PING_FIRST_REST
+                    
+                    # 当没有激活反机器人模式时 应该使用什么模式
+                    IDLE=STABLE_REST
+                    # 当服务器遭到攻击时 应该使用什么模式
+                    DURING-ATTACK=PING_FIRST_REST
+                    
+                    # 使用auto模式?
+                    AUTO=true
                 }
             """.trimIndent()
 
@@ -50,11 +69,27 @@ object LoadConfig {
                         help="列出所有已注册的命令 并针对指定命令提供帮助"
                     }
                 }
+                methods {
+                    JOIN="Join"
+                    ONCE-JOIN="Once Join"
+                    REJOIN="Reconnect"
+                    PING-AND-JOIN="Ping+Join"
+                    LONGER-NAME="Longer name"
+                    BAD-NAME="Bad name"
+                    
+                    PING="Ping"
+                    EXCEPTION-PING="Exception Ping"
+                    PING-FLOOD="Motd Attack"
+                    
+                    UNKNOWN-PROTOCOL="Protocol"
+                    MALFORMED_PACKET="Packets"
+                }
                 blacklist-reason {
                     ADMIN="被管理员列入黑名单"
                     PROXY="疑似使用代理或VPN"
                     PING-LIMIT="短时间内Ping次数过多"
                     JOIN-LIMIT="短时间内尝试加入次数过多"
+                    CHECK-FAILED="无法验证您是否是机器人还是玩家"
                     ALTS="同地址拥有太多账户"
                 }
                 kick {
@@ -69,14 +104,14 @@ object LoadConfig {
                         "BLACKLISTED",
                         ""
                     ]
-                    first-join = [
+                    rejoin = [
                         "",
                         "REJOIN",
                         ""
                     ]
-                    ping-join = [
+                    ping = [
                         "",
-                        "If u want join server. Ping server first.",
+                        "Ping server first.",
                         ""
                     ]
                 }

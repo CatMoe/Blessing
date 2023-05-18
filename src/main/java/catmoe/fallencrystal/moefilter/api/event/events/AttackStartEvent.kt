@@ -1,3 +1,5 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
-class AttackStartEvent
+import catmoe.fallencrystal.moefilter.common.attack.AttackType
+
+class AttackStartEvent(val method: List<AttackType>)
