@@ -2,12 +2,10 @@ package catmoe.fallencrystal.moefilter.common.check.joinping
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.BlacklistEvent
-import catmoe.fallencrystal.moefilter.api.event.events.WhitelistEvent
 import catmoe.fallencrystal.moefilter.common.blacklist.BlacklistProfile
 import catmoe.fallencrystal.moefilter.common.blacklist.BlacklistReason
 import catmoe.fallencrystal.moefilter.common.check.joinping.JoinPingType.*
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
-import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistType
 import catmoe.fallencrystal.moefilter.util.message.kick.KickType
 import com.github.benmanes.caffeine.cache.Caffeine
 
@@ -72,7 +70,4 @@ object JoinPingChecks {
         val checkName = joinCache.getIfPresent(address) ?: name
         return if (checkName != name) { EventManager.triggerEvent(BlacklistEvent(BlacklistProfile(address, BlacklistReason.CHECK_FAILED.reason, name), BlacklistReason.CHECK_FAILED)); false } else true
     }
-
-    private fun setWhitelist(address: String) { EventManager.triggerEvent(WhitelistEvent(address, WhitelistType.ADD)) }
-
 }

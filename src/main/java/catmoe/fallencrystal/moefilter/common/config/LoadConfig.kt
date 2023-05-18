@@ -55,6 +55,36 @@ object LoadConfig {
                     # 使用auto模式?
                     AUTO=true
                 }
+                
+                # 代理检查
+                proxy {
+                    enabled=true
+                    lists {
+                        "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
+                        "https://www.proxy-list.download/api/v1/get?type=http",
+                        "https://www.proxy-list.download/api/v1/get?type=https",
+                        "https://www.proxy-list.download/api/v1/get?type=socks4",
+                        "https://www.proxy-list.download/api/v1/get?type=socks5",
+                        "https://shieldcommunity.net/sockets.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks4.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-https.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks4.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks4.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt"
+                    }
+                }
             """.trimIndent()
 
     private val defaultMessage = """
@@ -101,7 +131,7 @@ object LoadConfig {
                     placeholder-pattern="%[placeholder]%"
                     blacklisted = [
                         "",
-                        "BLACKLISTED",
+                        "BLACKLISTED  [reason]",
                         ""
                     ]
                     rejoin = [

@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
+import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.PingListener
@@ -26,6 +27,8 @@ class MoeFilter : Plugin() {
 
         LoadCommand(this).load()
         registerLogger()
+
+        ProxyCache.fetchProxy()
     }
 
     override fun onDisable() {
