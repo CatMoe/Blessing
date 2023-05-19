@@ -11,6 +11,7 @@ import catmoe.fallencrystal.moefilter.listener.PingListener
 import catmoe.fallencrystal.moefilter.listener.PreJoinListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
+import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsListener
 import catmoe.fallencrystal.moefilter.util.system.CPUMonitor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -52,5 +53,7 @@ class MoeFilter : Plugin() {
         proxy.pluginManager.registerListener(this, PreJoinListener())
         proxy.pluginManager.registerListener(this, PingListener())
     }
+
+    private fun registerLuckPermsListener() { if (proxy.pluginManager.getPlugin("LuckPerms") != null) { LuckPermsListener } }
 
 }
