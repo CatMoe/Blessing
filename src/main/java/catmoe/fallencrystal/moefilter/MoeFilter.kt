@@ -30,7 +30,7 @@ class MoeFilter : Plugin() {
         LoadCommand(this).load()
         registerLogger()
 
-        ProxyCache.fetchProxy()
+        ProxyCache
         CPUMonitor
     }
 

@@ -1,7 +1,5 @@
 package catmoe.fallencrystal.moefilter.common.whitelist
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.WhitelistEvent
 import com.github.benmanes.caffeine.cache.Caffeine
 
 object WhitelistObject {
@@ -30,6 +28,4 @@ object WhitelistObject {
         cache.invalidate(address)
         ips.remove(address)
     }
-
-    private fun triggerEvent(address: String, type: WhitelistType) { EventManager.triggerEvent(WhitelistEvent(address, type)) }
 }

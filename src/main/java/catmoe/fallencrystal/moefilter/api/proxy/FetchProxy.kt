@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class FetchProxy {
-    val proxies = ObjectConfig.getConfig().getStringList("proxy.lists")
+    private val proxies = ObjectConfig.getConfig().getStringList("proxy.lists")
 
     fun get() {
         for (it in proxies) {
