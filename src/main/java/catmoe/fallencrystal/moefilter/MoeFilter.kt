@@ -11,6 +11,7 @@ import catmoe.fallencrystal.moefilter.listener.PingListener
 import catmoe.fallencrystal.moefilter.listener.PreJoinListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
+import catmoe.fallencrystal.moefilter.util.system.CPUMonitor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
@@ -29,6 +30,7 @@ class MoeFilter : Plugin() {
         registerLogger()
 
         ProxyCache.fetchProxy()
+        CPUMonitor
     }
 
     override fun onDisable() {
