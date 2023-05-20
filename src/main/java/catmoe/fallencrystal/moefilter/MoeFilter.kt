@@ -7,8 +7,6 @@ import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
-import catmoe.fallencrystal.moefilter.listener.PingListener
-import catmoe.fallencrystal.moefilter.listener.PreJoinListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsListener
@@ -47,11 +45,6 @@ class MoeFilter : Plugin() {
         EventManager.registerListener(WhitelistListener())
         EventManager.registerListener(ReloadConfig())
         EventManager.triggerEvent(PluginReloadEvent(null))
-    }
-
-    private fun registerBungeeListener() {
-        proxy.pluginManager.registerListener(this, PreJoinListener())
-        proxy.pluginManager.registerListener(this, PingListener())
     }
 
     private fun registerLuckPermsListener() { if (proxy.pluginManager.getPlugin("LuckPerms") != null) { LuckPermsListener } }

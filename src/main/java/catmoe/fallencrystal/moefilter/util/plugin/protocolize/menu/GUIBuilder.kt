@@ -48,8 +48,8 @@ abstract class GUIBuilder {
         val i = build()
         i.onClick { click: InventoryClick? -> onClick(click) }
         i.onClose { close: InventoryClose? -> onClose(close) }
-        val Protocolplayer = Protocolize.playerProvider().player(player.uniqueId)
-        Protocolplayer.openInventory(i)
+        val protocolizePlayer = Protocolize.playerProvider().player(player.uniqueId)
+        protocolizePlayer.openInventory(i)
     }
 
     fun updateItems() {
