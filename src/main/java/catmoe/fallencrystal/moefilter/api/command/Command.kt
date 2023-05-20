@@ -1,8 +1,8 @@
 package catmoe.fallencrystal.moefilter.api.command
 
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.TabExecutor
@@ -25,6 +25,7 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
+        if (!sender!!.hasPermission("moefilter")) return listOf("You don't have any permission to use this plugin command.")
         if (args!!.size == 1) return OCommand.commandList()
         val command = OCommand.getICommand(args[1])
         return if (args.size == 2 && command != null) {
