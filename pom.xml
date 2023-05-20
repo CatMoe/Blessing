@@ -162,7 +162,7 @@
             <artifactId>waterfall</artifactId>
             <version>1.19-R0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/waterfall-1.19-526.jar</systemPath>
+            <systemPath>${project.basedir}/lib/Waterfall.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>dev.simplix</groupId>
