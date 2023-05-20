@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.util.plugin.luckperms
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.luckperms.PermsUserDataRecalculateEvent
+import catmoe.fallencrystal.moefilter.api.user.displaycache.Display
+import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.ReCacheDisplayOnJoin
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.luckperms.api.LuckPermsProvider
@@ -20,7 +20,9 @@ object LuckPermsListener {
         luckperms.eventBus.subscribe(plugin!!, UserDataRecalculateEvent::class.java, LuckPermsListener::onUserDataRecalculateEvent)
     }
 
-    private fun onUserDataRecalculateEvent(event: UserDataRecalculateEvent) { EventManager.triggerEvent(PermsUserDataRecalculateEvent(event.user, event.data, event.luckPerms, event.eventType)) }
+    private fun onUserDataRecalculateEvent(event: UserDataRecalculateEvent) {
+        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: ""))
+    }
 
     private fun registerDisplayCacheEvent() {
         val plugin = FilterPlugin.getPlugin()
