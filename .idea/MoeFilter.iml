@@ -12,7 +12,7 @@
     <facet type="minecraft" name="Minecraft">
       <configuration>
         <autoDetectTypes>
-          <platformType>BUNGEECORD</platformType>
+          <platformType>WATERFALL</platformType>
         </autoDetectTypes>
       </configuration>
     </facet>
