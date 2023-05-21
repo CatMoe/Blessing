@@ -26,7 +26,7 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
         if (!sender!!.hasPermission("moefilter")) return listOf(messageConfig.getString("command.tabComplete.no-permission"))
-        if (args!!.size == 1) return OCommand.commandList()
+        if (args!!.size == 1) return getCommandList(sender)
         val command = OCommand.getICommand(args[1])
         return if (args.size == 2 && command != null) {
             if (!sender.hasPermission(command.permission())) listOf(messageConfig.getString("command.tabComplete-no-subcommand-permission"))
@@ -46,6 +46,13 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
             "&b&m&l                                                            "
         )
         message.forEach { MessageUtil.sendMessage(sender, it) }
+    }
+
+    private fun getCommandList(sender: CommandSender): MutableList<String> {
+        val list = OCommand.iCommandList()
+        val listWithPermission = mutableListOf<String>()
+        for (it in list) { if (sender.hasPermission(it.permission())) { listWithPermission.add(it.command()) } }
+        return listWithPermission
     }
 
 }

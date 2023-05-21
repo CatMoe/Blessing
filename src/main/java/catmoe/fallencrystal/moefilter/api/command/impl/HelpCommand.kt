@@ -13,7 +13,7 @@ class HelpCommand : ICommand {
 
     override fun description(): String { return ObjectConfig.getMessage().getString("command.description.help") }
 
-    override fun permission(): String { return "moefilter.list" }
+    override fun permission(): String { return "moefilter.help" }
 
     val config = ObjectConfig.getMessage()
     val prefix: String = config.getString("prefix")

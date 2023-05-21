@@ -25,6 +25,7 @@ class FetchProxy {
                         ProxyCache.addProxy(proxy)
                     }
                 }
+                response.close()
             }
         }
     }

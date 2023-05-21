@@ -1,5 +1,5 @@
 name: MoeFilter
-version: '0.0.1-Snapshot'
+version: ${project.version}
 author: CatMoe
 main: catmoe.fallencrystal.moefilter.MoeFilter
 description: 'A lite antibot for servers.'
