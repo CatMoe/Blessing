@@ -59,7 +59,7 @@ object LoadConfig {
                 # 代理检查
                 proxy {
                     enabled=true
-                    lists {
+                    lists [
                         "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
                         "https://www.proxy-list.download/api/v1/get?type=http",
                         "https://www.proxy-list.download/api/v1/get?type=https",
@@ -83,7 +83,7 @@ object LoadConfig {
                         "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
                         "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks4.txt",
                         "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt"
-                    }
+                    ]
                 }
             """.trimIndent()
 
@@ -94,9 +94,15 @@ object LoadConfig {
                 command {
                     not-found="&c未找到命令."
                     no-permission="&c缺少权限: [permission]"
+                    # 各类子命令描述
                     description {
                         reload="快速重载MoeFilter配置文件(不推荐)"
                         help="列出所有已注册的命令 并针对指定命令提供帮助"
+                    }
+                    # 命令补全描述. 颜色符号无法在此处使用.
+                    tabComplete {
+                        no-permission="You don't have permission to use this command."
+                        no-subcommand-permission="You need permission [permission] to use this command."
                     }
                 }
                 methods {
