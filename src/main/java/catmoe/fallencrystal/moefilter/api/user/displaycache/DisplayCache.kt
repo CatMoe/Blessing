@@ -8,7 +8,10 @@ import java.util.*
 
 object DisplayCache {
     private val displayCache = Caffeine.newBuilder().build<UUID, Display>()
-    fun getDisplay(uuid: UUID): Display? { return displayCache.getIfPresent(uuid) }
+    fun getDisplay(uuid: UUID): Display {
+        if (displayCache.getIfPresent(uuid) == null) { try { updateFromUUID(uuid) } catch (npe: NullPointerException) { return Display("", "") } }
+        return displayCache.getIfPresent(uuid) ?: Display("", "")
+    }
     fun updateDisplayCache(uuid: UUID, display: Display) { if (displayCache.getIfPresent(uuid) != null) { displayCache.invalidate(uuid) }; displayCache.put(uuid, display) }
 
     fun updateFromUUID(uuid: UUID) {
