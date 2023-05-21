@@ -59,7 +59,7 @@ object LoadConfig {
                 # 代理检查
                 proxy {
                     enabled=true
-                    lists [
+                    lists = [
                         "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
                         "https://www.proxy-list.download/api/v1/get?type=http",
                         "https://www.proxy-list.download/api/v1/get?type=https",
