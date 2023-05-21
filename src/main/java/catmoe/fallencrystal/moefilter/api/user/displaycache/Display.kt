@@ -1,3 +1,5 @@
 package catmoe.fallencrystal.moefilter.api.user.displaycache
 
-class Display(val displayPrefix: String, val displaySuffix: String)
+import java.util.*
+
+class Display(val uuid: UUID,val displayPrefix: String, val displaySuffix: String)

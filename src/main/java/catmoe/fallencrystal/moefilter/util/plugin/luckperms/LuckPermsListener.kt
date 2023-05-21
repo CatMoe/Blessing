@@ -21,7 +21,7 @@ object LuckPermsListener {
     }
 
     private fun onUserDataRecalculateEvent(event: UserDataRecalculateEvent) {
-        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: ""))
+        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.uniqueId, event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: ""))
     }
 
     private fun registerDisplayCacheEvent() {
