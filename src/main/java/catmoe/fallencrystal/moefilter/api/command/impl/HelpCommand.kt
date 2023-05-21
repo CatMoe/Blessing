@@ -22,13 +22,14 @@ class HelpCommand : ICommand {
         val line = "&b&m&l                                                            "
         if (args!!.size < 2) {
             sendMessage(sender,line)
-            OCommand.iCommandList().forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
+            OCommand.getCommandList(sender).forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
             sendMessage(sender,line)
             return
         } else {
             try {
                 val subCommand = args[1].let { OCommand.getICommand(it) }
-                val description = subCommand!!.description()
+                if (!sender.hasPermission(subCommand!!.permission())) { MessageUtil.sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
+                val description = subCommand.description()
                 val command = subCommand.command()
                 sendMessage(sender, "  &f/moefilter $command &b- &f$description")
             } catch (_: ArrayIndexOutOfBoundsException) {
@@ -39,9 +40,11 @@ class HelpCommand : ICommand {
         }
     }
 
-    override fun tabComplete(): MutableMap<Int, List<String>> {
+    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = HashMap()
-        map[1] = OCommand.commandList()
+        val list = mutableListOf<String>()
+        OCommand.getCommandList(sender).forEach { if (sender.hasPermission(it.permission())) { list.add(it.command()) } }
+        map[1] = list
         return map
     }
 

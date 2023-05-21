@@ -11,6 +11,7 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
 
     private val messageConfig = ObjectConfig.getMessage()
     private val prefix: String = messageConfig.getString("prefix")
+    private val fullHideCommand = messageConfig.getBoolean("command.full-hide-command")
 
     override fun execute(sender: CommandSender?, args: Array<out String>?) {
         // 当玩家没有权限或未输入任何子命令时  详见 infoCommand 方法.
@@ -19,25 +20,28 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
         if (command != null) {
             val permission = command.permission()
             if (sender !is ProxiedPlayer && !command.allowedConsole()) return
-            if (!sender.hasPermission(permission)) { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.no-permission").replace("[permission]", permission)}") }
+            if (!sender.hasPermission(permission)) {
+                if (fullHideCommand) { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.not-found")}") } else { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.no-permission").replace("[permission]", permission)}") }
+                return
+            }
             else { command.execute(sender, args) }
         } else { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.not-found")}") } // MessageNotFound
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
         if (!sender!!.hasPermission("moefilter")) return listOf(messageConfig.getString("command.tabComplete.no-permission"))
-        if (args!!.size == 1) return getCommandList(sender)
-        val command = OCommand.getICommand(args[1])
-        return if (args.size == 2 && command != null) {
-            if (!sender.hasPermission(command.permission())) listOf(messageConfig.getString("command.tabComplete-no-subcommand-permission"))
-            val map = command.tabComplete()
-            map[args.size - 1] ?: listOf()
+        if (args!!.size == 1) { val list = mutableListOf<String>(); OCommand.getCommandList(sender).forEach { if (sender.hasPermission(it.permission())) { list.add(it.command()) } }; return list }
+        val command = OCommand.getICommand(args[0])
+        return if (command != null) {
+            if (!sender.hasPermission(command.permission())) {
+               if (!fullHideCommand) { listOf(messageConfig.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", command.permission())) } else { listOf() }
+            } else command.tabComplete(sender)[args.size - 1] ?: listOf()
         } else { listOf() }
     }
 
     private fun infoCommand(sender: CommandSender) {
         val version = FilterPlugin.getPlugin()!!.description.version
-        val line = if (sender.hasPermission("moefilter")) "  &e使用 &f/moefilter help &e查看命令列表" else "  &egithub.com/CatMoe/MoeFilter"
+        val line = if (sender.hasPermission("moefilter")) "  &e使用 &f/moefilter help &e查看命令列表" else " &e github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
             "&b&m&l                                                            ",
             "  &bMoe&fFilter &7- &f$version",
@@ -46,13 +50,6 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
             "&b&m&l                                                            "
         )
         message.forEach { MessageUtil.sendMessage(sender, it) }
-    }
-
-    private fun getCommandList(sender: CommandSender): MutableList<String> {
-        val list = OCommand.iCommandList()
-        val listWithPermission = mutableListOf<String>()
-        for (it in list) { if (sender.hasPermission(it.permission())) { listWithPermission.add(it.command()) } }
-        return listWithPermission
     }
 
 }

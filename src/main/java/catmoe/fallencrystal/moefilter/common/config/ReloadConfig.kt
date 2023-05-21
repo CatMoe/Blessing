@@ -10,9 +10,9 @@ class ReloadConfig : EventListener {
     fun reloadConfig(event: PluginReloadEvent) { LoadConfig.loadConfig(); warnMessage(event) }
 
     private fun warnMessage(event: PluginReloadEvent) {
-        val sender = event.executor
+        val sender = event.executor ?: return
         val messageConfig = ObjectConfig.getMessage()
         val message = "${messageConfig.getString("prefix")}${messageConfig.getString("reload-warn")}"
-        MessageUtil.sendMessage(sender!!, message)
+        MessageUtil.sendMessage(sender, message)
     }
 }

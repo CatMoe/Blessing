@@ -20,5 +20,5 @@ class LogCommand : ICommand {
         }
     }
 
-    override fun tabComplete(): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
 }

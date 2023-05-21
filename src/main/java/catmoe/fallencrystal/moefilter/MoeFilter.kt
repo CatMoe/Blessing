@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
@@ -28,6 +29,7 @@ class MoeFilter : Plugin() {
         LoadCommand(this).load()
         registerLogger()
 
+        DisplayCache
         ProxyCache
         CPUMonitor
     }

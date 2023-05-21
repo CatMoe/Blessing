@@ -91,6 +91,8 @@ object LoadConfig {
                 version="$version"
                 prefix="&bMoe&fFilter &7>> "
                 reload-warn="&e您可以使用重载命令重载配置文件. 但实际上这可能会意外地破坏某些东西. 如果可以 请尽快重启代理而非使用reload命令."
+                
+                # [permission] = 当前命令权限占位符
                 command {
                     not-found="&c未找到命令."
                     no-permission="&c缺少权限: [permission]"
@@ -101,9 +103,13 @@ object LoadConfig {
                     }
                     # 命令补全描述. 颜色符号无法在此处使用.
                     tabComplete {
+                        # 当玩家没有权限使用MoeFilter的命令时 应该返回什么tab补全
                         no-permission="You don't have permission to use this command."
+                        # 当玩家没有权限使用MoeFilter的命令但补全了它时 应该返回什么tab补全. 
                         no-subcommand-permission="You need permission [permission] to use this command."
                     }
+                    # 当玩家没有权限使用那个子命令时 是否完全隐藏命令 (启用后忽略tabComplete的"no-subcommand-permission"和"no-permission")
+                    full-hide-command=false
                 }
                 methods {
                     JOIN="Join"

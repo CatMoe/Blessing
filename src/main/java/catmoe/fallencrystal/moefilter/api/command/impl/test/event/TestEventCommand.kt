@@ -26,7 +26,7 @@ class TestEventCommand : ICommand {
         }
     }
 
-    override fun tabComplete(): MutableMap<Int, List<String>> {
+    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = HashMap()
         map[1] = listOf("<message>")
         return map

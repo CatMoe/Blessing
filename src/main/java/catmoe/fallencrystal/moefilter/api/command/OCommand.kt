@@ -1,6 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.command
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.md_5.bungee.api.CommandSender
 
 object OCommand {
     private val commandList = Caffeine.newBuilder().build<String, ICommand>()
@@ -35,4 +36,11 @@ object OCommand {
     }
 
     fun getICommand(command: String): ICommand? { return commandList.getIfPresent(command) }
+
+    fun getCommandList(sender: CommandSender): MutableList<ICommand> {
+        val list = iCommandList()
+        val listWithPermission = mutableListOf<ICommand>()
+        for (it in list) { if (sender.hasPermission(it.permission())) { listWithPermission.add(it) } }
+        return listWithPermission
+    }
 }
