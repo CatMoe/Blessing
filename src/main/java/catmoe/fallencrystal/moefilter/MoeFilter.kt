@@ -45,7 +45,6 @@ class MoeFilter : Plugin() {
     private fun registerListener() {
         EventManager.registerListener(ReloadConfig())
         EventManager.registerListener(WhitelistListener())
-        EventManager.registerListener(ReloadConfig())
         EventManager.triggerEvent(PluginReloadEvent(null))
     }
 

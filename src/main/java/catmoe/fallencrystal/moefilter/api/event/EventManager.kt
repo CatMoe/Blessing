@@ -2,10 +2,11 @@ package catmoe.fallencrystal.moefilter.api.event
 
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
+import java.util.concurrent.CopyOnWriteArrayList
 
 object EventManager {
 
-    private val listeners: MutableList<EventListener> = ArrayList()
+    private val listeners: MutableList<EventListener> = CopyOnWriteArrayList()
 
     fun triggerEvent(event: Any) {
         ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
@@ -28,7 +29,7 @@ object EventManager {
     }
 
     fun unregisterListener(c: EventListener) {
-        if (!listeners.contains(c)) throw NullPointerException("$c haven't register listener!")
+        if (!listeners.contains(c)) throw NoSuchElementException("$c haven't register listener!")
         listeners.remove(c)
     }
 
