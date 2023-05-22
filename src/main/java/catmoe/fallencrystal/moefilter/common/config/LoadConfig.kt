@@ -24,7 +24,7 @@ object LoadConfig {
                 version="$version"
                 # 启用调试? 启用后可以获得更多的用法用于调试
                 # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
-                debug=true
+                debug=false
                 
                 #
                 # Join & Ping 检查.
@@ -82,7 +82,15 @@ object LoadConfig {
                         "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
                         "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
                         "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks4.txt",
-                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt"
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt",
+                        "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
+                        "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
+                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
+                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/entry_ips.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/https.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks4.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks5.txt"
                     ]
                 }
             """.trimIndent()
