@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.common.config
 
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import com.typesafe.config.Config
 import net.md_5.bungee.api.ProxyServer
 import java.io.File
 import java.nio.file.Files
@@ -15,6 +16,7 @@ object LoadConfig {
 
     private val configFile = File(path, "config.conf")
     private val messageFile = File(path, "message.conf")
+    private val proxyFile = File(path, "proxy.conf")
 
     private val version = FilterPlugin.getPlugin()!!.description.version
 
@@ -54,44 +56,6 @@ object LoadConfig {
                     
                     # 使用auto模式?
                     AUTO=true
-                }
-                
-                # 代理检查
-                proxy {
-                    enabled=true
-                    lists = [
-                        "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
-                        "https://www.proxy-list.download/api/v1/get?type=http",
-                        "https://www.proxy-list.download/api/v1/get?type=https",
-                        "https://www.proxy-list.download/api/v1/get?type=socks4",
-                        "https://www.proxy-list.download/api/v1/get?type=socks5",
-                        "https://shieldcommunity.net/sockets.txt",
-                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
-                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt",
-                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
-                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
-                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
-                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
-                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
-                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
-                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks4.txt",
-                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt",
-                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
-                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-https.txt",
-                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks4.txt",
-                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
-                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
-                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks4.txt",
-                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt",
-                        "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
-                        "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
-                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
-                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/entry_ips.txt",
-                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt",
-                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/https.txt",
-                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks4.txt",
-                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks5.txt"
-                    ]
                 }
             """.trimIndent()
 
@@ -167,45 +131,131 @@ object LoadConfig {
                 }
             """.trimIndent()
 
+    private val proxiesConfig = """
+                version="$version"
+        
+                # 内置的反代理. 自动从网站上抓取代理并使用换成记录
+                internal: {
+                    enabled=true
+                    # 启用调试 (大量垃圾邮件警告!)
+                    debug=false
+                    # 调度器任务设置
+                    schedule {
+                         # 在插件开启时自动搜索代理. false则在计时过后开始更新.
+                         trigger-on-enable=true
+                         # 单位为小时 意味着每三小时更新一次.
+                         update-delay=3
+                    }
+                    lists = [
+                        "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
+                        "https://www.proxy-list.download/api/v1/get?type=http",
+                        "https://www.proxy-list.download/api/v1/get?type=https",
+                        "https://www.proxy-list.download/api/v1/get?type=socks4",
+                        "https://www.proxy-list.download/api/v1/get?type=socks5",
+                        "https://shieldcommunity.net/sockets.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt",
+                        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
+                        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks4.txt",
+                        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-https.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks4.txt",
+                        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/http.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks4.txt",
+                        "https://raw.githubusercontent.com/rdavydov/proxy-list/main/proxies/socks5.txt",
+                        "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
+                        "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
+                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
+                        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/entry_ips.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/https.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks4.txt",
+                        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks5.txt"
+                    ]
+                }
+                
+                # 设置来自https://proxycheck.io的服务
+                proxycheck-io {
+                    enabled=true
+                    # API秘钥 您需要在上面注册一个账户才可以使用该服务.
+                    key = [
+                        "your-key-here"
+                    ]
+                    # 黑名单属性. 有VPN(代理), Business(主机供应商/企业), Wireless(家用网络)
+                    # 有需要可以将Business也加入 但这会阻止绝大多数加速器 并且有一定的误判风险.
+                    # Wireless没有专门用于区分有线网络和移动数据. 如果需要 请移步至IP-API
+                    blacklisted-type = ["VPN"]
+                    # 跟VPN属性不同. 对于proxycheck那边的解释是 VPN和Proxy不是一种东西 VPN属于虚拟专用网络 而Proxy属于代理.
+                    blacklist-proxy=true
+                    # 单日可查询次数限制. 这取决于你的计划. 但由于我们并不真正保存使用次数 
+                    # 而是作为插件在检查时的请求次数-1 以避免无限制调用接口.
+                    # 您可以使用多个API账户秘钥. 当到达throttle时 使用另一个API秘钥检查.
+                    limit=1000
+                    # 每分钟请求限制.
+                    throttle=350
+                }
+                
+                ip-api {
+                    enabled=true
+                    # 每分钟请求限制 超过此限制后 处理将被跳过或等待.
+                    throttle=45
+                    blacklist-proxy=true
+                }
+                
+                # 区域设置.
+                country {
+                    # 模式. WHITELIST(白名单), BLACKLIST(黑名单) 或 DISABLED(禁用)
+                    mode=DISABLED
+                    # 要阻止的列表. 支持Timezone(Asia/Shanghai, Asia, Shanghai), continent(Asia, AS), country(China, CN) 和 region(Guangdong, GD)
+                    list = [
+                        ""
+                    ]
+                }
+                
+    """.trimIndent()
+
     fun loadConfig() {
         createDefaultConfig()
         val config = ObjectConfig.getConfig()
         val message = ObjectConfig.getMessage()
-        val pluginFolder = FilterPlugin.getDataFolder()!!.absolutePath
-        val configVersion = config.getString("version")
-        val messageVersion = message.getString("version")
-        val nowTime = System.currentTimeMillis()
-        if (configVersion != version || config.isEmpty) {
-            val oldFile = Paths.get("$pluginFolder/config.conf")
-            val newFile = Paths.get("$pluginFolder/config-old-$configVersion-$nowTime.conf")
-            Files.move(oldFile, newFile)
-            createDefaultConfig()
-            broadcastUpdate(newFile)
-        }
-        if (messageVersion != version || message.isEmpty) {
-            val oldFile = Paths.get("$pluginFolder/message.conf")
-            val newFile = Paths.get("$pluginFolder/message-old-$configVersion-$nowTime.conf")
-            Files.move(oldFile, newFile)
-            createDefaultConfig()
-            broadcastUpdate(newFile)
-        }
+        val proxy = ObjectConfig.getProxy()
+        if (config.getString("version") != version || config.isEmpty) { updateConfig("config", config) }
+        if (message.getString("version") != version || message.isEmpty) { updateConfig("message", message) }
+        if (proxy.getString("version") != null || proxy.isEmpty) { updateConfig("proxy", proxy) }
         ObjectConfig.reloadConfig()
     }
 
+    private fun updateConfig(file: String, config: Config) {
+        val version = config.getString("version")
+        val nowTime = System.currentTimeMillis()
+        val pluginFolder = FilterPlugin.getDataFolder()!!.absolutePath
+        val oldFile = Paths.get("$pluginFolder/$file.conf")
+        val newFile = Paths.get("$pluginFolder/$file-old-$version-$nowTime.conf")
+        Files.move(oldFile, newFile)
+        createDefaultConfig()
+        broadcastUpdate(newFile)
+    }
+
     private fun createDefaultConfig() {
-        var createConfig = false
-        var createMessage = false
         val pluginFolder = FilterPlugin.getDataFolder()!!
         if (!pluginFolder.exists()) { pluginFolder.mkdirs() }
-        if (!configFile.exists()) { createConfig = true }
-        if (!messageFile.exists()) { createMessage = true }
-        if (createConfig) { configFile.createNewFile(); configFile.writeText(defaultConfig) }
-        if (createMessage) { messageFile.createNewFile(); messageFile.writeText(defaultMessage) }
+        if (!configFile.exists()) { configFile.createNewFile(); configFile.writeText(defaultConfig) }
+        if (!messageFile.exists()) { messageFile.createNewFile(); messageFile.writeText(defaultMessage) }
+        if (!proxyFile.exists()) { proxyFile.createNewFile(); proxyFile.writeText(proxiesConfig) }
     }
 
     fun getConfigFile(): File { return configFile }
 
     fun getMessage(): File { return messageFile }
+
+    fun getProxy(): File { return proxyFile }
 
     private fun broadcastUpdate(newFile: Path) {
         val message: List<String> = listOf(

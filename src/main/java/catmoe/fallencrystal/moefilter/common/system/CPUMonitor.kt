@@ -1,8 +1,8 @@
-package catmoe.fallencrystal.moefilter.util.system
+package catmoe.fallencrystal.moefilter.common.system
 
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
-import catmoe.fallencrystal.moefilter.util.system.impl.CPUUsage
+import catmoe.fallencrystal.moefilter.common.system.impl.CPUUsage
 import com.sun.management.OperatingSystemMXBean
 import net.md_5.bungee.api.ProxyServer
 import java.lang.management.ManagementFactory

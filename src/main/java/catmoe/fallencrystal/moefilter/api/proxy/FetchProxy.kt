@@ -1,21 +1,35 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
+import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.net.InetAddress
 import java.net.SocketTimeoutException
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 class FetchProxy {
-    private val proxies = ObjectConfig.getConfig().getStringList("proxy.lists")
+    private val config = ObjectConfig.getProxy()
+    private val proxies = config.getStringList("internal.lists")
+    private val debug = config.getBoolean("internal.debug")
+    private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
+    private val triggerOnEnable = if (config.getBoolean("internal.schedule.trigger-on-enable")) (0).toLong() else updateDelay
     private var count = 0
 
-    fun get() {
-        for (it in proxies) {
+    init {
+        if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, triggerOnEnable, updateDelay, TimeUnit.HOURS ) }
+    }
+
+    fun get() { get(proxies) }
+
+    fun get(lists: List<String>) {
+        for (it in lists) {
             ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
                 try {
                     val client = OkHttpClient()
@@ -25,11 +39,10 @@ class FetchProxy {
                     if (response.isSuccessful) {
                         val lines = response.body?.string()?.split("\n")
                         for (line in lines!!) {
-                            val proxy = regex.replace(line.trim()) { matchResult -> val address = matchResult.groupValues[1]
-                                address.replace(Regex("[^\\x20-\\x7E]"), "")
-                            }
-                            ProxyCache.addProxy(proxy)
-                            if (ObjectConfig.getConfig().getBoolean("debug")) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
+                            val proxy = regex.replace(line.trim()) { matchResult -> val address = matchResult.groupValues[1]; address.replace(Regex("[^\\x20-\\x7E]"), "") }
+                            if (ProxyCache.isProxy(InetAddress.getByName(proxy))) return@runAsync
+                            ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
+                            if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
                             count++
                         }
                     }

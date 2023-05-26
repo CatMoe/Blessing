@@ -1,15 +1,20 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
+import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import com.github.benmanes.caffeine.cache.Caffeine
+import java.net.InetAddress
 
 object ProxyCache {
-    private val cache = Caffeine.newBuilder().build<String, Boolean>()
+    private val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
 
-    init { fetchProxy()}
+    init { fetchProxy() }
 
-    private fun fetchProxy() {val fetchProxy = FetchProxy(); fetchProxy.get()}
+    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { val fetchProxy = FetchProxy(); fetchProxy.get() } }
 
-    fun isProxy(address: String): Boolean { return cache.getIfPresent(address) ?: false }
+    fun isProxy(address: InetAddress): Boolean { return cache.getIfPresent(address) != null }
 
-    fun addProxy(address: String) { cache.put(address, true) }
+    fun getProxy(address: InetAddress): ProxyResult? { return cache.getIfPresent(address) }
+
+    fun addProxy(proxy: ProxyResult) { cache.put(proxy.ip, proxy) }
 }
