@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.common.system
+package catmoe.fallencrystal.moefilter.common.utils.system
 
 import java.io.BufferedReader
 import java.io.IOException

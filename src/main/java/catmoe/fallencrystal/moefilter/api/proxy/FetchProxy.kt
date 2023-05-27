@@ -22,9 +22,7 @@ class FetchProxy {
     private val triggerOnEnable = if (config.getBoolean("internal.schedule.trigger-on-enable")) (0).toLong() else updateDelay
     private var count = 0
 
-    init {
-        if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, triggerOnEnable, updateDelay, TimeUnit.HOURS ) }
-    }
+    init { if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, triggerOnEnable, updateDelay, TimeUnit.HOURS ) } }
 
     fun get() { get(proxies) }
 
