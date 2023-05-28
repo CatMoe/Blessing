@@ -1,9 +1,7 @@
 package catmoe.fallencrystal.moefilter.util.message
 
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.ChatMessageType
-import net.md_5.bungee.api.CommandSender
-import net.md_5.bungee.api.ProxyServer
+import net.md_5.bungee.api.*
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
@@ -39,4 +37,19 @@ object MessageUtil {
     fun logInfo(text: String) { logger.info(colorize((text))) }
 
     fun logWarn(text: String) { logger.warning(colorize(text)) }
+
+    fun sendTitle(p: ProxiedPlayer, title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int) { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(p) }
+
+    fun sendTitle(p: ProxiedPlayer, title: BaseComponent, subtitle: BaseComponent, stay: Int, fadeIn: Int, fadeOut: Int) { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(p) }
+
+    fun sendTitle(p: List<ProxiedPlayer>, title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int) { p.forEach { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(it) } }
+
+    fun sendTitle(p: List<ProxiedPlayer>, title: BaseComponent, subtitle: BaseComponent, stay: Int, fadeIn: Int, fadeOut: Int) { p.forEach { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(it) } }
+
+    fun titleBuilder(title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int): Title { return titleBuilder(TextComponent(title), TextComponent(subtitle), stay, fadeIn, fadeOut) }
+
+    fun titleBuilder(title: BaseComponent, subtitle: BaseComponent, stay: Int, fadeIn: Int, fadeOut: Int): Title {
+        val t = ProxyServer.getInstance().createTitle()
+        t.title(title); t.subTitle(subtitle); t.stay(stay); t.fadeIn(fadeIn); t.fadeOut(fadeOut); return t
+    }
 }

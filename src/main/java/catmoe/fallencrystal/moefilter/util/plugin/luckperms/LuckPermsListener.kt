@@ -9,8 +9,8 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent
 import net.md_5.bungee.api.ProxyServer
 
 object LuckPermsListener {
-    init { registerEvent() }
-    private fun registerEvent() {
+
+    fun registerEvent() {
         val luckperms = LuckPermsProvider.get()
         val plugin = FilterPlugin.getPlugin()
 

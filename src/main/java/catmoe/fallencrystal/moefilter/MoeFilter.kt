@@ -11,7 +11,7 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
-import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsListener
+import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -47,8 +47,7 @@ class MoeFilter : Plugin() {
         EventManager.registerListener(ReloadConfig())
         EventManager.registerListener(WhitelistListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
+        val luckPermsRegister = LuckPermsRegister()
+        luckPermsRegister.register()
     }
-
-    private fun registerLuckPermsListener() { if (proxy.pluginManager.getPlugin("LuckPerms") != null) { LuckPermsListener } }
-
 }

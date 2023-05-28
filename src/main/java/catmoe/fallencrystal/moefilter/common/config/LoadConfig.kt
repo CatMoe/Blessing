@@ -141,10 +141,9 @@ object LoadConfig {
                     debug=false
                     # 调度器任务设置
                     schedule {
-                         # 在插件开启时自动搜索代理. false则在计时过后开始更新.
-                         trigger-on-enable=true
-                         # 单位为小时 意味着每三小时更新一次.
-                         update-delay=3
+                        # schedule总是会在启动时触发. 所以你不需要担心启动时不同步.
+                        # 单位为小时 意味着每三小时更新一次.
+                        update-delay=3
                     }
                     lists = [
                         "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all&ssl=all&anonymity=all",
@@ -228,7 +227,7 @@ object LoadConfig {
         val proxy = ObjectConfig.getProxy()
         if (config.getString("version") != version || config.isEmpty) { updateConfig("config", config) }
         if (message.getString("version") != version || message.isEmpty) { updateConfig("message", message) }
-        if (proxy.getString("version") != null || proxy.isEmpty) { updateConfig("proxy", proxy) }
+        if (proxy.getString("version") != version || proxy.isEmpty) { updateConfig("proxy", proxy) }
         ObjectConfig.reloadConfig()
     }
 

@@ -8,8 +8,10 @@ import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.net.ConnectException
 import java.net.InetAddress
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
@@ -19,10 +21,9 @@ class FetchProxy {
     private val proxies = config.getStringList("internal.lists")
     private val debug = config.getBoolean("internal.debug")
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
-    private val triggerOnEnable = if (config.getBoolean("internal.schedule.trigger-on-enable")) (0).toLong() else updateDelay
     private var count = 0
 
-    init { if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, triggerOnEnable, updateDelay, TimeUnit.HOURS ) } }
+    init { if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, updateDelay, TimeUnit.HOURS ) } }
 
     fun get() { get(proxies) }
 
@@ -38,14 +39,16 @@ class FetchProxy {
                         val lines = response.body?.string()?.split("\n")
                         for (line in lines!!) {
                             val proxy = regex.replace(line.trim()) { matchResult -> val address = matchResult.groupValues[1]; address.replace(Regex("[^\\x20-\\x7E]"), "") }
-                            if (ProxyCache.isProxy(InetAddress.getByName(proxy))) return@runAsync
+                            try { if (ProxyCache.isProxy(InetAddress.getByName(proxy))) return@runAsync } catch (ex: UnknownHostException) { MessageUtil.logWarn("$proxy is not a valid address."); return@runAsync }
                             ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
                             if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
                             count++
                         }
                     }
                     response.close()
-                } catch (ex: SocketTimeoutException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] $it has no responded. skipping proxies scammer.") }
+                }
+                catch (ex: SocketTimeoutException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] $it has no responded. skipping proxies scammer.") }
+                catch (ex: ConnectException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] Failed to connection $it. Your server is offline or target is downed?") }
             }
         }
         Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies.") }
