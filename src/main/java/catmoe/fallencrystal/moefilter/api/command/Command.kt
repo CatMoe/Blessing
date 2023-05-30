@@ -43,11 +43,11 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
         val version = FilterPlugin.getPlugin()!!.description.version
         val line = if (sender.hasPermission("moefilter")) "  &e使用 &f/moefilter help &e查看命令列表" else " &e github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
-            "&b&m&l                                                            ",
+            "&b&m&l                                        ",
             "  &bMoe&fFilter &7- &f$version",
             "",
             line,
-            "&b&m&l                                                            "
+            "&b&m&l                                        "
         )
         message.forEach { MessageUtil.sendMessage(sender, it) }
     }

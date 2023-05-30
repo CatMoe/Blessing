@@ -218,6 +218,14 @@ object LoadConfig {
                     ]
                 }
                 
+                # 代理上网配置. 适用于所有API和内置反代理 爬取
+                # 使用HTTP代理. 暂不支持加密HTTP代理和SOCKS4/5
+                proxies-config {
+                    enabled=false
+                    host="localhost"
+                    port=8080
+                }
+                
     """.trimIndent()
 
     fun loadConfig() {

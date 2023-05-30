@@ -36,7 +36,11 @@ object MessageUtil {
 
     fun logInfo(text: String) { logger.info(colorize((text))) }
 
+    fun logInfoRaw(text: String) { logger.info(text) }
+
     fun logWarn(text: String) { logger.warning(colorize(text)) }
+
+    fun logWarnRaw(text: String) { logger.warning(text) }
 
     fun sendTitle(p: ProxiedPlayer, title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int) { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(p) }
 
