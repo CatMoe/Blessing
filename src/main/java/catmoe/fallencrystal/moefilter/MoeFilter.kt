@@ -3,6 +3,7 @@ package catmoe.fallencrystal.moefilter
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
@@ -19,6 +20,7 @@ import net.md_5.bungee.api.plugin.Plugin
 class MoeFilter : Plugin() {
 
     private val proxy = ProxyServer.getInstance()
+    private val initLogger = InitLogger()
 
     override fun onEnable() {
         FilterPlugin.setPlugin(this)
@@ -33,10 +35,10 @@ class MoeFilter : Plugin() {
         DisplayCache
         ProxyCache
         CPUMonitor
+        initLogger.onLoad()
     }
 
-    override fun onDisable() {
-    }
+    override fun onDisable() { EventManager.triggerEvent(PluginUnloadEvent()); initLogger.onUnload() }
 
     private fun registerLogger() {
         InitLogger()

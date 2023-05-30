@@ -6,7 +6,7 @@ import net.md_5.bungee.api.CommandSender
 class LogCommand : ICommand {
     override fun command(): String { return "logger" }
 
-    override fun allowedConsole(): Boolean { return true }
+    override fun allowedConsole(): Boolean { return false }
 
     override fun description(): String { return "将控制台的消息打印到聊天中" }
 

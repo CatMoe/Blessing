@@ -16,4 +16,6 @@ object LogBroadcast {
     fun isInList(player: CommandSender): Boolean { return senders.contains(player) }
 
     fun broadcast(log: LogRecord) { senders.forEach { EventManager.triggerEvent(TestMessageEvent(it, ChatMessageType.ACTION_BAR, log.message))} }
+
+    fun invalidateAll() { senders.clear() }
 }

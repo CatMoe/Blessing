@@ -6,6 +6,7 @@ import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.MessageEvent
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.TestEventCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogCommand
+import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogSpyUnload
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import net.md_5.bungee.api.ProxyServer
@@ -25,6 +26,7 @@ class LoadCommand(private val plugin: Plugin) {
         // 如果并未启用
         if (!ObjectConfig.getConfig().getBoolean("debug")) return
         EventManager.registerListener(MessageEvent())
+        EventManager.registerListener(LogSpyUnload())
         OCommand.register(LogCommand())
         OCommand.register(TestEventCommand())
     }

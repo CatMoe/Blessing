@@ -15,14 +15,20 @@ class InitLogger {
         """                                                                                          """
     )
 
-    init {
-        try {
-            io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create().filter = LoggerManager
-            ascii.forEach { MessageUtil.logInfo(it) }
-            MessageUtil.logInfo("[MoeFilter] Detected Waterfall logger. using it for console filter.")
-        } catch (ex: ClassNotFoundException) {
-            ascii.forEach { MessageUtil.logInfo(it) }
-            BungeeCord.getInstance().logger.filter = LoggerManager
-        }
+    init { ascii.forEach { MessageUtil.logInfo(it) } }
+
+    private var useWaterfallLogger = false
+
+    private val logger = try { useWaterfallLogger=true; io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create(); } catch(ex: ClassNotFoundException) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
+
+    fun onLoad() {
+        logger.filter = LoggerManager
+        if (useWaterfallLogger) { MessageUtil.logInfo("[MoeFilter] Detected Waterfall log4j logger. use it for main logger.") }
+        MessageUtil.logInfo("[MoeFilter] LoggerManager are successfully loaded.")
+    }
+
+    fun onUnload() {
+        logger.filter = null
+        MessageUtil.logInfo("[MoeFilter] Unloaded logger filter.")
     }
 }
