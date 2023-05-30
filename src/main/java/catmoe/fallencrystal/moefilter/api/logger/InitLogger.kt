@@ -19,7 +19,8 @@ class InitLogger {
 
     private var useWaterfallLogger = false
 
-    private val logger = try { useWaterfallLogger=true; io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create(); } catch(ex: ClassNotFoundException) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
+    private val logger = try { useWaterfallLogger=true; io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create(); }
+    catch(ex: NoClassDefFoundError) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
 
     fun onLoad() {
         logger.filter = LoggerManager

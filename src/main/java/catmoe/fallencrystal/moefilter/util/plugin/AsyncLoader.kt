@@ -33,7 +33,13 @@ class AsyncLoader(val plugin: Plugin) {
         EventManager.registerListener(ReloadConfig())
         EventManager.registerListener(WhitelistListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
-        val luckPermsRegister = LuckPermsRegister()
-        luckPermsRegister.register()
+        registerLuckPermsListener()
+    }
+
+    private fun registerLuckPermsListener() {
+        if (proxy.pluginManager.getPlugin("LuckPerms") != null) {
+            val luckPermsRegister = LuckPermsRegister()
+            luckPermsRegister.register()
+        }
     }
 }
