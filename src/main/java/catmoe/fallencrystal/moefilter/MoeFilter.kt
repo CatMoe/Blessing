@@ -3,6 +3,7 @@ package catmoe.fallencrystal.moefilter
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
@@ -12,7 +13,6 @@ import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
-import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
@@ -39,7 +39,7 @@ class MoeFilter : Plugin() {
     }
 
     private fun registerLogger() {
-        BungeeCord.getInstance().logger.filter = LoggerManager
+        InitLogger()
         LoggerManager.registerFilter(LogHandler())
     }
 

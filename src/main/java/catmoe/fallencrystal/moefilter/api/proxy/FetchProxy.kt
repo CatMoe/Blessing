@@ -14,6 +14,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLHandshakeException
 import kotlin.concurrent.schedule
 
 class FetchProxy {
@@ -48,7 +49,8 @@ class FetchProxy {
                     response.close()
                 }
                 catch (ex: SocketTimeoutException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] $it has no responded. skipping proxies scammer.") }
-                catch (ex: ConnectException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] Failed to connection $it. Your server is offline or target is downed?") }
+                catch (ex: ConnectException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] Failed to connect $it. Your server is offline or target is unavailable?") }
+                catch (ex: SSLHandshakeException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] Failed to connect $it. Target server SSL handshake is unavailable.") }
             }
         }
         Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies.") }
