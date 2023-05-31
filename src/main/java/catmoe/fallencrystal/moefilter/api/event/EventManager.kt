@@ -16,7 +16,7 @@ object EventManager {
                 if (methods.isNullOrEmpty()) return@runAsync
                 for (method in methods) {
                     if (method.isAnnotationPresent(FilterEvent::class.java) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
-                        try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() }
+                        ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) { try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() } }
                     }
                 }
             }

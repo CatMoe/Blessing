@@ -43,11 +43,13 @@ class FetchProxy {
                     if (response.isSuccessful) {
                         val lines = response.body?.string()?.split("\n")
                         for (line in lines!!) {
-                            val proxy = regex.replace(line.trim()) { matchResult -> val address = matchResult.groupValues[1]; address.replace(Regex("[^\\x20-\\x7E]"), "") }
-                            try { if (ProxyCache.isProxy(InetAddress.getByName(proxy))) return@runAsync } catch (ex: UnknownHostException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $proxy is not a valid address."); return@runAsync }
-                            ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
-                            if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
-                            count++
+                            val proxy = regex.replace(line.trim()) { matchResult -> val address = matchResult.groupValues[1]
+                                address.replace(Regex("[^\\x20-\\x7E]"), "") }
+                            try { if (!ProxyCache.isProxy(InetAddress.getByName(proxy))) {
+                                ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
+                                if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
+                                count++
+                            } } catch (ex: UnknownHostException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $proxy is not a valid address."); }
                         }
                     }
                     response.close()
@@ -56,6 +58,7 @@ class FetchProxy {
                 catch (ex: ConnectException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] Failed to connect $it. Your server is offline or target is unavailable?") }
                 catch (ex: SSLHandshakeException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] Failed to connect $it. Target server SSL handshake is unavailable.") }
                 catch (ex: UnknownHostException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $it is unknown host. Please check your internet.") }
+                catch (ex: SocketException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $it rejected connection.") }
             }
         }
         Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies.") }

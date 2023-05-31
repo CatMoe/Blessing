@@ -1,10 +1,10 @@
 package catmoe.fallencrystal.moefilter.api.user.displaycache
 
-import net.md_5.bungee.api.event.PostLoginEvent
-import net.md_5.bungee.api.plugin.Listener
-import net.md_5.bungee.event.EventHandler
+import catmoe.fallencrystal.moefilter.api.event.EventListener
+import catmoe.fallencrystal.moefilter.api.event.FilterEvent
+import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 
-class ReCacheDisplayOnJoin : Listener {
-    @EventHandler(priority = 127)
-    fun onUpdateDisplayOnJoin(event: PostLoginEvent) { DisplayCache.getDisplay(event.player.uniqueId) }
+class ReCacheDisplayOnJoin : EventListener {
+    @FilterEvent
+    fun onUpdateDisplayOnJoin(event: AsyncPostLoginEvent) { DisplayCache.getDisplay(event.player.uniqueId) }
 }
