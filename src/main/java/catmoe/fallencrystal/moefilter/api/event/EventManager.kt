@@ -7,30 +7,32 @@ import java.util.concurrent.CopyOnWriteArrayList
 object EventManager {
 
     private val listeners: MutableList<EventListener> = CopyOnWriteArrayList()
+    private val plugin = FilterPlugin.getPlugin()
+    private val scheduler = ProxyServer.getInstance().scheduler
 
     fun triggerEvent(event: Any) {
-        ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
+        scheduler.runAsync(plugin) {
             if (listeners.isEmpty()) return@runAsync
             for (it in listeners) {
                 val methods = it.javaClass.declaredMethods
                 if (methods.isNullOrEmpty()) return@runAsync
                 for (method in methods) {
                     if (method.isAnnotationPresent(FilterEvent::class.java) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0])) {
-                        ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) { try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() } }
+                        scheduler.runAsync(plugin) { try { method.invoke(it, event) } catch (e: Exception) { e.printStackTrace() } }
                     }
                 }
             }
         }
     }
 
-    fun registerListener(c: EventListener) {
-        if (listeners.contains(c)) throw ConcurrentModificationException("$c is already registered")
-        listeners.add(c)
-    }
+    fun registerListener(c: EventListener) { scheduler.runAsync(plugin) { listeners.add(c) } }
 
     fun unregisterListener(c: EventListener) {
-        if (!listeners.contains(c)) throw NoSuchElementException("$c haven't register listener!")
-        listeners.remove(c)
+        scheduler.runAsync(plugin) {
+            val listenerToRemove = mutableListOf<EventListener>()
+            listeners.forEach { if (it::class.java == c::class.java) { listenerToRemove.add(it) } }
+            listeners.removeAll(listenerToRemove)
+        }
     }
 
     fun listenerList(): MutableList<EventListener> { return listeners }

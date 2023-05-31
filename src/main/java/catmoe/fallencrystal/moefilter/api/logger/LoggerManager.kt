@@ -1,10 +1,15 @@
 package catmoe.fallencrystal.moefilter.api.logger
 
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import net.md_5.bungee.api.ProxyServer
 import java.util.logging.Filter
 import java.util.logging.LogRecord
 
 object LoggerManager : Filter {
     private val logger: MutableList<ILogger>
+    private val plugin = FilterPlugin.getPlugin()
+    private val schedule = ProxyServer.getInstance().scheduler
+
     init { logger = ArrayList() }
 
     override fun isLoggable(record: LogRecord?): Boolean {
@@ -17,9 +22,6 @@ object LoggerManager : Filter {
 
     fun registerFilter(c: ILogger) { logger.add(c) }
 
-    fun unregisterFilter(c: ILogger) {
-        if (!logger.contains(c)) throw NullPointerException("$c is not registered logger!")
-        logger.remove(c)
-    }
+    fun unregisterFilter(c: ILogger) { schedule.runAsync(plugin) { val iterator = logger.iterator(); while (iterator.hasNext()) { if (iterator.next()::class.java == c::class.java) { iterator.remove() } } } }
 
 }

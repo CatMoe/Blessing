@@ -10,12 +10,14 @@ import catmoe.fallencrystal.moefilter.common.utils.counter.SessionCounterListene
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener
+import catmoe.fallencrystal.moefilter.listener.main.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
 class AsyncLoader(val plugin: Plugin) {
     private val proxy = ProxyServer.getInstance()
+    private val pluginManager = proxy.pluginManager
 
     init {
         proxy.scheduler.runAsync(plugin) {
@@ -40,7 +42,8 @@ class AsyncLoader(val plugin: Plugin) {
         EventManager.registerListener(SessionCounterListener())
         registerLuckPermsListener()
 
-        proxy.pluginManager.registerListener(FilterPlugin.getPlugin(), IncomingListener())
+        proxy.pluginManager.registerListener(plugin, IncomingListener())
+        proxy.pluginManager.registerListener(plugin, BungeeEvent())
     }
 
     private fun registerLuckPermsListener() {
