@@ -7,6 +7,7 @@ import catmoe.fallencrystal.moefilter.api.user.displaycache.ReCacheDisplayOnJoin
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.luckperms.api.LuckPermsProvider
 import net.luckperms.api.event.user.UserDataRecalculateEvent
+import net.md_5.bungee.api.ProxyServer
 
 object LuckPermsListener {
 
@@ -21,6 +22,6 @@ object LuckPermsListener {
     }
 
     private fun onUserDataRecalculateEvent(event: UserDataRecalculateEvent) {
-        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.uniqueId, event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: ""))
+        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.uniqueId, event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: "", ProxyServer.getInstance().getPlayer(event.user.uniqueId).name ?: ""))
     }
 }
