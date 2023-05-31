@@ -9,8 +9,8 @@ import java.util.*
 object DisplayCache {
     private val displayCache = Caffeine.newBuilder().build<UUID, Display>()
     fun getDisplay(uuid: UUID): Display {
-        if (displayCache.getIfPresent(uuid) == null) { try { updateFromUUID(uuid) } catch (npe: NullPointerException) { return Display(uuid, "", "", "") } }
-        return displayCache.getIfPresent(uuid) ?: Display(uuid, "", "", "")
+        if (displayCache.getIfPresent(uuid) == null) { try { updateFromUUID(uuid) } catch (npe: NullPointerException) { return Display(uuid, "", "") } }
+        return displayCache.getIfPresent(uuid) ?: Display(uuid, "", "")
     }
     fun updateDisplayCache(uuid: UUID, display: Display) { if (displayCache.getIfPresent(uuid) != null) { displayCache.invalidate(uuid) }; displayCache.put(uuid, display) }
 
@@ -19,9 +19,7 @@ object DisplayCache {
             val metaData = LuckPermsProvider.get().userManager.getUser(uuid)!!.cachedData.metaData
             val prefix = metaData.prefix
             val suffix = metaData.suffix
-            val player = ProxyServer.getInstance().getPlayer(uuid) ?: return@runAsync
-            val name = player.name
-            updateDisplayCache(uuid, Display(uuid, prefix ?: "", suffix ?: "", name))
+            updateDisplayCache(uuid, Display(uuid, prefix ?: "", suffix ?: ""))
         }
     }
 }
