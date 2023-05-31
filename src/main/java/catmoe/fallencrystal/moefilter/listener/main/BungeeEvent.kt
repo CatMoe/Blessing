@@ -17,7 +17,8 @@ class BungeeEvent : Listener {
             ProxyServer.getInstance().getPlayer(event.sender.toString()),
             event.isProxyCommand,
             (event.isCommand && !event.isProxyCommand),
-            event.isCancelled
+            event.isCancelled,
+            event.message
         )) }
 
     @EventHandler(priority = 127)
