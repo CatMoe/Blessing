@@ -36,10 +36,10 @@ class AsyncLoader(val plugin: Plugin) {
     }
 
     private fun registerListener() {
-        EventManager.registerListener(ReloadConfig())
-        EventManager.registerListener(WhitelistListener())
+        EventManager.registerListener(plugin, ReloadConfig())
+        EventManager.registerListener(plugin, WhitelistListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
-        EventManager.registerListener(SessionCounterListener())
+        EventManager.registerListener(plugin, SessionCounterListener())
         registerLuckPermsListener()
 
         proxy.pluginManager.registerListener(plugin, IncomingListener())

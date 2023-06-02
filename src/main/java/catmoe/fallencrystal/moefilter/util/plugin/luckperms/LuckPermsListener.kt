@@ -14,7 +14,7 @@ object LuckPermsListener {
         val luckperms = LuckPermsProvider.get()
         val plugin = FilterPlugin.getPlugin()
 
-        EventManager.registerListener(ReCacheDisplayOnJoin())
+        EventManager.registerListener(FilterPlugin.getPlugin()!!, ReCacheDisplayOnJoin())
 
         // private fun onUserDataRecalculateEvent -> UserDataRecalculateEvent
         luckperms.eventBus.subscribe(plugin!!, UserDataRecalculateEvent::class.java, LuckPermsListener::onUserDataRecalculateEvent)
