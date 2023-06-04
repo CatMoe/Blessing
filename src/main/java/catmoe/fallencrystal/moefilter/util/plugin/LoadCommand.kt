@@ -25,8 +25,8 @@ class LoadCommand(private val plugin: Plugin) {
     private fun debugCommand() {
         // 如果并未启用
         if (!ObjectConfig.getConfig().getBoolean("debug")) return
-        EventManager.registerListener(MessageEvent())
-        EventManager.registerListener(LogSpyUnload())
+        EventManager.registerListener(FilterPlugin.getPlugin()!!, MessageEvent())
+        EventManager.registerListener(FilterPlugin.getPlugin()!!, LogSpyUnload())
         OCommand.register(LogCommand())
         OCommand.register(TestEventCommand())
     }

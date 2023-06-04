@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
+import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.counter.SessionCounterListener
@@ -22,6 +23,7 @@ class AsyncLoader(val plugin: Plugin) {
     init {
         proxy.scheduler.runAsync(plugin) {
             FilterPlugin.setPlugin(plugin)
+            LoadConfig.loadConfig()
 
             EventManager // 初始化
             registerListener()

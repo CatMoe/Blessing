@@ -7,7 +7,9 @@ import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 
 class ReloadConfig : EventListener {
     @FilterEvent
-    fun reloadConfig(event: PluginReloadEvent) { LoadConfig.loadConfig(); warnMessage(event) }
+    fun reloadConfig(event: PluginReloadEvent) {
+        if (event.executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig() ;warnMessage(event) }
+    }
 
     private fun warnMessage(event: PluginReloadEvent) {
         val sender = event.executor ?: return
