@@ -28,6 +28,9 @@ object LoadConfig {
                 # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
                 debug=false
                 
+                # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).
+                fastboot=true
+                
                 #
                 # Join & Ping 检查.
                 # 此模块可以阻止绝大愚蠢的机器人 但这取决于您的配置.

@@ -5,7 +5,7 @@ import kotlin.concurrent.schedule
 
 class LuckPermsRegister {
     private fun isAvailable(): Boolean { return try { net.luckperms.api.LuckPermsProvider.get(); true }
-    catch (e: NoClassDefFoundError) { false } }
+    catch (e: Exception) { false } }
 
     fun register() { if (isAvailable()) { LuckPermsListener.registerEvent() } else { Timer().schedule(1000) { register() } } }
 }

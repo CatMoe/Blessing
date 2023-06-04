@@ -42,8 +42,8 @@ class AsyncLoader(val plugin: Plugin) {
         EventManager.registerListener(plugin, SessionCounterListener())
         registerLuckPermsListener()
 
-        proxy.pluginManager.registerListener(plugin, IncomingListener())
-        proxy.pluginManager.registerListener(plugin, BungeeEvent())
+        pluginManager.registerListener(plugin, IncomingListener())
+        pluginManager.registerListener(plugin, BungeeEvent())
     }
 
     private fun registerLuckPermsListener() {

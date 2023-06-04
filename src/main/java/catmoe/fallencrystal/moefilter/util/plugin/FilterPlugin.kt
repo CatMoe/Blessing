@@ -6,6 +6,7 @@ import java.io.File
 object FilterPlugin {
     private var filterPlugin: Plugin? = null
     private var dataFolder: File? = null
+    private var isEnabled = false
 
     fun setPlugin(plugin: Plugin) { filterPlugin = plugin }
 
@@ -14,4 +15,7 @@ object FilterPlugin {
     fun setDataFolder(folder: File) { dataFolder = folder }
 
     fun getDataFolder(): File? { return dataFolder }
+
+    fun pluginEnabled(): Boolean {return isEnabled}
+    fun setEnabled(b: Boolean) { isEnabled=b }
 }

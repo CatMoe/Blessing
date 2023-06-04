@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.logger
 
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.ProxyServer
 import java.util.logging.Filter
@@ -16,7 +17,7 @@ object LoggerManager : Filter {
         var loggable = true
         // 如果ILogger为空时 默认true
         if (logger.isEmpty()) return true
-        logger.forEach { if (!it.isLoggable(record)) loggable = false }
+        logger.forEach { try { if (!it.isLoggable(record)) loggable = false } catch (ex: Exception) { MessageUtil.logWarnRaw("${it::class.java} throws an error. Ask that plugin developer using MoeFilter API") } }
         return loggable
     }
 
