@@ -13,10 +13,11 @@ import java.io.File
 class MoeFilter : Plugin() {
 
     private val initLogger = InitLogger()
+    private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "proxy.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
 
-    init { if (try { ConfigFactory.parseFile(File(dataFolder, "proxy.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }) { load() } }
+    init { if (fastboot) { load() } }
 
-    override fun onEnable() { load() }
+    override fun onEnable() { if(!fastboot) { load() } }
 
     override fun onDisable() { EventManager.triggerEvent(PluginUnloadEvent()); initLogger.onUnload() }
 
