@@ -14,7 +14,7 @@ class MoeFilter : Plugin() {
 
     private val initLogger = InitLogger()
 
-    init { if (ConfigFactory.parseFile(File(dataFolder, "proxy.conf")).getBoolean("fastboot")) { load() } }
+    init { if (try { ConfigFactory.parseFile(File(dataFolder, "proxy.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }) { load() } }
 
     override fun onEnable() { load() }
 
