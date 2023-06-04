@@ -9,6 +9,8 @@ interface ICommand {
 
     fun description(): String
 
+    fun usage(): List<String>
+
     fun permission(): String
 
     fun execute(sender: CommandSender, args: Array<out String>?)

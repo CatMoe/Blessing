@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.listener.main
+package catmoe.fallencrystal.moefilter.util.bungee
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent

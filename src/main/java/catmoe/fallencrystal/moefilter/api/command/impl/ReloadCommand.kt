@@ -13,6 +13,8 @@ class ReloadCommand : ICommand {
 
     override fun description(): String { return ObjectConfig.getMessage().getString("command.description.reload") }
 
+    override fun usage(): List<String> { return listOf("/moefilter reload") }
+
     override fun permission(): String { return "moefilter.reload" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) { EventManager.triggerEvent(PluginReloadEvent(sender)) }

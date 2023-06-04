@@ -10,7 +10,7 @@ import catmoe.fallencrystal.moefilter.common.utils.counter.SessionCounterListene
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener
-import catmoe.fallencrystal.moefilter.listener.main.BungeeEvent
+import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin

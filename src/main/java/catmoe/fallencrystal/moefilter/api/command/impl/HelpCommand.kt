@@ -13,6 +13,8 @@ class HelpCommand : ICommand {
 
     override fun description(): String { return ObjectConfig.getMessage().getString("command.description.help") }
 
+    override fun usage(): List<String> { return listOf("/moefilter help", "/moefilter help <command>") }
+
     override fun permission(): String { return "moefilter.help" }
 
     val config = ObjectConfig.getMessage()
@@ -31,7 +33,18 @@ class HelpCommand : ICommand {
                 if (!sender.hasPermission(subCommand!!.permission())) { MessageUtil.sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
                 val description = subCommand.description()
                 val command = subCommand.command()
-                sendMessage(sender, "  &f/moefilter $command &b- &f$description")
+                // sendMessage(sender, "  &f/moefilter $command &b- &f$description")
+                val commandUsage = subCommand.usage()
+                val message = listOf<String>(
+                    "",
+                    "  &b命令: &f$command",
+                    "  &b描述: &f$description",
+                    "",
+                    "  &e此命令一共有${commandUsage.size} 个用法"
+                )
+                message.forEach { MessageUtil.sendMessage(sender, it) }
+                if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage(sender, "  &e$it") } }
+                MessageUtil.sendMessage(sender, "")
             } catch (_: ArrayIndexOutOfBoundsException) {
             } catch (_: NullPointerException) {
                 val message = config.getString("command.not-found")

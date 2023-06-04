@@ -14,6 +14,8 @@ class TestEventCommand : ICommand {
 
     override fun description(): String { return "测试事件是否正常工作." }
 
+    override fun usage(): List<String> { return listOf("/moefilter testevent", "/moefilter testevent <message>") }
+
     override fun permission(): String { return "moefilter.testevent" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
