@@ -46,7 +46,7 @@ class HelpCommand : ICommand {
                 if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage(sender, "  &e$it") } }
                 MessageUtil.sendMessage(sender, "")
             } catch (_: ArrayIndexOutOfBoundsException) {
-            } catch (_: NullPointerException) {
+            } catch (e: NullPointerException) {
                 val message = config.getString("command.not-found")
                 MessageUtil.sendMessage(sender, "$prefix$message")
             }
