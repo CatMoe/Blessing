@@ -37,7 +37,7 @@ object MainListener {
         if (method == 1 && protocol == 5) { pc.disconnect(); FirewallCache.addAddress(inetAddress, true); return }
         val cachedProtocol = protocolCache.getIfPresent(inetAddress)
         // check they protocol. if they changed client protocol in 5 sec. they will be blacklisted.
-        if (cachedProtocol != null && cachedProtocol != protocol) { pc.disconnect(); FirewallCache.addAddress(inetAddress, true); return }
+        if (cachedProtocol != null && cachedProtocol != protocol) { pc.disconnect(); FirewallCache.addAddressTemp(inetAddress, true); return }
         protocolCache.put(inetAddress, protocol)
     }
 
