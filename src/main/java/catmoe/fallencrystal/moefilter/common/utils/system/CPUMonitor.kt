@@ -3,8 +3,8 @@ package catmoe.fallencrystal.moefilter.common.utils.system
 import catmoe.fallencrystal.moefilter.common.utils.system.impl.CPUUsage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.sun.management.OperatingSystemMXBean
-import net.md_5.bungee.api.ProxyServer
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
@@ -25,11 +25,11 @@ object CPUMonitor {
 
     @Suppress("DEPRECATION")
     private fun update() {
-        ProxyServer.getInstance().scheduler.schedule(plugin, {
-            try {
-                if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
-            } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@schedule }
-            },0, 500, TimeUnit.MILLISECONDS)
+        val scheduler = Scheduler()
+        scheduler.repeatScheduler(500, TimeUnit.MILLISECONDS) {
+            try { if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
+            } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@repeatScheduler }
+        }
     }
 
     fun getCPUUsage(): CPUUsage { return latestCPUUsage }
