@@ -25,7 +25,7 @@ object CPUMonitor {
 
     @Suppress("DEPRECATION")
     private fun update() {
-        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(500, TimeUnit.MILLISECONDS) {
+        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(680, TimeUnit.MILLISECONDS) {
             try { if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
             } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@repeatScheduler }
         }
@@ -33,5 +33,5 @@ object CPUMonitor {
 
     fun getCPUUsage(): CPUUsage { return latestCPUUsage }
 
-    fun getRoundedCPUUsage(): CPUUsage { return CPUUsage(String.format("%.1f", latestCPUUsage.processCPU * 100).toDouble(), String.format("%.1f", latestCPUUsage.systemCPU * 100).toDouble()) }
+    fun getRoundedCPUUsage(): CPUUsage { return CPUUsage(String.format("%.2f", latestCPUUsage.processCPU * 100).toDouble(), String.format("%.2f", latestCPUUsage.systemCPU * 100).toDouble()) }
 }

@@ -9,10 +9,12 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.*
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
+import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLHandshakeException
 import kotlin.concurrent.schedule
 
 class FetchProxy {
@@ -55,11 +57,7 @@ class FetchProxy {
                     }
                     response.close()
                 }
-                catch (ex: SocketTimeoutException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $it has no responded. skipping proxies scammer.") }
-                catch (ex: ConnectException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] Failed to connect $it. Your server is offline or target is unavailable?") }
-                catch (ex: SSLHandshakeException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] Failed to connect $it. Target server SSL handshake is unavailable.") }
-                catch (ex: UnknownHostException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $it is unknown host. Please check your internet.") }
-                catch (ex: SocketException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $it rejected connection.") }
+                catch (ex: Exception) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] failed get proxies list from $it : ${ex.localizedMessage}") }
             }
         }
         Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies.") }

@@ -10,7 +10,7 @@ object ProxyCache {
 
     init { fetchProxy() }
 
-    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { val fetchProxy = FetchProxy(); fetchProxy.get() } }
+    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { FetchProxy() } }
 
     fun isProxy(address: InetAddress): Boolean { return cache.getIfPresent(address) != null }
 
