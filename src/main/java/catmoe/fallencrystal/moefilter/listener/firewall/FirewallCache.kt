@@ -17,7 +17,7 @@ object FirewallCache {
     fun isFirewalled(address: InetAddress): Boolean { return cache.getIfPresent(address) ?: false || tempCache.getIfPresent(address) ?: false }
 
     private fun logFirewalled(address: InetAddress, temp: Boolean) {
-        if (temp) { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are firewalled.") } else { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are temp firewalled (30 seconds)") }
+        if (!temp) { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are firewalled.") } else { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are temp firewalled (30 seconds)") }
     }
 
 }

@@ -37,10 +37,10 @@ class HelpCommand : ICommand {
                 val commandUsage = subCommand.usage()
                 val message = listOf(
                     "",
-                    "  &b命令: &f$command",
-                    "  &b描述: &f$description",
+                    "  <aqua>命令: &f$command",
+                    "  <aqua>描述: &f$description",
                     "",
-                    "  &e此命令一共有${commandUsage.size} 个用法"
+                    "  <yellow>此命令一共有${commandUsage.size} 个用法"
                 )
                 message.forEach { MessageUtil.sendMessage(sender, it) }
                 if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage(sender, "  &e$it") } }
@@ -48,7 +48,7 @@ class HelpCommand : ICommand {
             } catch (_: ArrayIndexOutOfBoundsException) {
             } catch (e: NullPointerException) {
                 val message = config.getString("command.not-found")
-                MessageUtil.sendMessage(sender, "$prefix$message")
+                MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$message"))
             }
         }
     }

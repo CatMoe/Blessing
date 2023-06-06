@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.api.command
 
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
@@ -21,11 +22,14 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
             val permission = command.permission()
             if (sender !is ProxiedPlayer && !command.allowedConsole()) return
             if (!sender.hasPermission(permission)) {
-                if (fullHideCommand) { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.not-found")}") } else { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.no-permission").replace("[permission]", permission)}") }
+                if (fullHideCommand) {
+                    MessageUtil.sendMessage(sender, colorizeMiniMessage("$prefix${messageConfig.getString("command.not-found")}")) }
+                else {
+                    MessageUtil.sendMessage(sender, colorizeMiniMessage("$prefix${messageConfig.getString("command.no-permission").replace("[permission]", permission)}")) }
                 return
             }
             else { command.execute(sender, args) }
-        } else { MessageUtil.sendMessage(sender, "$prefix${messageConfig.getString("command.not-found")}") } // MessageNotFound
+        } else { MessageUtil.sendMessage(sender, colorizeMiniMessage("$prefix${messageConfig.getString("command.not-found")}")) } // MessageNotFound
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
@@ -41,15 +45,15 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
 
     private fun infoCommand(sender: CommandSender) {
         val version = FilterPlugin.getPlugin()!!.description.version
-        val line = if (sender.hasPermission("moefilter")) "  &e使用 &f/moefilter help &e查看命令列表" else " &e github.com/CatMoe/MoeFilter"
+        val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
-            "&b&m&l                                        ",
+            "<aqua><st><b>                                        ",
             "  &bMoe&fFilter &7- &f$version",
             "",
             line,
-            "&b&m&l                                        "
+            "<aqua><st><b>                                        "
         )
-        message.forEach { MessageUtil.sendMessage(sender, it) }
+        message.forEach { MessageUtil.sendMessage(sender, colorizeMiniMessage(it)) }
     }
 
 }

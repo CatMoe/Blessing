@@ -20,8 +20,8 @@ class ToggleNotificationCommand : ICommand {
     override fun permission(): String { return "moefilter.notification" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage(sender, "$prefix &a已切换actionbar")
-        } else { MessageUtil.sendMessage(sender, "$prefix &c已切换actionbar") }
+        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix <green>已切换actionbar"))
+        } else { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix <red>已切换actionbar")) }
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }

@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.util.message
 
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import net.md_5.bungee.api.*
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -10,6 +11,8 @@ object MessageUtil {
     private val logger = ProxyServer.getInstance().logger
 
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
+
+    fun colorizeMiniMessage(text: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(text)) }
 
     fun colorizeTextComponent(text: String): BaseComponent { return TextComponent(colorize(text)) }
 
@@ -27,13 +30,22 @@ object MessageUtil {
 
     fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message) } }
 
+    fun sendMessage(sender: CommandSender, bc: BaseComponent) { if (sender !is ProxiedPlayer) { logInfo(bc.toLegacyText()) } else { sendMessage(sender, bc) } }
+
     fun sendMessage(player: ProxiedPlayer, type: ChatMessageType, message: String) { player.sendMessage(type, colorizeTextComponent(message)) }
 
     fun sendMessage(player: List<ProxiedPlayer>, type: ChatMessageType, message: String) { player.forEach { it.sendMessage(type, colorizeTextComponent(message)) } }
+    fun sendMessage(player: ProxiedPlayer, type: ChatMessageType, bc: BaseComponent) { player.sendMessage(type, bc) }
+
+    fun sendMessage(player: List<ProxiedPlayer>, type: ChatMessageType, bc: BaseComponent) { player.forEach { sendMessage(it, type, bc) } }
 
     fun sendMessage(player: ProxiedPlayer, message: String) { sendMessage(player, ChatMessageType.CHAT, message) }
+    fun sendMessage(player: ProxiedPlayer, bc: BaseComponent) { sendMessage(player, ChatMessageType.CHAT, bc) }
 
     fun sendActionbar(player: ProxiedPlayer, message: String) { sendMessage(player, ChatMessageType.ACTION_BAR, message) }
+    fun sendActionbar(player: List<ProxiedPlayer>, message: String) { player.forEach { sendActionbar(it, message) } }
+    fun sendActionbar(player: ProxiedPlayer, bc: BaseComponent) { player.sendMessage(ChatMessageType.ACTION_BAR, bc) }
+    fun sendActionbar(player: List<ProxiedPlayer>,  bc: BaseComponent) { player.forEach { sendActionbar(it, bc) } }
 
     fun logInfo(text: String) { logger.info(colorize((text))) }
 
