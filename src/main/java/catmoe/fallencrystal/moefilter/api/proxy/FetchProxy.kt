@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,7 +22,7 @@ class FetchProxy {
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
     private var count = 0
 
-    init { if (config.getBoolean("internal.enabled")) { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { get() }, updateDelay, TimeUnit.HOURS ) } }
+    init { if (config.getBoolean("internal.enabled")) { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(updateDelay, TimeUnit.HOURS) { get() } } }
 
     fun get() { get(proxies) }
 

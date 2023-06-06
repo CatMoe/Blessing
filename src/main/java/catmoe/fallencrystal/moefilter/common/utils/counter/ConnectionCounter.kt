@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.common.utils.counter
 
+import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
@@ -10,8 +11,7 @@ object ConnectionCounter {
     private var totalInSession: Long = 0
     private var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
-    private val schedule = Scheduler()
-    init { schedule.repeatScheduler(100, TimeUnit.MILLISECONDS) { putCPStoCache(); putIpSecToCache() } }
+    init { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(100, TimeUnit.MILLISECONDS) { putCPStoCache(); putIpSecToCache() } }
     private val ticks: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8 ,9 ,10)
     // in time (100ms)
     private var tempCPS = 0

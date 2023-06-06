@@ -25,8 +25,7 @@ object CPUMonitor {
 
     @Suppress("DEPRECATION")
     private fun update() {
-        val scheduler = Scheduler()
-        scheduler.repeatScheduler(500, TimeUnit.MILLISECONDS) {
+        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(500, TimeUnit.MILLISECONDS) {
             try { if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
             } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@repeatScheduler }
         }
