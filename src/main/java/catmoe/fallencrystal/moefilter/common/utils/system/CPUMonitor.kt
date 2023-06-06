@@ -1,8 +1,8 @@
 package catmoe.fallencrystal.moefilter.common.utils.system
 
+import catmoe.fallencrystal.moefilter.common.utils.system.impl.CPUUsage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
-import catmoe.fallencrystal.moefilter.common.utils.system.impl.CPUUsage
 import com.sun.management.OperatingSystemMXBean
 import net.md_5.bungee.api.ProxyServer
 import java.lang.management.ManagementFactory
@@ -28,11 +28,11 @@ object CPUMonitor {
         ProxyServer.getInstance().scheduler.schedule(plugin, {
             try {
                 if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
-            } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false }
-            }, 1L, TimeUnit.SECONDS)
+            } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@schedule }
+            },0, 500, TimeUnit.MILLISECONDS)
     }
 
     fun getCPUUsage(): CPUUsage { return latestCPUUsage }
 
-    fun getRoundedCPUUsage(): CPUUsage { return CPUUsage(String.format("%.1f", latestCPUUsage.processCPU).toDouble(), String.format("%.1f", latestCPUUsage.systemCPU).toDouble()) }
+    fun getRoundedCPUUsage(): CPUUsage { return CPUUsage(String.format("%.1f", latestCPUUsage.processCPU * 100).toDouble(), String.format("%.1f", latestCPUUsage.systemCPU * 100).toDouble()) }
 }

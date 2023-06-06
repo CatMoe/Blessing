@@ -12,6 +12,7 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener
 import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
+import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -30,10 +31,12 @@ class AsyncLoader(val plugin: Plugin) {
 
             LoadCommand(plugin).load()
 
+            // check they init method to get more information
             DisplayCache
             ProxyCache
             CPUMonitor
             ConnectionCounter
+            Notifications
         }
     }
 

@@ -11,7 +11,7 @@ object ConnectionCounter {
     private var totalInSession: Long = 0
     private var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
-    init { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { putCPStoCache(); putIpSecToCache(); }, 100, TimeUnit.MILLISECONDS) }
+    init { ProxyServer.getInstance().scheduler.schedule(FilterPlugin.getPlugin(), { putCPStoCache(); putIpSecToCache(); },0, 100, TimeUnit.MILLISECONDS) }
     private val ticks: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8 ,9 ,10)
     // in time (100ms)
     private var tempCPS = 0

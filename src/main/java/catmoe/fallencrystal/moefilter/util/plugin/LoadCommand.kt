@@ -3,6 +3,8 @@ package catmoe.fallencrystal.moefilter.util.plugin
 import catmoe.fallencrystal.moefilter.api.command.Command
 import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
+import catmoe.fallencrystal.moefilter.api.command.impl.ReloadCommand
+import catmoe.fallencrystal.moefilter.api.command.impl.ToggleNotificationCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.MessageEvent
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.TestEventCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogCommand
@@ -19,6 +21,7 @@ class LoadCommand(private val plugin: Plugin) {
     fun load(){
         proxy.registerCommand(plugin, Command("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
         OCommand.register(HelpCommand())
+        OCommand.register(ToggleNotificationCommand())
         debugCommand()
     }
 
@@ -29,5 +32,6 @@ class LoadCommand(private val plugin: Plugin) {
         EventManager.registerListener(FilterPlugin.getPlugin()!!, LogSpyUnload())
         OCommand.register(LogCommand())
         OCommand.register(TestEventCommand())
+        OCommand.register(ReloadCommand())
     }
 }

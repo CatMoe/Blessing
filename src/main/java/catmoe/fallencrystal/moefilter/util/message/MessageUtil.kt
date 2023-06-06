@@ -11,6 +11,8 @@ object MessageUtil {
 
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
 
+    fun colorizeTextComponent(text: String): BaseComponent { return TextComponent(colorize(text)) }
+
     fun colorize(text: List<String>): List<String> {
         val returnText = mutableListOf<String>()
         for (it in text) { returnText.add(colorize(it)) }
@@ -23,12 +25,11 @@ object MessageUtil {
         return message
     }
 
-    fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message)
-    } }
+    fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message) } }
 
-    fun sendMessage(player: ProxiedPlayer, type: ChatMessageType, message: String) { player.sendMessage(type, TextComponent(
-        colorize(message)
-    )) }
+    fun sendMessage(player: ProxiedPlayer, type: ChatMessageType, message: String) { player.sendMessage(type, colorizeTextComponent(message)) }
+
+    fun sendMessage(player: List<ProxiedPlayer>, type: ChatMessageType, message: String) { player.forEach { it.sendMessage(type, colorizeTextComponent(message)) } }
 
     fun sendMessage(player: ProxiedPlayer, message: String) { sendMessage(player, ChatMessageType.CHAT, message) }
 

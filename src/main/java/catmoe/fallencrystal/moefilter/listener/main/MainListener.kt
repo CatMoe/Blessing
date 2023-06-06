@@ -29,8 +29,9 @@ object MainListener {
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val protocol = pc.version
         val inetAddress = (pc.socketAddress as InetSocketAddress).address
-        if (FirewallCache.isFirewalled(inetAddress)) { pc.disconnect(); if (useLegacyDisconnect) { MessageUtil.logWarn("[MoeFilter] [AntiBot] initConnect are modified. use legacy handshake disconnect.") } }
-        // 1 = Ping  2 = Join
+        if (FirewallCache.isFirewalled(inetAddress)) { pc.disconnect();
+            if (!useLegacyDisconnect) { MessageUtil.logWarn("[MoeFilter] [AntiBot] initConnect are modified. use legacy handshake disconnect."); useLegacyDisconnect=true } }
+        // 1 = Ping  2 = Join  else = wtf not vanilla
         val method = handshake.requestedProtocol
         if (method > 2 || method < 1) { pc.disconnect(); FirewallCache.addAddress(inetAddress, true); return }
         // EndMinecraftPlus Bot(Join+Ping) or PingFlood protocol always is 5. i think there nobody still using 1.7.5-1.7.10 clients
