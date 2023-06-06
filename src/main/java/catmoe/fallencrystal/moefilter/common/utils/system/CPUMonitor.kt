@@ -16,8 +16,6 @@ object CPUMonitor {
      */
     private val osBean = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
 
-    private val plugin = FilterPlugin.getPlugin()
-
     private var detectCPUUsage = true
     private var latestCPUUsage: CPUUsage = CPUUsage(0.0, 0.0)
 
@@ -25,7 +23,7 @@ object CPUMonitor {
 
     @Suppress("DEPRECATION")
     private fun update() {
-        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(680, TimeUnit.MILLISECONDS) {
+        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(1, TimeUnit.SECONDS) {
             try { if (detectCPUUsage) { latestCPUUsage = CPUUsage(osBean.processCpuLoad, osBean.systemCpuLoad) }
             } catch (ex: Exception) { ex.printStackTrace(); MessageUtil.logWarn("CPU Usage is not available on your services"); detectCPUUsage = false; return@repeatScheduler }
         }

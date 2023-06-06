@@ -47,5 +47,5 @@ object Notifications {
     fun toggleSpyNotificationPlayer(player: ProxiedPlayer): Boolean { return if (spyNotificationPlayers.contains(player)) { spyNotificationPlayers.remove(player); false } else { spyNotificationPlayers.add(player); true } }
     fun getSpyNotificationPlayers(): List<ProxiedPlayer> { return spyNotificationPlayers }
 
-    private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeTextComponent(string)) }
+    private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeMiniMessage(string)) }
 }
