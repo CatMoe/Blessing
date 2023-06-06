@@ -25,7 +25,7 @@ object Notifications {
             "%total%" to ConnectionCounter.getTotal().toString(),
             "%total_session%" to ConnectionCounter.getTotalSession().toString(),
             "%peak_cps%" to ConnectionCounter.getPeakConnectionPerSec().toString(),
-            "%prefix" to ObjectConfig.getMessage().getString("prefix"),
+            "%prefix%" to ObjectConfig.getMessage().getString("prefix"),
         )
         if (autoNotificationPlayer.isNotEmpty()) { autoNotificationPlayer.removeAll(spyNotificationPlayers) }
         // Don't use val here. it will lock message style.
