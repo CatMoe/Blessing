@@ -28,7 +28,6 @@ object Notifications {
             "%prefix%" to ObjectConfig.getMessage().getString("prefix"),
         )
         if (autoNotificationPlayer.isNotEmpty()) { autoNotificationPlayer.removeAll(spyNotificationPlayers) }
-        // Don't use val here. it will lock message style.
         /*
         Deprecated Messages:
         <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%% <dark_gray>- <aqua>CPS <white>%cps% <dark_gray>- <aqua>Peak <white>%peak_cps% <dark_gray>- <aqua>IpSec <white>%ipsec% <dark_gray>- <aqua>Total <white>%total%

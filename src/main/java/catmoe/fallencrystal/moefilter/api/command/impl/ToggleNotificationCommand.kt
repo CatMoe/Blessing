@@ -8,7 +8,10 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 class ToggleNotificationCommand : ICommand {
-    private val prefix = ObjectConfig.getMessage().getString("prefix")
+    private val config = ObjectConfig.getMessage()
+    private val prefix = config.getString("prefix")
+    private val enable = config.getString("actionbar.command.enable")
+    private val disable = config.getString("actionbar.command.disable")
     override fun command(): String { return "actionbar" }
 
     override fun allowedConsole(): Boolean { return false }
@@ -20,8 +23,8 @@ class ToggleNotificationCommand : ICommand {
     override fun permission(): String { return "moefilter.notification" }
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix <green>已切换actionbar"))
-        } else { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix <red>已切换actionbar")) }
+        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$enable"))
+        } else { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$disable")) }
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }

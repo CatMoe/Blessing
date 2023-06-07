@@ -5,6 +5,7 @@ import net.md_5.bungee.api.*
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import java.util.logging.Level
 
 object MessageUtil {
 
@@ -54,6 +55,8 @@ object MessageUtil {
     fun logWarn(text: String) { logger.warning(colorize(text)) }
 
     fun logWarnRaw(text: String) { logger.warning(text) }
+
+    fun logError(text: String) { logger.log(Level.SEVERE, text) }
 
     fun sendTitle(p: ProxiedPlayer, title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int) { titleBuilder(title, subtitle, stay, fadeIn, fadeOut).send(p) }
 

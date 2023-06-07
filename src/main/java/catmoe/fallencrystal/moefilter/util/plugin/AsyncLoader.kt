@@ -12,8 +12,10 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener
 import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
+import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
@@ -21,22 +23,45 @@ class AsyncLoader(val plugin: Plugin) {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
+    private val configIssue = listOf(
+        "----------  PLEASE DON'T REPORT THIS ISSUE TO CATMOE! ----------",
+        "",
+        "  Your config file is broken or not updated. -- You using snapshot build?",
+        "  Please remove your config then restart proxy.",
+        "  Make sure you using latest snapshot build",
+        "",
+        "  You can look exception message to find where",
+        "  configured incorrectly or missing something",
+        "",
+        "  Proxy won't start until you fix that issue.",
+        "  If you don't know anything. Then backup your config is best option.",
+        "",
+        "----------  PLEASE DON'T REPORT THIS ISSUE TO CATMOE! ----------",
+    )
+
     init {
         proxy.scheduler.runAsync(plugin) {
-            FilterPlugin.setPlugin(plugin)
-            LoadConfig.loadConfig()
+            try {
+                FilterPlugin.setPlugin(plugin)
+                LoadConfig.loadConfig()
 
-            EventManager // 初始化
-            registerListener()
+                EventManager // 初始化
+                registerListener()
 
-            LoadCommand(plugin).load()
+                LoadCommand(plugin).load()
 
-            // check they init method to get more information
-            DisplayCache
-            ProxyCache
-            CPUMonitor
-            ConnectionCounter
-            Notifications
+                // check they init method to get more information
+                DisplayCache
+                ProxyCache
+                CPUMonitor
+                ConnectionCounter
+                Notifications
+            } catch (configException: ConfigException) {
+                configIssue.forEach { MessageUtil.logError(it) }
+                configException.localizedMessage
+                configException.printStackTrace()
+                proxy.stop()
+            }
         }
     }
 
