@@ -68,16 +68,24 @@ object LoadConfig {
                 prefix="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient> <gray>>> "
                 reload-warn="<yellow>您可以使用重载命令重载配置文件. 但实际上这可能会意外地破坏某些东西. 如果可以 请尽快重启代理而非使用reload命令."
                 
-                # 可用占位符: 
-                # %process_cpu% (BungeeCord CPU用量) %system_cpu% (系统使用CPU用量)
-                # %cps% (每秒涌入连接数) %ipsec% (每秒涌入连接的ip数) %peak_cps% (历史最高每秒涌入连接数) %total% (共涌入连接数)
-                # %prefix% (返回上面的prefix)
-                actionbar="%prefix% <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
+                actionbar {
+                    # 可用占位符: 
+                    # %process_cpu% (BungeeCord CPU用量) %system_cpu% (系统使用CPU用量)
+                    # %cps% (每秒涌入连接数) %ipsec% (每秒涌入连接的ip数) %peak_cps% (历史最高每秒涌入连接数) %total% (共涌入连接数)
+                    # %prefix% (返回上面的prefix)
+                    # 更多占位符会随着功能的增加而添加.
+                    style="%prefix% <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
+                    command {
+                        enable="<green>已切换actionbar"
+                        disable="<red>已切换actionbar"
+                    }
+                }
                 
                 # [permission] = 当前命令权限占位符
                 command {
                     not-found="<red>未找到命令."
                     no-permission="<red>缺少权限: [permission]"
+                    only-player="<red>该命令仅可以由在线玩家执行."
                     # 各类子命令描述
                     description {
                         reload="快速重载MoeFilter配置文件(不推荐)"

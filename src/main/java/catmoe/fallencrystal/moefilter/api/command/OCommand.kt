@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.api.command
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.CopyOnWriteArrayList
 
 object OCommand {
@@ -32,7 +33,8 @@ object OCommand {
 
     fun getCommandList(sender: CommandSender): MutableList<ICommand> {
         val listWithPermission = mutableListOf<ICommand>()
-        for (it in getCommandList()) { if (sender.hasPermission(it.permission())) { listWithPermission.add(it) } }
+        if (sender is ProxiedPlayer) { getCommandList().forEach { if (sender.hasPermission(it.permission())) { listWithPermission.add(it) } } // Player
+        } else { getCommandList().forEach { if (it.allowedConsole()) { listWithPermission.add(it) } } } // Console
         return listWithPermission
     }
 }

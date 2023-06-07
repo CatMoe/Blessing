@@ -4,6 +4,8 @@ import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.OCommand
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
+
 import net.md_5.bungee.api.CommandSender
 
 class HelpCommand : ICommand {
@@ -42,13 +44,13 @@ class HelpCommand : ICommand {
                     "",
                     "  <yellow>此命令一共有${commandUsage.size} 个用法"
                 )
-                message.forEach { MessageUtil.sendMessage(sender, it) }
-                if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage(sender, "  &e$it") } }
+                message.forEach { MessageUtil.sendMessage(sender, colorizeMiniMessage(it)) }
+                if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage(sender, colorizeMiniMessage("  <yellow>$it")) } }
                 MessageUtil.sendMessage(sender, "")
             } catch (_: ArrayIndexOutOfBoundsException) {
             } catch (e: NullPointerException) {
                 val message = config.getString("command.not-found")
-                MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$message"))
+                MessageUtil.sendMessage(sender, colorizeMiniMessage("$prefix$message"))
             }
         }
     }

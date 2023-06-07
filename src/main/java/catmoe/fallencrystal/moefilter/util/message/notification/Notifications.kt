@@ -34,7 +34,7 @@ object Notifications {
         <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%% <dark_gray>- <aqua>CPS <white>%cps% <dark_gray>- <aqua>Peak <white>%peak_cps% <dark_gray>- <aqua>IpSec <white>%ipsec% <dark_gray>- <aqua>Total <white>%total%
         <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>
          */
-        val message = ObjectConfig.getMessage().getString("actionbar")
+        val message = ObjectConfig.getMessage().getString("actionbar.style")
         var output = message
         internalPlaceholder.forEach { (placeholder, value) -> output = output.replace(placeholder, value) }
         if (autoNotificationPlayer.isNotEmpty()) { sendActionbar(autoNotificationPlayer, output) }
