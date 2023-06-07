@@ -15,6 +15,6 @@ class ReloadConfig : EventListener {
         val sender = event.executor ?: return
         val messageConfig = ObjectConfig.getMessage()
         val message = "${messageConfig.getString("prefix")}${messageConfig.getString("reload-warn")}"
-        MessageUtil.sendMessage(sender, message)
+        MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage(message))
     }
 }
