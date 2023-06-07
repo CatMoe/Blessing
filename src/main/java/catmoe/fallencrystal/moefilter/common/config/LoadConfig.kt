@@ -76,8 +76,8 @@ object LoadConfig {
                     # 更多占位符会随着功能的增加而添加.
                     style="%prefix% <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
                     command {
-                        enable="<green>已切换actionbar"
-                        disable="<red>已切换actionbar"
+                        enable="<hover:show_text:'<red>点击来切换actionbar'><click:run_command:/moefilter actionbar><green>已切换actionbar</click>"
+                        disable="<hover:show_text:'<green>点击来切换actionbar'><click:run_command:/moefilter actionbar><red>已切换actionbar</click>"
                     }
                 }
                 
