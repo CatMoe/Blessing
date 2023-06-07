@@ -74,7 +74,7 @@ object LoadConfig {
                     # %cps% (每秒涌入连接数) %ipsec% (每秒涌入连接的ip数) %peak_cps% (历史最高每秒涌入连接数) %total% (共涌入连接数)
                     # %prefix% (返回上面的prefix)
                     # 更多占位符会随着功能的增加而添加.
-                    style="%prefix% <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
+                    style="%prefix%<gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
                     command {
                         enable="<hover:show_text:'<red>点击来切换actionbar'><click:run_command:/moefilter actionbar><green>已切换actionbar</click>"
                         disable="<hover:show_text:'<green>点击来切换actionbar'><click:run_command:/moefilter actionbar><red>已切换actionbar</click>"
