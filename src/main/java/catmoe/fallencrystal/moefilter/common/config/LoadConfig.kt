@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.common.config
 
+import catmoe.fallencrystal.moefilter.common.config.util.CreateConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import com.typesafe.config.Config
@@ -269,11 +270,18 @@ object LoadConfig {
     }
 
     private fun createDefaultConfig() {
-        val pluginFolder = FilterPlugin.getDataFolder()!!
-        if (!pluginFolder.exists()) { pluginFolder.mkdirs() }
-        if (!configFile.exists()) { configFile.createNewFile(); configFile.writeText(defaultConfig) }
-        if (!messageFile.exists()) { messageFile.createNewFile(); messageFile.writeText(defaultMessage) }
-        if (!proxyFile.exists()) { proxyFile.createNewFile(); proxyFile.writeText(proxiesConfig) }
+        val pluginFolder=FilterPlugin.getDataFolder()!!
+        val defaultConfigMap = mapOf(
+            configFile to defaultConfig,
+            messageFile to defaultMessage,
+            proxyFile to proxiesConfig,
+        )
+        defaultConfigMap.forEach { (file, config) ->
+            val createConfig = CreateConfig(pluginFolder)
+            createConfig.setDefaultConfig(config)
+            createConfig.setConfigFile(file)
+            createConfig.onLoad()
+        }
     }
 
     fun getConfigFile(): File { return configFile }

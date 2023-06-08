@@ -7,7 +7,7 @@ object WhitelistObject {
     private val cache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val ips = mutableListOf<InetAddress>()
 
-    fun getWhitelist(address: InetAddress) { cache.getIfPresent(address) ?: false }
+    fun isWhitelist(address: InetAddress): Boolean {  return cache.getIfPresent(address) ?: false }
 
     fun setWhitelist(address: InetAddress, type: WhitelistType) {
         when (type) {
