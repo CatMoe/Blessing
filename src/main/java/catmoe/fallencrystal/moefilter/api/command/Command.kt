@@ -49,7 +49,7 @@ class Command(name: String?, permission: String?, vararg aliases: String?) : net
         val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
             "<aqua><st><b>                                        ",
-            "  &bMoe&fFilter &7- &f$version",
+            "  <aqua>Moe<white>Filter <gray>- <white>$version",
             "",
             line,
             "<aqua><st><b>                                        "
