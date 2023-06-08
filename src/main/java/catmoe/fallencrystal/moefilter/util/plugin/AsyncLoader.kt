@@ -19,7 +19,7 @@ import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
-class AsyncLoader(val plugin: Plugin) {
+class AsyncLoader(val plugin: Plugin, val utilMode: Boolean) {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
@@ -46,16 +46,17 @@ class AsyncLoader(val plugin: Plugin) {
                 LoadConfig.loadConfig()
 
                 EventManager // 初始化
-                registerListener()
-
-                LoadCommand(plugin).load()
 
                 // check they init method to get more information
                 DisplayCache
                 ProxyCache
                 CPUMonitor
-                ConnectionCounter
-                Notifications
+                if (!utilMode) {
+                    registerListener()
+                    LoadCommand(plugin).load()
+                    ConnectionCounter
+                    Notifications
+                }
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage

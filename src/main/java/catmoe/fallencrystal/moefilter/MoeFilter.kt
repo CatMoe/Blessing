@@ -13,7 +13,8 @@ import java.io.File
 class MoeFilter : Plugin() {
 
     private val initLogger = InitLogger()
-    private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "proxy.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
+    private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
+    private val utilMode = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("util-mode") } catch (ex: Exception) { false }
 
     init { if (fastboot) { load() } }
 
@@ -26,7 +27,7 @@ class MoeFilter : Plugin() {
         FilterPlugin.setPlugin(this)
         FilterPlugin.setDataFolder(dataFolder)
         initLogger.onLoad()
-        AsyncLoader(this)
+        AsyncLoader(this, utilMode)
     }
 
     override fun onLoad() { MessageUtil.logInfo("[MoeFilter] Using MoeFilter API") }

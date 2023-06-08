@@ -32,6 +32,10 @@ object LoadConfig {
                 # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).
                 fastboot=true
                 
+                # 实用工具模式, 启用后 禁用所有反机器人功能
+                # 不要使用多个反机器人. 我们提供让你选择这个的权利.
+                util-mode=false
+                
                 #
                 # Join & Ping 检查.
                 # 此模块可以阻止绝大愚蠢的机器人 但这取决于您的配置.
