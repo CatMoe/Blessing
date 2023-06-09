@@ -12,14 +12,14 @@ object ConnectionCounter {
     private var peakInSession: Int = 0
     private var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
-    init { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(100, TimeUnit.MILLISECONDS) { putCPStoCache(); putIpSecToCache() } }
-    private val ticks: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8 ,9 ,10)
-    // in time (100ms)
+    init { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(50, TimeUnit.MILLISECONDS) { putCPStoCache(); putIpSecToCache() } }
+    private val ticks: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7, 8 ,9 ,10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+    // in time (50ms)
     private var tempCPS = 0
     private var tempIpSec = 0
     private var peakCPS = 0
     /*
-    Int, Int = Time(1t = 2ticks = 100ms), Count
+    Int, Int = Ticks, Count
      */
     private val connectionPerSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
     private val ipCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<InetAddress, Int>()
@@ -29,13 +29,13 @@ object ConnectionCounter {
     fun getPeakConnectionPerSec(): Int { return peakCPS }
     fun increase(address: InetAddress) {
         val singleIpCount = ipCache.getIfPresent(address) ?: 0
-        if (singleIpCount == 0) { tempIpSec++; ipCache.put(address ,1) }
-        if (getConnectionPerSec() > peakCPS) { peakCPS=getConnectionPerSec(); peakInSession = if (inAttack) getConnectionPerSec() else 0 }
+        if (singleIpCount == 0) { tempIpSec++; ipCache.put(address, 1) }
+        if (getConnectionPerSec() > peakCPS) { peakCPS=getConnectionPerSec(); peakInSession = if (inAttack) peakCPS else 0 }
         total++; tempCPS++; if (inAttack) { totalInSession++; } else { totalInSession = 0 }
     }
     fun getTotal(): Long { return total }
     fun getTotalSession(): Long { return totalInSession }
-    fun getPeakSession(): Int { return peakInSession }
+    // fun getPeakSession(): Int { return peakInSession }
     private fun putCPStoCache() { ticks.forEach { if (connectionPerSecCache.getIfPresent(it) == null) { connectionPerSecCache.put(it, tempCPS); tempCPS = 0; return } } }
     private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache.getIfPresent(it) == null) { ipPerSecCache.put(it, tempIpSec); tempIpSec = 0; return } } }
     fun setInAttack(inAttacking: Boolean) { inAttack =inAttacking }

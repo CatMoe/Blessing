@@ -6,21 +6,14 @@ import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
-import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.connection.PendingConnection
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.protocol.packet.Handshake
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketAddress
-import java.util.concurrent.TimeUnit
 
 object MainListener {
-
-    // InetAddress, Protocol
-    private val protocolCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build<InetAddress, Int>()
-
-    private var useLegacyDisconnect = false
 
     fun initConnection(address: SocketAddress): Boolean {
         val inetAddress = (address as InetSocketAddress).address
@@ -64,10 +57,7 @@ object MainListener {
             if (pingingProtocol != null && pingingProtocol != protocol) { addFirewall(inetAddress, pc, true) }
         }
 
-        val cachedProtocol = protocolCache.getIfPresent(inetAddress)
-        // check they protocol. if they changed client protocol in sec 5. they will be blacklisted.
-        if (cachedProtocol != null && cachedProtocol != protocol) { addFirewall(inetAddress, pc, true) }
-        protocolCache.put(inetAddress, protocol)
+        // cached protocol removed. use PingCache for check protocol. no more bot switch they protocol on joining.
     }
 
     fun onLogin(event: PreLoginEvent) {
@@ -77,14 +67,13 @@ object MainListener {
 
         // Only mc storm bot name here. I will add config for this as soon as possible.
         if (event.connection.name.contains("MCSTORM")) {
-            FirewallCache.addAddress(inetAddress, true);
             /*
             Use PendingConnection.disconnect() insteadof event.setCancelReason.
             Invalid name bots don't care disconnect reason, so don't waste bandwidth on sending reason.
             Also, it can help disconnect quickly to avoid waiting calling PreLoginEvent and froze BungeeCord.
              */
-            event.connection.disconnect()
-            event.isCancelled=true;
+            addFirewall(inetAddress, event.connection, false)
+            event.isCancelled=true
             /*
             Null = BungeeCord default disconnect message. "Proxy lost connect from server."
             This reason will not be sent to the client. Because we've disconnected on PendingConnection.
@@ -93,7 +82,7 @@ object MainListener {
         }
     }
 
-    fun addFirewall(inetAddress: InetAddress, pc: PendingConnection, temp: Boolean) {
+    private fun addFirewall(inetAddress: InetAddress, pc: PendingConnection, temp: Boolean) {
         if (temp) FirewallCache.addAddressTemp(inetAddress, true) else FirewallCache.addAddress(inetAddress, true)
         pc.disconnect()
     }

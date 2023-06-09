@@ -15,6 +15,7 @@ import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
+
 import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
