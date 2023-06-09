@@ -39,7 +39,7 @@ MoeFilter作为一个实用工具**BungeeCord**插件:
   - 优先使用缓存而不是单独的Map或玩家来缓存某些内容  
     也请做好在单IP上连接数过大而未被及时被防火墙拦截的连接检查做好准备  
       
-  - 在Handshake注入AbstractWrapper是愚蠢且不必要的 这么做反而会增加CPU使用率
+  - 在Handshake注入AbstractWrapper是愚蠢且不必要的 这么做反而会增加CPU使用率  
     对于数据包限制器或者反崩溃类似的东西 使用其它插件而不是MoeFilter
     
   - 对攻击的方式以及反机器人的原理有充足的理解再做出贡献
