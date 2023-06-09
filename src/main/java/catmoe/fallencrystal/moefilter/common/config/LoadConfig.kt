@@ -83,6 +83,7 @@ object LoadConfig {
                     # 更新频率 (tick为单位)
                     update-delay=1
                     command {
+                        description="在actionbar查看MoeFilter状态."
                         enable="<hover:show_text:'<red>点击来切换actionbar'><click:run_command:/moefilter actionbar><green>已切换actionbar</click>"
                         disable="<hover:show_text:'<green>点击来切换actionbar'><click:run_command:/moefilter actionbar><red>已切换actionbar</click>"
                     }

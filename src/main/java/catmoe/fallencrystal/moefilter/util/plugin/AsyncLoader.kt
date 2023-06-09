@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.util.plugin
 
+import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
@@ -62,9 +63,10 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 DisplayCache
                 ProxyCache
                 CPUMonitor
+                pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
                 if (!utilMode) {
                     registerListener()
-                    LoadCommand(plugin).load()
+                    LoadCommand().load()
                     ConnectionCounter
                     Notifications
                     if (try{CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString())!=CountryMode.DISABLED }catch(_: Exception){false}) { loadMaxmindDatabase() }
