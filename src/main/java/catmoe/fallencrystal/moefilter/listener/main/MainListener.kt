@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
-import catmoe.fallencrystal.moefilter.common.check.ping.PingCache
+import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
@@ -49,15 +49,16 @@ object MainListener {
         // if (method == 1 && protocol == 5) { pc.disconnect(); return }
         if (method == 1) {
             if (protocol == 5) { pc.disconnect(); return }
-            PingCache.increase(inetAddress, protocol)
+            PingAndJoin.increasePing(inetAddress, protocol)
         }
 
         if (method == 2) {
-            val pingingProtocol = PingCache.getProtocol(inetAddress)
+            val pingingProtocol = PingAndJoin.getCachedPingProtocol(inetAddress)
             if (pingingProtocol != null && pingingProtocol != protocol) { addFirewall(inetAddress, pc, true) }
+            PingAndJoin.increaseJoin(inetAddress, protocol)
         }
 
-        // cached protocol removed. use PingCache for check protocol. no more bot switch they protocol on joining.
+        // cached protocol removed. use PingCache for check protocol. no more bot switches their protocol when joining.
     }
 
     fun onLogin(event: PreLoginEvent) {
