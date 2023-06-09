@@ -233,14 +233,16 @@ object LoadConfig {
                     blacklist-proxy=true
                 }
                 
-                # 区域设置.
+                # GeoIP设置 @MaxMind Database
                 country {
+                    enabled=false
+                    # MaxMind Database下载许可key. 建议使用自己的许可证秘钥.
+                    # https://dev.maxmind.com/geoip/geolite2-free-geolocation-data#accessing-geolite2-free-geolocation-data
+                    key="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"
                     # 模式. WHITELIST(白名单), BLACKLIST(黑名单) 或 DISABLED(禁用)
                     mode=DISABLED
-                    # 要阻止的列表. 支持Timezone(Asia/Shanghai, Asia, Shanghai), continent(Asia, AS), country(China, CN) 和 region(Guangdong, GD)
-                    list = [
-                        ""
-                    ]
+                    # 列表
+                    list = ["CN"]
                 }
                 
                 # 代理上网配置. 适用于所有API和内置反代理 爬取

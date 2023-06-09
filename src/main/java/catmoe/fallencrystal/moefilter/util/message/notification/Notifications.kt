@@ -6,14 +6,11 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
-
-import java.util.Timer
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-
 import kotlin.concurrent.schedule
 
 object Notifications {
@@ -33,7 +30,7 @@ object Notifications {
 
     private fun initSchedule() {
         scheduleStatus = AtomicBoolean(true)
-        scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay").toLong(), TimeUnit.MILLISECONDS) {
+        scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) {
             if (scheduleStatus.get()) { onBroadcast()  } else return@repeatScheduler
         }
     }
@@ -68,7 +65,7 @@ object Notifications {
         spyNotificationPlayers.clear()
 
         // reset schedule task
-        scheduler.runAsync { scheduleStatus= AtomicBoolean(false); Timer().schedule(100L) { initSchedule() } }
+        scheduler.runAsync { scheduleStatus= AtomicBoolean(false); Timer().schedule(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 100.toLong()) { initSchedule() } }
     }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeMiniMessage(string)) }
