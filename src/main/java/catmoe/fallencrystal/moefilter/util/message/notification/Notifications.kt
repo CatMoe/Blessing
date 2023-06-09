@@ -9,19 +9,30 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 object Notifications {
+    /*
+    Don't put val ObjectConfig.getMessage() here.
+    It will cause the config to not modify after the class is initialized.
+     */
 
-    private val config = ObjectConfig.getMessage()
-    private val updateDelaySetting = config.getInt("actionbar.update-delay")
-    private val updateDelay = if (updateDelaySetting < 1) { MessageUtil.logWarn("[MoeFilter] Actionbar update-delay must bigger than 0. Using 1."); 50 } else { updateDelaySetting * 50 }
-
-    init { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(updateDelay.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() } }
+    init { initSchedule() }
 
     private val spyNotificationPlayers: MutableList<ProxiedPlayer> = ArrayList()
     private val autoNotificationPlayer: MutableList<ProxiedPlayer> = ArrayList()
 
+    private var scheduleStatus: AtomicBoolean = AtomicBoolean(false)
+
+    private fun initSchedule() {
+        scheduleStatus = AtomicBoolean(true)
+        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay").toLong(), TimeUnit.MILLISECONDS) {
+            if (scheduleStatus.get()) { onBroadcast()  } else return@repeatScheduler
+        }
+    }
+
     private fun onBroadcast() {
+        val config = ObjectConfig.getMessage()
         val internalPlaceholder = mapOf(
             "%process_cpu%" to CPUMonitor.getRoundedCPUUsage().processCPU.toString(),
             "%system_cpu%" to CPUMonitor.getRoundedCPUUsage().systemCPU.toString(),
@@ -33,11 +44,6 @@ object Notifications {
             "%prefix%" to config.getString("prefix"),
         )
         if (autoNotificationPlayer.isNotEmpty()) { autoNotificationPlayer.removeAll(spyNotificationPlayers) }
-        /*
-        Deprecated Messages:
-        <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%% <dark_gray>- <aqua>CPS <white>%cps% <dark_gray>- <aqua>Peak <white>%peak_cps% <dark_gray>- <aqua>IpSec <white>%ipsec% <dark_gray>- <aqua>Total <white>%total%
-        <gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys, %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>
-         */
         val message = config.getString("actionbar.style")
         var output = message
         internalPlaceholder.forEach { (placeholder, value) -> output = output.replace(placeholder, value) }
@@ -45,9 +51,19 @@ object Notifications {
         if (spyNotificationPlayers.isNotEmpty()) { sendActionbar(spyNotificationPlayers, output) }
     }
     fun onAddAutoNotificationPlayer() { ProxyServer.getInstance().players.forEach { if (it.hasPermission("moefilter.notifications.auto")) { autoNotificationPlayer.add(it) } } }
+
     fun onInvalidateAutoNotificationPlayer() { autoNotificationPlayer.clear() }
 
     fun toggleSpyNotificationPlayer(player: ProxiedPlayer): Boolean { return if (spyNotificationPlayers.contains(player)) { spyNotificationPlayers.remove(player); false } else { spyNotificationPlayers.add(player); true } }
+
+    fun reload() {
+        autoNotificationPlayer.clear()
+        spyNotificationPlayers.clear()
+
+        // reset schedule task
+        scheduleStatus = AtomicBoolean(false)
+        initSchedule()
+    }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeMiniMessage(string)) }
 }

@@ -4,11 +4,13 @@ import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 
 class ReloadConfig : EventListener {
     @FilterEvent
     fun reloadConfig(event: PluginReloadEvent) {
         if (event.executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig() ;warnMessage(event) }
+        Notifications.reload()
     }
 
     private fun warnMessage(event: PluginReloadEvent) {
