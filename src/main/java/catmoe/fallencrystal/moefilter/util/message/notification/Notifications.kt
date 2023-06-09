@@ -6,16 +6,23 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
+
+import java.util.Timer
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+
+import kotlin.concurrent.schedule
 
 object Notifications {
     /*
     Don't put val ObjectConfig.getMessage() here.
     It will cause the config to not modify after the class is initialized.
      */
+
+    private val scheduler = Scheduler(FilterPlugin.getPlugin()!!)
 
     init { initSchedule() }
 
@@ -26,7 +33,7 @@ object Notifications {
 
     private fun initSchedule() {
         scheduleStatus = AtomicBoolean(true)
-        Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay").toLong(), TimeUnit.MILLISECONDS) {
+        scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay").toLong(), TimeUnit.MILLISECONDS) {
             if (scheduleStatus.get()) { onBroadcast()  } else return@repeatScheduler
         }
     }
@@ -61,8 +68,7 @@ object Notifications {
         spyNotificationPlayers.clear()
 
         // reset schedule task
-        scheduleStatus = AtomicBoolean(false)
-        initSchedule()
+        scheduler.runAsync { scheduleStatus= AtomicBoolean(false); Timer().schedule(100L) { initSchedule() } }
     }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeMiniMessage(string)) }
