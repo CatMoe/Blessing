@@ -20,9 +20,9 @@ object CommandManager {
 
     fun register(c: ICommand) {
         val iClass = c::class.java
-        if (iClass.isAnnotationPresent(DebugCommand::class.java) && try { !ObjectConfig.getProxy().getBoolean("debug") } catch (_: Exception) { false } ) return
-        val annotationCommand = ( try{ iClass.getAnnotation(Command::class.java).command }catch (_:Exception) { return } )
-        val annotationPermission = ( try { val permission= iClass.getAnnotation(CommandPermission::class.java).permission; permission.ifEmpty { "" } } catch(_: Exception) { "" } )
+        if (iClass.isAnnotationPresent(DebugCommand::class.java) && !(try { ObjectConfig.getConfig().getBoolean("debug") } catch (_: Exception) { false })) { return }
+        val annotationCommand = ( try { iClass.getAnnotation(Command::class.java).command } catch (_:Exception) { return } )
+        val annotationPermission = ( try { val permission= iClass.getAnnotation(CommandPermission::class.java).permission; permission.ifEmpty { "" } } catch (_: Exception) { "" } )
         val annotationAllowConsole = iClass.isAnnotationPresent(ConsoleCanExecute::class.java)
         val annotationDescription = getAnnotationDescription(c)
         val annotationUsage = ( try { iClass.getAnnotation(CommandUsage::class.java).usage.toList() } catch (_: Exception) { listOf() } )

@@ -10,9 +10,11 @@ import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 class ReloadConfig : EventListener {
     @FilterEvent
     fun reloadConfig(event: PluginReloadEvent) {
-        if (event.executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig() ;warnMessage(event) }
+        val executor = event.executor
+        if (executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig() ;warnMessage(event) }
         Notifications.reload()
-        LoadCommand().reload()
+        // Executor is null == Starting plugin.
+        if (executor != null) { LoadCommand().reload() } else { LoadCommand().load() }
     }
 
     private fun warnMessage(event: PluginReloadEvent) {

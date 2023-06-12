@@ -1,7 +1,9 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin
+import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.getCachedJoinProtocol
+import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.getCachedPingProtocol
+import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.increaseJoin
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.increasePing
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidateJoinCache
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidatePingCache
@@ -29,6 +31,7 @@ object MainListener {
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
         val protocol = pc.version
         val inetAddress = (pc.socketAddress as InetSocketAddress).address
+        if (WhitelistObject.isWhitelist(inetAddress)) return
 
         if (ProxyCache.isProxy(inetAddress)) { pc.disconnect(); addFirewall(inetAddress, pc, false) }
 
@@ -39,7 +42,7 @@ object MainListener {
         This protection is also effective in preventing some BungeeCord forks they're disabling
         ClientConnectEvent or InitConnectionEvent (Waterfall fork?)
          */
-        if (FirewallCache.isFirewalled(inetAddress) && WhitelistObject.isWhitelist(inetAddress)) { pc.disconnect(); return }
+        if (FirewallCache.isFirewalled(inetAddress)) { pc.disconnect(); return }
         // 1 = Ping  2 = Join  else = illegal connection.
         val method = handshake.requestedProtocol
         if (method > 2 || method < 1) { pc.disconnect(); FirewallCache.addAddress(inetAddress, false); return }
@@ -55,14 +58,14 @@ object MainListener {
 
         // if (method == 1 && protocol == 5) { pc.disconnect(); return }
         if (method == 1) {
+            if ((getCachedPingProtocol(inetAddress) ?: protocol) != protocol) { addFirewall(inetAddress, pc, true); return }
             if (protocol == 5) { pc.disconnect(); return }
             increasePing(inetAddress, protocol)
         }
 
         if (method == 2) {
-            val pingingProtocol = PingAndJoin.getCachedPingProtocol(inetAddress)
-            if (pingingProtocol != null && pingingProtocol != protocol) { addFirewall(inetAddress, pc, true) }
-            PingAndJoin.increaseJoin(inetAddress, protocol)
+            if ((getCachedJoinProtocol(inetAddress) ?: protocol) != protocol) { addFirewall(inetAddress, pc, true) }
+            increaseJoin(inetAddress, protocol)
         }
 
         // cached protocol removed. use PingCache for check protocol. no more bot switches their protocol when joining.

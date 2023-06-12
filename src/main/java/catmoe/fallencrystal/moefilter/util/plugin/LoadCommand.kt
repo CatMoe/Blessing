@@ -10,7 +10,7 @@ import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogSpyUnload
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 
-class LoadCommand() {
+class LoadCommand {
 
     fun load(){ loadCommand() }
 

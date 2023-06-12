@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
-import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.CommandManager
+import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.*
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
@@ -27,7 +27,7 @@ class HelpCommand : ICommand {
             for (it in CommandManager.getCommandList(sender)) {
                 val parsedInfo = CommandManager.getParsedCommand(it)
                 if (parsedInfo == null) { sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
-                sendMessage(sender, "  <white>/moefilter ${parsedInfo.command} <aqua>- <reset>${parsedInfo.description}")
+                sendMessage(sender, colorizeMiniMessage("  <white>/moefilter ${parsedInfo.command} <aqua>- <reset>${parsedInfo.description}"))
             }
             sendMessage(sender,line)
             return

@@ -66,7 +66,6 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
                 if (!utilMode) {
                     registerListener()
-                    LoadCommand().load()
                     ConnectionCounter
                     Notifications
                     if (try{CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString())!=CountryMode.DISABLED }catch(_: Exception){false}) { loadMaxmindDatabase() }
