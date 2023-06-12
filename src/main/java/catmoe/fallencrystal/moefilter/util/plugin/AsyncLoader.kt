@@ -1,8 +1,10 @@
 package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
+import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
@@ -64,6 +66,7 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 ProxyCache
                 CPUMonitor
                 pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
+                LoggerManager.registerFilter(LogHandler())
                 if (!utilMode) {
                     registerListener()
                     ConnectionCounter
