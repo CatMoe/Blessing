@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.logger
 
+import catmoe.fallencrystal.moefilter.api.logger.LoggerManager.setType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import net.md_5.bungee.BungeeCord
 
@@ -24,7 +25,13 @@ class InitLogger {
 
     fun onLoad() {
         logger.filter = LoggerManager
-        if (useWaterfallLogger) { MessageUtil.logInfo("[MoeFilter] Detected Waterfall log4j logger. use it for main logger.") }
+        if (useWaterfallLogger) {
+            MessageUtil.logInfo("[MoeFilter] Detected Waterfall log4j logger. use it for main logger.")
+            setType(BCLogType.WATERFALL);
+        } else {
+            MessageUtil.logInfo("[MoeFilter] Using tradition java logger. Waterfall or its fork is recommended.")
+            setType(BCLogType.BUNGEECORD)
+        }
         MessageUtil.logInfo("[MoeFilter] LoggerManager are successfully loaded.")
     }
 
