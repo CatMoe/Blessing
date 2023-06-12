@@ -246,9 +246,10 @@ object LoadConfig {
                 }
                 
                 # 代理上网配置. 适用于所有API和内置反代理 爬取
-                # 使用HTTP代理. 暂不支持加密HTTP代理和SOCKS4/5
+                # 暂不支持非HTTP/HTTPS以及SOCKS5之外的代理.
                 proxies-config {
-                    enabled=false
+                    # 工作模式. HTTP: HTTP代理, SOCKS: socks5代理, DIRECT: 直连
+                    mode=DIRECT
                     host="localhost"
                     port=8080
                 }

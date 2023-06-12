@@ -36,7 +36,8 @@ class FetchProxy {
                 try {
                     val client = OkHttpClient().newBuilder()
                     if (config.getBoolean("proxies-config.enabled")) {
-                        val proxyConfig = Proxy(Proxy.Type.HTTP, InetSocketAddress(config.getString("proxies-config.host"), config.getInt("proxies-config.port")))
+                        val proxyType: Proxy.Type = (try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
+                        val proxyConfig = Proxy(proxyType, InetSocketAddress(config.getString("proxies-config.host"), config.getInt("proxies-config.port")))
                         client.proxy(proxyConfig)
                     }
                     val call = client.build()
