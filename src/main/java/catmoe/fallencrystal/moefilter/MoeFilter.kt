@@ -20,7 +20,18 @@ class MoeFilter : Plugin() {
 
     override fun onEnable() { if(!fastboot) { load() } }
 
-    override fun onDisable() { EventManager.triggerEvent(PluginUnloadEvent()); initLogger.onUnload() }
+    override fun onDisable() {
+        EventManager.triggerEvent(PluginUnloadEvent())
+        initLogger.onUnload()
+        try {
+            MessageUtil.logInfo("[MoeFilter] Waiting event calling")
+            Thread.sleep(1000)
+        } catch (ex: Exception) {
+            MessageUtil.logWarn("[MoeFilter] Exception occurred while thread waiting.")
+            ex.printStackTrace()
+        }
+        MessageUtil.logInfo("[MoeFilter] MoeFilter are unloaded.")
+    }
 
     private fun load() {
         FilterPlugin.setEnabled(true)
