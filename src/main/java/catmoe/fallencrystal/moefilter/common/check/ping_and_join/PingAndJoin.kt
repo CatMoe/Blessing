@@ -51,5 +51,8 @@ object PingAndJoin {
     fun getCachedPingProtocol(address: InetAddress): Int? { return pingCache.getIfPresent(address) }
     fun getCachedJoinProtocol(address: InetAddress): Int? { return joinCache.getIfPresent(address) }
 
+    fun invalidatePingCache(address: InetAddress) { pingCache.invalidate(address) }
+    fun invalidateJoinCache(address: InetAddress) { pingCache.invalidate(address) }
+
     fun setMethod(method: CheckType) { this.method=method }
 }
