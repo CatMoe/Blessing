@@ -1,8 +1,6 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.getCachedJoinProtocol
-import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.getCachedPingProtocol
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.increaseJoin
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.increasePing
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidateJoinCache
@@ -58,13 +56,11 @@ object MainListener {
 
         // if (method == 1 && protocol == 5) { pc.disconnect(); return }
         if (method == 1) {
-            if ((getCachedPingProtocol(inetAddress) ?: protocol) != protocol) { addFirewall(inetAddress, pc, true); return }
             if (protocol == 5) { pc.disconnect(); return }
             increasePing(inetAddress, protocol)
         }
 
         if (method == 2) {
-            if ((getCachedJoinProtocol(inetAddress) ?: protocol) != protocol) { addFirewall(inetAddress, pc, true) }
             increaseJoin(inetAddress, protocol)
         }
 

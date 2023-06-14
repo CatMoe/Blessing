@@ -1,24 +1,23 @@
 package catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall
 
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
+import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
-import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.event.PlayerHandshakeEvent
+import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
-import java.net.InetSocketAddress
 
 class IncomingListener : Listener {
 
-    private val throttle = BungeeCord.getInstance().connectionThrottle
+    @EventHandler
+    fun onIncomingConnect(event: io.github.waterfallmc.waterfall.event.ConnectionInitEvent) { event.isCancelled = MainListener.initConnection(event.remoteSocketAddress) }
 
     @EventHandler
-    fun onIncomingConnect(event: io.github.waterfallmc.waterfall.event.ConnectionInitEvent) {
-        val socketAddress = event.remoteSocketAddress
-        val inetAddress = (socketAddress as InetSocketAddress).address
-        throttle.unthrottle(socketAddress)
-        if (FirewallCache.isFirewalled(inetAddress)) { event.isCancelled = true }
-    }
+    fun onHandshake(event: PlayerHandshakeEvent) { MainListener.onHandshake(event.handshake, event.connection) }
+
+    @EventHandler
+    fun onPreLogin(event: PreLoginEvent) { MainListener.onLogin(event) }
 
     @EventHandler
     fun onException(event: io.github.waterfallmc.waterfall.event.ProxyExceptionEvent) {

@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
@@ -17,13 +18,11 @@ import catmoe.fallencrystal.moefilter.common.utils.maxmind.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.utils.maxmind.InquireCountry
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
-import catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener
 import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-
 import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -98,7 +97,9 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
         EventManager.registerListener(plugin, SessionCounterListener())
         registerLuckPermsListener()
 
-        pluginManager.registerListener(plugin, IncomingListener())
+        if (LoggerManager.getType() == BCLogType.WATERFALL) pluginManager.registerListener(plugin, catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall.IncomingListener())
+        else pluginManager.registerListener(plugin, catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener())
+
         pluginManager.registerListener(plugin, BungeeEvent())
     }
 
