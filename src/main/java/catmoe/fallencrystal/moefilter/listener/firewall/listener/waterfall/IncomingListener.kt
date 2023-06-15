@@ -7,16 +7,17 @@ import net.md_5.bungee.api.event.PlayerHandshakeEvent
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import net.md_5.bungee.event.EventPriority
 
 class IncomingListener : Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onIncomingConnect(event: io.github.waterfallmc.waterfall.event.ConnectionInitEvent) { event.isCancelled = MainListener.initConnection(event.remoteSocketAddress) }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onHandshake(event: PlayerHandshakeEvent) { MainListener.onHandshake(event.handshake, event.connection) }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onPreLogin(event: PreLoginEvent) { MainListener.onLogin(event) }
 
     @EventHandler
