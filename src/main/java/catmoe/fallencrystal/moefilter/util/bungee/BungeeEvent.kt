@@ -9,9 +9,10 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import net.md_5.bungee.event.EventPriority
 
 class BungeeEvent : Listener {
-    @EventHandler(priority = 0)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onChat(event: ChatEvent) { EventManager.triggerEvent(
         AsyncChatEvent(
             ProxyServer.getInstance().getPlayer(event.sender.toString()),
@@ -21,15 +22,19 @@ class BungeeEvent : Listener {
             event.message
         )) }
 
-    @EventHandler(priority = 127)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onPostLogin(event: PostLoginEvent) { EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onServerConnect(event: ServerConnectEvent){ EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.target, false, event.isCancelled)) }
 
-    @EventHandler // isCancelled is not available on this event so isCancelled is always false.
+    /*
+    isCancelled is not available on this event
+    so isCancelled is always false.
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onServerConnected(event: ServerConnectedEvent) { EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.server.info, event.server.isConnected, false)) }
 
-    @EventHandler(priority = 0)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onServerSwitch(event: ServerSwitchEvent) { EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) }
 }
