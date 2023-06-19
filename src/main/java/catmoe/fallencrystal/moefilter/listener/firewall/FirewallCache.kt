@@ -11,6 +11,7 @@ object FirewallCache {
     private val tempCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build<InetAddress, Boolean>()
 
     fun addAddress(address: InetAddress, status: Boolean?) { cache.put(address, status ?: true); status ?: cache.invalidate(address); logFirewalled(address, false) }
+
     fun addAddressTemp(address: InetAddress, status: Boolean?) { tempCache.put(address, status ?: true); status?: tempCache.invalidate(address); logFirewalled(address, true) }
 
     fun removeAddress(address: InetAddress) { cache.invalidate(address) }

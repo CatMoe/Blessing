@@ -23,19 +23,15 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
     private val lk = KickStringWriter()
     private val protocol = 0
 
-    init { logInfo("Injected.") }
-
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {
-        logInfo("initChannel triggered. $channel")
         val parent = channel.parent()
         val isGeyser = parent != null && parent.javaClass.canonicalName.startsWith("org.geysermc.geyser")
         if (isGeyser) { GeyserPipeline().handle(channel, protocol) }
     }
 
     @Throws(Exception::class)
-    override fun handlerRemoved(ctx: ChannelHandlerContext) {
-        MessageUtil.logInfo("handlerRemoved triggered. $ctx")
+    override fun handlerAdded(ctx: ChannelHandlerContext) {
         try {
             val channel = ctx.channel()
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
@@ -45,6 +41,8 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             val pipeline = channel.pipeline()
             val listener = channel.attr(PipelineUtils.LISTENER).get()
             PipelineUtils.BASE.initChannel(channel)
+
+            MoeChannelHandler.register(pipeline)
 
             // MoeFilter有自己的VarIntFrameDecoder TimeoutHandler和InboundHandler.
             pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())

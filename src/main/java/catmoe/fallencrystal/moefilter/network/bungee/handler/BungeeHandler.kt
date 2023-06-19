@@ -23,12 +23,10 @@ class BungeeHandler : ChannelInboundHandlerAdapter() {
                 msg.clear();
                 throw PacketOutOfBoundsException("$msg reached packets limit.")
             }
-            val firstByte = msg.readByte()
-            val secondByte = msg.readByte()
 
             // the first byte cannot be below 0 as it's the size of the first packet
             // the second byte is the handshake packet id which is always 0
-            if (firstByte < 0 || secondByte.toInt() != 0) throw PacketOutOfBoundsException("First byte cannot be below 0 as it's the size of the first packet")
+            if (msg.readByte() < 0) throw PacketOutOfBoundsException("First byte cannot be below 0 as it's the size of the first packet")
             msg.resetReaderIndex()
             ctx.fireChannelRead(msg)
             ctx.pipeline().remove(this)

@@ -10,6 +10,8 @@ object ExceptionCatcher {
     fun handle(channel: Channel, cause: Throwable) {
         channel.close()
         if (cause is IOException) return
-        FirewallCache.addAddress((channel.remoteAddress() as InetSocketAddress).address, true)
+        cause.printStackTrace()
+        FirewallCache.addAddressTemp((channel.remoteAddress() as InetSocketAddress).address, true)
+        // FirewallCache.addAddress((channel.remoteAddress() as InetSocketAddress).address, true)
     }
 }
