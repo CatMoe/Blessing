@@ -24,18 +24,19 @@ class FetchProxy {
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
     private var count = 0
 
+    private val proxyType: Proxy.Type = (try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
+
     init { if (config.getBoolean("internal.enabled")) { Scheduler(FilterPlugin.getPlugin()!!).repeatScheduler(updateDelay, TimeUnit.HOURS) { get() } } }
 
     fun get() { get(proxies) }
 
     fun get(lists: List<String>) {
         MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Starting Async proxy fetcher. (${proxies.size} Threads)")
+        if (proxyType != Proxy.Type.DIRECT) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
         for (it in lists) {
             ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
                 try {
                     val client = OkHttpClient().newBuilder()
-                    val proxyType: Proxy.Type = (try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
-                    if (proxyType != Proxy.Type.DIRECT) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
                     if (proxyType != Proxy.Type.DIRECT) {
                         val proxyConfig = Proxy(proxyType, InetSocketAddress(config.getString("proxies-config.host"), config.getInt("proxies-config.port")))
                         client.proxy(proxyConfig)
