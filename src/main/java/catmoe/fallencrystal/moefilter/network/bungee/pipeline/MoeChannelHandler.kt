@@ -1,10 +1,12 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeeHandler
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelPipeline
 
 object MoeChannelHandler : IPipeline {
     @JvmField
@@ -17,5 +19,10 @@ object MoeChannelHandler : IPipeline {
         override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
             handle(ctx.channel(), cause)
         }
-    } // public void register(final ChannelPipeline pipeline) { pipeline.addFirst(HANDLER, ) }
+    }
+
+    private val MOEFILTER_HANDLER = BungeeHandler();
+
+    @JvmStatic
+    fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
 }

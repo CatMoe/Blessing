@@ -38,6 +38,7 @@ class MoeFilter : Plugin() {
         FilterPlugin.setPlugin(this)
         FilterPlugin.setDataFolder(dataFolder)
         initLogger.onLoad()
+        // InitChannel().initPipeline()
         AsyncLoader(this, utilMode)
     }
 

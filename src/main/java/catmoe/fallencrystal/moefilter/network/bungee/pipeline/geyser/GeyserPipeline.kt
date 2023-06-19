@@ -11,6 +11,7 @@ import net.md_5.bungee.protocol.*
 
 class GeyserPipeline {
     private val lk = KickStringWriter()
+
     @Throws(Exception::class)
     fun handle(channel: Channel, protocol: Int) {
         if (channel.remoteAddress() == null) { channel.close(); return }

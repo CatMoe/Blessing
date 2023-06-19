@@ -1,7 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -89,7 +88,6 @@ class PlayerHandler(
     override fun handle(loginRequest: LoginRequest) {
         inetAddress?.let { ConnectionCounter.increase(it) }
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
-        if (inetAddress?.let { Throttler.increase(it) } == true) { ctx.close(); return }
         if (throttler != null && throttler.throttle(socketAddress)) { ctx.close(); return }
     }
 

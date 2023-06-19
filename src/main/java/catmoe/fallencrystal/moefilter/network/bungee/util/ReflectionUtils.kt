@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
 class ReflectionUtils {
-    fun inject(initializer: ChannelInitializer<Channel?>?): AtomicBoolean {
+    fun inject(initializer: ChannelInitializer<Channel>): AtomicBoolean {
         val version = version
         if (version < 8) {
             ProxyServer.getInstance().stop()
