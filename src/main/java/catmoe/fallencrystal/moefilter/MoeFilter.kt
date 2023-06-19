@@ -3,6 +3,7 @@ package catmoe.fallencrystal.moefilter
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
+import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
@@ -38,7 +39,7 @@ class MoeFilter : Plugin() {
         FilterPlugin.setPlugin(this)
         FilterPlugin.setDataFolder(dataFolder)
         initLogger.onLoad()
-        // InitChannel().initPipeline()
+        InitChannel().initPipeline()
         AsyncLoader(this, utilMode)
     }
 

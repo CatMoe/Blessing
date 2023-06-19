@@ -23,6 +23,5 @@ object MoeChannelHandler : IPipeline {
 
     private val MOEFILTER_HANDLER = BungeeHandler();
 
-    @JvmStatic
     fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
 }

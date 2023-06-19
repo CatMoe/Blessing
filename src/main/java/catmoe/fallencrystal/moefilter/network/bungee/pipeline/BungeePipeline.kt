@@ -40,6 +40,8 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             val listener = channel.attr(PipelineUtils.LISTENER).get()
             PipelineUtils.BASE.initChannel(channel)
 
+            MoeChannelHandler.register(pipeline)
+
             // MoeFilter有自己的VarIntFrameDecoder TimeoutHandler和InboundHandler.
             pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
