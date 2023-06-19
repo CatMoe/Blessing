@@ -29,7 +29,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
     }
 
     @Throws(Exception::class)
-    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+    override fun handlerAdded(ctx: ChannelHandlerContext) {
         try {
             val channel = ctx.channel()
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()

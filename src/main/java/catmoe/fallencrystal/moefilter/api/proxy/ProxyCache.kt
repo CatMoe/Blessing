@@ -7,12 +7,16 @@ import java.net.InetAddress
 
 object ProxyCache {
     private val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
+    private val whitelistedAddress = listOf("/127.0.0.1")
 
     init { fetchProxy() }
 
     private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { FetchProxy() } }
 
-    fun isProxy(address: InetAddress): Boolean { return cache.getIfPresent(address) != null }
+    fun isProxy(address: InetAddress): Boolean {
+        if (whitelistedAddress.contains(address.toString())) { return false }
+        return cache.getIfPresent(address) != null
+    }
 
     fun getProxy(address: InetAddress): ProxyResult? { return cache.getIfPresent(address) }
 

@@ -58,7 +58,6 @@ object MainListener {
 
         // if (method == 1 && protocol == 5) { pc.disconnect(); return }
         if (method == 1) {
-            if (protocol == 5) { pc.disconnect(); return }
             increasePing(inetAddress, protocol)
         }
 

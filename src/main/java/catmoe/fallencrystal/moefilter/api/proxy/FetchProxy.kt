@@ -49,7 +49,7 @@ class FetchProxy {
                                 address.replace(Regex("[^\\x20-\\x7E]"), "") }
                             try { if (!ProxyCache.isProxy(InetAddress.getByName(proxy))) {
                                 ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
-                                if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list.") }
+                                if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list. (from $it)") }
                                 count++
                             } } catch (ex: UnknownHostException) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] $proxy is not a valid address."); }
                         }
