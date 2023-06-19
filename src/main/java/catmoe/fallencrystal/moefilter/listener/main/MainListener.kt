@@ -10,7 +10,9 @@ import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.connection.PendingConnection
+import net.md_5.bungee.api.event.PostLoginEvent
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.protocol.packet.Handshake
 import java.net.InetAddress
@@ -87,6 +89,10 @@ object MainListener {
              */
             event.setCancelReason(MessageUtil.colorizeTextComponent("Cancelled by MoeFilter."))
         }
+    }
+
+    fun postLoginHandler(event: PostLoginEvent) {
+        val uc = event.player as UserConnection
     }
 
     private fun addFirewall(inetAddress: InetAddress, pc: PendingConnection, temp: Boolean) {

@@ -29,13 +29,13 @@ class FetchProxy {
     fun get() { get(proxies) }
 
     fun get(lists: List<String>) {
-        if (config.getBoolean("proxies-config.enabled")) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
         MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Starting Async proxy fetcher. (${proxies.size} Threads)")
         for (it in lists) {
             ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
                 try {
                     val client = OkHttpClient().newBuilder()
                     val proxyType: Proxy.Type = (try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
+                    if (proxyType != Proxy.Type.DIRECT) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
                     val proxyConfig = Proxy(proxyType, InetSocketAddress(config.getString("proxies-config.host"), config.getInt("proxies-config.port")))
                     client.proxy(proxyConfig)
                     val call = client.build()
