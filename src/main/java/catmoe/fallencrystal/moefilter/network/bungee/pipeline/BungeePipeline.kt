@@ -7,6 +7,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PlayerHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipeline
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
@@ -21,6 +22,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
     private val throttler = BungeeCord.getInstance().connectionThrottle
     private val lk = KickStringWriter()
     private val protocol = 0
+
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {
         val parent = channel.parent()
@@ -57,4 +59,6 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener, throttler))
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }
     }
+
+    private fun logInfo(text: String) { MessageUtil.logInfo("[MoeFilter] [Pipeline] [Debug] BungeePipeline: $text") }
 }
