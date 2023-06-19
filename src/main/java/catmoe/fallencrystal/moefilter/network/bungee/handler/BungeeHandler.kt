@@ -32,8 +32,6 @@ class BungeeHandler : ChannelInboundHandlerAdapter() {
             msg.resetReaderIndex()
             ctx.fireChannelRead(msg)
             ctx.pipeline().remove(this)
-        } else {
-            super.channelRead(ctx, msg)
-        }
+        } else { super.channelRead(ctx, msg) }
     }
 }

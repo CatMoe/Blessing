@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.util.bungee.reflection
+package catmoe.fallencrystal.moefilter.network.bungee.util
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
