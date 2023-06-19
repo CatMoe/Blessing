@@ -1,11 +1,12 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
-import catmoe.fallencrystal.moefilter.network.bungee.util.InvalidHandshakeStatusException
-import catmoe.fallencrystal.moefilter.network.bungee.util.InvalidStatusPingException
-import catmoe.fallencrystal.moefilter.network.bungee.util.PacketOutOfBoundsException
+import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
+import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
+import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -25,8 +26,8 @@ class PlayerHandler(
     private val throttler: ConnectionThrottle?
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
     private var currentState = ConnectionState.HANDSHAKE
-    var inetAddress: InetAddress? = null
-    var pipeline: ChannelPipeline? = null
+    private var inetAddress: InetAddress? = null
+    private var pipeline: ChannelPipeline? = null
     @Throws(Exception::class)
     override fun connected(wrapper: ChannelWrapper) {
         super.connected(wrapper)
@@ -35,9 +36,7 @@ class PlayerHandler(
     }
 
     @Throws(Exception::class)
-    override fun exception(t: Throwable) {
-        handle(ctx.channel(), t)
-    }
+    override fun exception(t: Throwable) { handle(ctx.channel(), t) }
 
     @Throws(Exception::class)
     override fun handle(packet: PacketWrapper?) {
@@ -58,7 +57,8 @@ class PlayerHandler(
             else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol" + handshake.requestedProtocol) }
         }
 
-        // TODO ("Implements throttle here")
+        if (inetAddress?.let { Throttler.increase(it) } == true) { ctx.close(); return }
+
         pipeline!!.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         super.handle(handshake)
     }
@@ -93,6 +93,7 @@ class PlayerHandler(
     }
 
     override fun toString(): String {
-        return "§7(§f" + socketAddress + (if (name != null) "|$name" else "") + "§7) <-> MoeFilter InitialHandler"
+        // return "§7(§f" + socketAddress + (if (name != null) "|$name" else "") + "§7) <-> MoeFilter InitialHandler"
+        return "§7(§f$socketAddress${if (name != null) "|$name" else ""}§7) <-> MoeFilter InitialHandler"
     }
 }

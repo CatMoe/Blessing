@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
-import catmoe.fallencrystal.moefilter.network.bungee.util.PacketOutOfBoundsException
+import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
