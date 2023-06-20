@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelDuplexHandler
@@ -14,7 +14,7 @@ import net.md_5.bungee.protocol.packet.PluginMessage
 
 @RequiredArgsConstructor
 class PacketHandler : ChannelDuplexHandler() {
-    @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle"))
+    @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle"))
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         handle(ctx.channel(), cause)

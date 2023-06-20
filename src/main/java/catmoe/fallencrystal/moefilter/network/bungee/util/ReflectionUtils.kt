@@ -33,7 +33,7 @@ class ReflectionUtils {
                     try {
                         val unsafeField = Unsafe::class.java.getDeclaredField("theUnsafe")
                         unsafeField.isAccessible = true
-                        val unsafe = unsafeField.get(null) as Unsafe
+                        val unsafe = unsafeField[null] as Unsafe
                         unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), initializer)
                         success.set(true)
                     } catch (exception: Exception) { exception.printStackTrace() }

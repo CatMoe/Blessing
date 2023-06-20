@@ -1,5 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
+import catmoe.fallencrystal.moefilter.api.logger.BCLogType
+import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
@@ -11,15 +13,18 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipel
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import lombok.RequiredArgsConstructor
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.event.ClientConnectEvent
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
 
 @RequiredArgsConstructor
 class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
-    private val throttler = BungeeCord.getInstance().connectionThrottle
+    private val bungee = BungeeCord.getInstance()
+    private val throttler = bungee.connectionThrottle
     private val lk = KickStringWriter()
     private val protocol = 0
 
@@ -42,6 +47,14 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
             val pipeline = channel.pipeline()
             val listener = channel.attr(PipelineUtils.LISTENER).get()
+
+            if (bungee.pluginManager.callEvent(ClientConnectEvent(remoteAddress, listener)).isCancelled) { channel.close(); return }
+            if (LoggerManager.getType() == BCLogType.WATERFALL) {
+                io.github.waterfallmc.waterfall.event.ConnectionInitEvent(remoteAddress, listener) { result: io.github.waterfallmc.waterfall.event.ConnectionInitEvent, throwable: Throwable? ->
+                    if (result.isCancelled) { channel.close(); return@ConnectionInitEvent }
+                }
+            }
+
             PipelineUtils.BASE.initChannel(channel)
 
             MoeChannelHandler.register(pipeline)
@@ -59,6 +72,8 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
 
             // 仍然是MoeFilter的
             pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
+
+            if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }
     }
 }

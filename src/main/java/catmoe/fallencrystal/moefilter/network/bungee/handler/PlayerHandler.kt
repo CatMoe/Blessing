@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
