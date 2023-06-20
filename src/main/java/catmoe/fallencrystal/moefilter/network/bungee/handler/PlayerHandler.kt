@@ -10,7 +10,6 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfB
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
-import net.md_5.bungee.ConnectionThrottle
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
@@ -23,7 +22,6 @@ import java.util.concurrent.CompletableFuture
 class PlayerHandler(
     private val ctx: ChannelHandlerContext,
     listenerInfo: ListenerInfo?,
-    private val throttler: ConnectionThrottle?
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
     private var currentState = ConnectionState.HANDSHAKE
     private var inetAddress: InetAddress? = null
@@ -54,7 +52,7 @@ class PlayerHandler(
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
             2 -> { ConnectionState.JOINING }
-            else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol" + handshake.requestedProtocol) }
+            else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
 
         pipeline!!.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
@@ -88,7 +86,6 @@ class PlayerHandler(
     override fun handle(loginRequest: LoginRequest) {
         inetAddress?.let { ConnectionCounter.increase(it) }
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
-        if (throttler != null && throttler.throttle(socketAddress)) { ctx.close(); return }
     }
 
     override fun toString(): String {

@@ -1,6 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
@@ -36,7 +37,9 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
             val inetAddress = (remoteAddress as InetSocketAddress).address
             ConnectionCounter.increase(inetAddress)
-            if (Throttler.increase(inetAddress)) { ctx.close(); return }
+            if (FirewallCache.isFirewalled(inetAddress)) { channel.close(); return }
+            if (Throttler.increase(inetAddress)) { channel.close(); return }
+            if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
             val pipeline = channel.pipeline()
             val listener = channel.attr(PipelineUtils.LISTENER).get()
             PipelineUtils.BASE.initChannel(channel)
@@ -55,7 +58,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             pipeline.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.LEGACY_KICKER, lk)
 
             // 仍然是MoeFilter的
-            pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener, throttler))
+            pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }
     }
 }
