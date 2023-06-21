@@ -7,7 +7,7 @@ import java.io.IOException
 import java.net.InetSocketAddress
 
 object ExceptionCatcher {
-    val debug = ObjectConfig.getConfig().getBoolean("debug")
+    var debug = false
     @JvmStatic
     fun handle(channel: Channel, cause: Throwable) {
         channel.close()
@@ -16,4 +16,6 @@ object ExceptionCatcher {
         FirewallCache.addAddressTemp((channel.remoteAddress() as InetSocketAddress).address, true)
         // FirewallCache.addAddress((channel.remoteAddress() as InetSocketAddress).address, true)
     }
+
+    fun reload() { debug = ObjectConfig.getConfig().getBoolean("debug") }
 }

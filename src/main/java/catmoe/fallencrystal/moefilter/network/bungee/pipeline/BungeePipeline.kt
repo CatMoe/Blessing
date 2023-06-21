@@ -1,7 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.api.logger.BCLogType
-import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
+import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
@@ -10,13 +9,14 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PlayerHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
+import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import lombok.RequiredArgsConstructor
 import net.md_5.bungee.BungeeCord
-import net.md_5.bungee.api.event.ClientConnectEvent
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
@@ -41,20 +41,19 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             val channel = ctx.channel()
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
             val inetAddress = (remoteAddress as InetSocketAddress).address
-            ConnectionCounter.increase(inetAddress)
-            if (FirewallCache.isFirewalled(inetAddress)) { channel.close(); return }
-            if (Throttler.increase(inetAddress)) { channel.close(); return }
-            if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
             val pipeline = channel.pipeline()
             val listener = channel.attr(PipelineUtils.LISTENER).get()
+            val eventCaller = EventCaller(channel, listener)
 
-            if (bungee.pluginManager.callEvent(ClientConnectEvent(remoteAddress, listener)).isCancelled) { channel.close(); return }
-            if (LoggerManager.getType() == BCLogType.WATERFALL) {
-                io.github.waterfallmc.waterfall.event.ConnectionInitEvent(remoteAddress, listener) { result: io.github.waterfallmc.waterfall.event.ConnectionInitEvent, throwable: Throwable? ->
-                    if (result.isCancelled) { channel.close(); return@ConnectionInitEvent }
-                }
-            }
+            ConnectionCounter.increase(inetAddress)
+            eventCaller.call(EventCallMode.AFTER_INIT)
+            if (FirewallCache.isFirewalled(inetAddress)) { channel.close(); return }
+            eventCaller.call(EventCallMode.NON_FIREWALL)
+            if (Throttler.increase(inetAddress)) { channel.close(); return }
+            if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
+            eventCaller.call(EventCallMode.READY_DECODING)
 
+            if (ProxyCache.isProxy(inetAddress)) { FirewallCache.addAddress(inetAddress, true); channel.close(); return }
             PipelineUtils.BASE.initChannel(channel)
 
             MoeChannelHandler.register(pipeline)
@@ -74,6 +73,8 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
 
             if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
+
+            eventCaller.call(EventCallMode.AFTER_DECODER)
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }
     }
 }

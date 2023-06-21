@@ -3,6 +3,7 @@ package catmoe.fallencrystal.moefilter.common.config
 import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
@@ -15,6 +16,7 @@ class ReloadConfig : EventListener {
         Notifications.reload()
         // Executor is null == Starting plugin.
         if (executor != null) { LoadCommand().reload() } else { LoadCommand().load() }
+        ExceptionCatcher.reload()
     }
 
     private fun warnMessage(event: PluginReloadEvent) {
