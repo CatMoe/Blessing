@@ -1,18 +1,21 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
+import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetAddress
@@ -21,7 +24,7 @@ import java.util.concurrent.CompletableFuture
 
 class PlayerHandler(
     private val ctx: ChannelHandlerContext,
-    listenerInfo: ListenerInfo?,
+    listenerInfo: ListenerInfo,
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
     private var currentState = ConnectionState.HANDSHAKE
     private var inetAddress: InetAddress? = null
@@ -54,9 +57,9 @@ class PlayerHandler(
             2 -> { ConnectionState.JOINING }
             else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
-
-        pipeline!!.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        super.handle(handshake)
+        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler(this))
+        pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
+        try { super.handle(handshake) } catch (exception: Exception) { MessageUtil.logInfo(handshake.toString()); exception.printStackTrace(); ctx.channel().close() }
     }
 
     private var hasRequestedPing = false
@@ -84,8 +87,8 @@ class PlayerHandler(
 
     @Throws(Exception::class)
     override fun handle(loginRequest: LoginRequest) {
-        inetAddress?.let { ConnectionCounter.increase(it) }
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
+        super.handle(loginRequest)
     }
 
     override fun toString(): String {

@@ -33,8 +33,8 @@ object Notifications {
     private fun onBroadcast() {
         val config = ObjectConfig.getMessage()
         val internalPlaceholder = mapOf(
-            "%process_cpu%" to CPUMonitor.getRoundedCPUUsage().processCPU.toString(),
-            "%system_cpu%" to CPUMonitor.getRoundedCPUUsage().systemCPU.toString(),
+            "%process_cpu%" to CPUMonitor.getRoundedCpuUsage().processCPU.toString(),
+            "%system_cpu%" to CPUMonitor.getRoundedCpuUsage().systemCPU.toString(),
             "%cps%" to ConnectionCounter.getConnectionPerSec().toString(),
             "%ipsec%" to ConnectionCounter.getIpPerSec().toString(),
             "%total%" to ConnectionCounter.getTotal().toString(),

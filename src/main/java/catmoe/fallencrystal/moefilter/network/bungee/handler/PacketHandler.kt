@@ -13,12 +13,10 @@ import net.md_5.bungee.protocol.packet.LoginRequest
 import net.md_5.bungee.protocol.packet.PluginMessage
 
 @RequiredArgsConstructor
-class PacketHandler : ChannelDuplexHandler() {
+class PacketHandler(val playerHandler: PlayerHandler) : ChannelDuplexHandler() {
     @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle"))
     @Throws(Exception::class)
-    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        handle(ctx.channel(), cause)
-    }
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
 
     @Throws(Exception::class)
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
@@ -27,11 +25,7 @@ class PacketHandler : ChannelDuplexHandler() {
             if (pmTag.equals("mc|brand", ignoreCase = true) || pmTag.equals("minecraft:brand", ignoreCase = true)) {
                 val backend: String
                 val data = String(msg.data)
-                backend = try {
-                    data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-                } catch (ignore: Exception) {
-                    "unknown"
-                }
+                backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
                 val brand = ByteBufAllocator.DEFAULT.heapBuffer()
                 DefinedPacket.writeString("MoeFilter <- $backend", brand)
                 msg.data = DefinedPacket.toArray(brand)
