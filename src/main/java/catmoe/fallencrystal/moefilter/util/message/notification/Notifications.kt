@@ -8,10 +8,8 @@ import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import java.util.*
+import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.concurrent.schedule
 
 object Notifications {
     /*
@@ -26,13 +24,10 @@ object Notifications {
     private val spyNotificationPlayers: MutableList<ProxiedPlayer> = ArrayList()
     private val autoNotificationPlayer: MutableList<ProxiedPlayer> = ArrayList()
 
-    private var scheduleStatus: AtomicBoolean = AtomicBoolean(false)
+    private var schedule: ScheduledTask? = null
 
     private fun initSchedule() {
-        scheduleStatus = AtomicBoolean(true)
-        scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) {
-            if (scheduleStatus.get()) { onBroadcast()  } else return@repeatScheduler
-        }
+        this.schedule=scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() }
     }
 
     private fun onBroadcast() {
@@ -61,11 +56,8 @@ object Notifications {
     fun toggleSpyNotificationPlayer(player: ProxiedPlayer): Boolean { return if (spyNotificationPlayers.contains(player)) { spyNotificationPlayers.remove(player); false } else { spyNotificationPlayers.add(player); true } }
 
     fun reload() {
-        autoNotificationPlayer.clear()
-        spyNotificationPlayers.clear()
-
         // reset schedule task
-        scheduler.runAsync { scheduleStatus= AtomicBoolean(false); Timer().schedule(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 100.toLong()) { initSchedule() } }
+        if (schedule != null) { scheduler.cancelTask(schedule!!); initSchedule() }
     }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) { MessageUtil.sendActionbar(players, MessageUtil.colorizeMiniMessage(string)) }
