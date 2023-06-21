@@ -12,10 +12,10 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipel
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
+import io.netty.channel.ChannelOption
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import lombok.RequiredArgsConstructor
 import net.md_5.bungee.BungeeCord
@@ -27,12 +27,11 @@ import java.net.InetSocketAddress
 class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
     private val bungee = BungeeCord.getInstance()
     private val throttler = bungee.connectionThrottle
-    private val lk = KickStringWriter()
+    private val legacyKicker = KickStringWriter()
     private val protocol = 0
 
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {
-        MessageUtil.logInfo("[MoeFilter] [Pipeline] BungeePipeline.kt : initChannel : $channel")
         val parent = channel.parent()
         val isGeyser = parent != null && parent.javaClass.canonicalName.startsWith("org.geysermc.geyser")
         if (isGeyser) { GeyserPipeline().handle(channel, protocol) }
@@ -41,10 +40,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
     @Throws(Exception::class)
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         try {
-            MessageUtil.logInfo("[MoeFilter] [Pipeline] BungeePipeline.kt : handlerAdded : ctx : $ctx")
             val channel = ctx.channel()
-            MessageUtil.logInfo("[MoeFilter] [Pipeline] BungeePipeline.kt : handlerAdded : channel : $channel")
-            MessageUtil.logInfo("[MoeFilter] [Pipeline] BungeePipeline.kt : handlerAdded : pipeline : ${channel.pipeline()}")
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
             val inetAddress = (remoteAddress as InetSocketAddress).address
             val pipeline = channel.pipeline()
@@ -72,10 +68,12 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             pipeline.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.LEGACY_DECODER, LegacyDecoder())
             pipeline.addAfter(PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
             pipeline.addAfter(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, MinecraftEncoder(Protocol.HANDSHAKE, true, protocol))
-            pipeline.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.LEGACY_KICKER, lk)
+            pipeline.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.LEGACY_KICKER, legacyKicker)
 
-            // 仍然是MoeFilter的
-            // pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
+            // MoeFilter -- TND default should be true.
+            channel.config().setOption(ChannelOption.TCP_NODELAY, true)
+
+            // MoeFilter的InitialHandler
             pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
 
             if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
@@ -88,5 +86,6 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
         //
     }
 
+    @Deprecated("Deprecated in Java", ReplaceWith("ExceptionCatcher.handle(ctx!!.channel(), cause!!)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher"))
     override fun exceptionCaught(ctx: ChannelHandlerContext?, cause: Throwable?) { ExceptionCatcher.handle(ctx!!.channel(), cause!!) }
 }

@@ -8,7 +8,6 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handl
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -17,6 +16,7 @@ import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.PacketWrapper
+import net.md_5.bungee.protocol.Varint21FrameDecoder
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -59,7 +59,21 @@ class PlayerHandler(
         }
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler(this))
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        try { super.handle(handshake) } catch (exception: Exception) { MessageUtil.logInfo(handshake.toString()); exception.printStackTrace(); ctx.channel().close() }
+        try { super.handle(handshake) }
+        catch (safe: NullPointerException) {
+            // BotFilter
+            if (safe.message?.contains("net.md_5.bungee.protocol.Varint21FrameDecoder.set119(boolean)") == true) {
+                pipeline!!.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, Varint21FrameDecoder())
+                /*
+                Need more compatibility codes -- Throw:
+
+                 io.netty.handler.codec.DecoderException: java.lang.IndexOutOfBoundsException: index 3, length: 65 (expected: range(0, 28))
+                 java.util.NoSuchElementException: legacy-kick
+                 */
+                try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
+            }
+        }
+        catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
     }
 
     private var hasRequestedPing = false
