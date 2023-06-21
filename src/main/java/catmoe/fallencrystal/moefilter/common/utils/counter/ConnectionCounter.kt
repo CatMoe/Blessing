@@ -2,7 +2,7 @@ package catmoe.fallencrystal.moefilter.common.utils.counter
 
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-import com.google.common.cache.CacheBuilder
+import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
@@ -21,9 +21,9 @@ object ConnectionCounter {
     /*
     Int, Int = Ticks, Count
      */
-    private val connectionPerSecCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
-    private val ipCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<InetAddress, Int>()
-    private val ipPerSecCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
+    private val connectionPerSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
+    private val ipCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<InetAddress, Int>()
+    private val ipPerSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
     fun getConnectionPerSec(): Int { var cps=0; ticks.forEach { cps+=(connectionPerSecCache.getIfPresent(it) ?: 0) }; cps+=tempCPS; return cps }
     fun getIpPerSec(): Int { var ipPerSec=0; ticks.forEach { ipPerSec+=(ipPerSecCache.getIfPresent(it) ?: 0) }; ipPerSec+=tempIpSec; return ipPerSec }
     fun getPeakConnectionPerSec(): Int { return peakCPS }
