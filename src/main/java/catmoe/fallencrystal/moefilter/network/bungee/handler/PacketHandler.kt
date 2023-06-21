@@ -7,16 +7,21 @@ import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import lombok.RequiredArgsConstructor
+import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.LoginRequest
 import net.md_5.bungee.protocol.packet.PluginMessage
 
 @RequiredArgsConstructor
-class PacketHandler(val playerHandler: PlayerHandler) : ChannelDuplexHandler() {
+class PacketHandler(playerHandler: PlayerHandler) : ChannelDuplexHandler() {
     @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle"))
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
+
+    private val player = BungeeCord.getInstance().getPlayer(playerHandler.uniqueId)
+    private val proxy = ProxyServer.getInstance()
 
     @Throws(Exception::class)
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
