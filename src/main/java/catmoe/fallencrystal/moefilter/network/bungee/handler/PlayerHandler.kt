@@ -83,12 +83,18 @@ class PlayerHandler(
         if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) { throw InvalidStatusPingException() }
         hasRequestedPing = true
         currentState = ConnectionState.PROCESSING
-        CompletableFuture.runAsync {
-            if (!isConnected) { throw InvalidStatusPingException() }
-            currentState = ConnectionState.PINGING
-            hasSuccessfullyPinged = true
-            try { super.handle(statusRequest) } catch (exception: Exception) { throw InvalidStatusPingException() }
-        }
+        try {
+            CompletableFuture.runAsync {
+                if (!isConnected) { throw InvalidStatusPingException() }
+                currentState = ConnectionState.PINGING
+                hasSuccessfullyPinged = true
+            }
+        } catch (_: NoSuchElementException) {} // Actually inject netty failed.
+        // Deliver immediately instead of async.
+        // Avoid plugins that need to inject netty channels to throw exceptions.
+        // If they disconnect immediately after pinging.
+        // They are also firewalled.
+        try { super.handle(statusRequest) } catch (exception: Exception) { throw InvalidStatusPingException() }
     }
 
     @Throws(Exception::class)
