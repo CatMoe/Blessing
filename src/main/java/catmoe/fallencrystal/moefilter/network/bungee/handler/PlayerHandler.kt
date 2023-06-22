@@ -56,10 +56,9 @@ class PlayerHandler(
             2 -> { ConnectionState.JOINING }
             else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
-        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler(this))
+        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler())
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        try { super.handle(handshake) }
-        catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
+        try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
     }
 
     private var hasRequestedPing = false
@@ -69,6 +68,15 @@ class PlayerHandler(
         if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) { throw InvalidStatusPingException() }
         hasRequestedPing = true
         currentState = ConnectionState.PROCESSING
+        /*
+        Call StatusRequest asynchronously.
+        Some foolish pings tool always disconnects immediately after pinging.
+        However, The vanilla client will not disconnect until it receives the returned piing measurement.
+
+        Some other plugins (e.g. Protocolize, Triton) need to be injected into the netty pipeline.
+        If they are disconnected before super.handle(statusRequest), A NoSuchElementException will throw here.
+        But they are actually safe to ignore, I don't want console spam.
+         */
        CompletableFuture.runAsync {
            if (!isConnected) { throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
@@ -79,8 +87,11 @@ class PlayerHandler(
 
     @Throws(Exception::class)
     override fun handle(ping: PingPacket) {
+        // BungeeCord will accepts ping packets without StatusRequest packet. and throw a foolish exception.
         if (currentState !== ConnectionState.PINGING || !hasRequestedPing || !hasSuccessfullyPinged) { throw InvalidStatusPingException() }
         currentState = ConnectionState.PROCESSING
+        // If we want more compatibility. Can use method super.handle(ping).
+        // But in fact, the way it closes the connection is strange. So I chose to process directly here and close the pipeline for better performance.
         unsafe().sendPacket(ping)
         ctx.close()
     }
@@ -92,6 +103,7 @@ class PlayerHandler(
     }
 
     override fun toString(): String {
+        // I want to customize my own message insteadof replacing these with {0} and {1} placeholders.
         // return "§7(§f" + socketAddress + (if (name != null) "|$name" else "") + "§7) <-> MoeFilter InitialHandler"
         return "§7(§f$socketAddress${if (name != null) "|$name" else ""}§7) <-> MoeFilter InitialHandler"
     }

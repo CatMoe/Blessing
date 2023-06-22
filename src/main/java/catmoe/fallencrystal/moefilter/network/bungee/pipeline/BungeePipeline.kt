@@ -73,7 +73,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
             // MoeFilter -- TND default should be true.
             channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
-            // MoeFilter的InitialHandler
+            // MoeFilter's InitialHandler
             pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
 
             if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())

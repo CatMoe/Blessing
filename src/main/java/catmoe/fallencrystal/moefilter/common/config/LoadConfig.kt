@@ -109,29 +109,6 @@ object LoadConfig {
                     # 当玩家没有权限使用那个子命令时 是否完全隐藏命令 (启用后忽略tabComplete的"no-subcommand-permission"和"no-permission")
                     full-hide-command=false
                 }
-                methods {
-                    JOIN="Join"
-                    ONCE-JOIN="Once Join"
-                    REJOIN="Reconnect"
-                    PING-AND-JOIN="Ping+Join"
-                    LONGER-NAME="Longer name"
-                    BAD-NAME="Bad name"
-                    
-                    PING="Ping"
-                    EXCEPTION-PING="Exception Ping"
-                    PING-FLOOD="Motd Attack"
-                    
-                    UNKNOWN-PROTOCOL="Protocol"
-                    MALFORMED_PACKET="Packets"
-                }
-                blacklist-reason {
-                    ADMIN="被管理员列入黑名单"
-                    PROXY="疑似使用代理或VPN"
-                    PING-LIMIT="短时间内Ping次数过多"
-                    JOIN-LIMIT="短时间内尝试加入次数过多"
-                    CHECK-FAILED="无法验证您是否是机器人还是玩家"
-                    ALTS="同地址拥有太多账户"
-                }
                 kick {
                     placeholders {
                         custom1="这个是属于你的占位符! 在消息中使用[custom1]来使用它."
@@ -139,19 +116,10 @@ object LoadConfig {
                     }
                     # 在此处指定占位符格式. %[placeholder]% 就是为 %placeholder% 例如%custom1%就会返回上面的值
                     placeholder-pattern="%[placeholder]%"
-                    blacklisted = [
+                    already-online = [
                         "",
-                        "BLACKLISTED  [reason]",
-                        ""
-                    ]
-                    rejoin = [
-                        "",
-                        "REJOIN",
-                        ""
-                    ]
-                    ping = [
-                        "",
-                        "Ping server first.",
+                        "<red>You are already connected this server!",
+                        "<red>Contact server administrator for more information.",
                         ""
                     ]
                 }
