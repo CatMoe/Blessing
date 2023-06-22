@@ -34,9 +34,13 @@ object Notifications {
     private val autoNotificationPlayer: MutableList<ProxiedPlayer> = ArrayList()
 
     private val messagePacketCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, ChatViaActionbarPackets>()
-    private val componentSerializerCache = Caffeine.newBuilder().build<String, String>()
+    private val componentSerializerCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, String>()
 
     private var schedule: ScheduledTask? = null
+
+    private var need117data = false
+    private var need111data = false
+    private var need110data = false
 
     private fun initSchedule() {
         this.schedule=scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() }
@@ -73,24 +77,39 @@ object Notifications {
     }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) {
-        val viaPacket = getViaPacket(string)
-        for (player in players) {
-            val uc = player as UserConnection
-            val version = player.pendingConnection.version
-            if (version > ProtocolConstants.MINECRAFT_1_17) { uc.unsafe().sendPacket(viaPacket.v117) }
-            else if (version > ProtocolConstants.MINECRAFT_1_10) { uc.unsafe().sendPacket(viaPacket.v111) }
-            else { uc.unsafe().sendPacket(viaPacket.v110) }
+        scheduler.runAsync {
+            val viaPacket = getViaPacket(string)
+            need117data=false; need111data=false; need110data=false
+            for (player in players) { send(player, viaPacket) }
         }
+    }
+
+    private fun send(player: ProxiedPlayer, packets: ChatViaActionbarPackets) {
+        val version = player.pendingConnection.version
+        val uc = player as UserConnection
+        if (version > ProtocolConstants.MINECRAFT_1_17) { if (packets.has117data) { uc.unsafe().sendPacket(packets.v117!!) } else { need117data=true } }
+        else if (version > ProtocolConstants.MINECRAFT_1_10) { if (packets.has111data) { uc.unsafe().sendPacket(packets.v111!!) } else { need111data=true } }
+        else { if (packets.has110data) { uc.unsafe().sendPacket(packets.v110) } else { need110data=true } }
     }
 
     private val actionbar = ChatMessageType.ACTION_BAR.ordinal
 
     private fun getViaPacket(text: String): ChatViaActionbarPackets {
-        val viaPacket = messagePacketCache.getIfPresent(text) ?: ChatViaActionbarPackets(
-            getChatPacketVersion117(MessageUtil.colorizeMiniMessage(text)),
-            getChatPacketVersion111(MessageUtil.colorizeMiniMessage(text)),
-            getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)))
-        messagePacketCache.getIfPresent(text) ?: messagePacketCache.put(text, viaPacket)
+        val v117: SystemChat?
+        val v111: Title?
+        val v110: SystemChat?
+        val cached = messagePacketCache.getIfPresent(text)
+        if (cached != null) {
+            v117 = if (need117data) { if (cached.has117data) { cached.v117 } else getChatPacketVersion117(MessageUtil.colorizeMiniMessage(text)) } else null
+            v111 = if (need111data) { if (cached.has111data) { cached.v111 } else getChatPacketVersion111(MessageUtil.colorizeMiniMessage(text)) } else null
+            v110 = if (need110data) { if (cached.has110data) { cached.v110 } else getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)) } else null
+        } else {
+            v117 = if (need117data) { getChatPacketVersion117(MessageUtil.colorizeMiniMessage(text)) } else null
+            v111 = if (need111data) { getChatPacketVersion111(MessageUtil.colorizeMiniMessage(text)) } else null
+            v110 = if (need110data) { getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)) } else null
+        }
+        val viaPacket = ChatViaActionbarPackets(v117, v111, v110, need117data, need111data, need110data)
+        messagePacketCache.put(text, viaPacket)
         return viaPacket
     }
 
