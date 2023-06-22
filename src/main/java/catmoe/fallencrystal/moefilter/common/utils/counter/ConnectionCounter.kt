@@ -31,8 +31,8 @@ object ConnectionCounter {
     fun increase(address: InetAddress) {
         val singleIpCount = ipCache.getIfPresent(address) ?: 0
         if (singleIpCount == 0) { tempIpSec++; ipCache.put(address, 1) }
-        if (getConnectionPerSec() > peakCPS) { peakCPS=getConnectionPerSec(); peakInSession = if (inAttack) peakCPS else 0 }
         total++; tempCPS++; if (inAttack) { totalInSession++; } else { totalInSession = 0 }
+        if (getConnectionPerSec() > peakCPS) { peakCPS=getConnectionPerSec(); peakInSession = if (inAttack) peakCPS else 0 }
     }
     fun getTotal(): Long { return total }
     fun getTotalSession(): Long { return totalInSession }

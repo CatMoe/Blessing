@@ -16,7 +16,6 @@ import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.PacketWrapper
-import net.md_5.bungee.protocol.Varint21FrameDecoder
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -60,19 +59,6 @@ class PlayerHandler(
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler(this))
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         try { super.handle(handshake) }
-        catch (safe: NullPointerException) {
-            // BotFilter
-            if (safe.message?.contains("net.md_5.bungee.protocol.Varint21FrameDecoder.set119(boolean)") == true) {
-                pipeline!!.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, Varint21FrameDecoder())
-                /*
-                Need more compatibility codes -- Throw:
-
-                 io.netty.handler.codec.DecoderException: java.lang.IndexOutOfBoundsException: index 3, length: 65 (expected: range(0, 28))
-                 java.util.NoSuchElementException: legacy-kick
-                 */
-                try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
-            }
-        }
         catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
     }
 
@@ -83,18 +69,12 @@ class PlayerHandler(
         if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) { throw InvalidStatusPingException() }
         hasRequestedPing = true
         currentState = ConnectionState.PROCESSING
-        try {
-            CompletableFuture.runAsync {
-                if (!isConnected) { throw InvalidStatusPingException() }
-                currentState = ConnectionState.PINGING
-                hasSuccessfullyPinged = true
-            }
-        } catch (_: NoSuchElementException) {} // Actually inject netty failed.
-        // Deliver immediately instead of async.
-        // Avoid plugins that need to inject netty channels to throw exceptions.
-        // If they disconnect immediately after pinging.
-        // They are also firewalled.
-        try { super.handle(statusRequest) } catch (exception: Exception) { throw InvalidStatusPingException() }
+       CompletableFuture.runAsync {
+           if (!isConnected) { throw InvalidStatusPingException() }
+           currentState = ConnectionState.PINGING
+           hasSuccessfullyPinged = true
+           try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} // Actually inject netty failed.
+        }
     }
 
     @Throws(Exception::class)
