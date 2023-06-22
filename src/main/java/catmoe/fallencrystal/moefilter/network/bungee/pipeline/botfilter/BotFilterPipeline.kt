@@ -10,6 +10,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import io.netty.channel.Channel
@@ -77,4 +78,9 @@ class BotFilterPipeline : ChannelInitializer<Channel>(), IPipeline {
             eventCaller.call(EventCallMode.AFTER_DECODER)
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }
     }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }
+
+    @Deprecated("Deprecated in Java", ReplaceWith("ExceptionCatcher.handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher"))
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(ctx.channel(), cause) }
 }
