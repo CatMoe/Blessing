@@ -16,7 +16,7 @@ import net.md_5.bungee.protocol.packet.PluginMessage
 
 @RequiredArgsConstructor
 class PacketHandler(playerHandler: PlayerHandler) : ChannelDuplexHandler() {
-    @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle"))
+    @Suppress("OVERRIDE_DEPRECATION")
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
 

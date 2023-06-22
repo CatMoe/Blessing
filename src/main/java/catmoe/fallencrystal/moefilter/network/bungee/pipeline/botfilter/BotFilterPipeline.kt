@@ -60,7 +60,7 @@ class BotFilterPipeline : ChannelInitializer<Channel>(), IPipeline {
 
             // VarIntFameDecoder exploit is safe for BotFilter.
             // pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
-            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
+            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(bungee.getConfig().timeout.toLong()))
             pipeline.replace(PipelineUtils.BOSS_HANDLER, PipelineUtils.BOSS_HANDLER, InboundHandler())
 
             pipeline.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.LEGACY_DECODER, LegacyDecoder())
@@ -81,6 +81,6 @@ class BotFilterPipeline : ChannelInitializer<Channel>(), IPipeline {
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }
 
-    @Deprecated("Deprecated in Java", ReplaceWith("ExceptionCatcher.handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher"))
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(ctx.channel(), cause) }
 }

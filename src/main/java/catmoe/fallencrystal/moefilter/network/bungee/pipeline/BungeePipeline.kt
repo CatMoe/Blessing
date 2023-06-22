@@ -61,7 +61,7 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
 
             // MoeFilter has VarIntFrameDecoder, TimeoutHandler and InboundHandler itself.
             pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
-            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
+            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(bungee.getConfig().timeout.toLong()))
             pipeline.replace(PipelineUtils.BOSS_HANDLER, PipelineUtils.BOSS_HANDLER, InboundHandler())
 
             // Init default bungeecord pipeline
@@ -86,6 +86,6 @@ class BungeePipeline : ChannelInitializer<Channel>(), IPipeline {
         //
     }
 
-    @Deprecated("Deprecated in Java", ReplaceWith("ExceptionCatcher.handle(ctx!!.channel(), cause!!)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher"))
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext?, cause: Throwable?) { ExceptionCatcher.handle(ctx!!.channel(), cause!!) }
 }
