@@ -86,7 +86,7 @@ object MainListener {
             Null = BungeeCord default disconnect message. "Proxy lost connect from server."
             This reason will not be sent to the client. Because we've disconnected on PendingConnection.
              */
-            event.setCancelReason(MessageUtil.colorizeTextComponent("Cancelled by MoeFilter."))
+            event.setCancelReason(MessageUtil.colorizeMiniMessage("Cancelled by MoeFilter"))
         }
     }
 
