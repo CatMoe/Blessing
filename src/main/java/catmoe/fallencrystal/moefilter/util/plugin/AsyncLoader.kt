@@ -62,7 +62,7 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 // check they init method to get more information
                 DisplayCache
                 ProxyCache
-                CPUMonitor
+                CPUMonitor.startSchedule()
                 pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
                 LoggerManager.registerFilter(LogHandler())
                 if (!utilMode) {
