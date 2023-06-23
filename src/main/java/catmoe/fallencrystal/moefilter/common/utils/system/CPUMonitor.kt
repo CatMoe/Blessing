@@ -16,7 +16,7 @@ object CPUMonitor {
         val ex = ScheduledThreadPoolExecutor(1)
         ex.removeOnCancelPolicy = true
         executor = Executors.unconfigurableScheduledExecutorService(ex)
-        monitorTask = executor!!.scheduleAtFixedRate(this::update, 0L, 500L, TimeUnit.MILLISECONDS)
+        monitorTask = executor!!.scheduleAtFixedRate(this::update, 0L, 750L, TimeUnit.MILLISECONDS)
     }
 
     fun shutdownSchedule() {
@@ -31,7 +31,8 @@ object CPUMonitor {
         val zero = 0.000000
         val procCpuUsage = if (latestCpuUsage.processCPU > zero) latestCpuUsage.processCPU else this.latestCpuUsage.processCPU
         val sysCpuUsage = if (latestCpuUsage.systemCPU > zero) latestCpuUsage.systemCPU else this.latestCpuUsage.systemCPU
-        this.latestCpuUsage= CpuUsage(procCpuUsage, sysCpuUsage)
+        if (procCpuUsage > sysCpuUsage) return
+        this.latestCpuUsage = CpuUsage(procCpuUsage, sysCpuUsage)
     }
 
     fun getCpuUsage(): CpuUsage { return latestCpuUsage }

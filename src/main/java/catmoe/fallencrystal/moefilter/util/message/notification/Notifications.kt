@@ -125,7 +125,7 @@ object Notifications {
     }
 
     private fun componentSerializer(target: BaseComponent): String {
-        val cs = componentSerializerCache.getIfPresent(target.toString()) ?: ComponentSerializer.toString(target);
-        componentSerializerCache.put(target.toString(), cs); return cs
+        val cs = componentSerializerCache.getIfPresent(target.toLegacyText()) ?: ComponentSerializer.toString(target);
+        componentSerializerCache.put(target.toLegacyText(), cs); return cs
     }
 }
