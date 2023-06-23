@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.ReloadCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.ToggleNotificationCommand
+import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.MessageEvent
 import catmoe.fallencrystal.moefilter.api.command.impl.test.event.TestEventCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogCommand
@@ -20,11 +21,12 @@ class LoadCommand {
         CommandManager.register(HelpCommand())
         CommandManager.register(ToggleNotificationCommand())
 
-        // All debug command manager by @DebugCommand annotation
+        // All debug command managers by @DebugCommand annotation
         EventManager.registerListener(FilterPlugin.getPlugin()!!, MessageEvent())
         EventManager.registerListener(FilterPlugin.getPlugin()!!, LogSpyUnload())
         CommandManager.register(LogCommand())
         CommandManager.register(TestEventCommand())
         CommandManager.register(ReloadCommand())
+        CommandManager.register(TestKickCommand())
     }
 }

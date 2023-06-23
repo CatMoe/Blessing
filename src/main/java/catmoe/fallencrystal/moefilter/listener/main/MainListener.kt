@@ -5,19 +5,31 @@ import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.inc
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.increasePing
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidateJoinCache
 import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidatePingCache
+import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.connection.PendingConnection
 import net.md_5.bungee.api.event.PostLoginEvent
 import net.md_5.bungee.api.event.PreLoginEvent
+import net.md_5.bungee.connection.InitialHandler
+import net.md_5.bungee.netty.ChannelWrapper
+import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.packet.Handshake
+import java.lang.reflect.Field
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketAddress
+import java.util.concurrent.CompletableFuture
 
 object MainListener {
 
@@ -28,9 +40,14 @@ object MainListener {
     }
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
+        val connection = ConnectionUtil(pc)
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
         val protocol = pc.version
-        val inetAddress = (pc.socketAddress as InetSocketAddress).address
+        val inetAddress = connection.inetAddress()
+
+        // Firewall who connected after an instant disconnected.
+        CompletableFuture.runAsync { if (!connection.isConnected()) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } }
+
         if (WhitelistObject.isWhitelist(inetAddress)) return
 
         if (ProxyCache.isProxy(inetAddress)) { pc.disconnect(); addFirewall(inetAddress, pc, false) }
@@ -65,7 +82,25 @@ object MainListener {
             increaseJoin(inetAddress, protocol)
         }
 
-        // cached protocol removed. use PingCache for check protocol. no more bot switches their protocol when joining.
+        if (connection.isConnected()) {
+            val initialHandler = pc as InitialHandler
+            var field: Field? = null
+            val cw: ChannelWrapper?
+            val debug = ObjectConfig.getConfig().getBoolean("debug")
+            try {
+                field = initialHandler.javaClass.getDeclaredField("ch")
+                field!!.isAccessible=true
+                cw = field.get(initialHandler) as ChannelWrapper
+            }
+            catch (exception: IllegalAccessException) { if (debug) exception.printStackTrace(); return }
+            catch (exception: NoSuchFileException) { if (debug) exception.printStackTrace(); return }
+            finally { if (field != null) { field.isAccessible=false } }
+            val pipeline = cw!!.handle.pipeline() ?: return
+
+            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
+            pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketHandler())
+            pipeline.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
+        }
     }
 
     fun onLogin(event: PreLoginEvent) {

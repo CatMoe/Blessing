@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.player.PostBrandEvent
+import catmoe.fallencrystal.moefilter.api.event.events.channel.PostBrandEvent
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException

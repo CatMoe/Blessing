@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.command.impl.test.log.LogHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
@@ -17,6 +18,9 @@ import catmoe.fallencrystal.moefilter.common.utils.maxmind.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.utils.maxmind.InquireCountry
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
+import catmoe.fallencrystal.moefilter.network.InitChannel
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
@@ -65,18 +69,31 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 CPUMonitor.startSchedule()
                 pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
                 LoggerManager.registerFilter(LogHandler())
-                if (!utilMode) {
-                    registerListener()
-                    ConnectionCounter
-                    Notifications
-                    if (try{CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString())!=CountryMode.DISABLED }catch(_: Exception){false}) { loadMaxmindDatabase() }
-                }
+
+                registerListener()
+                ConnectionCounter
+                Notifications
+                if (try{CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString())!=CountryMode.DISABLED }catch(_: Exception){false}) { loadMaxmindDatabase() }
+                loadAntibot()
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage
                 configException.printStackTrace()
                 proxy.stop()
             }
+        }
+    }
+
+    private fun loadAntibot() {
+        when (try { WorkingMode.valueOf(ObjectConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }) {
+            PIPELINE -> { InitChannel().initPipeline() }
+            EVENT -> {
+                val waterfallListener = catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall.IncomingListener()
+                val commonListener = catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener()
+                val choose = if (LoggerManager.getType() == BCLogType.WATERFALL) waterfallListener else commonListener
+                pluginManager.registerListener(plugin, choose)
+            }
+            DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }
     }
 

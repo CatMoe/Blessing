@@ -5,7 +5,7 @@ import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
-import catmoe.fallencrystal.moefilter.network.bungee.handler.PlayerHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -44,7 +44,7 @@ class BotFilterPipeline : ChannelInitializer<Channel>(), IPipeline {
             val inetAddress = (remoteAddress as InetSocketAddress).address
             val pipeline = channel.pipeline()
             val listener = channel.attr(PipelineUtils.LISTENER).get()
-            val eventCaller = EventCaller(channel, listener)
+            val eventCaller = EventCaller(ctx, listener)
 
             ConnectionCounter.increase(inetAddress)
             eventCaller.call(EventCallMode.AFTER_INIT)
@@ -71,7 +71,7 @@ class BotFilterPipeline : ChannelInitializer<Channel>(), IPipeline {
             // TCP NO DELAY is always enabled on BotFilter/Waterfall
 
             // MoeFilter's InitialHandler
-            pipeline.get(InboundHandler::class.java).setHandler(PlayerHandler(ctx, listener))
+            pipeline.get(InboundHandler::class.java).setHandler(MoeInitialHandler(ctx, listener))
 
             if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
 

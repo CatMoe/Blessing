@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -34,7 +35,6 @@ object Notifications {
     private val autoNotificationPlayer: MutableList<ProxiedPlayer> = ArrayList()
 
     private val messagePacketCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, ChatViaActionbarPackets>()
-    private val componentSerializerCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, String>()
 
     private var schedule: ScheduledTask? = null
 
@@ -77,11 +77,9 @@ object Notifications {
     }
 
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) {
-        scheduler.runAsync {
-            val viaPacket = getViaPacket(string)
-            need117data=false; need111data=false; need110data=false
-            for (player in players) { send(player, viaPacket) }
-        }
+        val viaPacket = getViaPacket(string)
+        need117data=false; need111data=false; need110data=false
+        for (player in players) { send(player, viaPacket) }
     }
 
     private fun send(player: ProxiedPlayer, packets: ChatViaActionbarPackets) {
@@ -98,14 +96,16 @@ object Notifications {
         val v117: SystemChat?
         val v111: Title?
         val v110: SystemChat?
+        val bc = ComponentUtil.toBaseComponents(ComponentUtil.parse(text))
+        val componentSerializer = ComponentSerializer.toString(bc)
         val cached = messagePacketCache.getIfPresent(text)
         if (cached != null) {
-            v117 = if (need117data) { if (cached.has117data) { cached.v117 } else getChatPacketVersion117(MessageUtil.colorizeMiniMessage(text)) } else null
-            v111 = if (need111data) { if (cached.has111data) { cached.v111 } else getChatPacketVersion111(MessageUtil.colorizeMiniMessage(text)) } else null
-            v110 = if (need110data) { if (cached.has110data) { cached.v110 } else getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)) } else null
+            v117 = if (need117data) { if (cached.has117data) { cached.v117 } else getChatPacketVersion117(componentSerializer) } else null
+            v111 = if (need111data) { if (cached.has111data) { cached.v111 } else getChatPacketVersion111(componentSerializer) } else null
+            v110 = if (need110data) { if (cached.has110data) { cached.v110 } else getChatPacketVersion110(bc) } else null
         } else {
-            v117 = if (need117data) { getChatPacketVersion117(MessageUtil.colorizeMiniMessage(text)) } else null
-            v111 = if (need111data) { getChatPacketVersion111(MessageUtil.colorizeMiniMessage(text)) } else null
+            v117 = if (need117data) { getChatPacketVersion117(componentSerializer) } else null
+            v111 = if (need111data) { getChatPacketVersion111(componentSerializer) } else null
             v110 = if (need110data) { getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)) } else null
         }
         val viaPacket = ChatViaActionbarPackets(v117, v111, v110, need117data, need111data, need110data)
@@ -113,19 +113,14 @@ object Notifications {
         return viaPacket
     }
 
-    private fun getChatPacketVersion117(text: BaseComponent): SystemChat { return SystemChat(componentSerializer(text), actionbar) }
+    private fun getChatPacketVersion117(text: String): SystemChat { return SystemChat(text, actionbar) }
 
-    private fun getChatPacketVersion110(text: BaseComponent): SystemChat { return SystemChat(componentSerializer(TextComponent(BaseComponent.toLegacyText(text))), actionbar) }
+    private fun getChatPacketVersion110(text: BaseComponent): SystemChat { return SystemChat(ComponentSerializer.toString((TextComponent(BaseComponent.toLegacyText(text)))), actionbar) }
 
-    private fun getChatPacketVersion111(text: BaseComponent): Title {
+    private fun getChatPacketVersion111(text: String): Title {
         val title = Title()
-        title.action=Title.Action.ACTIONBAR
-        title.text = componentSerializer(text)
+        title.action = Title.Action.ACTIONBAR
+        title.text = text
         return title
-    }
-
-    private fun componentSerializer(target: BaseComponent): String {
-        val cs = componentSerializerCache.getIfPresent(target.toLegacyText()) ?: ComponentSerializer.toString(target);
-        componentSerializerCache.put(target.toLegacyText(), cs); return cs
     }
 }

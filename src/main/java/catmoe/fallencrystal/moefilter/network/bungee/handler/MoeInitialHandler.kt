@@ -21,7 +21,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.CompletableFuture
 
-class PlayerHandler(
+class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
     listenerInfo: ListenerInfo,
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {

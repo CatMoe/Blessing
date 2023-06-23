@@ -3,7 +3,6 @@ package catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser
 import io.netty.channel.Channel
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
-import net.md_5.bungee.api.event.ClientConnectEvent
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.HandlerBoss
 import net.md_5.bungee.netty.PipelineUtils
@@ -25,6 +24,5 @@ class GeyserPipeline {
         channel.pipeline().get(HandlerBoss::class.java).setHandler(InitialHandler(BungeeCord.getInstance(), listener))
 
         if (listener.isProxyProtocol) { channel.pipeline().addFirst(HAProxyMessageDecoder()) }
-        if (BungeeCord.getInstance().pluginManager.callEvent(ClientConnectEvent(channel.remoteAddress(), listener)).isCancelled) { channel.close() }
     }
 }
