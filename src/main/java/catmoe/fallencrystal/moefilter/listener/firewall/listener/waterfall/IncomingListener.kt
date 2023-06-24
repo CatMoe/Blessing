@@ -4,7 +4,6 @@ import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import net.md_5.bungee.api.event.PlayerHandshakeEvent
-import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
@@ -16,9 +15,6 @@ class IncomingListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onHandshake(event: PlayerHandshakeEvent) { MainListener.onHandshake(event.handshake, event.connection) }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPreLogin(event: PreLoginEvent) { MainListener.onLogin(event) }
 
     @EventHandler
     fun onException(event: io.github.waterfallmc.waterfall.event.ProxyExceptionEvent) {

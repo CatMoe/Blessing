@@ -1,7 +1,5 @@
 package catmoe.fallencrystal.moefilter
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
@@ -16,21 +14,15 @@ class MoeFilter : Plugin() {
     private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
     private val utilMode = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("util-mode") } catch (ex: Exception) { false }
 
+    private val loader = AsyncLoader(this, utilMode)
+
     init { if (fastboot) { load() } }
 
     override fun onEnable() { if(!fastboot) { load() } }
 
     override fun onDisable() {
-        EventManager.triggerEvent(PluginUnloadEvent())
         initLogger.onUnload()
-        try {
-            MessageUtil.logInfo("[MoeFilter] Waiting event calling")
-            Thread.sleep(1000)
-        } catch (ex: Exception) {
-            MessageUtil.logWarn("[MoeFilter] Exception occurred while thread waiting.")
-            ex.printStackTrace()
-        }
-        MessageUtil.logInfo("[MoeFilter] MoeFilter are unloaded.")
+        loader.unload()
     }
 
     private fun load() {
@@ -38,7 +30,7 @@ class MoeFilter : Plugin() {
         FilterPlugin.setPlugin(this)
         FilterPlugin.setDataFolder(dataFolder)
         initLogger.onLoad()
-        AsyncLoader(this, utilMode)
+        loader.load()
     }
 
     override fun onLoad() { MessageUtil.logInfo("[MoeFilter] Using MoeFilter API") }

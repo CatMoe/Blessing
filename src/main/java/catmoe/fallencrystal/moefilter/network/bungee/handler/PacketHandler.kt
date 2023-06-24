@@ -1,7 +1,5 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.channel.PostBrandEvent
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
@@ -51,7 +49,7 @@ class PacketHandler : ChannelDuplexHandler() {
             run {
                 if (packet == null) { return@run }
                 if (packet is LoginRequest) {
-                    val username = (msg.packet as LoginRequest).data
+                    val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(ctx.channel().remoteAddress().toString() + "try to login but they username is empty.") }
                     if (proxy.getPlayer(username) != null) { FastDisconnect.disconnect(ctx.channel(), DisconnectType.ALREADY_ONLINE); return }
                     // TODO More kick here.
@@ -64,7 +62,6 @@ class PacketHandler : ChannelDuplexHandler() {
                         val clientBrand = DefinedPacket.readString(brand)
                         brand.release()
                         if (clientBrand.isEmpty() || clientBrand.length > 128) { ctx.channel().close(); return }
-                        EventManager.triggerEvent(PostBrandEvent(ctx.channel(), player, clientBrand))
                     }
                 }
                 // if (packet is KeepAlive) { MessageUtil.logInfo("[MoeFilter] [KeepAlive] id: ${packet.randomId} address: ${ctx.channel().remoteAddress()} Client -> Server") }
