@@ -53,6 +53,10 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
    - [Waterfall](https://github.com/PaperMC/Waterfall)
    - [BotFilter](https://github.com/Leymooo/BungeeCord)
    - [FlameCord](https://github.com/arkflame/FlameCord)
+   - [BetterBungee](https://github.com/LucazPlays/BetterBungee)
+  
+  MoeFilter完全支持以上列表中的BungeeCord而不会引发任何兼容性问题(预期行为)  
+  在`antibot.conf`中使用`mode: PIPELINE`以获得最佳性能以及全部功能.  
 
  > 我会尽力兼容大多数BungeeCord分叉 因此如果您还想要更多的选择 请随时回来查看页面是否更新!
 

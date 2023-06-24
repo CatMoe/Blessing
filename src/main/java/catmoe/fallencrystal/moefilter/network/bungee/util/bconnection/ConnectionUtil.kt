@@ -9,18 +9,24 @@ import java.lang.reflect.Field
 import java.net.InetAddress
 import java.net.InetSocketAddress
 
+@Suppress("UNUSED")
 class ConnectionUtil(val connection: PendingConnection) {
+
+    private val channelWrapper = initChannelWrapper()
+
     fun write(packet: DefinedPacket) { connection.unsafe().sendPacket(packet) }
 
     fun from(): String { return connection.virtualHost.hostString }
 
-    fun close() { connection.disconnect() }
+    fun close() { channelWrapper?.close() ?: connection.disconnect() }
 
     fun isConnected(): Boolean { return connection.isConnected }
 
     fun inetAddress(): InetAddress { return (connection.socketAddress as InetSocketAddress).address }
 
-    fun getChannelWrapper(): ChannelWrapper? {
+    fun getChannelWrapper(): ChannelWrapper? { return channelWrapper }
+
+    private fun initChannelWrapper(): ChannelWrapper? {
         val initialHandler = connection as InitialHandler
         var field: Field? = null
         val debug = ObjectConfig.getConfig().getBoolean("debug")

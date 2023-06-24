@@ -34,7 +34,7 @@ object MainListener {
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
         val inetAddress = connection.inetAddress()
 
-        // Firewall who connected after an instant disconnected. ck.")
+        // Firewall who connected after an instant disconnected.
         CompletableFuture.runAsync { if (!pc.isConnected) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } }
 
         if (WhitelistObject.isWhitelist(inetAddress)) return
