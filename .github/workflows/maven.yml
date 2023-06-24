@@ -10,7 +10,7 @@ name: Main Maven CI
 
 on:
   push:
-    branches: [ "main", "v1", "dev/pipeline" ]
+    branches: [ "main", "v1" ]
   pull_request:
     branches: [ "main", "v1" ]
 
