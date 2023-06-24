@@ -164,4 +164,16 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
 
 ---
 
+## 学分
+
+---
+
+ 项目含储存库中借鉴的代码 没有它们 就没有MoeFilter:
+
+  - [BotFilter (BungeeCord)](https://github.com/Leymooo/BungeeCord)
+  - [Velocity](https://github.com/PaperMC/Velocity)
+  - [Sonar](https://github.com/jonesdevelopment/sonar)
+
+---
+
 Made by CatMoe.
