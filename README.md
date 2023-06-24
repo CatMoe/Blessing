@@ -1,6 +1,6 @@
 # Moe Filter
 
-一款功能强大的 兼容性极强地反机器人和实用工具接口.  
+一款功能强大的 兼容性极强的反机器人和实用工具接口.  
 
 ---
 
@@ -12,6 +12,16 @@ v1完成了注入管道相关代码 将在不久的将来完全落地数据包�
 有些抱歉的事情是它不一定兼容全部分叉或插件.  
 如果您需要使用的插件设计到修改管道但急需使用那个插件 可以考虑打开issue  
 采纳features了之后将会实施 您永远都不需要多余的插件做相同的事情来降低性能.  
+
+## v1进展?:  
+
+抱歉 我目前不能给出任何关于v1 release的[ETA](https://cn.bing.com/search?pglt=169&q=eta%E6%98%AF%E4%BB%80%E4%B9%88%E6%84%8F%E6%80%9D)  
+
+如果您想试试MoeFilter 请自行构建 如果您没有那个能力  
+请加入[猫萌的Discord服务器](https://discord.gg/JtXxFNNc9K) 然后dm我 `FallenCrystal`  
+  
+但请注意 请不要将您得到的MoeFilter副本**发送给任何人**.  
+因为MoeFilter在之后计划成为[付费开源](https://zhuanlan.zhihu.com/p/162055034) 的产物.  
 
 ---
 ## 用前须知/免责声明:
@@ -77,19 +87,21 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
        - 不必要的反射注入管道 (也可能没写完? 但至少目前不值得使用 且已经宣布永久停更)
        - 自己的AlreadyOnline检查 甚至对于Collection<ProxiedPlayer>不是使用.contains  
          而是使用for循环遍历所有在线玩家 如果.equals再cancelled事件
-  > 加入的一多这for循环就经不起折腾了.
+         加入的一多这for循环就经不起折腾了.
+       - 已被废弃的半成品
+       - 每个不同的检查使用独立的事件 一个加入检查触发三个PreLoginEvent监听器
   - [BotSentry](https://www.spigotmc.org/resources/%E2%9A%A1-botsentry-%E2%9A%A1-antibot-antiproxy-resisting-30k-bots-per-second-bungee-spigot-sponge-velocity.55924/)
        - "您已被列入黑名单  如果您认为您不是机器人 请点击下面的链接进行认证"
        - 仅依靠反代理云服务和 FirstJoin检查的狗屎
        - 新版本不如旧版本 资源链接下方的视频都是老视频
        - 如果遭到大型攻击 则您的服务器会立马崩溃
-       - 源代码也已经被混淆 但我相信它跟AntiAttackRL那样在Handshake阶段干了相同的事情
+       - 这边注入Netty管道handle LoginRequest数据包 那边监听PreLoginEvent 双倍伤害
   - [Sonar](https://github.com/jonesdevelopment/sonar)
        - 我目前见过最好的开源反机器人插件
        - 但.. 它多少有些囊肿了
        - 倒也不是不可以用
   - [EpicGuard](https://github.com/4drian3d/EpicGuard)
-       - 可以很好地防御大部分攻击
+       - 可以很好地防御大部分攻击 尽管它也只依靠事件
        - 尽管不是很具有高性能 但它也可以是好的选择 我的意思是 相比于其它反机器人来讲
   - [Ultimate AntiBot](https://github.com/Kr1S-D/UltimateAntibotRecoded)
        - 万能的PreLoginEvent 在上面实现所有反机器人逻辑
@@ -104,6 +116,8 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
        - ~~它作为MCStorm的测试插件 不是因为JH Antibot是万能的 而是Jheyson曾是MCStorm工作人员.~~
    - [XProtect](https://github.com/LagBug/XProtect)
        - 它甚至不是BungeeCord插件 我只是在此告诉你这个而已 (xD)
+       - ~~因为我在之前还是个无知的孩子的时候买了那个插件 声明支持BungeeCord~~
+         ~~但实际上它的意思是将XProtect放在后端Spigot服务端 妥妥智商税~~
 
 
 > **[?]** 我不会对任何反机器人做出好坏的评价 请根据您自己的测试来平衡  
