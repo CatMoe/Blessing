@@ -114,24 +114,22 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
   
 ### 想为反机器人模块做出贡献? :
 
-首先 通过直接修改BungeeCord的class来侦听监听管道(或类似的侵入性做法)不会得到支持.
+首先 对攻击的方式以及反机器人的原理有充足的理解再做出贡献. 我不倡导直接实现天马行空的想法.
 
-支持使用事件的组合来创建反机器人:
-  
-  - 对于无效数据包或者玩家一般不会触发到的检查  
-    快速使用PendingConnection或防火墙切断连接  
-      
-  - Ping检查应该在Handshake上检查. `requestProtocol == 1`  
-    而不是使用ProxyPingEvent (这也可以保证兼容自带MOTD的BungeeCord分叉)  
+  - 使用ConnectionUtil切断连接 如果需要带上理由 请使用FastDisconnect  
+    ```
+    ConnectionUtil(pendingConnection).close
+    ```
+    ```
+    FastDisconnect.disconnect(channel, DisconnectType)
+    FastDisconnect.disconnect(connectionUtil, DisconnectType)
+    ```
+    不会支持自定义理由. 如果您在玩家已经连接到时想踢出 请自己写一个插件来完成  
+    并且您可以有无数种办法将玩家踢出服务器或切断它们的连接.
     
-  - 优先使用缓存而不是单独的Map或玩家来缓存某些内容  
-    也请做好在单IP上连接数过大而未被及时被防火墙拦截的连接检查做好准备  
-  
+  - 使用缓存来完成大部分操作. 但对于部分使用缓存用处不大的地方 可以考虑直接存储  
+
   - 反机器人不是反崩溃
-    
-  - 对攻击的方式以及反机器人的原理有充足的理解再做出贡献  
-  
-如果您或您的提交满足以上条件之后 欢迎对MoeFilter做出贡献.
 
 ---
 
@@ -139,15 +137,11 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
 
 但在贡献之前 请确保您添加的功能可以模块化(并且你这么做了)  
   
-并且确保您的功能有相当的实用性
-例如我们的
-[ILogger](https://github.com/CatMoe/MoeFilter/blob/main/src/main/java/catmoe/fallencrystal/moefilter/api/logger/ILogger.kt)
-和
-[LoggerManager](https://github.com/CatMoe/MoeFilter/blob/main/src/main/java/catmoe/fallencrystal/moefilter/api/logger/LoggerManager.kt)
-日志过滤器  
+并且确保您的功能有相当的实用性 也请避免在一块地方复制同样的代码
 尝试用于解决只能设置一个过滤器的问题 之类的**比较有意义**的东西
 
-> 尽量保持String为空 或在配置中指定 目前配置类还在待办事项内 可能将在两三天后实现落地.
+> 对于非调试目的的代码, 尽量在配置文件中写明配置  
+> 对于某些拥有独立标志性的代码 可以选择硬编码String. 例如命令
 
 ---
 
@@ -160,7 +154,9 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
   - [x] HOCON配置
   - [x] MiniMessage 支持 
   - [ ] 基本反机器人检查 (Ping, FirstJoin, etc)
-  - [ ] 踢出消息缓存
+  - [x] 踢出消息缓存
+  - [x] 管道注入和支持
+  - [ ] 基于事件的反机器人 (对于不兼容的插件或BungeeCord) [施工中]
   - [ ] ~~当切换版本时 自动补全配置文件中缺失的内容.~~ 
  > 遥遥无期 并且我可能并没有想这么做. 最简单的办法是备份他们的配置文件 然后生成一份新的)
 
