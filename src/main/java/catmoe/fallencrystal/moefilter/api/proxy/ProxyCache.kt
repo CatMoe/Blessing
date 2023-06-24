@@ -9,9 +9,11 @@ object ProxyCache {
     private val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
     private val whitelistedAddress = listOf("/127.0.0.1")
 
-    init { fetchProxy() }
+    private val fetchProxy = FetchProxy()
 
-    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { FetchProxy() } }
+    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { fetchProxy.initSchedule() } }
+
+    fun reload() { fetchProxy.reload() }
 
     fun isProxy(address: InetAddress): Boolean {
         if (whitelistedAddress.contains(address.toString())) { return false }

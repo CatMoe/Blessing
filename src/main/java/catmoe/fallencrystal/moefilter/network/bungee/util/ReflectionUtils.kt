@@ -9,7 +9,6 @@ import java.lang.reflect.Field
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("unused")
 class ReflectionUtils {
     fun inject(initializer: ChannelInitializer<Channel>): AtomicBoolean {
         val version = version
@@ -32,16 +31,9 @@ class ReflectionUtils {
                     } catch (exception: Exception) { exception.printStackTrace() }
                 } else {
                     try {
-                        /*
                         val unsafeField = Unsafe::class.java.getDeclaredField("theUnsafe")
                         unsafeField.isAccessible = true
                         val unsafe = unsafeField[null] as Unsafe
-                        unsafe.putObject(unsafe.staticFieldOffset(unsafeField), unsafe.staticFieldOffset(unsafeField), initializer)
-                        success.set(true)
-                         */
-                        val unsafeField = Unsafe::class.java.getDeclaredField("theUnsafe")
-                        unsafeField.isAccessible = true
-                        val unsafe = unsafeField.get(null) as Unsafe
                         unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), initializer)
                         success.set(true)
                     } catch (exception: Exception) { exception.printStackTrace() }

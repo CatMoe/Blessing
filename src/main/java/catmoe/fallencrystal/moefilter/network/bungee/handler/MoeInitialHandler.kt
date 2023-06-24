@@ -1,29 +1,29 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.network.bungee.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
-import net.md_5.bungee.ConnectionThrottle
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
+import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.CompletableFuture
 
-class PlayerHandler(
+class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
-    listenerInfo: ListenerInfo?,
-    private val throttler: ConnectionThrottle?
+    listenerInfo: ListenerInfo,
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
     private var currentState = ConnectionState.HANDSHAKE
     private var inetAddress: InetAddress? = null
@@ -54,11 +54,11 @@ class PlayerHandler(
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
             2 -> { ConnectionState.JOINING }
-            else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol" + handshake.requestedProtocol) }
+            else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
-
-        pipeline!!.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        super.handle(handshake)
+        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler())
+        pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
+        try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
     }
 
     private var hasRequestedPing = false
@@ -68,30 +68,42 @@ class PlayerHandler(
         if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) { throw InvalidStatusPingException() }
         hasRequestedPing = true
         currentState = ConnectionState.PROCESSING
-        CompletableFuture.runAsync {
-            if (!isConnected) { throw InvalidStatusPingException() }
-            currentState = ConnectionState.PINGING
-            hasSuccessfullyPinged = true
-            try { super.handle(statusRequest) } catch (exception: Exception) { throw InvalidStatusPingException() }
+        /*
+        Call StatusRequest asynchronously.
+        Some foolish pings tool always disconnects immediately after pinging.
+        However, The vanilla client will not disconnect until it receives the returned piing measurement.
+
+        Some other plugins (e.g. Protocolize, Triton) need to be injected into the netty pipeline.
+        If they are disconnected before super.handle(statusRequest), A NoSuchElementException will throw here.
+        But they are actually safe to ignore, I don't want console spam.
+         */
+       CompletableFuture.runAsync {
+           if (!isConnected) { throw InvalidStatusPingException() }
+           currentState = ConnectionState.PINGING
+           hasSuccessfullyPinged = true
+           try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} // Actually inject netty failed.
         }
     }
 
     @Throws(Exception::class)
     override fun handle(ping: PingPacket) {
+        // BungeeCord will accepts ping packets without StatusRequest packet. and throw a foolish exception.
         if (currentState !== ConnectionState.PINGING || !hasRequestedPing || !hasSuccessfullyPinged) { throw InvalidStatusPingException() }
         currentState = ConnectionState.PROCESSING
+        // If we want more compatibility. Can use method super.handle(ping).
+        // But in fact, the way it closes the connection is strange. So I chose to process directly here and close the pipeline for better performance.
         unsafe().sendPacket(ping)
         ctx.close()
     }
 
     @Throws(Exception::class)
     override fun handle(loginRequest: LoginRequest) {
-        inetAddress?.let { ConnectionCounter.increase(it) }
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
-        if (throttler != null && throttler.throttle(socketAddress)) { ctx.close(); return }
+        super.handle(loginRequest)
     }
 
     override fun toString(): String {
+        // I want to customize my own message insteadof replacing these with {0} and {1} placeholders.
         // return "§7(§f" + socketAddress + (if (name != null) "|$name" else "") + "§7) <-> MoeFilter InitialHandler"
         return "§7(§f$socketAddress${if (name != null) "|$name" else ""}§7) <-> MoeFilter InitialHandler"
     }

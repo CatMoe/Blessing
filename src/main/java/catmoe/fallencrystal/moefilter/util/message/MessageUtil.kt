@@ -1,19 +1,26 @@
 package catmoe.fallencrystal.moefilter.util.message
 
 import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.*
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 object MessageUtil {
 
     private val logger = ProxyServer.getInstance().logger
 
+    private val mmCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<String, BaseComponent>()
+
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
 
-    fun colorizeMiniMessage(text: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(text)) }
+    fun colorizeMiniMessage(text: String): BaseComponent {
+        val result = mmCache.getIfPresent(text) ?: ComponentUtil.toBaseComponents(ComponentUtil.parse(text))
+        mmCache.put(text, result); return result
+    }
 
     fun colorizeTextComponent(text: String): BaseComponent { return TextComponent(colorize(text)) }
 

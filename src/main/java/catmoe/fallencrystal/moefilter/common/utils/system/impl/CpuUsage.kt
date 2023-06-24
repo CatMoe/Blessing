@@ -1,3 +1,3 @@
 package catmoe.fallencrystal.moefilter.common.utils.system.impl
 
-class CPUUsage(val processCPU: Double, val systemCPU: Double)
+class CpuUsage(val processCPU: Double, val systemCPU: Double)
