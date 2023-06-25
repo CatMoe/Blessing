@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
@@ -12,6 +13,7 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
+import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
@@ -54,4 +56,10 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onServerSwitch(event: ServerSwitchEvent) { EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun loginRequest(result: LoginEvent) {
+        val initialHandler = result.connection as InitialHandler
+        MessageUtil.logInfo(initialHandler::class.java.name)
+    }
 }

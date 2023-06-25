@@ -19,6 +19,7 @@ import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class MoeInitialHandler(
@@ -101,6 +102,24 @@ class MoeInitialHandler(
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
         super.handle(loginRequest)
     }
+
+    //JPremium
+    private var uniqueId: UUID? = null
+
+    override fun setUniqueId(uuid: UUID?) {
+        this.uniqueId=uuid
+        val parent = InitialHandler::class.java
+        val field = parent.getDeclaredField("uniqueId")
+        field.isAccessible=true
+        field.set(parent, uniqueId)
+    }
+
+    override fun handle(encryptResponse: EncryptionResponse?) {
+        if (encryptResponse == null) return
+        super.handle(encryptResponse)
+    }
+
+    override fun getUniqueId(): UUID? { return uniqueId ?: super.getUniqueId() }
 
     override fun toString(): String {
         // I want to customize my own message insteadof replacing these with {0} and {1} placeholders.

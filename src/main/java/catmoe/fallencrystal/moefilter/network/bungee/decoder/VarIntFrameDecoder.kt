@@ -3,7 +3,6 @@ package catmoe.fallencrystal.moefilter.network.bungee.decoder
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
-import io.netty.handler.codec.CorruptedFrameException
 
 class VarIntFrameDecoder : ByteToMessageDecoder() {
     @Throws(Exception::class)
@@ -37,7 +36,5 @@ class VarIntFrameDecoder : ByteToMessageDecoder() {
         }
     }
 
-    companion object {
-        private val EXCEPTION_IN_FRAME = CorruptedFrameException("Corrupted/Mutated frame (Exploit?)")
-    }
+    companion object
 }

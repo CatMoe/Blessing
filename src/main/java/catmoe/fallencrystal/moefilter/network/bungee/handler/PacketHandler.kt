@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelDuplexHandler
@@ -34,7 +35,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 val data = String(msg.data)
                 backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
                 val brand = ByteBufAllocator.DEFAULT.heapBuffer()
-                DefinedPacket.writeString("MoeFilter <- $backend", brand)
+                DefinedPacket.writeString((MessageUtil.colorizeMiniMessage("<light_purple>MoeFilter<aqua> <- <green>$backend")).toLegacyText(), brand)
                 msg.data = DefinedPacket.toArray(brand)
                 brand.release()
             }
