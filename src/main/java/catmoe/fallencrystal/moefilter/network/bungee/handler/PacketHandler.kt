@@ -58,7 +58,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 }
                 if (packet is PluginMessage) {
                     if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {
-                        val player = PipelineUtil.getPlayer(ctx.channel()) ?: return
+                        val player = PipelineUtil.getPlayer(ctx) ?: return
                         val brand = Unpooled.wrappedBuffer(packet.data)
                         val clientBrand = DefinedPacket.readString(brand)
                         brand.release()
