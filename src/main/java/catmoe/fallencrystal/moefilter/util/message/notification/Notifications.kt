@@ -3,12 +3,11 @@ package catmoe.fallencrystal.moefilter.util.message.notification
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.BaseComponent
@@ -83,31 +82,23 @@ object Notifications {
     }
 
     private fun send(player: ProxiedPlayer, packets: ChatViaActionbarPackets) {
-        val version = player.pendingConnection.version
-        val uc = player as UserConnection
-        if (version > ProtocolConstants.MINECRAFT_1_17) { if (packets.has117data) { uc.unsafe().sendPacket(packets.v117!!) } else { need117data=true } }
-        else if (version > ProtocolConstants.MINECRAFT_1_10) { if (packets.has111data) { uc.unsafe().sendPacket(packets.v111!!) } else { need111data=true } }
-        else { if (packets.has110data) { uc.unsafe().sendPacket(packets.v110) } else { need110data=true } }
+        val connection = ConnectionUtil(player.pendingConnection)
+        val version = connection.getVersion()
+        if (version > ProtocolConstants.MINECRAFT_1_17) { if (packets.has117data) { connection.writePacket(packets.v117!!) } else { need117data=true } }
+        else if (version > ProtocolConstants.MINECRAFT_1_10) { if (packets.has111data) { connection.writePacket(packets.v111!!) } else { need111data=true } }
+        else { if (packets.has110data) { connection.writePacket(packets.v110!!) } else { need110data=true } }
     }
 
     private val actionbar = ChatMessageType.ACTION_BAR.ordinal
 
     private fun getViaPacket(text: String): ChatViaActionbarPackets {
-        val v117: SystemChat?
-        val v111: Title?
-        val v110: SystemChat?
+        // 在经过了一堆改善之后 这是最后修改的版本 我想我不会再要求改什么了
         val bc = ComponentUtil.toBaseComponents(ComponentUtil.parse(text))
         val componentSerializer = ComponentSerializer.toString(bc)
         val cached = messagePacketCache.getIfPresent(text)
-        if (cached != null) {
-            v117 = if (need117data) { if (cached.has117data) { cached.v117 } else getChatPacketVersion117(componentSerializer) } else null
-            v111 = if (need111data) { if (cached.has111data) { cached.v111 } else getChatPacketVersion111(componentSerializer) } else null
-            v110 = if (need110data) { if (cached.has110data) { cached.v110 } else getChatPacketVersion110(bc) } else null
-        } else {
-            v117 = if (need117data) { getChatPacketVersion117(componentSerializer) } else null
-            v111 = if (need111data) { getChatPacketVersion111(componentSerializer) } else null
-            v110 = if (need110data) { getChatPacketVersion110(MessageUtil.colorizeMiniMessage(text)) } else null
-        }
+        val v117 = if (cached?.has117data == true && need117data) cached.v117 else if (need117data) getChatPacketVersion117(componentSerializer) else null
+        val v111 = if (cached?.has111data == true && need111data) cached.v111 else if (need111data) getChatPacketVersion111(componentSerializer) else null
+        val v110 = if (cached?.has110data == true && need110data) cached.v110 else if (need110data) getChatPacketVersion110(bc) else null
         val viaPacket = ChatViaActionbarPackets(v117, v111, v110, need117data, need111data, need110data)
         messagePacketCache.put(text, viaPacket)
         return viaPacket

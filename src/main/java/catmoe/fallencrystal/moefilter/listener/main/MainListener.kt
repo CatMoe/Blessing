@@ -54,8 +54,7 @@ object MainListener {
         if (method > 2 || method < 1) { connection.close(); FirewallCache.addAddress(inetAddress, false); return }
 
         if (connection.isConnected()) {
-            val cw = connection.getChannelWrapper() ?: return
-            val pipeline = cw.handle.pipeline()
+            val pipeline = connection.getPipeline() ?: return
 
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
             pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketHandler())

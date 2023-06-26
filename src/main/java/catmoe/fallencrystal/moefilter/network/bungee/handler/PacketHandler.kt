@@ -54,7 +54,7 @@ class PacketHandler : ChannelDuplexHandler() {
                     if (username.isEmpty()) { throw InvalidUsernameException(ctx.channel().remoteAddress().toString() + "try to login but they username is empty.") }
                     if (proxy.getPlayer(username) != null) { FastDisconnect.disconnect(ctx.channel(), DisconnectType.ALREADY_ONLINE); return }
                     // TODO More kick here.
-                    PipelineUtil.putChannel(ctx.channel(), username)
+                    PipelineUtil.putChannelHandler(ctx, username)
                 }
                 if (packet is PluginMessage) {
                     if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {

@@ -28,7 +28,7 @@ object FastDisconnect {
     fun disconnect(connection: ConnectionUtil, type: DisconnectType) {
         if (connection.isConnected()) {
             val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, TextComponent(""))).packet
-            connection.write(packet); connection.close()
+            connection.writePacket(packet); connection.close()
         }
     }
 

@@ -21,6 +21,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
@@ -48,6 +49,8 @@ class MoeInitialHandler(
         }
     }
 
+    private var superHandshake = AtomicBoolean(true)
+
     @Throws(Exception::class)
     override fun handle(handshake: Handshake) {
         if (currentState !== ConnectionState.HANDSHAKE) { throw InvalidHandshakeStatusException("") }
@@ -59,7 +62,7 @@ class MoeInitialHandler(
         }
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler())
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() }
+        if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() } }
     }
 
     private var hasRequestedPing = false

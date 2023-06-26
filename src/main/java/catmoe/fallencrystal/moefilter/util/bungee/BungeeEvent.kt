@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
+import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
@@ -54,4 +55,7 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onServerSwitch(event: ServerSwitchEvent) { EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onDisconnect(event: PlayerDisconnectEvent) { PipelineUtil.invalidateChannel(event.player) }
 }
