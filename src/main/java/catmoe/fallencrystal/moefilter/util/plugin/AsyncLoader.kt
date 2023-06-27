@@ -72,8 +72,7 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
                 registerListener()
                 ConnectionCounter
                 Notifications
-                if (try{
-                    CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString())!= CountryMode.DISABLED }catch(_: Exception){false}) { loadMaxmindDatabase() }
+                if ( try { CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false} ) { loadMaxmindDatabase() }
                 loadAntibot()
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
@@ -124,8 +123,8 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
     private fun registerListener() {
         EventManager.registerListener(plugin, ReloadConfig())
         EventManager.registerListener(plugin, WhitelistListener())
-        EventManager.triggerEvent(PluginReloadEvent(null))
         EventManager.registerListener(plugin, SessionCounterListener())
+        EventManager.triggerEvent(PluginReloadEvent(null))
         registerLuckPermsListener()
 
         /*

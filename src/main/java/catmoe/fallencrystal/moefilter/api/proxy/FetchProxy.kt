@@ -7,7 +7,6 @@ import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.scheduler.ScheduledTask
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.InetAddress
@@ -16,6 +15,7 @@ import java.net.Proxy
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.schedule
 
 class FetchProxy {
@@ -26,12 +26,19 @@ class FetchProxy {
     private var debug = config.getBoolean("internal.debug")
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
     private var count = 0
-
-    private var schedule: ScheduledTask? = null
+    private val scheduler = Scheduler(plugin)
 
     private var proxyType = updateProxyType()
+    private val scheduleTaskId = AtomicInteger(0)
 
-    fun initSchedule() { schedule = Scheduler(plugin).repeatScheduler(updateDelay, TimeUnit.HOURS) { get() } }
+    private fun initSchedule() {
+        if (scheduleTaskId.get() != 0) {
+            scheduler.cancelTask(scheduleTaskId.get())
+            scheduleTaskId.set(0)
+        }
+        val schedule = Scheduler(plugin).repeatScheduler(updateDelay, TimeUnit.HOURS) { get() }
+        scheduleTaskId.set(schedule.id)
+    }
 
     private fun updateProxyType(): Proxy.Type {
         val proxyType=(try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
@@ -39,7 +46,7 @@ class FetchProxy {
         return proxyType
     }
 
-    fun get() { ObjectConfig.getProxy().getStringList("internal.lists") }
+    fun get() { get(proxies) }
 
     fun get(lists: List<String>) {
         MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Starting Async proxy fetcher. (${proxies.size} Threads)")
@@ -79,12 +86,12 @@ class FetchProxy {
     fun reload() {
         val config = ObjectConfig.getProxy()
         val proxies = config.getStringList("internal.lists")
-        if (schedule != null) {
+        if (scheduleTaskId.get() != 0) {
             if (this.proxies != proxies || this.config.getInt("internal.schedule.update-delay") != config.getInt("internal.schedule.update-delay")) {
                 MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Scheduler update delay are edited or proxies source are edited. Force run update task now..")
-                Scheduler(plugin).cancelTask(schedule!!); initSchedule()
+                initSchedule()
             }
-        }
+        } else { initSchedule() }
         this.debug=config.getBoolean("internal.debug")
         this.config = config
         updateProxyType()

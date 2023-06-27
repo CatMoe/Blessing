@@ -13,12 +13,14 @@ import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 class ReloadConfig : EventListener {
     @FilterEvent
     fun reloadConfig(event: PluginReloadEvent) {
+        // Executor is null == Starting plugin.
+        // Load can hot load module without "if" syntax.
         val executor = event.executor
-        if (executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig(); ProxyCache.reload(); warnMessage(event) }
+        if (executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig(); LoadCommand().reload(); warnMessage(event) }
+        else { LoadCommand().load() }
+        ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
-        // Executor is null == Starting plugin.
-        if (executor != null) LoadCommand().reload() else LoadCommand().load()
         ExceptionCatcher.reload()
     }
 

@@ -1,6 +1,5 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
@@ -10,8 +9,6 @@ object ProxyCache {
     private val whitelistedAddress = listOf("/127.0.0.1")
 
     private val fetchProxy = FetchProxy()
-
-    private fun fetchProxy() { if (ObjectConfig.getProxy().getBoolean("internal.enabled")) { fetchProxy.initSchedule() } }
 
     fun reload() { fetchProxy.reload() }
 

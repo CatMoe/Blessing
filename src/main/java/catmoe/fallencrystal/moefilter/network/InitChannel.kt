@@ -17,7 +17,7 @@ class InitChannel {
     private var pipeline: ChannelInitializer<Channel> = BungeePipeline()
 
     fun initPipeline() {
-        log("Starting inject MoeFilter PipelineUtils...")
+        log("Starting inject MoeFilter Pipeline...")
         val proxyName = bungee.name
         for (it in knownIncompatibilitiesBungee) { if (it.contains(proxyName)) { log("&cFailed to inject because incompatibilities for $it bungeecord fork!"); bungee.stop(); return } }
         for (it in knownIncompatibilitiesPlugin) { if (bungee.pluginManager.getPlugin(it) != null) { log("&cFailed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first."); bungee.stop(); return } }
