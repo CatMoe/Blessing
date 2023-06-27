@@ -1,11 +1,11 @@
 package catmoe.fallencrystal.moefilter.api.command
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.TabExecutor
@@ -49,7 +49,7 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
     }
 
     private fun infoCommand(sender: CommandSender) {
-        val version = FilterPlugin.getPlugin()!!.description.version
+        val version = MoeFilter.instance.description.version
         val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
             "<aqua><st><b>                                        ",

@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.event
 
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
+import catmoe.fallencrystal.moefilter.MoeFilter
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 object EventManager {
 
     private val listeners: MutableList<EventListener> = CopyOnWriteArrayList()
-    private val plugin = FilterPlugin.getPlugin()
+    private val plugin = MoeFilter.instance as Plugin
     private val scheduler = ProxyServer.getInstance().scheduler
     private val listenerPlugin = Caffeine.newBuilder().build<EventListener, Plugin>()
 

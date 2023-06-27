@@ -1,8 +1,8 @@
 package catmoe.fallencrystal.moefilter.common.config
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.util.CreateConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import com.typesafe.config.Config
 import net.md_5.bungee.api.ProxyServer
 import java.io.File
@@ -13,14 +13,14 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 object LoadConfig {
-    private val path = FilterPlugin.getDataFolder()!!.absolutePath
+    private val path = MoeFilter.instance.dataFolder.absolutePath
 
     private val configFile = File(path, "config.conf")
     private val messageFile = File(path, "message.conf")
     private val proxyFile = File(path, "proxy.conf")
     private val antibotFile = File(path, "antibot.conf")
 
-    private val version = FilterPlugin.getPlugin()!!.description.version
+    private val version = MoeFilter.instance.description.version
 
     private val proxy = ProxyServer.getInstance()
 
@@ -32,6 +32,31 @@ object LoadConfig {
                 
                 # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).
                 fastboot=true
+                
+                # TCP FAST OPEN (TFO) 配置. 该选项仅当antibot.conf中的mode为PIPELINE时有效
+                # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
+                # 0 = DISABLED, 1 = CLIENT, 2 = SERVER, 3 = BOTH, 4 = MANGLED
+                tfo-mode=0
+                
+                # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
+                ping {
+                    # 缓存选项
+                    cache {
+                        # 缓存有效时间. 单位为秒
+                        max-life-time: 5
+                        # 即使缓存了也呼叫ProxyPingEvent. 如果返回内容不同 则刷新缓存
+                        still-call-event=true
+                        # 是否为独立的域创建MOTD缓存?
+                        stable-domain-cache=true
+                    }
+                    # 服务端标识选项 通常会在客户端版本不支持时显示
+                    # 仅支持经典MC16色.
+                    brand="Requires MC 1.8 - 1.20"
+                    # 无论协议是否支持都向客户端发送不支持的协议? 这么做会导致brand总是显示在motd中.
+                    protocol-always-unsupported=false
+                    # 当Ping到达throttle时 使用缓存而不是为每个请求都呼叫ProxyPingEvent
+                    disable-calling-throttle=10
+                }
             """.trimIndent()
 
     private val defaultMessage = """
@@ -111,30 +136,6 @@ object LoadConfig {
                 # AFTER_DECODER: 当解码器完成解码后呼叫事件 (不推荐, 但如果您正在使用反向代理(e.x HAProxy) 请使用此模式或DISABLED)
                 # DISABLED: 不呼叫事件以保留性能(推荐 但如果遇到问题 请将其设为以上模式的其中一种.)
                 event-call-mode=DISABLED
-                
-                # TCP FAST OPEN (TFO) 配置. 该选项仅当mode为PIPELINE时有效
-                # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
-                # 0 = DISABLED, 1 = CLIENT, 2 = SERVER, 3 = BOTH, 4 = MANGLED
-                tfo-mode=0
-                
-                # Ping选项 仅在mode为PIPELINE时有效.
-                ping {
-                    # 缓存选项
-                    cache {
-                        # 缓存有效时间. 单位为秒
-                        max-life-time: 5
-                        # 即使缓存了也呼叫ProxyPingEvent. 如果返回内容不同 则刷新缓存
-                        still-call-event=true
-                        # 是否为独立的域创建MOTD缓存?
-                        stable-domain-cache=true
-                    }
-                    # 服务端标识选项 通常会在客户端版本不支持时显示
-                    brand="Requires MC 1.8 - 1.20"
-                    # 无论协议是否支持都向客户端发送不支持的协议? 这么做会导致brand总是显示在motd中.
-                    protocol-always-unsupported=false
-                    # 当Ping到达throttle时 使用缓存而不是为每个请求都呼叫ProxyPingEvent
-                    disable-calling-throttle=10
-                }
     """.trimIndent()
 
     private val defaultProxy = """
@@ -252,16 +253,15 @@ object LoadConfig {
     private fun updateConfig(file: String, config: Config) {
         val version = config.getString("version")
         val nowTime = System.currentTimeMillis()
-        val pluginFolder = FilterPlugin.getDataFolder()!!.absolutePath
-        val oldFile = Paths.get("$pluginFolder/$file.conf")
-        val newFile = Paths.get("$pluginFolder/$file-old-$version-$nowTime.conf")
+        val oldFile = Paths.get("$path/$file.conf")
+        val newFile = Paths.get("$path/$file-old-$version-$nowTime.conf")
         Files.move(oldFile, newFile)
         createDefaultConfig()
         broadcastUpdate(newFile)
     }
 
     private fun createDefaultConfig() {
-        val pluginFolder=FilterPlugin.getDataFolder()!!
+        val pluginFolder = MoeFilter.instance.dataFolder
         val defaultConfigMap = mapOf(
             configFile to defaultConfig,
             messageFile to defaultMessage,

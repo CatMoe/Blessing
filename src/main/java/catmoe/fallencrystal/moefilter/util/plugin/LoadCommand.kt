@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.util.plugin
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.ReloadCommand
@@ -19,7 +20,7 @@ class LoadCommand {
         CommandManager.register(ToggleNotificationCommand())
 
         // All debug command managers by @DebugCommand annotation
-        EventManager.registerListener(FilterPlugin.getPlugin()!!, MessageEvent())
+        EventManager.registerListener(MoeFilter.instance, MessageEvent())
         CommandManager.register(ReloadCommand())
         CommandManager.register(TestKickCommand())
     }

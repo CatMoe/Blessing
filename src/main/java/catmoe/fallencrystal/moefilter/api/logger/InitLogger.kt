@@ -27,7 +27,7 @@ class InitLogger {
         logger.filter = LoggerManager
         if (useWaterfallLogger) {
             MessageUtil.logInfo("[MoeFilter] Detected Waterfall log4j logger. use it for main logger.")
-            setType(BCLogType.WATERFALL);
+            setType(BCLogType.WATERFALL)
         } else {
             MessageUtil.logInfo("[MoeFilter] Using tradition java logger. Waterfall or its fork is recommended.")
             setType(BCLogType.BUNGEECORD)

@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeeHandler
+import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelHandler.Sharable
@@ -21,7 +21,7 @@ object MoeChannelHandler : IPipeline {
         }
     }
 
-    private val MOEFILTER_HANDLER = BungeeHandler();
+    private val MOEFILTER_HANDLER = BungeeHandler()
 
     fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
 }

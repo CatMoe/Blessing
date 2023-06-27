@@ -1,11 +1,11 @@
 package catmoe.fallencrystal.moefilter.util.message.notification
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.ChatMessageType
@@ -26,7 +26,7 @@ object Notifications {
     It will cause the config to not modify after the class is initialized.
      */
 
-    private val scheduler = Scheduler(FilterPlugin.getPlugin()!!)
+    private val scheduler = Scheduler(MoeFilter.instance)
 
     init { initSchedule() }
 

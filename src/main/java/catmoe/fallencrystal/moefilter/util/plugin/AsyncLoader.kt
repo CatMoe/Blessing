@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.util.plugin
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
@@ -32,7 +33,7 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import java.nio.file.Paths
 
-class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
+class AsyncLoader(val plugin: Plugin) {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
@@ -58,7 +59,6 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
     fun load() {
         scheduler.runAsync {
             try {
-                FilterPlugin.setPlugin(plugin)
                 LoadConfig.loadConfig()
 
                 EventManager // 初始化
@@ -112,7 +112,7 @@ class AsyncLoader(val plugin: Plugin, private val utilMode: Boolean) {
 
     private fun loadMaxmindDatabase() {
         scheduler.runAsync {
-            val folder = FilterPlugin.getDataFolder()!!
+            val folder = MoeFilter.instance.dataFolder
             val maxmindLicense = try { ObjectConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
             if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }

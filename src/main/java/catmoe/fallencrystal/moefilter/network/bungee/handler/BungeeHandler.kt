@@ -20,8 +20,7 @@ class BungeeHandler : ChannelInboundHandlerAdapter() {
             if (!ctx.channel().isActive || !msg.isReadable) { msg.skipBytes(msg.readableBytes()); return }
             msg.markReaderIndex()
             if (msg.readableBytes() > 2048 || msg.capacity() > 4096 || msg.writableBytes() > 4096 || msg.writerIndex() > 1024 || msg.readerIndex() > 2048 || msg.readableBytes() <= 0) {
-                msg.clear();
-                throw PacketOutOfBoundsException("$msg reached packets limit.")
+                msg.clear(); throw PacketOutOfBoundsException("$msg reached packets limit.")
             }
 
             // the first byte cannot be below 0 as it's the size of the first packet

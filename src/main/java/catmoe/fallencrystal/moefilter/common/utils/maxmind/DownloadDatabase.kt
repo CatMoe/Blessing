@@ -10,7 +10,7 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class DownloadDatabase(private val folder: File, private val license: String) {
+class DownloadDatabase(folder: File, license: String) {
 
     private val invalidKeyWarn = "[MoeFilter] [GeoIP] $license is not a valid key."
 
@@ -18,14 +18,14 @@ class DownloadDatabase(private val folder: File, private val license: String) {
         if (license.length != 40) {
             try { throw InvalidMaxmindKeyException("key $license is not a valid key.") } catch (exception: InvalidMaxmindKeyException) { MessageUtil.logWarnRaw(invalidKeyWarn); exception.printStackTrace() }
         }
-        if (!folder.exists()) { folder.mkdirs() }
+        if (!folder.exists()) { folder.mkdirs(); download(); extract() }
     }
 
     private val url = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$license&suffix=tar.gz"
     private val downloadPath = Paths.get("${folder.absolutePath}/geolite")
     private val extractPath = Paths.get("${downloadPath.toAbsolutePath()}/geolite/extracted")
 
-    fun download() {
+    private fun download() {
         try { Files.createDirectories(downloadPath) } catch (exception: IOException) { exception.printStackTrace() } catch (_: Exception) {} 
         try {
             val tarFile = downloadPath.resolve("GeoLite2-Country.tar.gz").toFile()
@@ -36,7 +36,7 @@ class DownloadDatabase(private val folder: File, private val license: String) {
         MessageUtil.logInfo("[MoeFilter] [GeoIP] Download completed.")
     }
 
-    fun extract() {
+    private fun extract() {
         try {
             TarArchiveInputStream(GzipCompressorInputStream(Files.newInputStream(extractPath))).use { tarArchiveInputStream ->
                 var entry: TarArchiveEntry? = tarArchiveInputStream.nextTarEntry

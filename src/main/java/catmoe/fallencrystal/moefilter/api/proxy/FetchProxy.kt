@@ -1,10 +1,10 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
-import catmoe.fallencrystal.moefilter.util.plugin.FilterPlugin
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.schedule
 
 class FetchProxy {
-    private val plugin = FilterPlugin.getPlugin()!!
+    private val plugin = MoeFilter.instance
 
     private var config = ObjectConfig.getProxy()
     private var proxies = config.getStringList("internal.lists")
@@ -52,7 +52,7 @@ class FetchProxy {
         MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Starting Async proxy fetcher. (${proxies.size} Threads)")
         if (proxyType != Proxy.Type.DIRECT) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
         for (it in lists) {
-            ProxyServer.getInstance().scheduler.runAsync(FilterPlugin.getPlugin()) {
+            ProxyServer.getInstance().scheduler.runAsync(plugin) {
                 try {
                     val client = OkHttpClient().newBuilder()
                     if (proxyType != Proxy.Type.DIRECT) {
