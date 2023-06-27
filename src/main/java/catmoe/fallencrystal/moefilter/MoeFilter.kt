@@ -22,6 +22,7 @@ class MoeFilter : Plugin() {
     }
 
     private fun load() {
+        instance=this
         initLogger.onLoad()
         loader.load()
     }
