@@ -1,5 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.common.check.rejoin.RejoinManager
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
@@ -17,6 +18,7 @@ import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.LoginRequest
 import net.md_5.bungee.protocol.packet.PluginMessage
+import java.net.InetSocketAddress
 
 @RequiredArgsConstructor
 class PacketHandler : ChannelDuplexHandler() {
@@ -45,14 +47,17 @@ class PacketHandler : ChannelDuplexHandler() {
 
     @Throws(Exception::class)
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
+        val inetAddress = (ctx.channel().remoteAddress() as InetSocketAddress).address
+        val channel = ctx.channel()
         if (msg is PacketWrapper) {
             val packet: Any? = msg.packet
             run {
                 if (packet == null) { return@run }
                 if (packet is LoginRequest) {
                     val username = packet.data
-                    if (username.isEmpty()) { throw InvalidUsernameException(ctx.channel().remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (proxy.getPlayer(username) != null) { FastDisconnect.disconnect(ctx.channel(), DisconnectType.ALREADY_ONLINE); return }
+                    if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
+                    if (proxy.getPlayer(username) != null) { FastDisconnect.disconnect(channel, DisconnectType.ALREADY_ONLINE); return }
+                    if (!RejoinManager.increase(username, inetAddress)) { FastDisconnect.disconnect(channel, DisconnectType.FIRST_JOIN); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }

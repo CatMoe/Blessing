@@ -114,6 +114,12 @@ object LoadConfig {
                         "<red>Contact server administrator for more information.",
                         ""
                     ]
+                    rejoin = [
+                        "",
+                        "<green>You are successfully passed first-join check",
+                        "<white>Please rejoin server to join.",
+                        ""
+                    ]
                 }
             """.trimIndent()
 

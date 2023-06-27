@@ -1,8 +1,6 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidateJoinCache
-import catmoe.fallencrystal.moefilter.common.check.ping_and_join.PingAndJoin.invalidatePingCache
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
@@ -63,7 +61,6 @@ object MainListener {
     }
 
     private fun addFirewall(inetAddress: InetAddress, pc: PendingConnection, temp: Boolean) {
-        invalidateJoinCache(inetAddress); invalidatePingCache(inetAddress)
         if (temp) FirewallCache.addAddressTemp(inetAddress, true) else FirewallCache.addAddress(inetAddress, true)
         pc.disconnect()
     }
