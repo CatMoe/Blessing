@@ -57,13 +57,19 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
 
  > BotFilter应该是目前最合适搭配的分叉. 如果您想试试别的 可以看看下面的列表
 
-### 完全兼容的BungeeCord 
-
+### 完全兼容的BungeeCord  
+  
+  支持修改管道以可以使用MoeFilter所有功能的:
    - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
    - [Waterfall](https://github.com/PaperMC/Waterfall)
    - [BotFilter](https://github.com/Leymooo/BungeeCord)
    - [FlameCord](https://github.com/arkflame/FlameCord)
-   - [BetterBungee](https://github.com/LucazPlays/BetterBungee)
+
+   不支持管道修改 但可以用`EVENT`模式来支持的BungeeCord的:
+
+  - [BetterBungee](https://github.com/LucazPlays/BetterBungee)  
+  - [NullCordX](https://builtbybit.com/resources/nullcordx-lightweight-antibot.22322/)
+  
   
   MoeFilter完全支持以上列表中的BungeeCord而不会引发任何兼容性问题(预期行为)  
   在`antibot.conf`中使用`mode: PIPELINE`以获得最佳性能以及全部功能.  
