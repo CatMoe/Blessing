@@ -143,7 +143,7 @@ object LoadConfig {
                  # EVENT: 使用传统事件组合的反机器人. 可以实现一些普通的检查 例如PingJoin, FirstJoin, etc
                  # 理论上兼容所有BungeeCord分叉. 如果您在使用PIPELINE时出现了一些问题 可以选择使用该模式.
                  # DISABLED: 什么也不做. (作为纯实用工具使用)
-                mode: PIPELINE
+                mode=PIPELINE
                 
                 # 选择事件呼叫时机 该选项仅当mode为PIPELINE时有效.
                 # AFTER_INIT: 当连接传入时立马呼叫事件 无论它们是否被阻止 (不推荐)
