@@ -108,16 +108,21 @@ object LoadConfig {
                     }
                     # 在此处指定占位符格式. %[placeholder]% 就是为 %placeholder% 例如%custom1%就会返回上面的值
                     placeholder-pattern="%[placeholder]%"
-                    already-online = [
+                    already-online=[
                         "",
                         "<red>You are already connected this server!",
                         "<red>Contact server administrator for more information.",
                         ""
                     ]
-                    rejoin = [
+                    rejoin=[
                         "",
                         "<green>You are successfully passed first-join check",
                         "<white>Please rejoin server to join.",
+                        ""
+                    ]
+                    ping=[
+                        "",
+                        "<yellow>Please ping server first.",
                         ""
                     ]
                 }
@@ -142,6 +147,17 @@ object LoadConfig {
                 # AFTER_DECODER: 当解码器完成解码后呼叫事件 (不推荐, 但如果您正在使用反向代理(e.x HAProxy) 请使用此模式或DISABLED)
                 # DISABLED: 不呼叫事件以保留性能(推荐 但如果遇到问题 请将其设为以上模式的其中一种.)
                 event-call-mode=DISABLED
+                
+                general {
+                    # RECONNECT: 仅重新连接
+                    # JOIN_AFTER_PING: Ping后加入
+                    # JOIN_BEFORE_PING: 加入之后Ping
+                    # RECONNECT_AFTER_PING: Ping后重新连接
+                    # PING_AFTER_RECONNECT: 重新连接后Ping
+                    # STABLE: 独立模块互相工作
+                    # DISABLED: 禁用
+                    join-ping-mixin-mode=PING_AFTER_RECONNECT
+                }
     """.trimIndent()
 
     private val defaultProxy = """

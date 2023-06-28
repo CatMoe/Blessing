@@ -4,6 +4,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
@@ -22,6 +23,7 @@ class ReloadConfig : EventListener {
         Notifications.reload()
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
+        MixedCheck.reload()
     }
 
     private fun warnMessage(event: PluginReloadEvent) {

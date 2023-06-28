@@ -12,4 +12,7 @@ object Throttler {
         ipCache.put(address, count + 1)
         return count > 2
     }
+
+    fun isThrottled(address: InetAddress): Boolean { return (ipCache.getIfPresent(address) ?: 0) > 2
+    }
 }

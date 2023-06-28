@@ -1,5 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
@@ -75,7 +77,7 @@ class MoeInitialHandler(
         /*
         Call StatusRequest asynchronously.
         Some foolish pings tool always disconnects immediately after pinging.
-        However, The vanilla client will not disconnect until it receives the returned piing measurement.
+        However, The vanilla client will not disconnect until it receives the returned ping measurement.
 
         Some other plugins (e.g. Protocolize, Triton) need to be injected into the netty pipeline.
         If they are disconnected before super.handle(statusRequest), A NoSuchElementException will throw here.
@@ -85,6 +87,7 @@ class MoeInitialHandler(
            if (!isConnected) { throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
+           MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))
            try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} // Actually inject netty failed.
         }
     }

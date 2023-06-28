@@ -1,6 +1,8 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.common.check.rejoin.RejoinManager
+import catmoe.fallencrystal.moefilter.common.check.already_online.AlreadyOnlineCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
@@ -56,8 +58,9 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (proxy.getPlayer(username) != null) { FastDisconnect.disconnect(channel, DisconnectType.ALREADY_ONLINE); return }
-                    if (!RejoinManager.increase(username, inetAddress)) { FastDisconnect.disconnect(channel, DisconnectType.FIRST_JOIN); return }
+                    val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
+                    if (mixinKick != null) { FastDisconnect.disconnect(channel, mixinKick); return }
+                    if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.ALREADY_ONLINE) }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }

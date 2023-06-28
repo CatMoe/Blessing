@@ -6,7 +6,6 @@ import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-import net.md_5.bungee.api.ProxyServer
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.InetAddress
@@ -52,7 +51,7 @@ class FetchProxy {
         MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Starting Async proxy fetcher. (${proxies.size} Threads)")
         if (proxyType != Proxy.Type.DIRECT) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Applying HTTP proxy to help fetch proxies.") }
         for (it in lists) {
-            ProxyServer.getInstance().scheduler.runAsync(plugin) {
+            scheduler.runAsync {
                 try {
                     val client = OkHttpClient().newBuilder()
                     if (proxyType != Proxy.Type.DIRECT) {
