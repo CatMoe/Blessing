@@ -16,7 +16,7 @@ import java.net.InetSocketAddress
 class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
-    private val pipeline: ChannelPipeline? = PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() ?: initChannelWrapper()?.handle?.pipeline()
+    private val pipeline: ChannelPipeline? = (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } ) ?: initChannelWrapper()?.handle?.pipeline()
 
     fun from(): String { return connection.virtualHost.hostString }
 

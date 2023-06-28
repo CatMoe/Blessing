@@ -1,6 +1,8 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
@@ -33,7 +35,7 @@ object MainListener {
         val inetAddress = connection.inetAddress()
 
         // Firewall who connected after an instant disconnected.
-        CompletableFuture.runAsync { if (!pc.isConnected) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } }
+        CompletableFuture.runAsync { if (!pc.isConnected) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
 
         if (WhitelistObject.isWhitelist(inetAddress)) return
 
