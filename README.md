@@ -171,14 +171,17 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
   - [x] 日志接口
   - [x] 命令接口
   - [x] 事件接口
+  - [ ] 事件接口v2
   - [x] HOCON配置
   - [x] MiniMessage 支持 
-  - [ ] 基本反机器人检查 (Ping, FirstJoin, etc)
+  - [x] 基本反机器人检查 (Ping, FirstJoin, etc)
   - [x] 踢出消息缓存
   - [x] 管道注入和支持
-  - [ ] 基于事件的反机器人 (对于不兼容的插件或BungeeCord) [施工中]
-  - [ ] ~~当切换版本时 自动补全配置文件中缺失的内容.~~ 
- > 遥遥无期 并且我可能并没有想这么做. 最简单的办法是备份他们的配置文件 然后生成一份新的)
+  - [x] 基于事件的反机器人 (对于不兼容的插件或BungeeCord)
+  - [x] 热加载
+  - [ ] 清理代码 ([#24](https://github.com/CatMoe/MoeFilter/issues/24))
+  - [ ] 纯数据包消息发送器 (为了更好的性能! [#25](https://github.com/CatMoe/MoeFilter/issues/25))
+  - [ ] ~~为了更好而变得更好!~~
 
 > 这只是**临时的** TODO列表 会随着时间的推移而增加 不代表整个项目的process.
 
