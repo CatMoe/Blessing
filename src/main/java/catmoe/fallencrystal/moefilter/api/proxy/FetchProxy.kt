@@ -80,19 +80,25 @@ class FetchProxy {
                 catch (ex: Exception) { MessageUtil.logWarnRaw("[MoeFilter] [ProxyFetch] failed get proxies list from $it : ${ex.localizedMessage}") }
             }
         }
-        Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies.") }
+        Timer().schedule(30000) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] get $count proxies."); count=0 }
     }
 
     fun reload() {
         val config = ObjectConfig.getProxy()
         val proxies = config.getStringList("internal.lists")
+        val enabled = config.getBoolean("internal.enabled")
         if (scheduleTaskId.get() != 0) {
+            if (!enabled) {
+                MessageUtil.logWarn("[MoeFilter] [ProxyFetch] ProxyFetch are disabled. All firewalled proxies from ProxyFetch will clear when restarted server.")
+                MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Schedule are stopped.")
+                scheduler.cancelTask(scheduleTaskId.get()); return
+            }
             if (this.proxies != proxies || this.config.getInt("internal.schedule.update-delay") != config.getInt("internal.schedule.update-delay")) {
                 MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Scheduler update delay are edited or proxies source are edited. Force run update task now..")
                 initSchedule()
             }
-        } else { initSchedule() }
-        this.debug=config.getBoolean("internal.debug")
+        } else { if (enabled) { initSchedule() } }
+        this.debug = config.getBoolean("internal.debug")
         this.config = config
         updateProxyType()
     }
