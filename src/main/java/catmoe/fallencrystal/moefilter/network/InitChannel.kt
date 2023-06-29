@@ -22,7 +22,7 @@ class InitChannel {
         for (it in knownIncompatibilitiesBungee) { if (it.contains(proxyName)) { log("&cFailed to inject because incompatibilities for $it bungeecord fork!"); bungee.stop(); return } }
         for (it in knownIncompatibilitiesPlugin) { if (bungee.pluginManager.getPlugin(it) != null) { log("&cFailed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first."); bungee.stop(); return } }
         if (proxyName.contains("BotFilter")) { pipeline=BotFilterPipeline() }
-        if (!inject(pipeline).get()) { log("&cFailed to inject pipeline. Please report this issue for CatMoe!") } else { log("&aPipeline inject successfully.") }
+        try { if (!inject(pipeline).get()) { log("&cFailed to inject pipeline. Please report this issue for CatMoe!") } else { log("&aPipeline inject successfully.") } } catch (err: UnsupportedClassVersionError) { err.printStackTrace(); bungee.stop() }
     }
 
     private fun inject(pipeline: ChannelInitializer<Channel>): AtomicBoolean { return ReflectionUtils().inject(pipeline) }

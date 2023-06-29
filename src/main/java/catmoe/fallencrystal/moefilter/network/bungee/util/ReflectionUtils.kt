@@ -14,7 +14,7 @@ class ReflectionUtils {
         val version = version
         if (version < 8) {
             ProxyServer.getInstance().stop()
-            throw RuntimeException("Reflection failed because java version is unsupported.")
+            throw UnsupportedClassVersionError("Reflection failed because java version is unsupported.")
         }
         val success = AtomicBoolean(false)
         Arrays.stream(PipelineUtils::class.java.declaredFields).filter { obj: Field? -> Objects.nonNull(obj) }
