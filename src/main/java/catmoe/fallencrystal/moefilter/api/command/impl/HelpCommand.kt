@@ -4,7 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.*
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
 import net.md_5.bungee.api.CommandSender
@@ -16,7 +16,7 @@ import net.md_5.bungee.api.CommandSender
 @ConsoleCanExecute
 class HelpCommand : ICommand {
 
-    private val config = ObjectConfig.getMessage()
+    private val config = LocalConfig.getMessage()
     private val prefix: String = config.getString("prefix")
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {

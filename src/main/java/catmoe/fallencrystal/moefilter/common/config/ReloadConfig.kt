@@ -18,19 +18,19 @@ class ReloadConfig : EventListener {
         // Executor is null == Starting plugin.
         // Load can hot load module without "if" syntax.
         val executor = event.executor
-        if (executor != null) { LoadConfig.loadConfig(); ObjectConfig.reloadConfig(); LoadCommand().reload(); warnMessage(event) }
-        else { LoadCommand().load() }
+        if (executor != null) { LoadConfig.instance.loadConfig(); LocalConfig.reloadConfig(); LoadCommand().reload(); warnMessage(event) }
+        else { LoadCommand().load(); ValidNameCheck }
         ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
         MixedCheck.reload()
-        ValidNameCheck.init()
+        ValidNameCheck.instance.init()
     }
 
     private fun warnMessage(event: PluginReloadEvent) {
         val sender = event.executor ?: return
-        val messageConfig = ObjectConfig.getMessage()
+        val messageConfig = LocalConfig.getMessage()
         val message = "${messageConfig.getString("prefix")}${messageConfig.getString("reload-warn")}"
         MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage(message))
     }

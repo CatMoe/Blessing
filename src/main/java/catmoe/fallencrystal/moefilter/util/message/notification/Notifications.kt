@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.util.message.notification
 
 import catmoe.fallencrystal.moefilter.MoeFilter
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
@@ -45,11 +45,11 @@ object Notifications {
     private var need110data = false
 
     private fun initSchedule() {
-        this.schedule=scheduler.repeatScheduler(ObjectConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() }
+        this.schedule=scheduler.repeatScheduler(LocalConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() }
     }
 
     private fun onBroadcast() {
-        val config = ObjectConfig.getMessage()
+        val config = LocalConfig.getMessage()
         val internalPlaceholder = mapOf(
             "%process_cpu%" to CPUMonitor.getRoundedCpuUsage().processCPU.toString(),
             "%system_cpu%" to CPUMonitor.getRoundedCpuUsage().systemCPU.toString(),

@@ -12,7 +12,7 @@ import java.nio.file.Paths
 import java.util.*
 import kotlin.concurrent.schedule
 
-object LoadConfig {
+class LoadConfig {
     private val path = MoeFilter.instance.dataFolder.absolutePath
 
     private val configFile = File(path, "config.conf")
@@ -23,6 +23,8 @@ object LoadConfig {
     private val version = MoeFilter.instance.description.version
 
     private val proxy = ProxyServer.getInstance()
+
+    init { instance=this }
 
     private val defaultConfig = """
                 version="$version"
@@ -275,15 +277,15 @@ object LoadConfig {
 
     fun loadConfig() {
         createDefaultConfig()
-        val config = ObjectConfig.getConfig()
-        val message = ObjectConfig.getMessage()
-        val proxy = ObjectConfig.getProxy()
-        val antibot = ObjectConfig.getAntibot()
+        val config = LocalConfig.getConfig()
+        val message = LocalConfig.getMessage()
+        val proxy = LocalConfig.getProxy()
+        val antibot = LocalConfig.getAntibot()
         if (config.getString("version") != version || config.isEmpty) { updateConfig("config", config) }
         if (message.getString("version") != version || message.isEmpty) { updateConfig("message", message) }
         if (proxy.getString("version") != version || proxy.isEmpty) { updateConfig("proxy", proxy) }
         if (antibot.getString("version") != version || antibot.isEmpty) { updateConfig("antibot", antibot) }
-        ObjectConfig.reloadConfig()
+        LocalConfig.reloadConfig()
     }
 
     private fun updateConfig(file: String, config: Config) {
@@ -335,5 +337,10 @@ object LoadConfig {
         )
         message.forEach { MessageUtil.logWarn(it) }
         Timer().schedule(10000L) { proxy.stop() }
+    }
+
+    companion object {
+        lateinit var instance: LoadConfig
+            private set
     }
 }

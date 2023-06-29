@@ -4,7 +4,7 @@ import catmoe.fallencrystal.moefilter.api.command.annotation.*
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom.MESSAGE_PATH
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom.STRING
 import catmoe.fallencrystal.moefilter.api.command.annotation.parse.ParsedInfo
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
@@ -20,7 +20,7 @@ object CommandManager {
 
     fun register(c: ICommand) {
         val iClass = c::class.java
-        if (iClass.isAnnotationPresent(DebugCommand::class.java) && !(try { ObjectConfig.getConfig().getBoolean("debug") } catch (_: Exception) { false })) { iClass.name.uppercase().replace("command", "") }
+        if (iClass.isAnnotationPresent(DebugCommand::class.java) && !(try { LocalConfig.getConfig().getBoolean("debug") } catch (_: Exception) { false })) { iClass.name.uppercase().replace("command", "") }
         val annotationCommand = ( try { iClass.getAnnotation(Command::class.java).command } catch (_:Exception) { return } )
         val annotationPermission = ( try { val permission= iClass.getAnnotation(CommandPermission::class.java).permission; permission.ifEmpty { "moefilter.$annotationCommand" } } catch (_: Exception) { "moefilter.$annotationCommand" } )
         val annotationAllowConsole = iClass.isAnnotationPresent(ConsoleCanExecute::class.java)
@@ -38,7 +38,7 @@ object CommandManager {
         val description = annotationDescription.description
         return when (annotationDescription.type) {
             STRING -> { description }
-            MESSAGE_PATH -> { try { ObjectConfig.getMessage().getString(description) } catch (_: Exception) { "" } }
+            MESSAGE_PATH -> { try { LocalConfig.getMessage().getString(description) } catch (_: Exception) { "" } }
         }
     }
 

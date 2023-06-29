@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util
 
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.DebugException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
@@ -22,5 +22,5 @@ object ExceptionCatcher {
         FirewallCache.addAddressTemp(address, true)
     }
 
-    fun reload() { debug = ObjectConfig.getConfig().getBoolean("debug") }
+    fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }
 }

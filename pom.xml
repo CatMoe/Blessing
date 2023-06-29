@@ -8,12 +8,12 @@
     
     <groupId>catmoe.fallencrystal.moefilter</groupId>
     <artifactId>MoeFilter</artifactId>
-    <version>0.0.1-API8</version>
+    <version>0.0.2</version>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.8.22</kotlin.version>
-        <project.version>0.0.1-API8</project.version>
+        <project.version>0.0.2</project.version>
     </properties>
     <packaging>jar</packaging>
 

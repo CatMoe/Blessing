@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util.bconnection
 
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -37,7 +37,7 @@ class ConnectionUtil(val connection: PendingConnection) {
     private fun initChannelWrapper(): ChannelWrapper? {
         val initialHandler = connection as InitialHandler
         var field: Field? = null
-        val debug = ObjectConfig.getConfig().getBoolean("debug")
+        val debug = LocalConfig.getConfig().getBoolean("debug")
         return try {
             field = initialHandler.javaClass.getDeclaredField("ch")
             field!!.isAccessible=true

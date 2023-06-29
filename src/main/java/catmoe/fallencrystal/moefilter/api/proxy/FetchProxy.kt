@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
 import catmoe.fallencrystal.moefilter.MoeFilter
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
@@ -20,7 +20,7 @@ import kotlin.concurrent.schedule
 class FetchProxy {
     private val plugin = MoeFilter.instance
 
-    private var config = ObjectConfig.getProxy()
+    private var config = LocalConfig.getProxy()
     private var proxies = config.getStringList("internal.lists")
     private var debug = config.getBoolean("internal.debug")
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
@@ -83,7 +83,7 @@ class FetchProxy {
     }
 
     fun reload() {
-        val config = ObjectConfig.getProxy()
+        val config = LocalConfig.getProxy()
         val proxies = config.getStringList("internal.lists")
         val enabled = config.getBoolean("internal.enabled")
         if (scheduleTaskId.get() != 0) {

@@ -10,7 +10,7 @@ import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.counter.SessionCounterListener
@@ -37,6 +37,8 @@ class AsyncLoader(val plugin: Plugin) {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
+    private val configLoader = LoadConfig()
+
     private val scheduler = Scheduler(plugin)
 
     private val configIssue = listOf(
@@ -59,7 +61,7 @@ class AsyncLoader(val plugin: Plugin) {
     fun load() {
         scheduler.runAsync {
             try {
-                LoadConfig.loadConfig()
+                configLoader.loadConfig()
 
                 EventManager // 初始化
 
@@ -72,7 +74,7 @@ class AsyncLoader(val plugin: Plugin) {
                 registerListener()
                 ConnectionCounter
                 Notifications
-                if ( try { CountryMode.valueOf(ObjectConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false} ) { loadMaxmindDatabase() }
+                if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
                 loadAntibot()
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
@@ -97,7 +99,7 @@ class AsyncLoader(val plugin: Plugin) {
     }
 
     private fun loadAntibot() {
-        when (try { WorkingMode.valueOf(ObjectConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }) {
+        when (try { WorkingMode.valueOf(LocalConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }) {
             PIPELINE -> { InitChannel().initPipeline() }
             EVENT -> {
                 val waterfallListener = catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall.IncomingListener()
@@ -113,7 +115,7 @@ class AsyncLoader(val plugin: Plugin) {
     private fun loadMaxmindDatabase() {
         scheduler.runAsync {
             val folder = MoeFilter.instance.dataFolder
-            val maxmindLicense = try { ObjectConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
+            val maxmindLicense = try { LocalConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
             if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }
             InquireCountry

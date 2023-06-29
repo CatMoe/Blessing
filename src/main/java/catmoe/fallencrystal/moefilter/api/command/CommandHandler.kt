@@ -3,7 +3,7 @@ package catmoe.fallencrystal.moefilter.api.command
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
 import net.md_5.bungee.api.CommandSender
@@ -12,7 +12,7 @@ import net.md_5.bungee.api.plugin.TabExecutor
 
 class CommandHandler(name: String?, permission: String?, vararg aliases: String?) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
 
-    private val config = ObjectConfig.getMessage() // Message Config
+    private val config = LocalConfig.getMessage() // Message Config
     private val prefix: String = config.getString("prefix")
     private val fullHideCommand = config.getBoolean("command.full-hide-command")
 

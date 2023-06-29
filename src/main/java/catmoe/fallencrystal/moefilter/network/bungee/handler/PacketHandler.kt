@@ -1,10 +1,12 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.api.event.EventManager
+import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
 import catmoe.fallencrystal.moefilter.common.check.already_online.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.valid_name.ValidNameCheck
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
@@ -41,7 +43,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 val data = String(msg.data)
                 backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
                 val brand = ByteBufAllocator.DEFAULT.heapBuffer()
-                val target = ObjectConfig.getConfig().getString("f3-brand")
+                val target = LocalConfig.getConfig().getString("f3-brand")
                     .replace("%bungee%", proxy.name)
                     .replace("%version%", proxy.version)
                     .replace("%backend%", backend)
@@ -64,7 +66,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (!ValidNameCheck.increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.INVALID_NAME); return }
+                    if (!ValidNameCheck.instance.increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.INVALID_NAME); return }
                     val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
                     if (mixinKick != null) { FastDisconnect.disconnect(channel, mixinKick); return }
                     if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.ALREADY_ONLINE); return }
@@ -77,7 +79,8 @@ class PacketHandler : ChannelDuplexHandler() {
                         val brand = Unpooled.wrappedBuffer(packet.data)
                         val clientBrand = DefinedPacket.readString(brand)
                         brand.release()
-                        if (clientBrand.isEmpty() || clientBrand.length > 128) { ctx.channel().close(); return }
+                        if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
+                        EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
                     }
                 }
                 // if (packet is KeepAlive) { MessageUtil.logInfo("[MoeFilter] [KeepAlive] id: ${packet.randomId} address: ${ctx.channel().remoteAddress()} Client -> Server") }

@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util.kick
 
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -14,9 +14,9 @@ object FastDisconnect {
     private val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
 
     private fun getPlaceholders(): Map<String, String> {
-        val placeholderConfig = ObjectConfig.getMessage().getConfig("kick.placeholders")
+        val placeholderConfig = LocalConfig.getMessage().getConfig("kick.placeholders")
         val resultMap: MutableMap<String, String> = mutableMapOf()
-        for (key in placeholderConfig.root().keys) { resultMap[ObjectConfig.getMessage().getString("kick.placeholder-pattern").replace("[placeholder]", key)]=placeholderConfig.getString(key) }
+        for (key in placeholderConfig.root().keys) { resultMap[LocalConfig.getMessage().getString("kick.placeholder-pattern").replace("[placeholder]", key)]=placeholderConfig.getString(key) }
         return resultMap
     }
 
@@ -36,7 +36,7 @@ object FastDisconnect {
         val placeholder = getPlaceholders()
         for (type in DisconnectType.values()) {
             // <newline> is MiniMessage's syntax. use it instead of \n
-            val message = MessageUtil.colorizeMiniMessage(replacePlaceholder(ObjectConfig.getMessage().getStringList(type.messagePath).joinToString("<reset><newline>"), placeholder))
+            val message = MessageUtil.colorizeMiniMessage(replacePlaceholder(LocalConfig.getMessage().getStringList(type.messagePath).joinToString("<reset><newline>"), placeholder))
             reasonCache.put(type, getCacheReason(type, message))
         }
     }

@@ -6,7 +6,7 @@ import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandPermission
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import net.md_5.bungee.api.CommandSender
@@ -18,7 +18,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 @CommandPermission("moefilter.notification")
 // ConsoleCanExecute is not here. so only can execute this command by who online player has permission.
 class ToggleNotificationCommand : ICommand {
-    private val config = ObjectConfig.getMessage()
+    private val config = LocalConfig.getMessage()
     private val prefix = config.getString("prefix")
     private val enable = config.getString("actionbar.command.enable")
     private val disable = config.getString("actionbar.command.disable")

@@ -4,7 +4,7 @@ import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedType.*
-import catmoe.fallencrystal.moefilter.common.config.ObjectConfig
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
@@ -67,7 +67,7 @@ object MixedCheck {
     fun reload() {
         joinCache.invalidateAll()
         pingCache.invalidateAll()
-        val configureType = try { ObjectConfig.getAntibot().getAnyRef("general.join-ping-mixin-mode").toString() } catch (e: Exception) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); return }
+        val configureType = try { LocalConfig.getAntibot().getAnyRef("general.join-ping-mixin-mode").toString() } catch (e: Exception) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); return }
         this.type = try { MixedType.valueOf(configureType) } catch (e: Exception) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"$configureType\", Disabling.."); DISABLED }
     }
 

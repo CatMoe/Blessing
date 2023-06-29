@@ -27,7 +27,10 @@ class MoeFilter : Plugin() {
         loader.load()
     }
 
-    override fun onLoad() { if (fastboot) { load() }; MessageUtil.logInfo("[MoeFilter] Using MoeFilter API") }
+    override fun onLoad() {
+        if (fastboot) { load() }
+        MessageUtil.logInfo("[MoeFilter] Using MoeFilter API")
+    }
 
     companion object {
         lateinit var instance: MoeFilter
