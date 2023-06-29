@@ -163,7 +163,6 @@ class LoadConfig {
                 general {
                     # RECONNECT: 仅重新连接
                     # JOIN_AFTER_PING: Ping后加入
-                    # JOIN_BEFORE_PING: 加入之后Ping
                     # RECONNECT_AFTER_PING: Ping后重新连接
                     # PING_AFTER_RECONNECT: 重新连接后Ping
                     # STABLE: 独立模块互相工作

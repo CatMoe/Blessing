@@ -24,14 +24,6 @@ object MixedCheck {
             return when (type) {
                 RECONNECT -> { if (cacheJoin(info)) null else DisconnectType.REJOIN }
                 JOIN_AFTER_PING -> { if (cachePing(info.address, false)) null else DisconnectType.PING }
-                JOIN_BEFORE_PING -> {
-                    if (cacheJoin(info)) {
-                        if (cachePing(info.address, false)) { null } else DisconnectType.PING
-                    } else {
-                        if (cachePing(info.address, false)) { pingCache.invalidate(info.address) }
-                        DisconnectType.PING
-                    }
-                }
                 RECONNECT_AFTER_PING -> {
                     if (!cachePing(info.address, false)) { DisconnectType.PING }
                     else if (!cacheJoin(info)) { DisconnectType.REJOIN }
