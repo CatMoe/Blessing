@@ -64,6 +64,10 @@ class LoadConfig {
                     # 当Ping到达throttle时 使用缓存而不是为每个请求都呼叫ProxyPingEvent
                     disable-calling-throttle=10
                 }
+                
+                # 每秒连接数限制. 当您正在使用PIPELINE模式时非常有用.
+                # EVENT模式此throttle关闭连接的效率比BungeeCord自带的低
+                throttle-limit=3
             """.trimIndent()
 
     private val defaultMessage = """
