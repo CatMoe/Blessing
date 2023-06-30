@@ -59,8 +59,8 @@ object MixedCheck {
     fun reload() {
         joinCache.invalidateAll()
         pingCache.invalidateAll()
-        val configureType = try { LocalConfig.getAntibot().getAnyRef("general.join-ping-mixin-mode").toString() } catch (e: Exception) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); return }
-        this.type = try { MixedType.valueOf(configureType) } catch (e: Exception) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"$configureType\", Disabling.."); DISABLED }
+        val configureType = try { LocalConfig.getAntibot().getAnyRef("general.join-ping-mixin-mode").toString() } catch (e: IllegalArgumentException) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); return }
+        this.type = try { MixedType.valueOf(configureType) } catch (e: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"$configureType\", Disabling.."); DISABLED }
     }
 
 }

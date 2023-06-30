@@ -57,6 +57,8 @@ class AsyncLoader(val plugin: Plugin) {
         "----------  PLEASE DON'T REPORT THIS ISSUE TO CATMOE! ----------",
     )
 
+    init { instance=this }
+
 
     fun load() {
         scheduler.runAsync {
@@ -142,5 +144,10 @@ class AsyncLoader(val plugin: Plugin) {
             val luckPermsRegister = LuckPermsRegister()
             luckPermsRegister.register()
         }
+    }
+
+    companion object {
+        lateinit var instance: AsyncLoader
+            private set
     }
 }

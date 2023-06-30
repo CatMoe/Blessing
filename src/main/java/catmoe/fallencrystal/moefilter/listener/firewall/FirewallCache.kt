@@ -15,6 +15,7 @@ object FirewallCache {
     fun addAddressTemp(address: InetAddress, status: Boolean?) { tempCache.put(address, status ?: true); status?: tempCache.invalidate(address); logFirewalled(address, true) }
 
     fun removeAddress(address: InetAddress) { cache.invalidate(address) }
+
     fun isFirewalled(address: InetAddress): Boolean { return cache.getIfPresent(address) ?: false || tempCache.getIfPresent(address) ?: false }
 
     private fun logFirewalled(address: InetAddress, temp: Boolean) {

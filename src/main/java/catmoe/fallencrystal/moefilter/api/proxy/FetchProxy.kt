@@ -40,7 +40,7 @@ class FetchProxy {
     }
 
     private fun updateProxyType(): Proxy.Type {
-        val proxyType=(try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
+        val proxyType=(try { Proxy.Type.valueOf(config.getAnyRef("proxies-config.mode").toString()) } catch (ex: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [FetchProxy] Unknown proxy type ${config.getAnyRef("proxies-config.mode")}, Fallback to DIRECT."); Proxy.Type.DIRECT } )
         this.proxyType=proxyType
         return proxyType
     }

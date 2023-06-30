@@ -35,7 +35,7 @@ object MainListener {
         val inetAddress = connection.inetAddress()
 
         // Firewall who connected after an instant disconnected.
-        CompletableFuture.runAsync { if (!pc.isConnected) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
+        CompletableFuture.runAsync { if (!pc.isConnected && handshake.requestedProtocol == 2) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
 
         if (WhitelistObject.isWhitelist(inetAddress)) return
 
@@ -53,7 +53,7 @@ object MainListener {
         val method = handshake.requestedProtocol
         if (method > 2 || method < 1) { connection.close(); FirewallCache.addAddress(inetAddress, false); return }
 
-        if (connection.isConnected()) {
+        if (connection.isConnected() && handshake.requestedProtocol == 2) {
             val pipeline = connection.getPipeline() ?: return
             if (pipeline.channel().parent() != null && pipeline.channel().parent().javaClass.canonicalName.startsWith("org.geysermc.geyser")) return
 

@@ -21,7 +21,7 @@ object LoggerManager : Filter {
         for (it in logger) {
             try {
                 if (!it.isLoggable(record, !loggable)) { loggable = false }
-            } catch (ex: Exception) { MessageUtil.logWarnRaw("[MoeFilter] [Logger] ${it::class.java} throw an error. Ask that plugin developer what they using MoeFilter API.") }
+            } catch (ex: Exception) { MessageUtil.logWarnRaw("[MoeFilter] [Logger] ${it::class.java} throw an error. Ask that plugin developer what they using MoeFilter API."); ex.printStackTrace() }
         }
         return loggable
     }

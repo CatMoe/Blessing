@@ -70,7 +70,7 @@ class LoadConfig {
                 version="$version"
                 # API v6已经切换到MiniMessage.
                 prefix="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient> <gray>>> "
-                reload-warn="<yellow>您可以使用重载命令重载配置文件. 但实际上这可能会意外地破坏某些东西. 如果可以 请尽快重启代理而非使用reload命令."
+                reload-warn="<green>已重新加载配置文件 部分内容可能需要重启代理生效."
                 
                 actionbar {
                     # 可用占位符: 
@@ -169,8 +169,8 @@ class LoadConfig {
                     # DISABLED: 禁用
                     join-ping-mixin-mode=PING_AFTER_RECONNECT
                     
-                    // 有效名称正则. 默认正则的规则
-                    // 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
+                    # 有效名称正则. 默认正则的规则
+                    # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
                     valid-regex="^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}${'$'}"
                 }
     """.trimIndent()

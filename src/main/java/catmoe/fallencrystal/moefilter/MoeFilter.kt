@@ -12,17 +12,17 @@ class MoeFilter : Plugin() {
     private val initLogger = InitLogger()
     private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
 
-    private val loader = AsyncLoader(this)
+    init { instance=this }
 
     override fun onEnable() { if(!fastboot) { load() } }
 
     override fun onDisable() {
         initLogger.onUnload()
-        loader.unload()
+        AsyncLoader.instance.unload()
     }
 
     private fun load() {
-        instance=this
+        val loader = AsyncLoader(this)
         initLogger.onLoad()
         loader.load()
     }
