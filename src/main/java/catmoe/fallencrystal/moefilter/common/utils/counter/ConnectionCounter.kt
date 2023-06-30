@@ -37,8 +37,8 @@ object ConnectionCounter {
     fun getTotal(): Long { return total }
     fun getTotalSession(): Long { return totalInSession }
     // fun getPeakSession(): Int { return peakInSession }
-    private fun putCPStoCache() { ticks.forEach { if (connectionPerSecCache.getIfPresent(it) != null) { connectionPerSecCache.put(it, tempCPS); tempCPS = 0; return } } }
-    private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache.getIfPresent(it) != null) { ipPerSecCache.put(it, tempIpSec); tempIpSec = 0; return } } }
+    private fun putCPStoCache() { ticks.forEach { if (connectionPerSecCache.getIfPresent(it) == null) { connectionPerSecCache.put(it, tempCPS); tempCPS = 0; return } } }
+    private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache.getIfPresent(it) == null) { ipPerSecCache.put(it, tempIpSec); tempIpSec = 0; return } } }
     fun setInAttack(inAttacking: Boolean) { inAttack =inAttacking }
 
 }
