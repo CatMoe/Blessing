@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.util.message
 
 import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.md_5.bungee.BungeeTitle
 import net.md_5.bungee.api.*
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -76,7 +77,7 @@ object MessageUtil {
     fun titleBuilder(title: String, subtitle: String, stay: Int, fadeIn: Int, fadeOut: Int): Title { return titleBuilder(TextComponent(title), TextComponent(subtitle), stay, fadeIn, fadeOut) }
 
     fun titleBuilder(title: BaseComponent, subtitle: BaseComponent, stay: Int, fadeIn: Int, fadeOut: Int): Title {
-        val t = ProxyServer.getInstance().createTitle()
+        val t = BungeeTitle()
         t.title(title); t.subTitle(subtitle); t.stay(stay); t.fadeIn(fadeIn); t.fadeOut(fadeOut); return t
     }
 }
