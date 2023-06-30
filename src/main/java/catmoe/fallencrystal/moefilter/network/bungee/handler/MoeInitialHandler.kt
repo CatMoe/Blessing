@@ -25,6 +25,8 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 
+// Borrowed from :
+// https://github.com/SpigotMC/BungeeCord/blob/master/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
     listenerInfo: ListenerInfo,

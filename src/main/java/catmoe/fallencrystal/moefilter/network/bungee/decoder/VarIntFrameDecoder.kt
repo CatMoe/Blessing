@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
 
+// © velocitypowered.com
 class VarIntFrameDecoder : ByteToMessageDecoder() {
     @Throws(Exception::class)
     override fun decode(

@@ -2,6 +2,7 @@ package catmoe.fallencrystal.moefilter.network.bungee.decoder
 
 import io.netty.util.ByteProcessor
 
+// © velocitypowered.com
 class VarIntByteDecoder : ByteProcessor {
     var result = DecoderResult.INVALID
     var readVarInt = 0

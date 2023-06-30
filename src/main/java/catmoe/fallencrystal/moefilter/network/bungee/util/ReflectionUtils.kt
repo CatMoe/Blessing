@@ -9,6 +9,8 @@ import java.lang.reflect.Field
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
+// Borrowed from :
+// https://github.com/jonesdevelopment/sonar/blob/main/src/main/java/jones/sonar/bungee/util/Reflection.java
 class ReflectionUtils {
     fun inject(initializer: ChannelInitializer<Channel>): AtomicBoolean {
         val version = version
