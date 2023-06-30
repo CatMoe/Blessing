@@ -31,11 +31,16 @@ object MainListener {
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
-        // Use PendingConnection.version insteadof Handshake.protocolVersion.
         val inetAddress = connection.inetAddress()
+        if (FirewallCache.isFirewalled(inetAddress)) { connection.close(); return }
+        if (Throttler.isThrottled(inetAddress)) { connection.close() }
+        val packetHandler = PacketHandler()
+        // Use PendingConnection.version insteadof Handshake.protocolVersion.
 
         // Firewall who connected after an instant disconnected.
-        CompletableFuture.runAsync { if (!pc.isConnected && handshake.requestedProtocol == 2) { FirewallCache.addAddressTemp(connection.inetAddress(), true) } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
+        CompletableFuture.runAsync { if (!pc.isConnected && (handshake.requestedProtocol == 2) && !packetHandler.cancelled.get() && packetHandler.isAvailable.get()) {
+            FirewallCache.addAddressTemp(connection.inetAddress(), true)
+        } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
 
         if (WhitelistObject.isWhitelist(inetAddress)) return
 
@@ -48,19 +53,18 @@ object MainListener {
         This protection is also effective in preventing some BungeeCord forks they're disabling
         ClientConnectEvent or InitConnectionEvent (Waterfall fork?)
          */
-        if (FirewallCache.isFirewalled(inetAddress)) { connection.close(); return }
         // 1 = Ping  2 = Join  else = illegal connection.
         val method = handshake.requestedProtocol
         if (method > 2 || method < 1) { connection.close(); FirewallCache.addAddress(inetAddress, false); return }
 
-        if (connection.isConnected() && handshake.requestedProtocol == 2) {
+        if (connection.isConnected()) {
             val pipeline = connection.getPipeline() ?: return
             if (pipeline.channel().parent() != null && pipeline.channel().parent().javaClass.canonicalName.startsWith("org.geysermc.geyser")) return
 
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
-            pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketHandler())
+            pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
             pipeline.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        } else { FirewallCache.addAddressTemp(inetAddress, true) }
+        } else { if (method != 1) { FirewallCache.addAddressTemp(inetAddress, true) } }
     }
 
     private fun addFirewall(inetAddress: InetAddress, pc: PendingConnection, temp: Boolean) {

@@ -15,6 +15,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
+import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
@@ -25,6 +26,7 @@ import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.LoginRequest
 import net.md_5.bungee.protocol.packet.PluginMessage
 import java.net.InetSocketAddress
+import java.util.concurrent.atomic.AtomicBoolean
 
 @RequiredArgsConstructor
 class PacketHandler : ChannelDuplexHandler() {
@@ -34,8 +36,12 @@ class PacketHandler : ChannelDuplexHandler() {
 
     private val proxy = ProxyServer.getInstance()
 
+    val cancelled = AtomicBoolean(false)
+    val isAvailable = AtomicBoolean(false)
+
     @Throws(Exception::class)
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
+        isAvailable.set(true)
         if (msg is PluginMessage) {
             val pmTag = msg.tag
             if (pmTag.equals("mc|brand", ignoreCase = true) || pmTag.equals("minecraft:brand", ignoreCase = true)) {
@@ -66,10 +72,10 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (!ValidNameCheck.instance.increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.INVALID_NAME); return }
+                    if (!ValidNameCheck.instance.increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return }
                     val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
-                    if (mixinKick != null) { FastDisconnect.disconnect(channel, mixinKick); return }
-                    if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { FastDisconnect.disconnect(channel, DisconnectType.ALREADY_ONLINE); return }
+                    if (mixinKick != null) { kick(channel, mixinKick); return }
+                    if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
@@ -87,5 +93,10 @@ class PacketHandler : ChannelDuplexHandler() {
             }
         }
         super.channelRead(ctx, msg)
+    }
+
+    private fun kick(channel: Channel, type: DisconnectType) {
+        FastDisconnect.disconnect(channel, type)
+        cancelled.set(true)
     }
 }
