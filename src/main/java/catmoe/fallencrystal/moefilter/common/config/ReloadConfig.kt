@@ -9,8 +9,9 @@ import catmoe.fallencrystal.moefilter.common.check.valid_name.ValidNameCheck
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 
 class ReloadConfig : EventListener {
@@ -34,6 +35,6 @@ class ReloadConfig : EventListener {
         val sender = event.executor ?: return
         val messageConfig = LocalConfig.getMessage()
         val message = "${messageConfig.getString("prefix")}${messageConfig.getString("reload-warn")}"
-        MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage(message))
+        MessageUtil.sendMessage(message, MessagesType.CHAT, sender)
     }
 }

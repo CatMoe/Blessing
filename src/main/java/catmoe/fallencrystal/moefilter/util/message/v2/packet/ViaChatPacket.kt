@@ -13,7 +13,7 @@ class ViaChatPacket(
     val hasLegacyData: Boolean,
     val bc: BaseComponent,
     val cs: String,
-    val original: String
+    val originalMessage: String
 ) : MessagePacket {
     override fun getType(): MessagesType { return MessagesType.CHAT }
 
@@ -21,4 +21,11 @@ class ViaChatPacket(
         if (has119Data && version >= ProtocolConstants.MINECRAFT_1_19) return true
         return hasLegacyData && version > ProtocolConstants.MINECRAFT_1_8
     }
+
+
+    override fun getBaseComponent(): BaseComponent { return bc }
+
+    override fun getComponentSerializer(): String { return cs }
+
+    override fun getOriginal(): String { return originalMessage }
 }

@@ -12,8 +12,11 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType.C
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.ProtocolConstants
 import net.md_5.bungee.protocol.packet.Chat
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit
 object MessageUtil {
     // Type(Enum's Field) + Message, Packet
     private val packetCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<String, MessagePacket>()
+    private val bungee = ProxyServer.getInstance()
     private val scheduler = Scheduler(MoeFilter.instance)
 
     private fun packetBuilder(message: String, type: MessagesType, protocol: List<Int>) : MessagePacket {
@@ -41,12 +45,6 @@ object MessageUtil {
                     if (it >= ProtocolConstants.MINECRAFT_1_19) { need119=true } else if (it > ProtocolConstants.MINECRAFT_1_17) { need117=true }
                     else if (it > ProtocolConstants.MINECRAFT_1_10) { need111=true } else { need110=true }
                 }
-                /*
-                val p119 = if (need119) { if (cached?.has119Data == true) cached.v119 else SystemChat(componentSerializer, actionbar)  } else null
-                val p117 = if (need117) { if (cached?.has117Data == true) cached.v117 else Chat(componentSerializer, actionbar.toByte(), null) } else null
-                val p111 = if (need111) { if (cached?.has111Data == true) cached.v111 else { val t = Title(); t.action=Title.Action.ACTIONBAR; t.text=componentSerializer; t } } else null
-                val p110 = if (need110) { if (cached?.has110Data == true) cached.v110 else Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(bc))), actionbar.toByte(), null) } else null
-                 */
                 val p119 = if (cached?.has119Data == true) cached.v119 else if (need119) SystemChat(componentSerializer, actionbar) else null
                 val p117 = if (cached?.has117Data == true) cached.v117 else if (need117) Chat(componentSerializer, actionbar.toByte(), null) else null
                 val p111 = if (cached?.has111Data == true) cached.v111 else if (need111) { val t = Title(); t.action=Title.Action.ACTIONBAR; t.text=componentSerializer; t  } else null
@@ -71,7 +69,7 @@ object MessageUtil {
         }
     }
 
-    fun sendMessage(message: String, type: MessagesType ,connection: ConnectionUtil) {
+    fun sendMessage(message: String, type: MessagesType, connection: ConnectionUtil) {
         scheduler.runAsync {
             var packet = packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(connection.getVersion()))
             if (!packet.supportChecker(connection.getVersion())) packet = packetBuilder(message, type, listOf(connection.getVersion()))
@@ -99,5 +97,18 @@ object MessageUtil {
         }
     }
 
+    fun sendMessage(message: String, type: MessagesType, sender: CommandSender) {
+        val version = if (sender is ProxiedPlayer) sender.pendingConnection.version else 0
+        val packet = packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(version))
+        if (sender is ProxiedPlayer) {
+            val connection = ConnectionUtil(sender.pendingConnection)
+            packetSender(packet, connection)
+        } else { logInfo(packet.getBaseComponent().toLegacyText()) }
+    }
+
     fun invalidateCache(type: MessagesType, message: String) { packetCache.invalidate("${type.prefix}$message") }
+
+    fun logInfo(message: String) { bungee.logger.info(message) }
+
+    fun logWarn(message: String) { bungee.logger.warning(message) }
 }

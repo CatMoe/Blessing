@@ -4,8 +4,8 @@ import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.TabExecutor
@@ -23,16 +23,13 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         if (command != null) {
             val parsedInfo = getParsedCommand(command)!!
             val permission = parsedInfo.permission
-            if (sender !is ProxiedPlayer && !parsedInfo.allowConsole) { sendMessage(sender, colorizeMiniMessage("$prefix${config.getString("command.only-player")}")); return }
+            if (sender !is ProxiedPlayer && !parsedInfo.allowConsole) { MessageUtil.sendMessage("$prefix${config.getString("command.only-player")}", MessagesType.CHAT, sender); return }
             if (!sender.hasPermission(permission)) {
-                if (fullHideCommand) {
-                    sendMessage(sender, colorizeMiniMessage("$prefix${config.getString("command.not-found")}")) }
-                else {
-                    sendMessage(sender, colorizeMiniMessage("$prefix${config.getString("command.no-permission").replace("[permission]", permission)}")) }
-                return
+                if (fullHideCommand) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
+                else { MessageUtil.sendMessage("$prefix${config.getString("command.no-permission").replace("[permission]", permission)}", MessagesType.CHAT, sender) }; return
             }
             else { command.execute(sender, args) }
-        } else { sendMessage(sender, colorizeMiniMessage("$prefix${config.getString("command.not-found")}")) } // MessageNotFound
+        } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
@@ -58,7 +55,7 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
             line,
             "<aqua><st><b>                                        "
         )
-        message.forEach { sendMessage(sender, colorizeMiniMessage(it)) }
+        message.forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
     }
 
 }

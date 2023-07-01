@@ -18,7 +18,7 @@ class ViaActionbarPacket(
     val has110Data: Boolean,
     val bc: BaseComponent,
     val cs: String,
-    val original: String,
+    val originalMessage: String,
 ) : MessagePacket {
     override fun getType(): MessagesType { return MessagesType.ACTION_BAR }
 
@@ -28,4 +28,10 @@ class ViaActionbarPacket(
         if (has111Data && version > ProtocolConstants.MINECRAFT_1_10) return true
         return has110Data && version > ProtocolConstants.MINECRAFT_1_8
     }
+
+    override fun getBaseComponent(): BaseComponent { return bc }
+
+    override fun getComponentSerializer(): String { return cs }
+
+    override fun getOriginal(): String { return originalMessage }
 }
