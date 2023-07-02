@@ -6,17 +6,15 @@ import net.md_5.bungee.BungeeCord
 
 class InitLogger {
     private val ascii: List<String> = listOf(
-        """&b_____ ______   ________  _______   ________ ___  ___   _________  _______   ________     """,
-        """&b|\   _ \  _   \|\   __  \|\  ___ \ |\  _____\\  \|\  \ |\___   ___\\  ___ \ |\   __  \    """,
-        """&b\ \  \\\__\ \  \ \  \|\  \ \   __/|\ \  \__/\ \  \ \  \\|___ \  \_\ \   __/|\ \  \|\  \   """,
-        """&b \ \  \\|__| \  \ \  \\\  \ \  \_|/_\ \   __\\ \  \ \  \    \ \  \ \ \  \_|/_\ \   _  _\  """,
-        """&b  \ \  \    \ \  \ \  \\\  \ \  \_|\ \ \  \_| \ \  \ \  \____\ \  \ \ \  \_|\ \ \  \\  \ """,
-        """&b   \ \__\    \ \__\ \_______\ \_______\ \__\   \ \__\ \_______\ \__\ \ \_______\ \__\\ _\ """,
-        """&b    \|__|     \|__|\|_______|\|_______|\|__|    \|__|\|_______|\|__|  \|_______|\|__|\|__|""",
-        """&b                                                                                          """
+        """<aqua>_____ ______   ________  _______   ________ ___  ___   _________  _______   ________     """,
+        """<aqua>|\   _ \  _   \|\   __  \|\  ___ \ |\  _____\\  \|\  \ |\___   ___\\  ___ \ |\   __  \    """,
+        """<aqua>\ \  \\\__\ \  \ \  \|\  \ \   __/|\ \  \__/\ \  \ \  \\|___ \  \_\ \   __/|\ \  \|\  \   """,
+        """<aqua> \ \  \\|__| \  \ \  \\\  \ \  \_|/_\ \   __\\ \  \ \  \    \ \  \ \ \  \_|/_\ \   _  _\  """,
+        """<aqua>  \ \  \    \ \  \ \  \\\  \ \  \_|\ \ \  \_| \ \  \ \  \____\ \  \ \ \  \_|\ \ \  \\  \ """,
+        """<aqua>   \ \__\    \ \__\ \_______\ \_______\ \__\   \ \__\ \_______\ \__\ \ \_______\ \__\\ _\ """,
+        """<aqua>    \|__|     \|__|\|_______|\|_______|\|__|    \|__|\|_______|\|__|  \|_______|\|__|\|__|""",
+        """<aqua>                                                                                          """
     )
-
-    init { ascii.forEach { MessageUtil.logInfo(it) } }
 
     private var useWaterfallLogger = false
 
@@ -24,15 +22,16 @@ class InitLogger {
     catch(ex: NoClassDefFoundError) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
 
     fun onLoad() {
+        ascii.forEach { MessageUtil.logInfo(it) }
         logger.filter = LoggerManager
         if (useWaterfallLogger) {
-            MessageUtil.logInfo("[MoeFilter] Detected Waterfall log4j logger. use it for main logger.")
+            MessageUtil.logInfo("[MoeFilter] <green>Detected Waterfall log4j logger. use it for main logger.")
             setType(BCLogType.WATERFALL)
         } else {
-            MessageUtil.logInfo("[MoeFilter] Using tradition java logger. Waterfall or its fork is recommended.")
+            MessageUtil.logInfo("[MoeFilter] <yellow>Using tradition java logger. Waterfall or its fork is recommended.")
             setType(BCLogType.BUNGEECORD)
         }
-        MessageUtil.logInfo("[MoeFilter] LoggerManager are successfully loaded.")
+        MessageUtil.logInfo("[MoeFilter] <green>LoggerManager are successfully loaded.")
     }
 
     fun onUnload() {

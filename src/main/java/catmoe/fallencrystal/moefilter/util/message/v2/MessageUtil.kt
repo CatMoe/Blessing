@@ -107,7 +107,7 @@ object MessageUtil {
         if (sender is ProxiedPlayer) {
             val connection = ConnectionUtil(sender.pendingConnection)
             packetSender(packet, connection)
-        } else { logInfo(packet.getBaseComponent().toLegacyText()) }
+        } else { logInfo(packet.getOriginal()) }
     }
 
     fun invalidateCache(type: MessagesType, message: String) { packetCache.invalidate("${type.prefix}$message") }
