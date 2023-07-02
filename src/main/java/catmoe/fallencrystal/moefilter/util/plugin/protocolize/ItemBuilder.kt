@@ -32,6 +32,8 @@ class ItemBuilder(material: ItemType) {
         return this
     }
 
+    fun lore(lore: List<Component>): ItemBuilder { lore.forEach { lore(it) }; return this }
+
     fun enchantment(enchantment: Enchantments): ItemBuilder { this.enchantments.add(enchantment); return this }
 
     fun clearEnchantment(): ItemBuilder { this.enchantments.clear(); return this }

@@ -176,7 +176,7 @@ class LoadConfig {
                     
                     # 有效名称正则. 默认正则的规则
                     # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
-                    valid-regex="^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}${'$'}"
+                    valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"
                 }
     """.trimIndent()
 

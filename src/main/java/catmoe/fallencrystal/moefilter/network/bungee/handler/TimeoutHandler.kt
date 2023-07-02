@@ -6,8 +6,6 @@ import io.netty.handler.timeout.IdleStateEvent
 import io.netty.handler.timeout.IdleStateHandler
 import java.util.concurrent.TimeUnit
 
-// Borrowed from :
-// https://github.com/jonesdevelopment/sonar/blob/main/src/main/java/jones/sonar/bungee/util/Reflection.java
 class TimeoutHandler @JvmOverloads constructor(timeout: Long, timeUnit: TimeUnit? = TimeUnit.MILLISECONDS) : IdleStateHandler(timeout, 0L, 0L, timeUnit) {
     private var closed = false
 

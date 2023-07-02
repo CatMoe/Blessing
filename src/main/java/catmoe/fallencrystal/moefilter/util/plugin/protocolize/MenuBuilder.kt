@@ -49,6 +49,7 @@ abstract class MenuBuilder {
     }
 
     open fun onClose(close: InventoryClose) {}
+
     open fun onClick(click: InventoryClick) {}
 
     open fun close() { Protocolize.playerProvider().player(player!!.uniqueId).closeInventory() }

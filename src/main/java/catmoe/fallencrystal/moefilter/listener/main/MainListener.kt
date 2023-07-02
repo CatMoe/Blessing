@@ -12,6 +12,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
+import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.PendingConnection
 import net.md_5.bungee.netty.PipelineUtils
@@ -23,8 +24,12 @@ import java.util.concurrent.CompletableFuture
 
 object MainListener {
 
+    private val connectionCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
+
     fun initConnection(address: SocketAddress): Boolean {
         val inetAddress = (address as InetSocketAddress).address
+        // Don't firewall them.
+        if (connectionCache.getIfPresent(inetAddress) == true) { return false } else { connectionCache.put(inetAddress, true) }
         ConnectionCounter.increase(inetAddress)
         return FirewallCache.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
     }
@@ -32,6 +37,7 @@ object MainListener {
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
         val inetAddress = connection.inetAddress()
+        connectionCache.invalidate(inetAddress)
         if (FirewallCache.isFirewalled(inetAddress)) { connection.close(); return }
         if (Throttler.isThrottled(inetAddress)) { connection.close() }
         val packetHandler = PacketHandler()

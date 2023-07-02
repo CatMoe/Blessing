@@ -18,7 +18,7 @@ v1完成了注入管道相关代码 将在不久的将来完全落地数据包�
 抱歉 我目前不能给出任何关于v1 release的[ETA](https://cn.bing.com/search?pglt=169&q=eta%E6%98%AF%E4%BB%80%E4%B9%88%E6%84%8F%E6%80%9D)  
 
 如果您想试试MoeFilter 请自行构建 如果您没有那个能力  
-请加入[猫萌的Discord服务器](https://discord.gg/JtXxFNNc9K) 然后dm我 `FallenCrystal`  
+请加入[猫萌的Discord服务器](https://discord.gg/JtXxFNNc9K)然后dm我 `FallenCrystal`  
   
 但请注意 请不要将您得到的MoeFilter副本**发送给任何人**.  
 因为MoeFilter在之后计划成为[付费开源](https://zhuanlan.zhihu.com/p/162055034) 的产物.  
@@ -27,6 +27,31 @@ v1完成了注入管道相关代码 将在不久的将来完全落地数据包�
 
 此插件现在使用[BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib/)来减少包体积
 在[此处下载对应的Kotlin 1.8.22版本的lib](https://github.com/LensMemory/BungeeKotlinLib/releases/tag/1.8.22)
+
+## 正在寻找合适的反机器人?:
+
+好的.. 不要再看了! 全国 #1 的反机器人就在这里  
+
+> 我不管, 我就是要寻找别的替代方案! ?:
+
+您可以在这里查看[其它反机器人](#其它反机器人列表)列表
+
+---
+
+## Features:
+
+ - 对于已被阻止的反机器人不呼叫PreLoginEvent而保留性能
+ - 强大的兼容性 (您可以选择 `修改管道` 或 `传统事件`. 总有一个适合你)
+ - 使用管道以获得最佳性能
+ - 缓存数据包以避免在大型攻击时造成巨额消耗
+ - 可自定义的Ping+Join检查 阻止绝大多数愚蠢的机器人
+ - 丰富以及强大的接口
+ - 十六进制颜色&渐变 MiniMessage支持
+ - 自定义消息占位符设置 轻松创建属于自己的排版 (目前仅限踢出)
+
+### 还不够多?
+
+在[此处](https://github.com/CatMoe/MoeFilter/issues/new)打开一个问题或查看我们的[TODO](#TODO)列表
 
 ---
 ## 用前须知/免责声明:
@@ -186,6 +211,7 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
   - [x] 热加载
   - [ ] 清理代码 ([#24](https://github.com/CatMoe/MoeFilter/issues/24))
   - [x] 纯数据包消息发送器 (为了更好的性能! [#25](https://github.com/CatMoe/MoeFilter/issues/25))
+  - [ ] Limbo机器人过滤
   - [ ] ~~为了更好而变得更好!~~
 
 > 这只是**临时的** TODO列表 会随着时间的推移而增加 不代表整个项目的process.
