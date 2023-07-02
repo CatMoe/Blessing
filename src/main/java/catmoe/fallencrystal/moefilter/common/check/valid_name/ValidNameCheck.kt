@@ -9,7 +9,7 @@ import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 
 class ValidNameCheck : AbstractCheck() {
 
-    private var regexPattern = "(?i)^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,15}$"
+    private var regexPattern = "(?i)^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}$"
 
     init { instance=this }
 

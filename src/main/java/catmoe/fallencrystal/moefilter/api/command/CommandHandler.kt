@@ -33,15 +33,14 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
     }
 
     override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
-        if (!sender!!.hasPermission("moefilter")) return listOf(config.getString("command.tabComplete.no-permission"))
-        if (args!!.size == 1) { val list = mutableListOf<String>(); getCommandList(sender).forEach { list.add(
-            getParsedCommand(it)!!.command) }; return list }
+        val noPermission = if (config.getString("command.tabComplete.no-permission").isNotEmpty()) { listOf(config.getString("command.tabComplete.no-permission")) } else listOf()
+        val noSubPermission = if (config.getString("command.tabComplete.no-subcommand-permission").isNotEmpty()) listOf(config.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", permission)) else listOf()
+        if (!sender!!.hasPermission("moefilter")) return noPermission
+        if (args!!.size == 1) { val list = mutableListOf<String>(); getCommandList(sender).forEach { list.add(getParsedCommand(it)!!.command) }; return list }
         val command = CommandManager.getICommand(args[0])
         return if (command != null) {
             val permission = getParsedCommand(command)!!.permission
-            if (!sender.hasPermission(permission)) {
-               if (!fullHideCommand) { listOf(config.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", permission)) } else { listOf() }
-            } else command.tabComplete(sender)[args.size - 1] ?: listOf()
+            if (!sender.hasPermission(permission)) { if (!fullHideCommand) { noSubPermission } else { listOf() } } else command.tabComplete(sender)[args.size - 1] ?: listOf()
         } else { listOf() }
     }
 
@@ -49,13 +48,13 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         val version = MoeFilter.instance.description.version
         val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
         val message: List<String> = listOf(
-            "<aqua><st><b>                                        ",
+            "",
             "  <aqua>Moe<white>Filter <gray>- <white>$version",
             "",
             line,
-            "<aqua><st><b>                                        "
+            ""
         )
-        message.forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
+        MessageUtil.sendMessage(message.joinToString("<reset><newline>"), MessagesType.CHAT, sender)
     }
 
 }

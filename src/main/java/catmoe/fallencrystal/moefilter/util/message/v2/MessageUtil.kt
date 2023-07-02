@@ -77,7 +77,8 @@ object MessageUtil {
         }
     }
 
-    fun packetSender(p: MessagePacket, connection: ConnectionUtil) {
+    private fun packetSender(p: MessagePacket, connection: ConnectionUtil) {
+        if (p.getOriginal().isEmpty()) return
         when (p.getType()) {
             ACTION_BAR -> {
                 val packet = p as ViaActionbarPacket

@@ -12,9 +12,9 @@ object ComponentUtil {
         return ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(component))
     }
 
-    fun toBaseComponents(component: Component): BaseComponent {
-        return TextComponent(*ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(component)))
-    }
+    fun toBaseComponents(component: Component): BaseComponent { return TextComponent(*ComponentSerializer.parse(toGson(component))) }
+
+    fun toGson(component: Component): String { return GsonComponentSerializer.gson().serialize(component) }
 
     fun parse(str: String): Component { return MiniMessage.miniMessage().deserialize(str) }
 }
