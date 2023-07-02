@@ -207,6 +207,7 @@
             <scope>compile</scope>
             <version>4.14.0</version>
         </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson</artifactId>
@@ -221,6 +222,7 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -238,6 +240,7 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-jps-plugin</artifactId>
             <version>1.8.22</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--suppress VulnerableLibrariesLocal -->
