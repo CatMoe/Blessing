@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.logger
 
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager.setType
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import net.md_5.bungee.BungeeCord
 
 class InitLogger {

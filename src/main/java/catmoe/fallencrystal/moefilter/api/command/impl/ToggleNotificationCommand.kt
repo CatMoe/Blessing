@@ -7,8 +7,9 @@ import catmoe.fallencrystal.moefilter.api.command.annotation.CommandPermission
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
@@ -24,8 +25,7 @@ class ToggleNotificationCommand : ICommand {
     private val disable = config.getString("actionbar.command.disable")
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$enable"))
-        } else { MessageUtil.sendMessage(sender, MessageUtil.colorizeMiniMessage("$prefix$disable")) }
+        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage("$prefix$enable", MessagesType.CHAT, sender) } else { MessageUtil.sendMessage("$prefix$disable", MessagesType.CHAT, sender) }
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }

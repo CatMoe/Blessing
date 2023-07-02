@@ -12,7 +12,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
@@ -53,7 +53,7 @@ class PacketHandler : ChannelDuplexHandler() {
                     .replace("%bungee%", proxy.name)
                     .replace("%version%", proxy.version)
                     .replace("%backend%", backend)
-                DefinedPacket.writeString((MessageUtil.colorizeMiniMessage(target)).toLegacyText(), brand)
+                DefinedPacket.writeString((MessageUtil.colorize(target)).toLegacyText(), brand)
                 msg.data = DefinedPacket.toArray(brand)
                 brand.release()
             }

@@ -180,7 +180,7 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
   - [x] 基于事件的反机器人 (对于不兼容的插件或BungeeCord)
   - [x] 热加载
   - [ ] 清理代码 ([#24](https://github.com/CatMoe/MoeFilter/issues/24))
-  - [ ] 纯数据包消息发送器 (为了更好的性能! [#25](https://github.com/CatMoe/MoeFilter/issues/25))
+  - [x] 纯数据包消息发送器 (为了更好的性能! [#25](https://github.com/CatMoe/MoeFilter/issues/25))
   - [ ] ~~为了更好而变得更好!~~
 
 > 这只是**临时的** TODO列表 会随着时间的推移而增加 不代表整个项目的process.

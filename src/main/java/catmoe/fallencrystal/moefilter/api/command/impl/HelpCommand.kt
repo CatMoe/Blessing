@@ -5,8 +5,8 @@ import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.*
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil.colorizeMiniMessage
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil.sendMessage
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 
 @Command("help")
@@ -20,23 +20,23 @@ class HelpCommand : ICommand {
     private val prefix: String = config.getString("prefix")
 
     override fun execute(sender: CommandSender, args: Array<out String>?) {
-        val line = "&b&m&l                                                            "
+        val line = ""
         if (args!!.size < 2) {
-            sendMessage(sender,line)
+            MessageUtil.sendMessage(line, MessagesType.CHAT, sender)
             // OCommand.getCommandList(sender).forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
             for (it in CommandManager.getCommandList(sender)) {
                 val parsedInfo = CommandManager.getParsedCommand(it)
-                if (parsedInfo == null) { sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
-                sendMessage(sender, colorizeMiniMessage("  <white>/moefilter ${parsedInfo.command} <aqua>- <reset>${parsedInfo.description}"))
+                if (parsedInfo == null) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender); return }
+                MessageUtil.sendMessage("  <white>/moefilter ${parsedInfo.command} <aqua>- <reset>${parsedInfo.description}", MessagesType.CHAT, sender)
             }
-            sendMessage(sender,line)
+            MessageUtil.sendMessage(line, MessagesType.CHAT, sender)
             return
         } else {
             try {
                 val subCommand = CommandManager.getICommand(args[1])
-                if (subCommand == null) { sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
+                if (subCommand == null) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender); return }
                 val parsedInfo = CommandManager.getParsedCommand(subCommand)!!
-                if (!sender.hasPermission(parsedInfo.permission)) { sendMessage(sender, "$prefix${config.getString("command.not-found")}"); return }
+                if (!sender.hasPermission(parsedInfo.permission)) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender); return }
                 val description = parsedInfo.description
                 val command = parsedInfo.command
                 // sendMessage(sender, "  &f/moefilter $command &b- &f$description")
@@ -48,13 +48,13 @@ class HelpCommand : ICommand {
                     "",
                     "  <yellow>此命令一共有${commandUsage.size} 个用法"
                 )
-                message.forEach { sendMessage(sender, colorizeMiniMessage(it)) }
-                if (commandUsage.isNotEmpty()) { commandUsage.forEach { sendMessage(sender, colorizeMiniMessage("  <yellow>$it")) } }
-                sendMessage(sender, "")
+                message.forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
+                if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage("  <yellow>$it", MessagesType.CHAT, sender) } }
+                MessageUtil.sendMessage("", MessagesType.CHAT, sender)
             } catch (_: ArrayIndexOutOfBoundsException) {
             } catch (e: NullPointerException) {
                 val message = config.getString("command.not-found")
-                sendMessage(sender, colorizeMiniMessage("$prefix$message"))
+                MessageUtil.sendMessage("$prefix$message", MessagesType.CHAT, sender)
             }
         }
     }

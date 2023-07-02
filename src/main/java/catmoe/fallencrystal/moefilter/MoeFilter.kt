@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import com.typesafe.config.ConfigFactory
 import net.md_5.bungee.api.plugin.Plugin

@@ -2,7 +2,7 @@ package catmoe.fallencrystal.moefilter.common.config
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.util.CreateConfig
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.typesafe.config.Config
 import net.md_5.bungee.api.ProxyServer
 import java.io.File
@@ -12,6 +12,7 @@ import java.nio.file.Paths
 import java.util.*
 import kotlin.concurrent.schedule
 
+@Suppress("SpellCheckingInspection")
 class LoadConfig {
     private val path = MoeFilter.instance.dataFolder.absolutePath
 

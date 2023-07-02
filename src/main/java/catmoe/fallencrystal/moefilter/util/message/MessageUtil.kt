@@ -10,6 +10,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
+@Deprecated("Please use MessageUtil v2")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 object MessageUtil {
 
     private val logger = ProxyServer.getInstance().logger
@@ -29,12 +31,6 @@ object MessageUtil {
         val returnText = mutableListOf<String>()
         for (it in text) { returnText.add(colorize(it)) }
         return returnText
-    }
-
-    fun messageBuilder(startIndex: Int, args: Array<out String>?): StringBuilder {
-        val message = StringBuilder()
-        if (args != null) { for (i in startIndex until args.size) { message.append(args[i]).append(" ") } }
-        return message
     }
 
     fun sendMessage(sender: CommandSender, message: String) { if (sender !is ProxiedPlayer) { logInfo(message); return } else { sendMessage(sender, message) } }

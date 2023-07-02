@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.common.utils.maxmind
 
 import catmoe.fallencrystal.moefilter.common.utils.maxmind.exception.InvalidMaxmindKeyException
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -10,13 +10,15 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 
+@Suppress("SpellCheckingInspection")
 class DownloadDatabase(folder: File, license: String) {
 
     private val invalidKeyWarn = "[MoeFilter] [GeoIP] $license is not a valid key."
 
     init {
         if (license.length != 40) {
-            try { throw InvalidMaxmindKeyException("key $license is not a valid key.") } catch (exception: InvalidMaxmindKeyException) { MessageUtil.logWarnRaw(invalidKeyWarn); exception.printStackTrace() }
+            try { throw InvalidMaxmindKeyException("key $license is not a valid key.") } catch (exception: InvalidMaxmindKeyException) {
+                MessageUtil.logWarn(invalidKeyWarn); exception.printStackTrace() }
         }
         if (!folder.exists()) { folder.mkdirs(); download(); extract() }
     }

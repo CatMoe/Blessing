@@ -23,11 +23,14 @@ import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 
+@Suppress("unused")
 object MessageUtil {
     // Type(Enum's Field) + Message, Packet
     private val packetCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<String, MessagePacket>()
     private val bungee = ProxyServer.getInstance()
+    private val logger = bungee.logger
     private val scheduler = Scheduler(MoeFilter.instance)
 
     private fun packetBuilder(message: String, type: MessagesType, protocol: List<Int>) : MessagePacket {
@@ -35,7 +38,7 @@ object MessageUtil {
             ACTION_BAR -> {
                 val actionbar = ChatMessageType.ACTION_BAR.ordinal
                 val cached = packetCache.getIfPresent(("${ACTION_BAR.prefix}$message")) as ViaActionbarPacket?
-                val bc = if (cached?.bc != null) cached.bc else ComponentUtil.toBaseComponents(ComponentUtil.parse(message))
+                val bc = if (cached?.bc != null) cached.bc else colorize(message)
                 val componentSerializer = if (cached?.cs != null) cached.cs else ComponentSerializer.toString(bc)
                 var need119 = false
                 var need117 = false
@@ -55,7 +58,7 @@ object MessageUtil {
             }
             CHAT -> {
                 val cached = packetCache.getIfPresent("${CHAT.prefix}$message") as ViaChatPacket?
-                val bc = if (cached?.bc != null) cached.bc else ComponentUtil.toBaseComponents(ComponentUtil.parse(message))
+                val bc = if (cached?.bc != null) cached.bc else colorize(message)
                 val componentSerializer = if (cached?.cs != null) cached.cs else ComponentSerializer.toString(bc)
                 var need119 = false
                 var needLegacy = false
@@ -109,7 +112,17 @@ object MessageUtil {
 
     fun invalidateCache(type: MessagesType, message: String) { packetCache.invalidate("${type.prefix}$message") }
 
-    fun logInfo(message: String) { bungee.logger.info(message) }
+    fun argsBuilder(startIndex: Int, args: Array<out String>?): StringBuilder {
+        val message = StringBuilder()
+        if (args != null) { for (i in startIndex until args.size) { message.append(args[i]).append(" ") } }
+        return message
+    }
 
-    fun logWarn(message: String) { bungee.logger.warning(message) }
+    fun logInfo(message: String) { logger.log(Level.INFO, colorize(message).toLegacyText()) }
+
+    fun logWarn(message: String) { logger.log(Level.WARNING, colorize(message).toLegacyText()) }
+
+    fun logError(message: String) { logger.log(Level.SEVERE, colorize(message).toLegacyText()) }
+
+    fun colorize(message: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) }
 }

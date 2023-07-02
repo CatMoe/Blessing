@@ -3,7 +3,7 @@ package catmoe.fallencrystal.moefilter.network
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.util.ReflectionUtils
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import net.md_5.bungee.api.ProxyServer

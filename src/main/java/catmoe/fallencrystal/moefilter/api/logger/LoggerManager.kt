@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.api.logger
 
 import catmoe.fallencrystal.moefilter.MoeFilter
-import catmoe.fallencrystal.moefilter.util.message.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Filter
@@ -21,7 +21,7 @@ object LoggerManager : Filter {
         for (it in logger) {
             try {
                 if (!it.isLoggable(record, !loggable)) { loggable = false }
-            } catch (ex: Exception) { MessageUtil.logWarnRaw("[MoeFilter] [Logger] ${it::class.java} throw an error. Ask that plugin developer what they using MoeFilter API."); ex.printStackTrace() }
+            } catch (ex: Exception) { MessageUtil.logWarn("[MoeFilter] [Logger] ${it::class.java} throw an error. Ask that plugin developer what they using MoeFilter API."); ex.printStackTrace() }
         }
         return loggable
     }
