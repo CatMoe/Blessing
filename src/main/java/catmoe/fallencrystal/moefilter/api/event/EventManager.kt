@@ -14,7 +14,7 @@ object EventManager {
     private val scheduler = ProxyServer.getInstance().scheduler
     private val listenerPlugin = Caffeine.newBuilder().build<EventListener, Plugin>()
 
-    fun triggerEvent(event: Any) {
+    fun triggerEvent(event: MoeEvent) {
         scheduler.runAsync(plugin) {
             if (listeners.isEmpty()) return@runAsync
             for (it in listeners) {
