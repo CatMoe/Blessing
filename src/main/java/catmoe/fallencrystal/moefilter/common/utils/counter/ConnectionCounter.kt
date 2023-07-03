@@ -21,11 +21,11 @@ object ConnectionCounter {
     /*
     Int, Int = Ticks, Count
      */
-    private val connectionPerSecCache = mutableMapOf<Int, Int>()
+    private val perSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
     private val ipCache = Caffeine.newBuilder().build<InetAddress, Int>()
-    private val ipPerSecCache = mutableMapOf<Int, Int>()
-    fun getConnectionPerSec(): Int { var cps=0; ticks.forEach { cps+=(connectionPerSecCache.getOrDefault(it, 0)) }; cps+=tempCPS; return cps }
-    fun getIpPerSec(): Int { var ipPerSec=0; ticks.forEach { ipPerSec+=(ipPerSecCache.getOrDefault(it, 0)) }; ipPerSec+=tempIpSec; return ipPerSec }
+    private val ipPerSecCache =  Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
+    fun getConnectionPerSec(): Int { var cps=0; ticks.forEach { cps+=(perSecCache.getIfPresent(it) ?: 0) }; cps+=tempCPS; return cps }
+    fun getIpPerSec(): Int { var ipPerSec=0; ticks.forEach { ipPerSec+=(ipPerSecCache.getIfPresent(it) ?: 0) }; ipPerSec+=tempIpSec; return ipPerSec }
     fun getPeakConnectionPerSec(): Int { return peakCPS }
     fun increase(address: InetAddress) {
         val singleIpCount = ipCache.getIfPresent(address) ?: 0
@@ -36,8 +36,8 @@ object ConnectionCounter {
     fun getTotal(): Long { return total }
     fun getTotalSession(): Long { return totalInSession }
     // fun getPeakSession(): Int { return peakInSession }
-    private fun putCPStoCache() { ticks.forEach { if (connectionPerSecCache[it] == null) { connectionPerSecCache[it] = tempCPS; tempCPS = 0; return } } }
-    private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache[it] == null) { ipPerSecCache[it] = tempIpSec; tempIpSec = 0; return } } }
-    fun setInAttack(inAttacking: Boolean) { inAttack =inAttacking }
+    private fun putCPStoCache() { ticks.forEach { if (perSecCache.getIfPresent(it) == null) { perSecCache.put(it, tempCPS); tempCPS = 0; return } } }
+    private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache.getIfPresent(it) == null) { ipPerSecCache.put(it, tempIpSec); tempIpSec = 0; return } } }
+    fun setInAttack(inAttacking: Boolean) { inAttack = inAttacking }
 
 }
