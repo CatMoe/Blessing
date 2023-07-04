@@ -4,10 +4,12 @@ import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import dev.simplix.protocolize.api.item.ItemStack
 import dev.simplix.protocolize.data.ItemType
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import net.querz.nbt.tag.CompoundTag
 import net.querz.nbt.tag.IntTag
 import net.querz.nbt.tag.ListTag
 
+@Suppress("unused")
 class ItemBuilder(material: ItemType) {
     private val item = ItemStack(material)
     private val enchantments: MutableList<Enchantments> = ArrayList()
@@ -19,6 +21,7 @@ class ItemBuilder(material: ItemType) {
     fun amount(amount: Int): ItemBuilder { item.amount(amount.toByte()); return this }
 
     fun name(name: Component): ItemBuilder {
+        name.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         val bc = ComponentUtil.toBaseComponents(name)
         bc.isItalic=false
         item.displayName(bc.toLegacyText())
@@ -26,6 +29,7 @@ class ItemBuilder(material: ItemType) {
     }
 
     fun lore(lore: Component): ItemBuilder {
+        lore.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         val bc = ComponentUtil.toBaseComponents(lore)
         bc.isItalic=false
         item.addToLore(bc.toLegacyText())

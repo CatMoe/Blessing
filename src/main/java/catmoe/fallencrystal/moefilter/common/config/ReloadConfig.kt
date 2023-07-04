@@ -20,13 +20,18 @@ class ReloadConfig : EventListener {
         // Executor is null == Starting plugin.
         // Load can hot load module without "if" syntax.
         val executor = event.executor
-        if (executor != null) { LoadConfig.instance.loadConfig(); LocalConfig.reloadConfig(); LoadCommand().reload(); warnMessage(event) }
+        if (executor != null) {
+            LoadConfig.instance.loadConfig()
+            LocalConfig.reloadConfig()
+            LoadCommand().reload()
+            warnMessage(event)
+            MixedCheck.reload()
+        }
         else { LoadCommand().load() }
         ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
-        MixedCheck.reload()
         Throttler.reload()
         try { ValidNameCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck().init() }
     }

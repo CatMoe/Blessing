@@ -174,6 +174,12 @@ class LoadConfig {
                     # DISABLED: 禁用
                     join-ping-mixin-mode=PING_AFTER_RECONNECT
                     
+                    # join+ping的检查的缓存过期时间 (秒)
+                    # 如果您或您的玩家遇到连续要求的问题
+                    # 请尝试将值调高直到适合您或您的玩家通过检查
+                    # 但也不要填写一个较大的值.
+                    max-cache-time="10"
+                    
                     # 有效名称正则. 默认正则的规则
                     # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
                     valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"

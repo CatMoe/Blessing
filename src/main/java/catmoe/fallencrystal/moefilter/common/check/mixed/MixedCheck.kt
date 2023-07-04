@@ -10,14 +10,18 @@ import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.typesafe.config.ConfigException
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 object MixedCheck {
 
-    private val joinCache = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build<InetAddress, String>()
-    private val pingCache = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build<InetAddress, Boolean>()
-    private var type: MixedType = DISABLED
+    private val conf = LocalConfig.getAntibot().getConfig("general")
+    private val cache = Caffeine.newBuilder().expireAfterWrite(conf.getInt("max-cache-time").toLong(), TimeUnit.SECONDS)
+
+    private var joinCache = cache.build<InetAddress, String>()
+    private var pingCache = cache.build<InetAddress, Boolean>()
+    private var type: MixedType = loadType()
 
     fun increase(info: CheckInfo): DisconnectType? {
         if (info is Joining) {
@@ -56,11 +60,17 @@ object MixedCheck {
         return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, write) }; false }
     }
 
+    private fun loadType(): MixedType {
+        return try { MixedType.valueOf(conf.getAnyRef("join-ping-mixin-mode").toString()) }
+        catch (ex: ConfigException) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); DISABLED }
+        catch (ex: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"${conf.getAnyRef("join-ping-mixin-mode")}\", Disabling.."); DISABLED }
+    }
+
     fun reload() {
-        joinCache.invalidateAll()
-        pingCache.invalidateAll()
-        val configureType = try { LocalConfig.getAntibot().getAnyRef("general.join-ping-mixin-mode").toString() } catch (e: IllegalArgumentException) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); return }
-        this.type = try { MixedType.valueOf(configureType) } catch (e: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"$configureType\", Disabling.."); DISABLED }
+        joinCache = cache.build()
+        pingCache = cache.build()
+        if (type != DISABLED) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Mode is not disabled. If someone try to pass checking. They need to do it again.") }
+        type=loadType()
     }
 
 }
