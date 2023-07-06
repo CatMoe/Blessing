@@ -101,6 +101,12 @@ object MessageUtil {
         }
     }
 
+    fun sendMessage(message: String, type: MessageType, sender: ProxiedPlayer) {
+        val connection = ConnectionUtil(player.pendingConnection)
+        val packet =  packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(connection.getVersion()))
+        packetSender(packet, connection)
+    }
+
     fun sendMessage(message: String, type: MessagesType, sender: CommandSender) {
         val version = if (sender is ProxiedPlayer) sender.pendingConnection.version else 0
         val packet = packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(version))
