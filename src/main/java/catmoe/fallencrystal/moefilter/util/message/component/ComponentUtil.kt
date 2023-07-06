@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.chat.ComponentSerializer
