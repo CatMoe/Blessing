@@ -24,7 +24,7 @@ object CommandManager {
         val annotationCommand = ( try { iClass.getAnnotation(Command::class.java).command } catch (_:Exception) { iClass.simpleName.lowercase().replace("command", "") } )
         val annotationPermission = ( try { val permission= iClass.getAnnotation(CommandPermission::class.java).permission; permission.ifEmpty { "moefilter.$annotationCommand" } } catch (_: Exception) { "moefilter.$annotationCommand" } )
         val annotationAllowConsole = iClass.isAnnotationPresent(ConsoleCanExecute::class.java)
-        val annotationDescription = getAnnotationDescription(c)
+        val annotationDescription = return try { getAnnotationDescription(c) } catch (_: Exception) { "This command don't have description." }
         val annotationUsage = ( try { iClass.getAnnotation(CommandUsage::class.java).usage.toList() } catch (_: Exception) { listOf() } )
         if (commands.contains(annotationCommand)) { return }
         val parsed = ParsedInfo(annotationCommand, annotationDescription, annotationPermission, annotationUsage, annotationAllowConsole)
