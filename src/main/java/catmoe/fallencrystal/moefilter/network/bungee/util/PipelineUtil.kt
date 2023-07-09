@@ -19,7 +19,7 @@ object PipelineUtil {
     fun putChannelHandler(ctx: ChannelHandlerContext, name: String) { cache.put(ctx, name); playerCache.put(name, ctx) }
 
     fun invalidateChannel(player: ProxiedPlayer) {
-        val ctx = playerCache.getIfPresent(player.name)
+        val ctx: ChannelHandlerContext? = playerCache.getIfPresent(player.name)
         playerCache.invalidate(player.name)
         cache.invalidate(ctx ?: return)
     }
