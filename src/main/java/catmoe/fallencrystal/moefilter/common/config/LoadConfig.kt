@@ -45,6 +45,11 @@ class LoadConfig {
                 # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
                 # 0 = DISABLED, 1 = CLIENT, 2 = SERVER, 3 = BOTH, 4 = MANGLED
                 tfo-mode=0
+
+                domain-check {
+                    enabled: false
+                    allow-lists = ["mc.miaomoe.net", "catmoe.realms.moe"]
+                }
                 
                 # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
                 ping {
