@@ -18,8 +18,7 @@ object MixedCheck {
 
     private var conf = LocalConfig.getAntibot().getConfig("general")
     private var maxCacheTime = conf.getLong("max-cache-time")
-    private val cacheBuilder = Caffeine.newBuilder()
-    private var cache = cacheBuilder.expireAfterWrite(maxCacheTime, TimeUnit.SECONDS)
+    private var cache = Caffeine.newBuilder().expireAfterWrite(maxCacheTime, TimeUnit.SECONDS)
 
     private var joinCache = cache.build<InetAddress, String>()
     private var pingCache = cache.build<InetAddress, Boolean>()
@@ -73,7 +72,7 @@ object MixedCheck {
         val type = loadType()
         if (type == DISABLED && this.type == DISABLED) return
         this.type = type
-        cache = cacheBuilder.expireAfterWrite(conf.getLong("max-cache-time"), TimeUnit.SECONDS)
+        cache = Caffeine.newBuilder().expireAfterWrite(conf.getLong("max-cache-time"), TimeUnit.SECONDS)
         val maxCacheTime = conf.getLong("max-cache-time")
         if (this.maxCacheTime != maxCacheTime) {
             joinCache = cache.build()
