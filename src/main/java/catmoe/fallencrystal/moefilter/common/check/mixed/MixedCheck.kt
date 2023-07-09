@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
 
 object MixedCheck {
 
-    private val conf = LocalConfig.getAntibot().getConfig("general")
-    private val cache = Caffeine.newBuilder().expireAfterWrite(conf.getInt("max-cache-time").toLong(), TimeUnit.SECONDS)
+    private var conf = LocalConfig.getAntibot().getConfig("general")
+    private var cache = Caffeine.newBuilder().expireAfterWrite(conf.getInt("max-cache-time").toLong(), TimeUnit.SECONDS)
 
     private var joinCache = cache.build<InetAddress, String>()
     private var pingCache = cache.build<InetAddress, Boolean>()
@@ -67,10 +67,14 @@ object MixedCheck {
     }
 
     fun reload() {
+        val type = loadType()
+        conf = LocalConfig.getAntibot().getConfig("general")
+        cache = Caffeine.newBuilder().expireAfterWrite(conf.getInt("max-cache-time").toLong(), TimeUnit.SECONDS)
+        if (type == DISABLED && this.type == DISABLED) return
+        this.type = type
         joinCache = cache.build()
         pingCache = cache.build()
-        if (type != DISABLED) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Mode is not disabled. If someone try to pass checking. They need to do it again.") }
-        type=loadType()
+        MessageUtil.logWarn("[MoeFilter] [MixedCheck] Original mode is not disabled. If someone try to pass checking. They need to do it again.")
     }
 
 }
