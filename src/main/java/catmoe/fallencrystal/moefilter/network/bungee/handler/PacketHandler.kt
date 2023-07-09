@@ -63,8 +63,9 @@ class PacketHandler : ChannelDuplexHandler() {
 
     @Throws(Exception::class)
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-        val inetAddress = (ctx.channel().remoteAddress() as InetSocketAddress).address
         val channel = ctx.channel()
+        val inetSocketAddress = channel.remoteAddress() as InetSocketAddress
+        val inetAddress = inetSocketAddress.address
         if (msg is PacketWrapper) {
             val packet: Any? = msg.packet
             run {
