@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 object MixedCheck {
 
     private var conf = LocalConfig.getAntibot().getConfig("general")
-    private var maxCacheTime = conf.getInt("max-cache-time").toLong()
+    private var maxCacheTime = conf.getLong("max-cache-time")
     private val cacheBuilder = Caffeine.newBuilder()
     private var cache = cacheBuilder.expireAfterWrite(maxCacheTime, TimeUnit.SECONDS)
 
@@ -73,11 +73,12 @@ object MixedCheck {
         val type = loadType()
         if (type == DISABLED && this.type == DISABLED) return
         this.type = type
-        cache = cacheBuilder.expireAfterWrite(conf.getInt("max-cache-time").toLong(), TimeUnit.SECONDS)
-        val maxCacheTime = conf.getInt("max-cache-time").toLong()
+        cache = cacheBuilder.expireAfterWrite(conf.getLong("max-cache-time"), TimeUnit.SECONDS)
+        val maxCacheTime = conf.getLong("max-cache-time")
         if (this.maxCacheTime != maxCacheTime) {
             joinCache = cache.build()
             pingCache = cache.build()
+            this.maxCacheTime = maxCacheTime
             MessageUtil.logWarn("[MoeFilter] [MixedCheck] Original mode is not disabled. If someone try to pass checking. They need to do it again.")
         }
     }
