@@ -4,8 +4,10 @@ import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
 import catmoe.fallencrystal.moefilter.common.check.already_online.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.valid_name.ValidNameCheck
+import catmoe.fallencrystal.moefilter.common.check.domain_check.DomainCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
@@ -77,6 +79,7 @@ class PacketHandler : ChannelDuplexHandler() {
                     val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
                     if (mixinKick != null) { kick(channel, mixinKick); return }
                     if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return }
+                    if (!DomainCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
