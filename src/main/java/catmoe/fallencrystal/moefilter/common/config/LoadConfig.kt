@@ -34,7 +34,7 @@ class LoadConfig {
                 debug=false
                 
                 # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).
-                fastboot=true
+                fastboot=false
                 
                 # f3服务端标识. 在较高版本的客户端上按F3即可看到.
                 # gradient和其它标签e.x <newline> 不可在此处使用
@@ -47,8 +47,8 @@ class LoadConfig {
                 tfo-mode=0
 
                 domain-check {
-                    enabled: false
-                    allow-lists=["mc.miaomoe.net", "catmoe.realms.moe"]
+                    enabled=false
+                    allow-lists=["127.0.0.1", "localhost", "mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 
                 # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
@@ -56,7 +56,7 @@ class LoadConfig {
                     # 缓存选项
                     cache {
                         # 缓存有效时间. 单位为秒
-                        max-life-time: 5
+                        max-life-time=5
                         # 即使缓存了也呼叫ProxyPingEvent. 如果返回内容不同 则刷新缓存
                         still-call-event=true
                         # 是否为独立的域创建MOTD缓存?
@@ -249,9 +249,7 @@ class LoadConfig {
                 proxycheck-io {
                     enabled=true
                     # API秘钥 您需要在上面注册一个账户才可以使用该服务.
-                    key = [
-                        "your-key-here"
-                    ]
+                    key=["your-key-here"]
                     # 黑名单属性. 有VPN(代理), Business(主机供应商/企业), Wireless(家用网络)
                     # 有需要可以将Business也加入 但这会阻止绝大多数加速器 并且有一定的误判风险.
                     # Wireless没有专门用于区分有线网络和移动数据. 如果需要 请移步至IP-API
@@ -281,7 +279,7 @@ class LoadConfig {
                     # 模式. WHITELIST(白名单), BLACKLIST(黑名单) 或 DISABLED(禁用)
                     mode=DISABLED
                     # 列表
-                    list = ["CN"]
+                    list=["CN"]
                 }
                 
                 # 代理上网配置. 适用于所有API和内置反代理 爬取
