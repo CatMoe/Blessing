@@ -48,7 +48,7 @@ class LoadConfig {
 
                 domain-check {
                     enabled: false
-                    allow-lists = ["mc.miaomoe.net", "catmoe.realms.moe"]
+                    allow-lists=["mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 
                 # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
@@ -147,6 +147,11 @@ class LoadConfig {
                         "<red>Your name is invalid or not allowed on this server.",
                         ""
                     ]
+                    invalid-host=[
+                        "",
+                        "<red>Please join server from mc.miaomoe.net",
+                        ""
+                    ]
                 }
             """.trimIndent()
 
@@ -155,11 +160,11 @@ class LoadConfig {
                 
                 # 反机器人工作模式.
                 # PIPELINE(推荐): 接管BungeeCord管道 实现无效数据包检查和EVENT模式拥有的所有检查
-                 # 并且比EVENT更快. 但无法保证所有东西都兼容. 有关兼容的BungeeCord 请移步:
-                 # https://github.com/CatMoe/MoeFilter#%E5%AE%8C%E5%85%A8%E5%85%BC%E5%AE%B9%E7%9A%84bungeecord
-                 # EVENT: 使用传统事件组合的反机器人. 可以实现一些普通的检查 例如PingJoin, FirstJoin, etc
-                 # 理论上兼容所有BungeeCord分叉. 如果您在使用PIPELINE时出现了一些问题 可以选择使用该模式.
-                 # DISABLED: 什么也不做. (作为纯实用工具使用)
+                # 并且比EVENT更快. 但无法保证所有东西都兼容. 有关兼容的BungeeCord 请移步:
+                # https://github.com/CatMoe/MoeFilter#%E5%AE%8C%E5%85%A8%E5%85%BC%E5%AE%B9%E7%9A%84bungeecord
+                # EVENT: 使用传统事件组合的反机器人. 可以实现一些普通的检查 例如PingJoin, FirstJoin, etc
+                # 理论上兼容所有BungeeCord分叉. 如果您在使用PIPELINE时出现了一些问题 可以选择使用该模式.
+                # DISABLED: 什么也不做. (作为纯实用工具使用)
                 mode=PIPELINE
                 
                 # 选择事件呼叫时机 该选项仅当mode为PIPELINE时有效.
