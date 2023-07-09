@@ -8,7 +8,7 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 
 class DomainCheck : AbstractCheck() {
    override fun increase(info: CheckInfo): Boolean {
-     val config = LocalConfig.getConfig
+     val config = LocalConfig.getConfig()
      val host = (info as AddressCheck).address.hostString
      if (!config.getBoolean("domain-check.enabled")) { return true }
      val allowed = AtomicBoolean(false)
