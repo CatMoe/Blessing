@@ -48,6 +48,12 @@ v1完成了注入管道相关代码并且已经实现了异常检查和First-joi
 
 抱歉 我目前不能给出任何关于v1 release的[ETA](https://cn.bing.com/search?pglt=169&q=eta%E6%98%AF%E4%BB%80%E4%B9%88%E6%84%8F%E6%80%9D)  
 
+> [0.0.3-Snapshot](https://github.com/CatMoe/MoeFilter/releases/tag/0.0.3)现已发布在release.  
+> 但直到您购买插件时 您创建的非bug issue都会被reject.  
+
+
+### 忽略以下说明:  
+
 如果您想试试MoeFilter 请自行构建 如果您没有那个能力  
 请加入[猫萌的Discord服务器](https://discord.gg/JtXxFNNc9K)然后dm我 `FallenCrystal`  
   
@@ -57,15 +63,7 @@ v1完成了注入管道相关代码并且已经实现了异常检查和First-joi
 ## 依赖项提示:
 
 此插件现在使用[BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib/)来减少包体积
-在[此处下载对应的Kotlin 1.8.22版本的lib](https://github.com/LensMemory/BungeeKotlinLib/releases/tag/1.8.22)
-
-## 正在寻找合适的反机器人?:
-
-好的.. 不要再看了! 全国 #1 的反机器人就在这里  
-
-> 我不管, 我就是要寻找别的替代方案! ?:
-
-您可以在这里查看[其它反机器人](#其它反机器人列表)列表
+在[此处下载对应的Kotlin 1.9.0版本的lib](https://github.com/LensMemory/BungeeKotlinLib/releases/tag/1.9.0)
 
 ---
 
