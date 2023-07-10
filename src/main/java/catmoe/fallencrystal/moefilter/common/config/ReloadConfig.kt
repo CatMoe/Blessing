@@ -34,7 +34,7 @@ class ReloadConfig : EventListener {
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
         Throttler.reload()
-        DomainCheck
+        DomainCheck.init()
         try { ValidNameCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck().init() }
     }
 
