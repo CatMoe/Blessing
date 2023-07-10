@@ -75,11 +75,11 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
+                    if (!DomainCheck.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
                     if (!ValidNameCheck.instance.increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return }
                     val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
                     if (mixinKick != null) { kick(channel, mixinKick); return }
                     if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return }
-                    if (!DomainCheck.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
