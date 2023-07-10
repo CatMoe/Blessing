@@ -5,6 +5,7 @@ import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
+import catmoe.fallencrystal.moefilter.common.check.domain_check.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.valid_name.ValidNameCheck
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
@@ -33,6 +34,7 @@ class ReloadConfig : EventListener {
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
         Throttler.reload()
+        DomainCheck
         try { ValidNameCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck().init() }
     }
 
