@@ -110,7 +110,7 @@ This project contains code borrowed from the following repository.
 
 ---
 
-#### I wan't see the old readme!?
+#### I want see the old readme!?
 
 [Here](https://github.com/CatMoe/MoeFilter/blob/stray/readme/legacy.md)
 
