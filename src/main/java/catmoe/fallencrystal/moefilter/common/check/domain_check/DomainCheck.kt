@@ -14,7 +14,7 @@ object DomainCheck : AbstractCheck() {
    
    override fun increase(info: CheckInfo): Boolean {
      if (!enable) { return true }
-     return cache.getIfPresent((info as AddressCheck).address.hostString.lowercase())
+     return cache.getIfPresent((info as AddressCheck).address.hostString.lowercase()) != null
    }
 
    fun init() {
