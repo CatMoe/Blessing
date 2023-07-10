@@ -79,7 +79,7 @@ class PacketHandler : ChannelDuplexHandler() {
                     val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
                     if (mixinKick != null) { kick(channel, mixinKick); return }
                     if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return }
-                    if (!DomainCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
+                    if (!DomainCheck.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
