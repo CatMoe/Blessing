@@ -21,6 +21,6 @@ object DomainCheck : AbstractCheck() {
       cache.invalidateAll()
       val config = LocalConfig.getConfig().getConfig("domain-check")
       enable = config.getBoolean("enabled")
-      config.getStringList("domain-check.allow-lists").forEach { cache.put(it.lowercase(), true) }
+      config.getStringList("allow-lists").forEach { cache.put(it.lowercase(), true) }
    }
 }
