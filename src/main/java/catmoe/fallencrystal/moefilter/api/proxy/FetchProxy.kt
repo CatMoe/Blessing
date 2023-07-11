@@ -72,9 +72,7 @@ class FetchProxy {
                         val proxyConfig = Proxy(proxyType, InetSocketAddress(config.getString("proxies-config.host"), config.getInt("proxies-config.port")))
                         client.proxy(proxyConfig)
                     }
-                    val call = client.build()
-                    val request = Request.Builder().url(it).build()
-                    val response = call.newCall(request).execute()
+                    val response = client.build().newCall(Request.Builder().url(it).build()).execute()
                     val regex = Regex("""(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)""")
                     if (response.isSuccessful) {
                         val lines = response.body?.string()?.split("\n")

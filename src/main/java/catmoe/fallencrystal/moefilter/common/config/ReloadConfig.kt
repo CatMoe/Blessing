@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.api.proxy.ip_api.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ValidNameCheck
@@ -48,7 +49,7 @@ class ReloadConfig : EventListener {
             MixedCheck.reload()
             GeoIPManager.reload()
         }
-        else { LoadCommand().load() }
+        else { LoadCommand().load(); IPAPIChecker.schedule() }
         ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
