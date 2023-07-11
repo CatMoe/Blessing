@@ -3,11 +3,11 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
 import catmoe.fallencrystal.moefilter.common.check.already_online.AlreadyOnlineCheck
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.common.check.domain_check.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.valid_name.ValidNameCheck
-import catmoe.fallencrystal.moefilter.common.check.domain_check.DomainCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
@@ -25,8 +25,7 @@ import lombok.RequiredArgsConstructor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
-import net.md_5.bungee.protocol.packet.LoginRequest
-import net.md_5.bungee.protocol.packet.PluginMessage
+import net.md_5.bungee.protocol.packet.*
 import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
 

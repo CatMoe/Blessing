@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
-import catmoe.fallencrystal.moefilter.api.event.MoeEvent
+import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
 
 @Suppress("unused")
-class AttackStartEvent : MoeEvent
+class AttackStartEvent : MoeAsyncEvent

@@ -124,11 +124,15 @@ object MessageUtil {
         return message
     }
 
-    fun logInfo(message: String) { logger.log(Level.INFO, colorize(message).toLegacyText()) }
+    fun logInfo(message: String) { logger.log(Level.INFO, logColorize(message)) }
 
-    fun logWarn(message: String) { logger.log(Level.WARNING, colorize(message).toLegacyText()) }
+    fun logWarn(message: String) { logger.log(Level.WARNING, logColorize(message)) }
 
-    fun logError(message: String) { logger.log(Level.SEVERE, colorize(message).toLegacyText()) }
+    fun logError(message: String) { logger.log(Level.SEVERE, logColorize(message)) }
 
     fun colorize(message: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) }
+
+    private fun logColorize(message: String): String {
+        return if (message.contains(">") && message.contains(">")) colorize(message).toLegacyText() else message
+    }
 }
