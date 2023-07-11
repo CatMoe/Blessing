@@ -15,16 +15,6 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.event.events.bungee
+package catmoe.fallencrystal.moefilter.api.command.annotation.misc
 
-import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
-import net.md_5.bungee.api.connection.ProxiedPlayer
-
-@Suppress("unused")
-class AsyncChatEvent(
-    val sender: ProxiedPlayer,
-    val isProxyCommand: Boolean,
-    val isBackendCommand: Boolean,
-    val isCancelled: Boolean,
-    val message: String
-) : MoeAsyncEvent
+class ParsedInfo(val command: String, val description: String, val permission: String, val usage: List<String>, val allowConsole: Boolean)
