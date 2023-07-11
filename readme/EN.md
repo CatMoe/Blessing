@@ -18,9 +18,9 @@ Turning to coping with what happened to me in reality.
      - If the code contains content borrowed from a licensed repo.  
        Must be declared at the beginning of the code.  
        Otherwise I will close the pull request
-  - For server adminstrator(s)
-     - [Open A issue](https://github.com/CatMoe/MoeFilter/issues/new)
-     - ~~But.. If u are not a customer. Your request may be closed directly.~~
+  - For server administrator(s)
+     - [Open an issue](https://github.com/CatMoe/MoeFilter/issues/new)
+     - ~~But… If you're not a customer. Your request may be closed directly.~~
      - May be put on hold indefinitely
 
 ### ⚠️ Dependency warning:  
@@ -46,14 +46,14 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
   - Cache message packets
      - Avoid huge overhead when sending repeatedly or to multiple players
   - Full MiniMessage supports
-     - Also can use hex / gradient colors anywhere
+     - Also, can use hex / gradient colors anywhere
      - (Not available for players client versions below 1.16.x and some BungeeCord(Its logger))
-  - Design with asynchrony in mind
+  - Design with synchrony in mind
      - Well, we're not actually all async because in some cases it is simply not worth using async.
      - Bungeecord will never lag because of it.
   - Consider it from a compatibility and performance perspective
      - Is there anything MoeFilter isn't compatible with?
-     - If you really encounter such problems. You should go and open a [issue](https://github.com/CatMoe/MoeFilter/issues)
+     - If you really encounter such problems. You should go and open an [issue](https://github.com/CatMoe/MoeFilter/issues)
   - Easy-to-use interface. Your next BungeeCord utility plugin.
      - Hey! Stop buying bells and whistles of BungeeCord forks.  
        It's not worth spending your money on those.  
@@ -66,22 +66,22 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
 
 | BungeeCord & forks | Support |
 |--------------------|---------|
-| BungeeCord         | ✅ |
-| Waterfall          | ✅ |
-| Flame/MongoCord    | ✅ |
-| BotFilter          | ✅ |
-| BetterBungee       | 🛑 |
-| Travertine         | ❔ |
-| XCord              | ❔ |
-| NullCordX          | ☑️ |
+| BungeeCord         | ✅       |
+| Waterfall          | ✅       |
+| Flame/MongoCord    | ✅       |
+| BotFilter          | ✅       |
+| BetterBungee       | 🛑      |
+| Travertine         | ❔       |
+| XCord              | ❔       |
+| NullCordX          | ☑️      |
 
-| Plugins            | Support |
-|--------------------|---------|
-| nAntiBot | 🛑 |
-| HAProxyDetector | ❔ |
-| JH AntiBot | 🛑 |
-| Protocoolize | ✅ |
-| JPremium | ☑️ |
+| Plugins         | Support |
+|-----------------|---------|
+| nAntiBot        | 🛑      |
+| HAProxyDetector | ❔       |
+| JH AntiBot      | 🛑      |
+| Protocoolize    | ✅       |
+| JPremium        | ☑️      |
 
 > ✅: Full supported. Can use all MoeFilter's features with it
 

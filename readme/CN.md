@@ -47,7 +47,7 @@ MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.co
   - MiniMessage支持
      - 在任何地方使用 十六进制 / 渐变 颜色!
      - (十六进制颜色不适用于低于1.16.x的客户端 以及部分BungeeCord的控制台)
-  - 尽可能的使用异步
+  - 尽可能地使用异步
      - 至于为什么不是full-async ——因为很多时候根本不值得使用异步. 且目前不需要线程调度程序
      - BungeeCord永远不会因为MoeFilter内部的处理而滞后/冻结服务器
   - 兼顾性能以及兼容性
@@ -63,23 +63,23 @@ MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.co
 > **将在(很久)之后添加对Velocity的支持. 不支持所有Spigot版本&分叉**
 
 | BungeeCord & forks | 支持 |
-|--------------------|------|
-| BungeeCord         | ✅ |
-| Waterfall          | ✅ |
-| Flame/MongoCord    | ✅ |
-| BotFilter          | ✅ |
+|--------------------|----|
+| BungeeCord         | ✅  |
+| Waterfall          | ✅  |
+| Flame/MongoCord    | ✅  |
+| BotFilter          | ✅  |
 | BetterBungee       | 🛑 |
-| Travertine         | ❔ |
-| XCord              | ❔ |
+| Travertine         | ❔  |
+| XCord              | ❔  |
 | NullCordX          | ☑️ |
 
-| 插件            | 支持 |
-|-----------------|------|
-| nAntiBot | 🛑 |
-| HAProxyDetector | ❔ |
-| JH AntiBot | 🛑 |
-| Protocoolize | ✅ |
-| JPremium | ☑️ |
+| 插件              | 支持 |
+|-----------------|----|
+| nAntiBot        | 🛑 |
+| HAProxyDetector | ❔  |
+| JH AntiBot      | 🛑 |
+| Protocolize     | ✅  |
+| JPremium        | ☑️ |
 
 > ✅: 完全支持. MoeFilter可以与其一起使用而不会出现任何问题 (预期行为)
 
