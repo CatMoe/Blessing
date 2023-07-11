@@ -23,10 +23,12 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 
-object DomainCheck : AbstractCheck() {
+class DomainCheck : AbstractCheck() {
 
    private val cache = Caffeine.newBuilder().build<String, Boolean>()
    private var enable = false
+
+   init { instance=this; init() }
    
    override fun increase(info: CheckInfo): Boolean {
      if (!enable) { return true }
@@ -38,5 +40,10 @@ object DomainCheck : AbstractCheck() {
       val config = LocalConfig.getConfig().getConfig("domain-check")
       enable = config.getBoolean("enabled")
       config.getStringList("allow-lists").forEach { cache.put(it.lowercase(), true) }
+   }
+
+   companion object {
+      lateinit var instance: DomainCheck
+          private set
    }
 }

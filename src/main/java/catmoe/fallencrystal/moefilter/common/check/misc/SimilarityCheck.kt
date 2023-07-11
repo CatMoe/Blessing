@@ -26,13 +26,15 @@ import com.typesafe.config.ConfigException
 import me.xdrop.fuzzywuzzy.FuzzySearch
 
 @Suppress("UnstableApiUsage")
-object SimilarityCheck : AbstractCheck() {
+class SimilarityCheck : AbstractCheck() {
     private var config = LocalConfig.getAntibot().getConfig("general.similarity")
     private var maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
     private var enable = config.getBoolean("enable")
     private var length = config.getInt("length")
 
     private var queue = EvictingQueue.create<String>(maxList)
+
+    init { instance=this }
 
     override fun increase(info: CheckInfo): Boolean {
         if (!enable) { super.increase(info) }
@@ -49,5 +51,10 @@ object SimilarityCheck : AbstractCheck() {
         length = config.getInt("length")
         this.queue.clear()
         this.queue = EvictingQueue.create(maxList)
+    }
+
+    companion object {
+        lateinit var instance: SimilarityCheck
+            private set
     }
 }

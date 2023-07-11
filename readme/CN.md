@@ -103,8 +103,9 @@ MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.co
 
 此储存库借用了以下储存库的代码
   - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
-  - [Velocity](https://github.com/PaperMC/Velocity)
-  - [Sonar](https://github.com/jonesdevelopment/sonar)
+- [Velocity](https://github.com/PaperMC/Velocity) `一些解码器之类的参考`
+- [Sonar](https://github.com/jonesdevelopment/sonar) `劫持 SERVER_CHILD 以及初始化管道的反射代码`
+- [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP的初始化以及检查`
 
 ---
 

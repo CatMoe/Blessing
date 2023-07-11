@@ -15,13 +15,13 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.kick
+package catmoe.fallencrystal.moefilter.common.check.misc
 
-enum class DisconnectType(@JvmField val messagePath: String) {
-    ALREADY_ONLINE("kick.already-online"),
-    REJOIN("kick.rejoin"),
-    PING("kick.ping"),
-    INVALID_NAME("kick.invalid-name"),
-    INVALID_HOST("kick.invalid-host"),
-    COUNTRY("kick.country"),
+import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
+import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.utils.maxmind.GeoIPManager
+
+class CountryCheck : AbstractCheck() {
+    override fun increase(info: CheckInfo): Boolean { return GeoIPManager.checkCountry((info as AddressCheck).address.address) }
 }

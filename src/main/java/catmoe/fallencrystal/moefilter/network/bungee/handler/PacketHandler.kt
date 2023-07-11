@@ -4,10 +4,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
-import catmoe.fallencrystal.moefilter.common.check.misc.AlreadyOnlineCheck
-import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
-import catmoe.fallencrystal.moefilter.common.check.misc.SimilarityCheck
-import catmoe.fallencrystal.moefilter.common.check.misc.ValidNameCheck
+import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
@@ -67,7 +64,6 @@ class PacketHandler : ChannelDuplexHandler() {
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         val channel = ctx.channel()
         val inetSocketAddress = channel.remoteAddress() as InetSocketAddress
-        val inetAddress = inetSocketAddress.address
         if (msg is PacketWrapper) {
             val packet: Any? = msg.packet
             run {
@@ -75,12 +71,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (!DomainCheck.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return }
-                    if (!ValidNameCheck.instance.increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return }
-                    val mixinKick = MixedCheck.increase(Joining(username, inetAddress))
-                    if (mixinKick != null) { kick(channel, mixinKick); return }
-                    if (!SimilarityCheck.increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return }
-                    if (!AlreadyOnlineCheck().increase(Joining(username, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return }
+                    if (check(channel, inetSocketAddress, username)) return
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
@@ -98,6 +89,18 @@ class PacketHandler : ChannelDuplexHandler() {
             }
         }
         super.channelRead(ctx, msg)
+    }
+
+    private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String): Boolean {
+        val inetAddress = inetSocketAddress.address
+        if (!DomainCheck.instance.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return true }
+        if (!ValidNameCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return true }
+        val mixinKick = MixedCheck.increase(Joining(name, inetAddress))
+        if (mixinKick != null) { kick(channel, mixinKick); return true }
+        if (CountryCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.COUNTRY); return true }
+        if (!SimilarityCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return true }
+        if (!AlreadyOnlineCheck().increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return true }
+        return false
     }
 
     private fun kick(channel: Channel, type: DisconnectType) {

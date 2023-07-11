@@ -169,6 +169,11 @@ class LoadConfig {
                         "<red>Please join server from mc.miaomoe.net",
                         ""
                     ]
+                    country=[
+                        "",
+                        "<red>Your country is not allowed on this server.",
+                        ""
+                    ]
                 }
             """.trimIndent()
 
@@ -303,10 +308,12 @@ class LoadConfig {
                 country {
                     # MaxMind Database下载许可key. 建议使用自己的许可证秘钥.
                     # https://dev.maxmind.com/geoip/geolite2-free-geolocation-data#accessing-geolite2-free-geolocation-data
-                    key="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"
+                    key="LARAgQo3Fw7W9ZMS"
                     # 模式. WHITELIST(白名单), BLACKLIST(黑名单) 或 DISABLED(禁用)
                     mode=DISABLED
-                    # 列表
+                    # 下载 & 查询超时时间 (ms)
+                    time-out=5000
+                    # https://dev.maxmind.com/geoip/legacy/codes/iso3166/
                     list=["CN"]
                 }
                 

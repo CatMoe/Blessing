@@ -64,8 +64,7 @@ class HelpCommand : ICommand {
                     "  <aqua>描述: &f$description",
                     "",
                     "  <yellow>此命令一共有${commandUsage.size} 个用法"
-                )
-                message.forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
+                ).forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
                 if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage("  <yellow>$it", MessagesType.CHAT, sender) } }
                 MessageUtil.sendMessage("", MessagesType.CHAT, sender)
             } catch (_: ArrayIndexOutOfBoundsException) {

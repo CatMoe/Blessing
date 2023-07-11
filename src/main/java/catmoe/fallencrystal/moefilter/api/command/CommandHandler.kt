@@ -64,14 +64,16 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
     private fun infoCommand(sender: CommandSender) {
         val version = MoeFilter.instance.description.version
         val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
-        val message: List<String> = listOf(
-            "",
-            "  <aqua>Moe<white>Filter <gray>- <white>$version",
-            "",
-            line,
-            ""
+        MessageUtil.sendMessage(
+            listOf(
+                "",
+                "  <aqua>Moe<white>Filter <gray>- <white>$version",
+                "",
+                line,
+                ""
+            ).joinToString("<reset><newline>"),
+            MessagesType.CHAT, sender
         )
-        MessageUtil.sendMessage(message.joinToString("<reset><newline>"), MessagesType.CHAT, sender)
     }
 
 }

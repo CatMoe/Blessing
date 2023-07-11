@@ -105,8 +105,9 @@ If you want to publish your own preview. Please dm me `FallenCrystal`
 
 This project contains code borrowed from the following repository.
   - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
-  - [Velocity](https://github.com/PaperMC/Velocity)
-  - [Sonar](https://github.com/jonesdevelopment/sonar)
+  - [Velocity](https://github.com/PaperMC/Velocity) `References such as decoders`
+  - [Sonar](https://github.com/jonesdevelopment/sonar) `Code that reflects SERVER_CHILD aspects of robbery`
+  - [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP initialization and checking`
 
 ---
 
