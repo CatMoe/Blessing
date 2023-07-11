@@ -17,8 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.listener.main
 
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
@@ -63,11 +64,11 @@ object MainListener {
         // Firewall who connected after an instant disconnected.
         CompletableFuture.runAsync { if (!pc.isConnected && (handshake.requestedProtocol == 2) && !packetHandler.cancelled.get() && packetHandler.isAvailable.get()) {
             FirewallCache.addAddressTemp(connection.inetAddress(), true)
-        } else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
+        }
+        else if (DomainCheck().increase(AddressCheck(pc.socketAddress as InetSocketAddress))) { pc.disconnect() }
+        else if (handshake.requestedProtocol == 1) { MixedCheck.increase(Pinging(inetAddress)) } }
 
         if (WhitelistObject.isWhitelist(inetAddress)) return
-
-        if (ProxyCache.isProxy(inetAddress)) { connection.close(); addFirewall(inetAddress, pc, false) }
 
         /*
         Prevent too many connections from being established from a single IP

@@ -1,6 +1,8 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
@@ -86,7 +88,7 @@ class MoeInitialHandler(
         But they are actually safe to ignore, I don't want console spam.
          */
        CompletableFuture.runAsync {
-           if (!isConnected) { throw InvalidStatusPingException() }
+           if (!isConnected || ProxyCheck().increase(AddressCheck(socketAddress as InetSocketAddress))) { throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
            MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))

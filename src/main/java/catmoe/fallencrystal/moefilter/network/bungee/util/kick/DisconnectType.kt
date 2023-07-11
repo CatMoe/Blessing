@@ -24,4 +24,5 @@ enum class DisconnectType(@JvmField val messagePath: String) {
     INVALID_NAME("kick.invalid-name"),
     INVALID_HOST("kick.invalid-host"),
     COUNTRY("kick.country"),
+    PROXY("kick.proxy"),
 }

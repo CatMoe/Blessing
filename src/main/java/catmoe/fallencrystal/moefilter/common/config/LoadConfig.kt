@@ -174,6 +174,11 @@ class LoadConfig {
                         "<red>Your country is not allowed on this server.",
                         ""
                     ]
+                    proxy=[
+                        "",
+                        "<red>This server is not allowed proxy/vpn.",
+                        ""
+                    ]
                 }
             """.trimIndent()
 

@@ -52,7 +52,6 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
         if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
         eventCaller.call(EventCallMode.READY_DECODING)
 
-        if (ProxyCache.isProxy(inetAddress)) { FirewallCache.addAddress(inetAddress, true); channel.close(); return }
         if (!channel.isActive) { return }
         MoeChannelHandler.register(pipeline)
         PipelineUtils.BASE.initChannel(channel)

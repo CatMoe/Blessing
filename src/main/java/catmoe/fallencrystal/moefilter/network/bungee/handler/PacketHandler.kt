@@ -11,6 +11,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handl
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
@@ -93,13 +94,14 @@ class PacketHandler : ChannelDuplexHandler() {
 
     private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String): Boolean {
         val inetAddress = inetSocketAddress.address
-        if (!DomainCheck.instance.increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.INVALID_HOST); return true }
-        if (!ValidNameCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return true }
+        if (!DomainCheck.instance.increase(AddressCheck(inetSocketAddress))) { kick(channel, INVALID_HOST); return true }
+        if (!ValidNameCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, INVALID_NAME); return true }
+        if (ProxyCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, PROXY); return true }
         val mixinKick = MixedCheck.increase(Joining(name, inetAddress))
         if (mixinKick != null) { kick(channel, mixinKick); return true }
-        if (CountryCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, DisconnectType.COUNTRY); return true }
-        if (!SimilarityCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.INVALID_NAME); return true }
-        if (!AlreadyOnlineCheck().increase(Joining(name, inetAddress))) { kick(channel, DisconnectType.ALREADY_ONLINE); return true }
+        if (CountryCheck().increase(AddressCheck(inetSocketAddress))) { kick(channel, COUNTRY); return true }
+        if (!SimilarityCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, INVALID_NAME); return true }
+        if (!AlreadyOnlineCheck().increase(Joining(name, inetAddress))) { kick(channel, ALREADY_ONLINE); return true }
         return false
     }
 
