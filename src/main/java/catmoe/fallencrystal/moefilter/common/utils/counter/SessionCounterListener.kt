@@ -23,6 +23,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.AttackEndedEvent
 import catmoe.fallencrystal.moefilter.api.event.events.AttackStartEvent
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 
+@Suppress("unused")
 class SessionCounterListener : EventListener {
     private var inAttack = false
     @FilterEvent

@@ -30,7 +30,8 @@ import net.md_5.bungee.chat.ComponentSerializer
 object ComponentUtil {
     fun toBaseComponents(component: Component): BaseComponent { return TextComponent(*ComponentSerializer.parse(toGson(component))) }
 
-    fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', legacy)) as Component }
+    fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', legacy))
+    }
 
     fun componentToRaw(component: Component): String { return MiniMessage.builder().strict(true).build().serialize(component) }
 

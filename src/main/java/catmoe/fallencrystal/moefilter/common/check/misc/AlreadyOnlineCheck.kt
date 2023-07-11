@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.already_online
+package catmoe.fallencrystal.moefilter.common.check.misc
 
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo

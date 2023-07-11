@@ -210,6 +210,17 @@ class LoadConfig {
                     # 有效名称正则. 默认正则的规则
                     # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
                     valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"
+                    
+                    # 名称相似性检查
+                    # 该检查的踢出理由仍然将是 invalid-name
+                    similarity {
+                        # 是否启用?
+                        enable=false
+                        # 用户名的采样的最大个数
+                        max-list=10
+                        # 当字符串相似度达到该值 则不允许他们加入服务器
+                        length=4
+                    }
                 }
     """.trimIndent()
 

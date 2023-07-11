@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.valid_name
+package catmoe.fallencrystal.moefilter.common.check.misc
 
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
@@ -28,7 +28,7 @@ class ValidNameCheck : AbstractCheck() {
 
     private var regexPattern = "(?i)^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}$"
 
-    init { instance=this }
+    init { instance =this }
 
     override fun increase(info: CheckInfo): Boolean {
         val result = Regex(regexPattern).matches((info as Joining).username)
