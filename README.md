@@ -39,12 +39,22 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
 ---
 
 ## ✨ Features:
-### Antibot:
-- Players connected via geyser are not checked `Only Geyser-BungeeCord!`
-- Configurable Ping & Join mixed checks
-- Disconnect with pre-made packets to preserve performance
-- Do not call `PreLoginEvent` for clients when they are already disconnected
-- Clean console. Don't even need a log filter.
+### Antibot:  
+  - Players connected via geyser are not checked `Only Geyser-BungeeCord!`
+  - Configurable Ping & Join mixed checks
+  - Disconnect with pre-made packets to preserve performance
+  - Do not call `PreLoginEvent` for clients when they are already disconnected
+  - Clean console. Don't even need a log filter.
+  - You can customize how all inspection modules work
+
+   Checks that have been implemented:
+   - Ping & Join Combined checks.
+   - Username checking (to avoid invalid or bot's username)
+   - Connection domain via check
+   - Geolocation (GeoIP) check
+   - Check if the player is already online (Avoid forcing kick online player for same username)
+   - Similar Name Check (Beta)
+   - Prevent bot/player using proxy (built-in proxy scanner + third-party interface)
 
 > The final effect depends on the working mode you choose in `antibot.conf`
 
