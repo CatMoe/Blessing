@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEven
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
+import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyChecker
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -62,7 +63,9 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPreLogin(event: PreLoginEvent) {
-        IPAPIChecker.addAddress((event.connection.socketAddress as InetSocketAddress).address)
+        val inetAddress = (event.connection.socketAddress as InetSocketAddress).address
+        IPAPIChecker.addAddress(inetAddress)
+        ProxyChecker.addAddress(inetAddress)
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.listener.firewall
 
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit
 
 object FirewallCache {
 
+    private var debug = LocalConfig.getConfig().getBoolean("debug")
     private val cache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val tempCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build<InetAddress, Boolean>()
 
@@ -36,7 +38,10 @@ object FirewallCache {
     fun isFirewalled(address: InetAddress): Boolean { return cache.getIfPresent(address) ?: false || tempCache.getIfPresent(address) ?: false }
 
     private fun logFirewalled(address: InetAddress, temp: Boolean) {
+        if (!debug) return
         if (isFirewalled(address)) { if (!temp) { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are firewalled.") } else { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are temp firewalled (30 seconds)") } }
     }
+
+    fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }
 
 }

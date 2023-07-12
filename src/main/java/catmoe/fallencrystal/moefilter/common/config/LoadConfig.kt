@@ -285,21 +285,18 @@ class LoadConfig {
                 
                 # 设置来自https://proxycheck.io的服务
                 proxycheck-io {
-                    enabled=true
+                    enabled=false
                     # API秘钥 您需要在上面注册一个账户才可以使用该服务.
-                    key=["your-key-here"]
-                    # 黑名单属性. 有VPN(代理), Business(主机供应商/企业), Wireless(家用网络)
-                    # 有需要可以将Business也加入 但这会阻止绝大多数加速器 并且有一定的误判风险.
-                    # Wireless没有专门用于区分有线网络和移动数据. 如果需要 请移步至IP-API
-                    blacklisted-type = ["VPN"]
-                    # 跟VPN属性不同. 对于proxycheck那边的解释是 VPN和Proxy不是一种东西 VPN属于虚拟专用网络 而Proxy属于代理.
-                    blacklist-proxy=true
+                    key="your-key-here"
                     # 单日可查询次数限制. 这取决于你的计划. 但由于我们并不真正保存使用次数 
                     # 而是作为插件在检查时的请求次数-1 以避免无限制调用接口.
-                    # 您可以使用多个API账户秘钥. 当到达throttle时 使用另一个API秘钥检查.
                     limit=1000
+                    # 检查并踢出vpn 但可能会导致消耗两次查询机会
+                    check-vpn=false
                     # 每分钟请求限制.
                     throttle=350
+                    # 如果您因为proxies-config中配置的代理而被proxycheck禁止访问 请将其设置为true
+                    direct-response=false
                 }
                 
                 ip-api {
