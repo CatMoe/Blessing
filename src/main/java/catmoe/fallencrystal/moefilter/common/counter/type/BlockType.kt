@@ -15,10 +15,11 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.maxmind
+package catmoe.fallencrystal.moefilter.common.counter.type
 
-enum class CountryMode {
-    DISABLED,
-    WHITELIST,
-    BLACKLIST,
+enum class BlockType {
+    FIREWALL,
+    JOIN,
+    PING,
+    VOID_INTENT
 }

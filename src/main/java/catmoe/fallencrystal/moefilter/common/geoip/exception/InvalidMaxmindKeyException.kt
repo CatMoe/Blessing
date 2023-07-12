@@ -15,11 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.counter.type
+package catmoe.fallencrystal.moefilter.common.geoip.exception
 
-enum class BlockType {
-    FIREWALL,
-    JOIN,
-    PING,
-    VOID_INTENT
+class InvalidMaxmindKeyException(message: String?) : RuntimeException(message){
+    override fun initCause(cause: Throwable?): Throwable { return this }
+    override fun fillInStackTrace(): Throwable { return this }
 }

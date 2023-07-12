@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
-import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler

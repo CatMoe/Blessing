@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.api.proxy
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import okhttp3.OkHttpClient

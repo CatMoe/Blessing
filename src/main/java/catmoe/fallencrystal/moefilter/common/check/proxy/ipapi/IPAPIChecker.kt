@@ -15,13 +15,13 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.proxy.ip_api
+package catmoe.fallencrystal.moefilter.common.check.proxy.ipapi
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
 import okhttp3.OkHttpClient

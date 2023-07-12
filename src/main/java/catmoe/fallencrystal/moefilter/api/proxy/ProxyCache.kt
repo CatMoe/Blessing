@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.api.proxy
 
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResult
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 

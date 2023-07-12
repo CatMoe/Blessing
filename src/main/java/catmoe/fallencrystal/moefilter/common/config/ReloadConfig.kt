@@ -21,12 +21,12 @@ import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.api.proxy.ip_api.IPAPIChecker
+import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.GeoIPManager
+import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect

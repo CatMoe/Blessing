@@ -15,17 +15,17 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.maxmind
+package catmoe.fallencrystal.moefilter.common.geoip
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-import com.maxmind.db.CHMCache
-import com.maxmind.geoip2.DatabaseReader
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.utils.IOUtils
+import com.maxmind.db.CHMCache
+import com.maxmind.geoip2.DatabaseReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -35,6 +35,7 @@ import java.net.Proxy
 import java.net.URL
 import java.nio.channels.Channels
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.GZIPInputStream
 
 /*
@@ -44,11 +45,12 @@ https://github.com/awumii/EpicGuard/blob/master/core/src/main/java/me/xneox/epic
 https://github.com/awumii/EpicGuard/blob/master/core/src/main/java/me/xneox/epicguard/core/util/URLUtils.java
  */
 @Suppress("SpellCheckingInspection")
-class DownloadDatabase(folder: File, license: String) {
+class DownloadDatabase(folder: File) {
 
     private val currentTime = System.currentTimeMillis()
     private val conf = LocalConfig.getProxy().getConfig("country")
     private val parent = File(folder, "/geoip")
+    private val scheduler = Scheduler(MoeFilter.instance)
 
     private var proxy: Proxy? = null
 
@@ -61,30 +63,42 @@ class DownloadDatabase(folder: File, license: String) {
         }
     }
 
-    private val countryDatabase = File(parent, "GeoLite2-Country.mmdb");
-    private val cityDatabase = File(parent, "GeoLite2-City.mmdb");
-    private val countryArchive = File(parent, "GeoLite2-Country.tar.gz");
-    private val cityArchive = File(parent, "GeoLite2-City.tar.gz");
+    private val countryDatabase = File(parent, "GeoLite2-Country.mmdb")
+    private val cityDatabase = File(parent, "GeoLite2-City.mmdb")
+    private val countryArchive = File(parent, "GeoLite2-Country.tar.gz")
+    private val cityArchive = File(parent, "GeoLite2-City.tar.gz")
+    private val countryAvailable = AtomicBoolean(false)
+    private val cityAvailable = AtomicBoolean(false)
+    private val hasError = AtomicBoolean(false)
 
     private val license = conf.getString("key")
     private val timeout = conf.getInt("time-out")
+    private val debug = LocalConfig.getConfig().getBoolean("debug")
 
     init {
         try {
             update()
-            GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
-            GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
-            GeoIPManager.available.set(true)
-            Scheduler(MoeFilter.instance).repeatScheduler(7, 7, TimeUnit.DAYS) { update() }
+            scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
+                if (countryAvailable.get() && cityAvailable.get()) {
+                    GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
+                    GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
+                    GeoIPManager.available.set(true)
+                    scheduler.repeatScheduler(7, 7, TimeUnit.DAYS) { update() }
+                }
+                else if (hasError.get()) { if (debug) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); return@repeatScheduler } }
+                else if (debug) { MessageUtil.logInfo("[MoeFilter] [GeoIP] Waiting download task complete..") }
+            }
         } catch (ex: IOException) {
             MessageUtil.logError("[MoeFilter] [GeoIP] A critical error occurred when initing database files.")
-            listOf(
-                "Database are dropped. This feature will disable until restart the proxy.",
-                "",
-                "If you confirm that there is no problem with your network/proxy.",
-                "And this problem always occurs. Please enable debug mode to print the error stack trace and report that.",
-                "If you close the proxy while downloading. This can also cause this to occur."
-            ).forEach { MessageUtil.logWarn("[MoeFilter] [GeoIP] $it") }
+            if (!hasError.get()) {
+                listOf(
+                    "Database are dropped. This feature will disable until restart the proxy.",
+                    "",
+                    "If you confirm that there is no problem with your network/proxy.",
+                    "And this problem always occurs. Please enable debug mode to print the error stack trace and report that.",
+                    "If you close the proxy while downloading. This can also cause this to occur."
+                ).forEach { MessageUtil.logWarn("[MoeFilter] [GeoIP] $it") }
+            }
             countryDatabase.delete()
             cityDatabase.delete()
             GeoIPManager.available.set(false)
@@ -93,8 +107,28 @@ class DownloadDatabase(folder: File, license: String) {
     }
 
     private fun update() {
-        downloadDatabase(countryDatabase, countryArchive, getUrl(countryDatabase))
-        downloadDatabase(cityDatabase, cityArchive, getUrl(cityDatabase))
+        scheduler.runAsync {
+            try { downloadDatabase(countryDatabase, countryArchive, getUrl(countryDatabase)); countryAvailable.set(true) } catch (ex: Exception) { throwError(countryDatabase, countryArchive, ex); countryAvailable.set(false) }
+        }
+        scheduler.runAsync {
+            try { downloadDatabase(cityDatabase, cityArchive, getUrl(cityDatabase)); cityAvailable.set(true) } catch (ex: Exception) { throwError(cityDatabase, cityArchive, ex); cityAvailable.set(false) }
+        }
+    }
+
+    private fun throwError(db: File, archive: File, throwable: Throwable) {
+        val debug = LocalConfig.getConfig().getBoolean("debug")
+        MessageUtil.logError("[MoeFilter] [GeoIP] A critical error occurred when initing database files. (${db.name})")
+        listOf(
+            "Database are dropped. This feature will disable until restart the proxy.",
+            "",
+            "If you confirm that there is no problem with your network/proxy.",
+            "And this problem always occurs. Please enable debug mode to print the error stack trace and report that.",
+            "If you close the proxy while downloading. This can also cause this to occur."
+        ).forEach { MessageUtil.logWarn("[MoeFilter] [GeoIP] $it") }
+        if (debug) { throwable.printStackTrace() }
+        db.delete()
+        archive.delete()
+        hasError.set(true)
     }
 
 

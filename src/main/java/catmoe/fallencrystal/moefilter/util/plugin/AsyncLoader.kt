@@ -29,11 +29,11 @@ import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
-import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.common.utils.counter.SessionCounterListener
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.CountryMode
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.DownloadDatabase
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.GeoIPManager
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.SessionCounterListener
+import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
+import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
+import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
@@ -137,7 +137,7 @@ class AsyncLoader(val plugin: Plugin) {
             val maxmindLicense = try { LocalConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
             // if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }
-            DownloadDatabase(folder, maxmindLicense)
+            DownloadDatabase(folder)
         }
     }
 

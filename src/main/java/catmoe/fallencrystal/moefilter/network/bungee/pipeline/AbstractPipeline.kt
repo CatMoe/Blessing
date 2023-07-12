@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.utils.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder

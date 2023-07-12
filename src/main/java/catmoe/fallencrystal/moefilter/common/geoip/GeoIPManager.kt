@@ -15,11 +15,11 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.maxmind
+package catmoe.fallencrystal.moefilter.common.geoip
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.CountryMode.DISABLED
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.CountryMode.WHITELIST
+import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.DISABLED
+import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.WHITELIST
 import com.maxmind.geoip2.DatabaseReader
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
@@ -37,7 +37,7 @@ object GeoIPManager {
         val conf = LocalConfig.getProxy().getConfig("country")
         list = GeoIPManager.conf.getStringList("list")
         type = try { CountryMode.valueOf(GeoIPManager.conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
-        this.conf = conf
+        GeoIPManager.conf = conf
     }
 
     fun checkCountry(address: InetAddress): Boolean { return checkCountry(address, type) }

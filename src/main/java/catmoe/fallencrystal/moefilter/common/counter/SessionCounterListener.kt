@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.counter
+package catmoe.fallencrystal.moefilter.common.counter
 
 import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.FilterEvent

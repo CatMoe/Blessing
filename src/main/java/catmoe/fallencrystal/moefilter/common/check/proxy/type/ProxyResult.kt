@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.utils.proxy.type
+package catmoe.fallencrystal.moefilter.common.check.proxy.type
 
 import java.net.InetAddress
 

@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
-import catmoe.fallencrystal.moefilter.common.utils.proxy.type.ProxyResultType
+import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
 import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 

@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.common.check.misc
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
-import catmoe.fallencrystal.moefilter.common.utils.maxmind.GeoIPManager
+import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 
 class CountryCheck : AbstractCheck() {
     override fun increase(info: CheckInfo): Boolean { return GeoIPManager.checkCountry((info as AddressCheck).address.address) }
