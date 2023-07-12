@@ -21,24 +21,31 @@ import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 
 class DomainCheck : AbstractCheck() {
 
    private val cache = Caffeine.newBuilder().build<String, Boolean>()
    private var enable = false
+   private var debug = false
 
    init { instance=this; init() }
    
    override fun increase(info: CheckInfo): Boolean {
-     if (!enable) { return true }
-     return cache.getIfPresent((info as AddressCheck).address.hostString.lowercase()) != null
+      if (!enable) return false
+      val address = (info as AddressCheck).address
+      val host = info.virtualHost!!.hostString
+      if (host == address.address.toString().replace("/", "")) return false
+      if (debug) { MessageUtil.logInfo("[MoeFilter] [AntiBot] [DomainCheck] ${info.address.address} try to connect from $host") }
+      return cache.getIfPresent(host.lowercase()) == null
    }
 
    fun init() {
       cache.invalidateAll()
       val config = LocalConfig.getConfig().getConfig("domain-check")
       enable = config.getBoolean("enabled")
+      debug = LocalConfig.getConfig().getBoolean("debug")
       config.getStringList("allow-lists").forEach { cache.put(it.lowercase(), true) }
    }
 

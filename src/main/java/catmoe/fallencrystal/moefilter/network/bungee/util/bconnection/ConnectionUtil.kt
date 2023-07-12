@@ -28,8 +28,9 @@ import net.md_5.bungee.protocol.DefinedPacket
 import java.lang.reflect.Field
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.SocketAddress
 
-@Suppress("UNUSED")
+@Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
@@ -41,7 +42,13 @@ class ConnectionUtil(val connection: PendingConnection) {
 
     fun isConnected(): Boolean { return connection.isConnected }
 
-    fun inetAddress(): InetAddress { return (connection.socketAddress as InetSocketAddress).address }
+    fun socketAddress(): SocketAddress { return connection.socketAddress }
+
+    fun inetSocketAddress(): InetSocketAddress { return socketAddress() as InetSocketAddress }
+
+    fun virtualHost(): InetSocketAddress { return connection.virtualHost }
+
+    fun inetAddress(): InetAddress { return inetSocketAddress().address }
 
     fun close() { pipeline?.close() ?: connection.disconnect() }
 

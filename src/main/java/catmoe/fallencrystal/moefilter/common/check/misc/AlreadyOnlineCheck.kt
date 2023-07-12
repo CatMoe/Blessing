@@ -23,5 +23,5 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import net.md_5.bungee.BungeeCord
 
 class AlreadyOnlineCheck : AbstractCheck() {
-    override fun increase(info: CheckInfo): Boolean { return BungeeCord.getInstance().getPlayer((info as Joining).username) == null }
+    override fun increase(info: CheckInfo): Boolean { return BungeeCord.getInstance().getPlayer((info as Joining).username) != null }
 }

@@ -31,7 +31,7 @@ class ValidNameCheck : AbstractCheck() {
     init { instance =this }
 
     override fun increase(info: CheckInfo): Boolean {
-        val result = Regex(regexPattern).matches((info as Joining).username)
+        val result = !Regex(regexPattern).matches((info as Joining).username)
         if (result && Throttler.isThrottled(info.address)) { FirewallCache.addAddress(info.address, true) }
         return result
     }

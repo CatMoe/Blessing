@@ -1,8 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
-import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
@@ -33,14 +31,17 @@ class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
     listenerInfo: ListenerInfo,
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
+    private val channel = ctx.channel()
     private var currentState = ConnectionState.HANDSHAKE
+    private var inetSocketAddress: InetSocketAddress? = null
     private var inetAddress: InetAddress? = null
     private var pipeline: ChannelPipeline? = null
     @Throws(Exception::class)
     override fun connected(wrapper: ChannelWrapper) {
         super.connected(wrapper)
-        pipeline = wrapper.handle.pipeline()
-        inetAddress = (socketAddress as InetSocketAddress).address
+        this.pipeline = wrapper.handle.pipeline()
+        this.inetSocketAddress = socketAddress as InetSocketAddress
+        this.inetAddress = this.inetSocketAddress!!.address
     }
 
     @Throws(Exception::class)
@@ -88,7 +89,7 @@ class MoeInitialHandler(
         But they are actually safe to ignore, I don't want console spam.
          */
        CompletableFuture.runAsync {
-           if (!isConnected || ProxyCheck().increase(AddressCheck(socketAddress as InetSocketAddress))) { throw InvalidStatusPingException() }
+           if (!isConnected) { throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
            MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))

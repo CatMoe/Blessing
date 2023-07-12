@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.google.common.collect.EvictingQueue
 import com.typesafe.config.ConfigException
 import me.xdrop.fuzzywuzzy.FuzzySearch
@@ -32,16 +33,22 @@ class SimilarityCheck : AbstractCheck() {
     private var enable = config.getBoolean("enable")
     private var length = config.getInt("length")
 
+    private var debug = LocalConfig.getConfig().getBoolean("debug")
+
     private var queue = EvictingQueue.create<String>(maxList)
 
     init { instance=this }
 
     override fun increase(info: CheckInfo): Boolean {
-        if (!enable) { super.increase(info) }
+        if (!enable) { return false }
         val name = (info as Joining).username.lowercase()
-        queue.forEach { if (FuzzySearch.weightedRatio(it, name) >= length) { return false } }
+        queue.forEach {
+            val ratio = FuzzySearch.weightedRatio(it, name)
+            if (debug) { MessageUtil.logInfo("[MoeFilter] [AntiBot] [SimilarityCheck] Fuzzy searching $it for $name ($ratio length)") }
+            if (ratio >= length) { return true }
+        }
         queue.add(name)
-        return true
+        return false
     }
 
     fun reload() {
@@ -51,6 +58,7 @@ class SimilarityCheck : AbstractCheck() {
         length = config.getInt("length")
         this.queue.clear()
         this.queue = EvictingQueue.create(maxList)
+        this.debug = LocalConfig.getConfig().getBoolean("debug")
     }
 
     companion object {

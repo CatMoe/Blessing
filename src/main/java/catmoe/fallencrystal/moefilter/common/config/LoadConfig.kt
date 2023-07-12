@@ -47,7 +47,7 @@ class LoadConfig {
     private val defaultConfig = """
                 version="$version"
                 # 启用调试? 启用后可以获得更多的用法用于调试
-                # 不要在生产环境中使用这个! 它可能会泄露你的服务器的关键信息.
+                # 不要在生产环境中使用这个! 它可能会导致发送大量垃圾邮件降低性能或泄露你的服务器的关键信息.
                 debug=false
                 
                 # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).

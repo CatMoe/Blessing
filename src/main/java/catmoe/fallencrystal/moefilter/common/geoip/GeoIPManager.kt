@@ -35,9 +35,9 @@ object GeoIPManager {
 
     fun reload() {
         val conf = LocalConfig.getProxy().getConfig("country")
-        list = GeoIPManager.conf.getStringList("list")
-        type = try { CountryMode.valueOf(GeoIPManager.conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
-        GeoIPManager.conf = conf
+        this.list = conf.getStringList("list")
+        this.type = try { CountryMode.valueOf(conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
+        this.conf = conf
     }
 
     fun checkCountry(address: InetAddress): Boolean { return checkCountry(address, type) }
@@ -46,7 +46,7 @@ object GeoIPManager {
         if (!available.get() || type == DISABLED) return false
         val country = getISOCode(address)
         if (country == "NULL") return false
-        return if (type == WHITELIST) list.contains(country) else list.contains(country)
+        return if (type == WHITELIST) !list.contains(country) else list.contains(country)
     }
 
     fun getISOCode(address: InetAddress): String { return try { (country ?: return "NULL").country(address).country.isoCode } catch (_: Exception) { "NULL" } }

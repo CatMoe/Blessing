@@ -61,7 +61,7 @@ class ReloadConfig : EventListener {
         ProxyChecker.schedule()
         // Init checks
         try { SimilarityCheck.instance.reload() } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() }
-        try { DomainCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { DomainCheck() }
+        try { DomainCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { DomainCheck().init() }
         try { ValidNameCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck().init() }
     }
 
