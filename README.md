@@ -135,4 +135,8 @@ This project contains code borrowed from the following repository.
 
 ---
 
+#### Contributors:
+
+![Contributors](https://contrib.rocks/image?repo=CatMoe/MoeFilter)
+
 Made by [@CatMoe](https://github.com/CatMoe) / [@FallenCrystal](https://github.com/FallenCrystal) on 🌏 with 💖
