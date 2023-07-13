@@ -22,9 +22,12 @@ import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.typesafe.config.ConfigException
 import me.xdrop.fuzzywuzzy.FuzzySearch
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 @Suppress("UnstableApiUsage")
 class SimilarityCheck : AbstractCheck() {
@@ -33,6 +36,11 @@ class SimilarityCheck : AbstractCheck() {
     private var enable = config.getBoolean("enable")
     private var length = config.getInt("length")
 
+    private var validTime = config.getLong("valid-time")
+    private var validCache = Caffeine.newBuilder().expireAfterWrite(validTime, TimeUnit.SECONDS).build<String, Boolean>()
+
+    private val banned: MutableCollection<String> = CopyOnWriteArrayList()
+
     private var debug = LocalConfig.getConfig().getBoolean("debug")
 
     private var queue = EvictingQueue.create<String>(maxList)
@@ -40,14 +48,21 @@ class SimilarityCheck : AbstractCheck() {
     init { instance=this }
 
     override fun increase(info: CheckInfo): Boolean {
-        if (!enable) { return false }
+        if (!enable) return false
         val name = (info as Joining).username.lowercase()
-        queue.forEach {
-            val ratio = FuzzySearch.weightedRatio(it, name)
-            if (debug) { MessageUtil.logInfo("[MoeFilter] [AntiBot] [SimilarityCheck] Fuzzy searching $it for $name ($ratio length)") }
-            if (ratio >= length) { return true }
+        if (banned.joinToString("|").toRegex().matches(name)) return true
+        val iterator = queue.iterator()
+        while (iterator.hasNext()) {
+            val it = iterator.next()
+            if (validCache.getIfPresent(it) == true) {
+                if (it == name) { return false } // 防止重新连接的玩家被误判
+                val ratio = FuzzySearch.weightedRatio(it, name)
+                if (debug) { MessageUtil.logInfo("[MoeFilter] [AntiBot] [SimilarityCheck] Fuzzy searching $it for $name ($ratio length)") }
+                if (ratio >= length) { banned.add(name.substring(length)); return true }
+            } else { queue.remove(it) }
         }
         queue.add(name)
+        validCache.put(name, true)
         return false
     }
 
@@ -59,6 +74,8 @@ class SimilarityCheck : AbstractCheck() {
         this.queue.clear()
         this.queue = EvictingQueue.create(maxList)
         this.debug = LocalConfig.getConfig().getBoolean("debug")
+        this.validTime = config.getLong("valid-time")
+        this.validCache = Caffeine.newBuilder().expireAfterWrite(validTime, TimeUnit.SECONDS).build()
     }
 
     companion object {

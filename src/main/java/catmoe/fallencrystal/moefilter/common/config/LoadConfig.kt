@@ -228,6 +228,9 @@ class LoadConfig {
                         enable=false
                         # 用户名的采样的最大个数
                         max-list=10
+                        # 名称有效时间 如果无效 则丢弃. (秒)
+                        # 避免玩家多次加入导致封禁玩家
+                        valid-time=4
                         # 当字符串相似度达到该值 则不允许他们加入服务器
                         length=4
                     }
