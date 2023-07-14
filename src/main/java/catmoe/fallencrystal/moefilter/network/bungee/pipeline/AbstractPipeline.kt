@@ -1,9 +1,8 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
@@ -46,7 +45,7 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
 
         ConnectionCounter.increase(inetAddress)
         eventCaller.call(EventCallMode.AFTER_INIT)
-        if (FirewallCache.isFirewalled(inetAddress)) { channel.close(); return }
+        if (Firewall.isFirewalled(inetAddress)) { channel.close(); return }
         eventCaller.call(EventCallMode.NON_FIREWALL)
         if (Throttler.increase(inetAddress)) { channel.close(); return }
         if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }

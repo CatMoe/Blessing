@@ -21,8 +21,8 @@ import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 
 class ValidNameCheck : AbstractCheck() {
 
@@ -32,7 +32,7 @@ class ValidNameCheck : AbstractCheck() {
 
     override fun increase(info: CheckInfo): Boolean {
         val result = !Regex(regexPattern).matches((info as Joining).username)
-        if (result && Throttler.isThrottled(info.address)) { FirewallCache.addAddress(info.address, true) }
+        if (result && Throttler.isThrottled(info.address)) { Firewall.addAddress(info.address) }
         return result
     }
 

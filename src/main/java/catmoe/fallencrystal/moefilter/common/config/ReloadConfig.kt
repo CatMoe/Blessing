@@ -27,9 +27,9 @@ import catmoe.fallencrystal.moefilter.common.check.misc.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyChecker
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
@@ -50,14 +50,18 @@ class ReloadConfig : EventListener {
             warnMessage(event)
             MixedCheck.reload()
             GeoIPManager.reload()
+            Firewall.load()
         }
-        else { LoadCommand().load(); IPAPIChecker.schedule() }
+        else {
+            LoadCommand().load()
+            IPAPIChecker.schedule()
+            Firewall.reload()
+        }
         ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
         ExceptionCatcher.reload()
         Throttler.reload()
-        FirewallCache.reload()
         ProxyChecker.schedule()
         // Init checks
         try { SimilarityCheck.instance.reload() } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() }

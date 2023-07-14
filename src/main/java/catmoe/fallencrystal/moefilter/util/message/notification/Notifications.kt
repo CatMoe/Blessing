@@ -31,6 +31,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
+@Suppress("SameParameterValue")
 object Notifications {
     /*
     Don't put val ObjectConfig.getMessage() here.
@@ -67,7 +68,7 @@ object Notifications {
         if (autoNotificationPlayer.isNotEmpty()) { autoNotificationPlayer.removeAll(spyNotificationPlayers) }
         val message = config.getString("actionbar.style")
         var output = message
-        internalPlaceholder.forEach { (placeholder, value) -> output = output.replace(placeholder, value) }
+        internalPlaceholder.forEach { output = output.replace(it.key, it.value) }
         if (autoNotificationPlayer.isNotEmpty()) { sendActionbar(autoNotificationPlayer, output) }
         if (spyNotificationPlayers.isNotEmpty()) { sendActionbar(spyNotificationPlayers, output) }
     }

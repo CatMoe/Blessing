@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("UnstableApiUsage")
 class SimilarityCheck : AbstractCheck() {
-    private var config = LocalConfig.getAntibot().getConfig("general.similarity")
+    private var config = LocalConfig.getAntibot().getConfig("similarity")
     private var maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
     private var enable = config.getBoolean("enable")
     private var length = config.getInt("length")

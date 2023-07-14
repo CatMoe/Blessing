@@ -238,12 +238,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
@@ -254,6 +248,18 @@
             <artifactId>kotlin-jps-plugin</artifactId>
             <version>1.9.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.13.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--suppress VulnerableLibrariesLocal -->

@@ -22,8 +22,8 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedType.*
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -62,7 +62,7 @@ object MixedCheck {
             }
         }
         if (info is Pinging) {
-            if (Throttler.isThrottled(info.address)) { FirewallCache.addAddressTemp(info.address, true) }
+            if (Throttler.isThrottled(info.address)) { Firewall.addAddressTemp(info.address) }
             else { cachePing(info.address, true) }
             return null
         }

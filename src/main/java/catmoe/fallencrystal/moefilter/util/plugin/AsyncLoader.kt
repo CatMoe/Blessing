@@ -36,6 +36,7 @@ import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
+import catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
 import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
@@ -120,8 +121,8 @@ class AsyncLoader(val plugin: Plugin) {
         when (try { WorkingMode.valueOf(LocalConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }) {
             PIPELINE -> { InitChannel().initPipeline() }
             EVENT -> {
-                val waterfallListener = catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall.IncomingListener()
-                val commonListener = catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener()
+                val waterfallListener = catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
+                val commonListener = IncomingListener()
                 val choose = if (LoggerManager.getType() == BCLogType.WATERFALL) waterfallListener else commonListener
                 pluginManager.registerListener(plugin, choose)
                 LoggerManager.registerFilter(ExceptionFilter())

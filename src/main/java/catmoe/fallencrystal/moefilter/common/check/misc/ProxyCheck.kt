@@ -22,15 +22,15 @@ import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 
 class ProxyCheck : AbstractCheck() {
     override fun increase(info: CheckInfo): Boolean {
         val inetAddress = (info as AddressCheck).address.address
         val result = ProxyCache.getProxy(inetAddress) ?: return false
-        if (result.type == ProxyResultType.INTERNAL) { FirewallCache.addAddress(inetAddress, true)}
-        else if (Throttler.isThrottled(inetAddress)) { FirewallCache.addAddress(inetAddress, true) }
+        if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress)}
+        else if (Throttler.isThrottled(inetAddress)) { Firewall.addAddress(inetAddress) }
         return true
     }
 }

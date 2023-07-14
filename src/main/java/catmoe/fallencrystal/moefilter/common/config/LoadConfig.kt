@@ -220,8 +220,9 @@ class LoadConfig {
                     # 有效名称正则. 默认正则的规则
                     # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
                     valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"
-                    
-                    # 名称相似性检查
+                }
+                
+                # 名称相似性检查
                     # 该检查的踢出理由仍然将是 invalid-name
                     similarity {
                         # 是否启用?
@@ -234,6 +235,16 @@ class LoadConfig {
                         # 当字符串相似度达到该值 则不允许他们加入服务器
                         length=4
                     }
+                
+                # 防火墙缓解
+                firewall {
+                    # INTERNAL: 内置L7层缓解
+                    # SYSTEM: iptables&ipset L4层缓解
+                    # INTERNAL_AND_SYSTEM: 两者结合
+                    # SYSTEM需要在Linux系统上使用,运行的实例必须有root权限 且已安装iptables&ipset
+                    mode=INTERNAL
+                    # 临时封禁有效时间 单位为秒. 需重启服务器生效
+                    temp-expire-time=30
                 }
     """.trimIndent()
 

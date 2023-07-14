@@ -15,10 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.listener.firewall.type
+package catmoe.fallencrystal.moefilter.common.firewall
 
 enum class FirewallType {
-    IPTABLES,
-    NORMAL,
-    NORMAL_IPTABLES,
+    INTERNAL,
+    SYSTEM,
+    INTERNAL_AND_SYSTEM
 }

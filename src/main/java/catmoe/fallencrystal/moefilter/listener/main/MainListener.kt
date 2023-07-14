@@ -22,9 +22,9 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
-import catmoe.fallencrystal.moefilter.listener.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
@@ -51,14 +51,14 @@ object MainListener {
         // Don't firewall them.
         if (connectionCache.getIfPresent(inetAddress) == true) { return false } else { connectionCache.put(inetAddress, true) }
         ConnectionCounter.increase(inetAddress)
-        return FirewallCache.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
+        return Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
     }
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
         val inetAddress = connection.inetAddress()
         connectionCache.invalidate(inetAddress)
-        if (FirewallCache.isFirewalled(inetAddress)) { connection.close(); return }
+        if (Firewall.isFirewalled(inetAddress)) { connection.close(); return }
         if (Throttler.isThrottled(inetAddress)) { connection.close() }
         val packetHandler = PacketHandler()
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
@@ -89,7 +89,7 @@ object MainListener {
          */
         // 1 = Ping  2 = Join  else = illegal connection.
         val method = handshake.requestedProtocol
-        if (method > 2 || method < 1) { connection.close(); FirewallCache.addAddress(inetAddress, false); return }
+        if (method > 2 || method < 1) { connection.close(); Firewall.addAddress(inetAddress); return }
 
         if (connection.isConnected()) {
             val pipeline = connection.getPipeline() ?: return
@@ -97,12 +97,12 @@ object MainListener {
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
             pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
             pipeline.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        } else { if (method != 1) { FirewallCache.addAddressTemp(inetAddress, true) } }
+        } else { if (method != 1) { Firewall.addAddressTemp(inetAddress) } }
     }
 
     private fun addFirewall(connection: ConnectionUtil, temp: Boolean) {
         val address = connection.inetAddress()
-        if (temp) FirewallCache.addAddressTemp(address, true) else FirewallCache.addAddress(address, true)
+        if (temp) Firewall.addAddressTemp(address) else Firewall.addAddress(address)
         connection.close()
     }
 

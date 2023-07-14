@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.listener.firewall
+package catmoe.fallencrystal.moefilter.common.firewall
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -35,5 +35,5 @@ object Throttler {
 
     fun isThrottled(address: InetAddress): Boolean { return (ipCache.getIfPresent(address) ?: 0) >= throttle }
 
-    fun reload() { this.throttle=LocalConfig.getConfig().getInt("throttle-limit") }
+    fun reload() { throttle =LocalConfig.getConfig().getInt("throttle-limit") }
 }

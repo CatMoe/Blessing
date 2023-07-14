@@ -21,7 +21,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-object RuntimeUtil {
+object CommandUtil {
     fun execute(vararg command: String): Process? {
         return try {
             val commands = arrayOf("/bin/bash", "-c") + command

@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.listener.firewall.FirewallCache
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.DebugException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
@@ -37,9 +37,9 @@ object ExceptionCatcher {
         val address = (channel.remoteAddress() as InetSocketAddress).address
         if (cause is IOException) return
         if (cause is DebugException) { cause.printStackTrace(); return }
-        if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { FirewallCache.addAddress(address, true); return }
+        if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { Firewall.addAddress(address); return }
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection force closed because your config has critical issue"); cause.printStackTrace(); return }
-        FirewallCache.addAddressTemp(address, true)
+        Firewall.addAddressTemp(address)
     }
 
     fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }
