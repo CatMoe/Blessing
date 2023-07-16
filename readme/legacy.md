@@ -169,6 +169,7 @@ BotFilter足以降低坏数据包和机器人带来的影响. 因其虚拟服务
        - 这边注入Netty管道handle LoginRequest数据包 那边监听PreLoginEvent 双倍伤害
        - 依靠控制台Filter忽略异常并声称自己有数据包拦截能力 "我们找到了一种真正的办法来抵御此攻击"
        - 所谓的数据包拦截计数器其实就是传入到服务端的连接计数器而已
+       - 使用LinkageMap制作黑名单而不是选择使用缓存
   - [Sonar](https://github.com/jonesdevelopment/sonar)
        - 我目前见过最好的开源反机器人插件
        - 但.. 它多少有些囊肿了
