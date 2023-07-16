@@ -26,11 +26,15 @@ import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
+import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
+import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
+import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.SessionCounterListener
+import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
@@ -50,6 +54,7 @@ import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
+@Suppress("SpellCheckingInspection")
 class AsyncLoader(val plugin: Plugin) {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
@@ -95,6 +100,9 @@ class AsyncLoader(val plugin: Plugin) {
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
                 loadAntibot()
+                LoadCommand().load()
+                Firewall.reload()
+                loadProxyAPI()
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage
@@ -129,6 +137,12 @@ class AsyncLoader(val plugin: Plugin) {
             }
             DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }
+    }
+
+    private fun loadProxyAPI() {
+        val conf = LocalConfig.getProxy()
+        if (conf.getBoolean("ip-api.enable")) ProxyChecker.addAPI(IPAPIChecker())
+        if (conf.getBoolean("proxycheck-io.enable")) ProxyChecker.addAPI(ProxyCheck())
     }
 
     private fun loadMaxmindDatabase() {

@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.proxy.IProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
@@ -34,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-object ProxyChecker {
+class ProxyCheck : IProxyChecker {
     private val schedule = Scheduler(MoeFilter.instance)
 
     private var config = LocalConfig.getProxy().getConfig("proxycheck-io")
@@ -50,17 +51,21 @@ object ProxyChecker {
     private val queue: Queue<InetAddress> = ArrayDeque()
     private  val checked = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private var checkSchedule: ScheduledTask? = null
+    private var allSchedule: MutableCollection<ScheduledTask> = CopyOnWriteArrayList()
     private val queuedLimit: MutableList<InetAddress> = CopyOnWriteArrayList()
 
-    fun schedule() {
-        schedule.repeatScheduler(1, 1, TimeUnit.MINUTES) { minuteCount.set(0) }
-        schedule.repeatScheduler(1, 1, TimeUnit.DAYS) { checkCount.set(0); queue.addAll(queuedLimit) }
-        this.check()
+    override fun schedule() {
+        allSchedule.add(schedule.repeatScheduler(1, 1, TimeUnit.MINUTES) { minuteCount.set(0) })
+        allSchedule.add(schedule.repeatScheduler(1, 1, TimeUnit.DAYS) { checkCount.set(0); queue.addAll(queuedLimit) })
+        this.check(null)
     }
 
-    fun addAddress(address: InetAddress) { if (checked.getIfPresent(address) == null && !ProxyCache.isProxy(address)) { queue.add(address) } }
+    override fun stopSchedule() { allSchedule.forEach { it.cancel() } }
 
-    private fun check() {
+    override fun addAddress(address: InetAddress) { if (checked.getIfPresent(address) == null && !ProxyCache.isProxy(address)) { queue.add(address) } }
+
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+    override fun check(empty: InetAddress?): Boolean {
         checkSchedule=schedule.repeatScheduler(200, TimeUnit.MILLISECONDS) {
             val checkCount = this.checkCount.get()
             val minuteCount = this.minuteCount.get()
@@ -86,6 +91,8 @@ object ProxyChecker {
                 }
             }
         }
+        allSchedule.add(checkSchedule!!)
+        return true
     }
 
     private fun parseProxy(input: String): Boolean {

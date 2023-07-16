@@ -23,10 +23,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
-import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
-import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyChecker
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
-import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -35,8 +32,8 @@ import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
-import java.net.InetSocketAddress
 
+@Suppress("SpellCheckingInspection")
 class BungeeEvent : Listener {
 
     private val proxy = ProxyServer.getInstance()
@@ -46,12 +43,14 @@ class BungeeEvent : Listener {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
         if (event.isProxyCommand && event.message.equals("/bungee")) {
             Scheduler(MoeFilter.instance).runAsync {
-                val bungeeMessage = listOf(
-                    "<gradient:green:yellow>This server is running <aqua><hover:show_text:'<rainbow>${proxy.name} ${proxy.version}'>${proxy.name}</hover></aqua> & <gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilter.instance.description.version}</gradient> ❤</gradient>",
-                    "<gradient:#9BCD9B:#FFE4E1><click:open_url:'https://github.com/CatMoe/MoeFilter/'>CatMoe/MoeFilter</click> @ <click:open_url:'https://www.miaomoe.net/'>miaomoe.net</click></gradient>")
-                MessageUtil.sendMessage(bungeeMessage.joinToString("<reset><newline>"), MessagesType.CHAT, ConnectionUtil(player.pendingConnection))
-            }
-            event.isCancelled = true
+                MessageUtil.sendMessage(listOf(
+                        "<gradient:green:yellow>This server is running " +
+                                "<aqua><hover:show_text:'<rainbow>${proxy.name} ${proxy.version}'>${proxy.name}</hover></aqua> & " +
+                                "<gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilter.instance.description.version}</gradient> ❤</gradient>",
+                        "<gradient:#9BCD9B:#FFE4E1><click:open_url:'https://github.com/CatMoe/MoeFilter/'>CatMoe/MoeFilter</click> @ " +
+                                "<click:open_url:'https://www.miaomoe.net/'>miaomoe.net</click></gradient>"
+                    ).joinToString("<reset><newline>"), MessagesType.CHAT, player)
+            }; event.isCancelled = true; return
         }
         EventManager.triggerEvent(AsyncChatEvent(
             player,
@@ -60,13 +59,6 @@ class BungeeEvent : Listener {
             event.isCancelled,
             event.message
         )) }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    fun onPreLogin(event: PreLoginEvent) {
-        val inetAddress = (event.connection.socketAddress as InetSocketAddress).address
-        IPAPIChecker.addAddress(inetAddress)
-        ProxyChecker.addAddress(inetAddress)
-    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPostLogin(event: PostLoginEvent) { EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) }

@@ -298,8 +298,9 @@ class LoadConfig {
                 }
                 
                 # 设置来自https://proxycheck.io的服务
+                # 修改此选项需要重启服务器.
                 proxycheck-io {
-                    enabled=false
+                    enable=false
                     # API秘钥 您需要在上面注册一个账户才可以使用该服务.
                     key="your-key-here"
                     # 单日可查询次数限制. 这取决于你的计划. 但由于我们并不真正保存使用次数 
@@ -313,11 +314,10 @@ class LoadConfig {
                     direct-response=false
                 }
                 
+                # 是否使用来自ip-api提供的检测代理服务
+                # 修改此选项需要重启服务器.
                 ip-api {
-                    enabled=true
-                    # 每分钟请求限制 超过此限制后 处理将被跳过或等待.
-                    throttle=45
-                    blacklist-proxy=true
+                    enable=true
                 }
                 
                 # GeoIP设置 @MaxMind Database
