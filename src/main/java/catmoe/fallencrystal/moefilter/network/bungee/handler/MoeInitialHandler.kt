@@ -93,7 +93,7 @@ class MoeInitialHandler(
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
            MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))
-           try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} // Actually inject netty failed.
+           try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} catch (_: NullPointerException) {} // Actually inject netty failed.
         }
     }
 
