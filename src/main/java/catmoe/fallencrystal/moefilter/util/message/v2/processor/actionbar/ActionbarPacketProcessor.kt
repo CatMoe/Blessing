@@ -20,7 +20,9 @@ package catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageActionbarPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
+import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
@@ -30,6 +32,7 @@ import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
 
+@PacketMessageType(MessagesType.ACTION_BAR)
 class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     val aOrdinal = ChatMessageType.ACTION_BAR.ordinal

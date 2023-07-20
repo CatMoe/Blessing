@@ -209,7 +209,7 @@ class LoadConfig {
                     # PING_AFTER_RECONNECT: 重新连接后Ping
                     # STABLE: 独立模块互相工作
                     # DISABLED: 禁用
-                    join-ping-mixin-mode=PING_AFTER_RECONNECT
+                    join-ping-mixin-mode=RECONNECT
                     
                     # join+ping的检查的缓存过期时间 (秒)
                     # 如果您或您的玩家遇到连续要求的问题
