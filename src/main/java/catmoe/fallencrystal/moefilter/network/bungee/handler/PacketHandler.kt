@@ -6,6 +6,8 @@ import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
+import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
+import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil

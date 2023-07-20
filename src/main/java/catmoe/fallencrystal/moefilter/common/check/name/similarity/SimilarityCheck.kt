@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.misc
+package catmoe.fallencrystal.moefilter.common.check.name.similarity
 
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("UnstableApiUsage")
 class SimilarityCheck : AbstractCheck() {
-    private var config = LocalConfig.getAntibot().getConfig("similarity")
+    private var config = LocalConfig.getAntibot().getConfig("name-check.similarity")
     private var maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
     private var enable = config.getBoolean("enable")
     private var length = config.getInt("length")
@@ -45,7 +45,7 @@ class SimilarityCheck : AbstractCheck() {
 
     private var queue = EvictingQueue.create<String>(maxList)
 
-    init { instance=this }
+    init { instance =this }
 
     override fun increase(info: CheckInfo): Boolean {
         if (!enable) return false

@@ -15,11 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.misc
+package catmoe.fallencrystal.moefilter.common.check.name.valid
 
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.common.check.name.valid.AutoFirewallMode.*
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
@@ -28,15 +29,29 @@ class ValidNameCheck : AbstractCheck() {
 
     private var regexPattern = "(?i)^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}$"
 
+    private var autoFirewallMode = DISABLED
+
     init { instance =this }
 
     override fun increase(info: CheckInfo): Boolean {
         val result = !Regex(regexPattern).matches((info as Joining).username)
-        if (result && Throttler.isThrottled(info.address)) { Firewall.addAddress(info.address) }
+        val address = info.address
+        if (result) {
+            when (autoFirewallMode) {
+                THROTTLE -> { if (Throttler.isThrottled(address)) { Firewall.addAddressTemp(address) } }
+                ALWAYS -> { Firewall.addAddressTemp(address) }
+                ATTACK -> {}
+                DISABLED -> {}
+            }
+        }
         return result
     }
 
-    fun init() { regexPattern=LocalConfig.getAntibot().getString("general.valid-regex") }
+    fun init() {
+        val config = LocalConfig.getAntibot().getConfig("name-check.valid-check")
+        regexPattern=config.getString("valid-regex")
+        autoFirewallMode=try { AutoFirewallMode.valueOf(config.getAnyRef("firewall-mode").toString()) } catch (_: Exception) { DISABLED }
+    }
 
     companion object {
         lateinit var instance: ValidNameCheck

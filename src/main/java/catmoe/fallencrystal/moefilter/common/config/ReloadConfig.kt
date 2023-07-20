@@ -22,8 +22,8 @@ import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
-import catmoe.fallencrystal.moefilter.common.check.misc.SimilarityCheck
-import catmoe.fallencrystal.moefilter.common.check.misc.ValidNameCheck
+import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
+import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler

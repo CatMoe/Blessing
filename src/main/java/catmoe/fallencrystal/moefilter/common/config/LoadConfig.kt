@@ -216,13 +216,23 @@ class LoadConfig {
                     # 请尝试将值调高直到适合您或您的玩家通过检查
                     # 但也不要填写一个较大的值.
                     max-cache-time=10
-                    
-                    # 有效名称正则. 默认正则的规则
-                    # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
-                    valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"
                 }
                 
-                # 名称相似性检查
+                name-check {
+                    # 名称有效性检查
+                    valid-check {
+                        # 有效名称正则. 默认正则的规则. 如需禁用检查 将其设为 "" 即可.
+                        # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
+                        valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute))[A-Za-z0-9_]{3,16}${'$'}"
+                        # 自动防火墙配置 (此选项将会将触发此检查的玩家列入临时黑名单)
+                        # THROTTLE: 当触发此检查时如果刚好触发连接限制 则黑名单
+                        # ALWAYS: 始终将触发此检查的IP列入黑名单
+                        # ATTACK: 当在遭到攻击时始终将其列入黑名单 (无用, 因为攻击事件等代码未完全实施)
+                        # DISABLED: 仅踢出
+                        firewall-mode=ALWAYS
+                    }
+                    
+                    # 名称相似性检查
                     # 该检查的踢出理由仍然将是 invalid-name
                     similarity {
                         # 是否启用?
@@ -235,6 +245,7 @@ class LoadConfig {
                         # 当字符串相似度达到该值 则不允许他们加入服务器
                         length=4
                     }
+                }
                 
                 # 防火墙缓解
                 firewall {
