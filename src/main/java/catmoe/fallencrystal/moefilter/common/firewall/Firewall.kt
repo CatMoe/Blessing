@@ -64,6 +64,7 @@ object Firewall {
     private fun logFirewalled(address: InetAddress, temp: Boolean) {
         if (!debug) return
         if (isFirewalled(address)) { if (!temp) { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are firewalled.") } else { MessageUtil.logInfo("[MoeFilter] [AntiBot] $address are temp firewalled (30 seconds)") } }
+        Throwable().printStackTrace()
     }
 
     private fun addressToString(address: InetAddress): String { return address.toString().replace("/", "") }
