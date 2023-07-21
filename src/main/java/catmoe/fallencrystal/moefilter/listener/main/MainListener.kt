@@ -46,17 +46,26 @@ object MainListener {
 
     private val connectionCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
 
+    private val bungee = BungeeCord.getInstance()
+
+    private var isProxyProtocol = false
+
+    fun init() {
+        bungee.config.listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol=true } }
+    }
+
     fun initConnection(address: SocketAddress): Boolean {
         val inetAddress = (address as InetSocketAddress).address
         // Don't firewall them.
         if (connectionCache.getIfPresent(inetAddress) == true) { return false } else { connectionCache.put(inetAddress, true) }
-        ConnectionCounter.increase(inetAddress)
+        if (!isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
         return Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
     }
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
         val inetAddress = connection.inetAddress()
+        if (isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
         connectionCache.invalidate(inetAddress)
         if (Firewall.isFirewalled(inetAddress)) { connection.close(); return }
         if (Throttler.isThrottled(inetAddress)) { connection.close() }

@@ -21,11 +21,11 @@ import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import com.maxmind.db.CHMCache
+import com.maxmind.geoip2.DatabaseReader
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.utils.IOUtils
-import com.maxmind.db.CHMCache
-import com.maxmind.geoip2.DatabaseReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -83,7 +83,7 @@ class DownloadDatabase(folder: File) {
                     GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
                     GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
                     GeoIPManager.available.set(true)
-                    scheduler.repeatScheduler(7, 7, TimeUnit.DAYS) { update() }
+                    scheduler.repeatScheduler(1, 1, TimeUnit.DAYS) { update() }
                 }
                 else if (hasError.get()) { if (debug) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); return@repeatScheduler } }
                 else if (debug) { MessageUtil.logInfo("[MoeFilter] [GeoIP] Waiting download task complete..") }

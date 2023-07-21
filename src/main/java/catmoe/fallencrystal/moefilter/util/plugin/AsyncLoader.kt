@@ -42,6 +42,7 @@ import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
+import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
@@ -103,6 +104,7 @@ class AsyncLoader(val plugin: Plugin) {
                 LoadCommand().load()
                 Firewall.reload()
                 loadProxyAPI()
+                MainListener.init()
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage

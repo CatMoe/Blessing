@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.api.command.impl.HelpCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.ReloadCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.ToggleNotificationCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
+import catmoe.fallencrystal.moefilter.api.command.impl.test.TestWebhookCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.gui.TestGuiCommand
 
 class LoadCommand {
@@ -33,10 +34,11 @@ class LoadCommand {
     private fun loadCommand() {
         CommandManager.register(HelpCommand())
         CommandManager.register(ToggleNotificationCommand())
+        CommandManager.register(ReloadCommand())
 
         // All debug command managers by @DebugCommand annotation
-        CommandManager.register(ReloadCommand())
         CommandManager.register(TestKickCommand())
         CommandManager.register(TestGuiCommand())
+        CommandManager.register(TestWebhookCommand())
     }
 }

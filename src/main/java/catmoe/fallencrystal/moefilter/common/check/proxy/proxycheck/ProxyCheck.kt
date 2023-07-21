@@ -88,6 +88,7 @@ class ProxyCheck : IProxyChecker {
                             queue.clear()
                         }
                     } catch (ex: Exception) { if (LocalConfig.getConfig().getBoolean("debug")) { ex.printStackTrace() }; queue.add(address) }
+                    client.getResponse().close()
                 }
             }
         }

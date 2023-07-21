@@ -23,19 +23,23 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.ReflectionUtils
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
-import net.md_5.bungee.api.ProxyServer
+import net.md_5.bungee.BungeeCord
 import java.util.concurrent.atomic.AtomicBoolean
 
 class InitChannel {
+
     private val knownIncompatibilitiesBungee = listOf("NullCordX", "XCord", "BetterBungee")
     private val knownIncompatibilitiesPlugin = listOf("AntiAttackRL", "HAProxyDetector", "JH_AntiBot", "nAntiBot", "BotSentry")
 
-    private val bungee = ProxyServer.getInstance()
+    private val bungee = BungeeCord.getInstance()
+    private var isProxyProtocol = false
     private var pipeline: ChannelInitializer<Channel> = BungeePipeline()
 
     fun initPipeline() {
         log("Starting inject MoeFilter Pipeline...")
         val proxyName = bungee.name
+        bungee.getConfig().listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol = true } }
+        if (isProxyProtocol) { log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.") }
         for (it in knownIncompatibilitiesBungee) { if (it.contains(proxyName)) { log("<red>Failed to inject because incompatibilities for $it bungeecord fork!"); bungee.stop(); return } }
         for (it in knownIncompatibilitiesPlugin) { if (bungee.pluginManager.getPlugin(it) != null) { log("<red>Failed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first."); bungee.stop(); return } }
         if (proxyName.contains("BotFilter")) { pipeline=BotFilterPipeline() }

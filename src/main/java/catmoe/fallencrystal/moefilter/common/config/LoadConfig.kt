@@ -68,7 +68,7 @@ class LoadConfig {
                     allow-lists=["127.0.0.1", "localhost", "mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 
-                # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
+                # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效 (临时废弃)
                 ping {
                     # 缓存选项
                     cache {
@@ -91,6 +91,88 @@ class LoadConfig {
                 # 每秒连接数限制. 当您正在使用PIPELINE模式时非常有用.
                 # EVENT模式此throttle关闭连接的效率比BungeeCord自带的低
                 throttle-limit=3
+                
+                # 提醒
+                notifications {
+                    # discord webhook.
+                    # 此选项将会通过proxy.conf中的代理设置发送webhook 而不是直连
+                    # 注意! ——如果有人要求您的配置文件 请将此段删除或将url留空 避免遭到webhook垃圾邮件滥用.
+                    webhook {
+                        # 当在使用/moefilter webhook (debug命令 首先打开debug模式) 时发送的webhook 
+                        test {
+                            # false = 不发送
+                            enabled=false
+                            # discord webhook url
+                            # 将鼠标悬浮在频道上 然后点击 "编辑频道",
+                            # 整合 -> 创建 Webhook -> 创建 Webhook -> 点击 "Captain Hook" -> 
+                            # 设置头像和频道 (可选) -> 复制 Webhook URL 然后粘贴在此处
+                            url=""
+                            # webhook消息的名称 (不遵循discord中的webhook名称设置)
+                            username="MoeFilter Webhook
+                            # @ 设置 - 设置此选项之后将会在webhook发送时@某个人/组
+                            # 禁用 = 留空
+                            # ping用户 = <@[用户id]>
+                            # ping组 (role) = &[组id]
+                            # 如何获取id? 设置 -> 高级设置 -> 开发者模式 = 开
+                            # 对于用户: 右键用户 点击 "复制用户ID"
+                            # 对于role: 左键拥有需要@的role的用户 右键role 然后点击 "复制身份组ID" 
+                            ping=""
+                            # Webhook标题
+                            title="MoeFilter Test Webhook"
+                            # 内容
+                            format=[
+                                "> This is a webhook for test!"
+                            ]
+                            # 嵌入消息设置
+                            embed {
+                                # 是否嵌入消息?
+                                enabled=true
+                                # 嵌入边框颜色设置
+                                color {
+                                    r=255
+                                    g=255
+                                    b=180
+                                }
+                            }
+                        }
+                        attack-start {
+                            enabled=false
+                            url=""
+                            username="MoeFilter Webhook
+                            ping=""
+                            title="MoeFilter"
+                            format=[
+                                "> :warning: This server is under attack!"
+                            ]
+                            embed {
+                                enabled=true
+                                color {
+                                    r=255
+                                    g=255
+                                    b=0
+                                }
+                            }
+                        }
+                        attack-stop {
+                            enabled=false
+                            url=""
+                            username="MoeFilter Webhook
+                            ping=""
+                            title="MoeFilter"
+                            format=[
+                                "> :warning: This server is under attack!"
+                            ]
+                            embed {
+                                enabled=true
+                                color {
+                                    r=255
+                                    g=255
+                                    b=0
+                                }
+                            }
+                        }
+                    }
+                }
             """.trimIndent()
 
     private val defaultMessage = """
