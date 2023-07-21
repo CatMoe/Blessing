@@ -108,11 +108,11 @@ class LoadConfig {
                             # 设置头像和频道 (可选) -> 复制 Webhook URL 然后粘贴在此处
                             url=""
                             # webhook消息的名称 (不遵循discord中的webhook名称设置)
-                            username="MoeFilter Webhook
+                            username="MoeFilter Webhook"
                             # @ 设置 - 设置此选项之后将会在webhook发送时@某个人/组
                             # 禁用 = 留空
-                            # ping用户 = <@[用户id]>
-                            # ping组 (role) = &[组id]
+                            # ping用户 = 直接键入用户id
+                            # ping组 (role) = &组id (保留& 就像&1234567890这样)
                             # 如何获取id? 设置 -> 高级设置 -> 开发者模式 = 开
                             # 对于用户: 右键用户 点击 "复制用户ID"
                             # 对于role: 左键拥有需要@的role的用户 右键role 然后点击 "复制身份组ID" 
@@ -138,7 +138,7 @@ class LoadConfig {
                         attack-start {
                             enabled=false
                             url=""
-                            username="MoeFilter Webhook
+                            username="MoeFilter Webhook"
                             ping=""
                             title="MoeFilter"
                             format=[
@@ -156,7 +156,7 @@ class LoadConfig {
                         attack-stop {
                             enabled=false
                             url=""
-                            username="MoeFilter Webhook
+                            username="MoeFilter Webhook"
                             ping=""
                             title="MoeFilter"
                             format=[

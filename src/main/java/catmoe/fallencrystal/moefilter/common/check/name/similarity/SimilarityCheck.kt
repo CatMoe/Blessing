@@ -67,7 +67,7 @@ class SimilarityCheck : AbstractCheck() {
     }
 
     fun reload() {
-        config = LocalConfig.getAntibot().getConfig("general.similarity")
+        config = LocalConfig.getAntibot().getConfig("name-check.similarity")
         maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
         enable = config.getBoolean("enable")
         length = config.getInt("length")
