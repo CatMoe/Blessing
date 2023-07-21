@@ -38,13 +38,11 @@ class TestWebhookCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>?) {
         Scheduler(MoeFilter.instance).runAsync {
             val conf = LocalConfig.getConfig().getConfig("notifications.webhook.test")
-            if (!conf.getBoolean("enabled")) { MessageUtil.sendMessage("<red>Rejected send request because this webhook is disabled", MessagesType.ACTION_BAR, sender); return@runAsync
-            }
+            if (!conf.getBoolean("enabled")) { MessageUtil.sendMessage("<red>Rejected send request because this webhook is disabled", MessagesType.ACTION_BAR, sender); return@runAsync }
             val url = conf.getString("url")
-            if (url.isEmpty()) { MessageUtil.sendMessage("<red>URL is empty!", MessagesType.ACTION_BAR, sender); return@runAsync
-            }
+            if (url.isEmpty()) { MessageUtil.sendMessage("<red>URL is empty!", MessagesType.ACTION_BAR, sender); return@runAsync }
             val embedColor = Color(conf.getInt("embed.color.r"), conf.getInt("embed.color.g"), conf.getInt("embed.color.b"))
-            try { WebhookSender().sendWebhook("", conf.getString("title"), embedColor, conf.getBoolean("embed.enabled"), url, conf.getString("ping"), conf.getString("username")) }
+            try { WebhookSender().sendWebhook(conf.getStringList("format").joinToString("\n"), conf.getString("title"), embedColor, conf.getBoolean("embed.enabled"), url, conf.getString("ping"), conf.getString("username")) }
             catch (e: Exception) { MessageUtil.sendMessage("<red>Error when sending webhook: ${e.localizedMessage}. To Get More information, Please check console.", MessagesType.CHAT, sender); e.printStackTrace(); return@runAsync }
             MessageUtil.sendMessage("<green>Webhook looks are send successfully.", MessagesType.ACTION_BAR, sender)
         }
