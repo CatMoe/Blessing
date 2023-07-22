@@ -42,12 +42,13 @@ object ConnectionCounter {
     fun schedule() {
         putCPStoCache(); putIpSecToCache()
         if (StateManager.inAttack.get()) {
-            if (inAttack) { attackEndedDetector()
+            if (inAttack) { attackEndedDetector(); attackMethodAnalyser()
             } else {
                 inAttack = false; totalInSession = 0; peakCpsInSession = 0; peakIpSecInSession = 0
                 sessionBlocked.clear()
             }
-        }
+        } else if (getConnectionPerSec() >= LocalConfig.getAntibot().getInt("attack-mode.incoming"))
+        { StateManager.fireAttackEvent() }
     }
 
     private val attackEndedWaiter = AtomicBoolean(false)
@@ -74,7 +75,6 @@ object ConnectionCounter {
     private fun attackEndedDetector() {
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
         val cps = getConnectionPerSec()
-        if (!inAttack && cps > conf.getInt("incoming")) { StateManager.fireAttackEvent() }
         if (inAttack && cps == 0) {
             if (conf.getBoolean("un-attacked.instant")) { StateManager.fireNotInAttackEvent() }
             else {

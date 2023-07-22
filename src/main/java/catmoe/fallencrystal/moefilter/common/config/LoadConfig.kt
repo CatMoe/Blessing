@@ -142,7 +142,7 @@ class LoadConfig {
                             ping=""
                             title="MoeFilter"
                             format=[
-                                "> :warning: This server is under attack!"
+                                "> :warning: The server is under attack!"
                             ]
                             embed {
                                 enabled=true
