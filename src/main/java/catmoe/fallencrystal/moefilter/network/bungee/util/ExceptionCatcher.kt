@@ -18,6 +18,8 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.DebugException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
@@ -40,6 +42,7 @@ object ExceptionCatcher {
         if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { Firewall.addAddress(address); return }
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection force closed because your config has critical issue"); cause.printStackTrace(); return }
         Firewall.addAddressTemp(address)
+        ConnectionCounter.countBlocked(BlockType.FIREWALL)
     }
 
     fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }

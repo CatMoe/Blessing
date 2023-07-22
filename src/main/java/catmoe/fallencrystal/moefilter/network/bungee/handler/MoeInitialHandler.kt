@@ -2,6 +2,8 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
@@ -76,7 +78,10 @@ class MoeInitialHandler(
     private var hasSuccessfullyPinged = false
     @Throws(Exception::class)
     override fun handle(statusRequest: StatusRequest) {
-        if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) { throw InvalidStatusPingException() }
+        if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) {
+            ConnectionCounter.countBlocked(BlockType.PING)
+            throw InvalidStatusPingException()
+        }
         hasRequestedPing = true
         currentState = ConnectionState.PROCESSING
         /*
@@ -89,7 +94,7 @@ class MoeInitialHandler(
         But they are actually safe to ignore, I don't want console spam.
          */
        CompletableFuture.runAsync {
-           if (!isConnected) { throw InvalidStatusPingException() }
+           if (!isConnected) { ConnectionCounter.countBlocked(BlockType.PING); throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
            MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))

@@ -1,6 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
@@ -45,10 +46,10 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
 
         ConnectionCounter.increase(inetAddress)
         eventCaller.call(EventCallMode.AFTER_INIT)
-        if (Firewall.isFirewalled(inetAddress)) { channel.close(); return }
+        if (Firewall.isFirewalled(inetAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
         eventCaller.call(EventCallMode.NON_FIREWALL)
-        if (Throttler.increase(inetAddress)) { channel.close(); return }
-        if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); return }
+        if (Throttler.increase(inetAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
+        if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
         eventCaller.call(EventCallMode.READY_DECODING)
 
         if (!channel.isActive) { return }
