@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.util.message.notification
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -50,27 +51,43 @@ object Notifications {
     private var latestMessage = ""
 
     private fun initSchedule() {
-        this.schedule=scheduler.repeatScheduler(LocalConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(), TimeUnit.MILLISECONDS) { onBroadcast() }
+        this.schedule=scheduler.repeatScheduler(
+            LocalConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(),
+            TimeUnit.MILLISECONDS)
+        { onBroadcast() }
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun placeholder(message: String): String {
+        var output = message
+        val config = LocalConfig.getMessage()
+        val cpu = CPUMonitor.getRoundedCpuUsage()
+        val internalPlaceholder = mapOf(
+            "%process_cpu%" to "${cpu.processCPU}",
+            "%system_cpu%" to "${cpu.systemCPU}",
+            "%cps%" to "${ConnectionCounter.getConnectionPerSec()}",
+            "%ipsec%" to "${ConnectionCounter.getIpPerSec()}",
+            "%total%" to "${ConnectionCounter.total}",
+            "%total_session%" to "${ConnectionCounter.totalInSession}",
+            "%blocked%" to "${ConnectionCounter.totalBlocked()}",
+            "%blocked_session%" to "${ConnectionCounter.totalSessionBlocked()}",
+            "%peak_cps%" to "${ConnectionCounter.peakCps}",
+            "%peak_cps_session%" to "${ConnectionCounter.peakCpsInSession}",
+            "%prefix%" to config.getString("prefix"),
+            "%duration%" to getDuration(StateManager.duration.getDuration()),
+            "%blocked%" to "${ConnectionCounter.totalBlocked()}",
+        )
+        internalPlaceholder.forEach { output = output.replace(it.key, it.value) }
+        return output
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     private fun onBroadcast() {
         val config = LocalConfig.getMessage()
-        val internalPlaceholder = mapOf(
-            "%process_cpu%" to CPUMonitor.getRoundedCpuUsage().processCPU.toString(),
-            "%system_cpu%" to CPUMonitor.getRoundedCpuUsage().systemCPU.toString(),
-            "%cps%" to ConnectionCounter.getConnectionPerSec().toString(),
-            "%ipsec%" to ConnectionCounter.getIpPerSec().toString(),
-            "%total%" to ConnectionCounter.getTotal().toString(),
-            "%total_session%" to ConnectionCounter.getTotalSession().toString(),
-            "%peak_cps%" to ConnectionCounter.getPeakConnectionPerSec().toString(),
-            "%prefix%" to config.getString("prefix"),
-        )
         if (autoNotificationPlayer.isNotEmpty()) { autoNotificationPlayer.removeAll(spyNotificationPlayers) }
-        val message = config.getString("actionbar.style")
-        var output = message
-        internalPlaceholder.forEach { output = output.replace(it.key, it.value) }
-        if (autoNotificationPlayer.isNotEmpty()) { sendActionbar(autoNotificationPlayer, output) }
-        if (spyNotificationPlayers.isNotEmpty()) { sendActionbar(spyNotificationPlayers, output) }
+        val message = placeholder(if (StateManager.inAttack.get()) { config.getString("actionbar.format.attack") } else config.getString("actionbar.format.idle"))
+        if (autoNotificationPlayer.isNotEmpty()) { sendActionbar(autoNotificationPlayer, message) }
+        if (spyNotificationPlayers.isNotEmpty()) { sendActionbar(spyNotificationPlayers, message) }
     }
     fun onAddAutoNotificationPlayer() { ProxyServer.getInstance().players.forEach { if (it.hasPermission("moefilter.notifications.auto")) { autoNotificationPlayer.add(it) } } }
 
@@ -83,11 +100,17 @@ object Notifications {
         if (schedule != null) { scheduler.cancelTask(schedule!!); initSchedule() }
     }
 
+    private fun getDuration(sec: Long): String {
+        // Hours, Minutes, Seconds or Minutes, Seconds
+        return if (sec >= 3600) String.format("%02d:%02d:%02d", sec / 3600, sec % 3600 / 60, sec % 60)
+        else String.format("%02d:%02d", sec % 3600 / 60, sec % 60)
+    }
+
     private fun sendActionbar(players: List<ProxiedPlayer>, string: String) {
         if (latestMessage != string) { MessageUtil.invalidateCache(MessagesType.ACTION_BAR, string); latestMessage = string }
         players.forEach {
             try { MessageUtil.sendMessage(string, MessagesType.ACTION_BAR , ConnectionUtil(it.pendingConnection)) }
-            catch (npe: NullPointerException) { autoNotificationPlayer.remove(it); spyNotificationPlayers.remove(it) }
+            catch (_: NullPointerException) { autoNotificationPlayer.remove(it); spyNotificationPlayers.remove(it) }
         }
     }
 }

@@ -14,9 +14,13 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.api.event.events
 
-import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
+package catmoe.fallencrystal.moefilter.common.state
 
 @Suppress("unused")
-class AttackStartEvent : MoeAsyncEvent
+enum class AttackState(@JvmField val raw: String) {
+    FIREWALL("Firewall"),
+    JOIN("Join"),
+    PING("Ping"),
+    PACKET("NotHandled"),
+}

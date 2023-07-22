@@ -153,7 +153,7 @@ class LoadConfig {
                                 }
                             }
                         }
-                        attack-stop {
+                        attack-stopped {
                             enabled=false
                             url=""
                             username="MoeFilter Webhook"
@@ -187,7 +187,10 @@ class LoadConfig {
                     # %cps% (每秒涌入连接数) %ipsec% (每秒涌入连接的ip数) %peak_cps% (历史最高每秒涌入连接数) %total% (共涌入连接数)
                     # %prefix% (返回上面的prefix)
                     # 更多占位符会随着功能的增加而添加.
-                    style="%prefix%<gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys. %system_cpu%% - CPS %cps% - Peak %peak_cps% - IpSec %ipsec% - Total %total%</gradient>"
+                    format {
+                        idle="%prefix%<gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys. %system_cpu%% - CPS %cps% - IpSec %ipsec% - Total %total%</gradient>"
+                        attack=""
+                    }
                     # 更新频率 (tick为单位)
                     update-delay=1
                     command {
@@ -221,6 +224,7 @@ class LoadConfig {
                     placeholders {
                         custom1="这个是属于你的占位符! 在消息中使用[custom1]来使用它."
                         custom2="你可以增加无限行占位符 来使你的消息模板化更加轻松!"
+                        server-ip="mc.miaomoe.net"
                     }
                     # 在此处指定占位符格式. %[placeholder]% 就是为 %placeholder% 例如%custom1%就会返回上面的值
                     placeholder-pattern="%[placeholder]%"
@@ -248,7 +252,7 @@ class LoadConfig {
                     ]
                     invalid-host=[
                         "",
-                        "<red>Please join server from mc.miaomoe.net",
+                        "<red>Please join server from %server-ip%",
                         ""
                     ]
                     country=[
@@ -283,6 +287,23 @@ class LoadConfig {
                 # AFTER_DECODER: 当解码器完成解码后呼叫事件 (不推荐, 但如果您正在使用反向代理(e.x HAProxy) 请使用此模式或DISABLED)
                 # DISABLED: 不呼叫事件以保留性能(推荐 但如果遇到问题 请将其设为以上模式的其中一种.)
                 event-call-mode=DISABLED
+                
+                # 攻击模式激活设置
+                attack-mode { 
+                    # 当一秒内的连接超过此数字 将激活攻击模式
+                    incoming=5
+                    # 模式激活设置
+                    mode {
+                        # 当阻止总数在1秒内达到此值 将会将状态设置为被此模式攻击
+                        count=4
+                    }
+                    un-attacked {
+                        # 当1秒内没有任何连接传入时 立即解除攻击模式
+                        instant=true
+                        # 如果instant模式为false且 x 秒内没有传入连接 则解除戒备模式
+                        wait=5
+                    }
+                }
                 
                 general {
                     # RECONNECT: 仅重新连接

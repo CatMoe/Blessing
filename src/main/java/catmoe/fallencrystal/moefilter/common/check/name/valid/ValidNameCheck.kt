@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.common.check.name.valid.AutoFirewallMode.*
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 
 class ValidNameCheck : AbstractCheck() {
 
@@ -40,7 +41,7 @@ class ValidNameCheck : AbstractCheck() {
             when (autoFirewallMode) {
                 THROTTLE -> { if (Throttler.isThrottled(address)) { Firewall.addAddressTemp(address) } }
                 ALWAYS -> { Firewall.addAddressTemp(address) }
-                ATTACK -> {}
+                ATTACK -> { if (StateManager.inAttack.get()) { Firewall.addAddressTemp(address) } }
                 DISABLED -> {}
             }
         }

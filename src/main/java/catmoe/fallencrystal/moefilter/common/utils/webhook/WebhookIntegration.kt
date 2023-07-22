@@ -27,9 +27,9 @@ import javax.net.ssl.HttpsURLConnection
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class WebhookIntegration {
-    @JvmField
+
     val embeds: MutableList<EmbedObject> = ArrayList()
-    @JvmField
+
     var webhookUrl: String? = null
 
     var content: String? = null
@@ -37,6 +37,8 @@ open class WebhookIntegration {
     var username: String? = null
 
     protected var avatarUrl: String? = null
+
+    var proxy: Proxy? = null
 
     private val proxyConf = LocalConfig.getProxy().getConfig("proxies-config")
 
@@ -104,10 +106,12 @@ open class WebhookIntegration {
             json.put("embeds", embedObjects.toTypedArray())
         }
         val url = URL(webhookUrl)
-        val proxyType = try { Proxy.Type.valueOf(proxyConf.getAnyRef("mode").toString()) } catch (_: Exception) { Proxy.Type.DIRECT }
-        val proxy = if (proxyType != Proxy.Type.DIRECT) { Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port"))) } else null
+        val proxy = if (this.proxy != null) this.proxy else if (proxyFromCfg() != null) proxyFromCfg() else null
         val connection = (if (proxy != null) url.openConnection(proxy) else url.openConnection() ) as HttpsURLConnection
-        connection.addRequestProperty("Content-Type", "application/json")
+        connection.addRequestProperty(
+            "Content-Type",
+            "application/json"
+        )
         connection.addRequestProperty(
             "User-Agent",
             "MoeFilter Webhook"
@@ -122,26 +126,29 @@ open class WebhookIntegration {
         connection.disconnect()
     }
 
+    private fun proxyFromCfg(): Proxy? {
+        val proxyType =
+            try { Proxy.Type.valueOf(proxyConf.getAnyRef("mode").toString()) }
+            catch (_: Exception) { Proxy.Type.DIRECT }
+        return if (proxyType != Proxy.Type.DIRECT) {
+            Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port")))
+        } else null
+    }
+
     @Suppress("MemberVisibilityCanBePrivate")
     internal inner class JSONObject {
         private val map = HashMap<String, Any>()
-        fun put(s: String, value: Any?) {
-            if (value != null) {
-                map[s] = value
-            }
-        }
+        fun put(s: String, value: Any?) { if (value != null) { map[s] = value } }
 
         override fun toString(): String {
             val builder = StringBuilder()
             val entrySet: Set<Map.Entry<String, Any>> = map.entries
             builder.append("{")
             var i = 0
-            for ((s, obj) in entrySet) {
-                builder.append(quote(s)).append(":")
-                if (obj is String) { builder.append(quote(obj.toString()))
-                } else if (obj is Int) { builder.append(Integer.valueOf(obj.toString()))
-                } else if (obj is Boolean) { builder.append(obj)
-                } else if (obj is JSONObject) { builder.append(obj.toString())
+            entrySet.forEach { (it, obj) ->
+                builder.append("\"$it\"").append(":")
+                if (obj is String) { builder.append("\"$obj\"") } else if (obj is Int) { builder.append(Integer.valueOf(obj.toString()))
+                } else if (obj is Boolean) { builder.append(obj) } else if (obj is JSONObject) { builder.append(obj.toString())
                 } else if (obj.javaClass.isArray) {
                     builder.append("[")
                     val len = Array.getLength(obj)
@@ -151,10 +158,6 @@ open class WebhookIntegration {
                 builder.append(if (++i == entrySet.size) "}" else ",")
             }
             return builder.toString()
-        }
-
-        fun quote(string: String): String {
-            return "\"" + string + "\""
         }
     }
 }

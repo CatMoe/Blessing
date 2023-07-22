@@ -33,7 +33,7 @@ import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.common.counter.SessionCounterListener
+import catmoe.fallencrystal.moefilter.common.counter.AttackCounterListener
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
@@ -161,7 +161,7 @@ class AsyncLoader(val plugin: Plugin) {
     private fun registerListener() {
         EventManager.registerListener(plugin, ReloadConfig())
         EventManager.registerListener(plugin, WhitelistListener())
-        EventManager.registerListener(plugin, SessionCounterListener())
+        EventManager.registerListener(plugin, AttackCounterListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
         registerLuckPermsListener()
 

@@ -15,12 +15,23 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.counter.type
+package catmoe.fallencrystal.moefilter.common.state
 
-import catmoe.fallencrystal.moefilter.common.state.AttackState
+import java.util.concurrent.TimeUnit
 
-enum class BlockType(@JvmField val state: AttackState) {
-    FIREWALL(AttackState.FIREWALL),
-    JOIN(AttackState.JOIN),
-    PING(AttackState.PING),
+class AttackDuration {
+
+    private var startTime: Long = 0
+
+    fun start() {
+        if (!StateManager.inAttack.get()) { throw IllegalStateException("Cannot start count when not in attack!") }
+        startTime = System.currentTimeMillis()
+    }
+
+    fun getDuration(): Long {
+        if (!StateManager.inAttack.get()) return 0
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime)
+    }
+
+    fun stop() { startTime = 0 }
 }

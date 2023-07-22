@@ -9,6 +9,8 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidUsernameException
@@ -74,7 +76,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (check(channel, inetSocketAddress, username)) return
+                    if (check(channel, inetSocketAddress, username)) { ConnectionCounter.countBlocked(BlockType.JOIN); return }
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }

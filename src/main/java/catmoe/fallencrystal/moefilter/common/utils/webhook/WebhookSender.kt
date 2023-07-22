@@ -17,6 +17,7 @@
 package catmoe.fallencrystal.moefilter.common.utils.webhook
 
 import catmoe.fallencrystal.moefilter.common.utils.webhook.embed.EmbedObject
+import com.typesafe.config.Config
 import java.awt.Color
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -50,6 +51,19 @@ class WebhookSender {
             webhook.content = content
         }
         run(url, username)
+    }
+
+    fun sendWebhook(config: Config) {
+        val enabled = config.getBoolean("enabled")
+        if (!enabled) return
+        val url = config.getString("url")
+        val username = config.getString("username")
+        val ping = config.getString("ping")
+        val title = config.getString("title")
+        val format = config.getStringList("format").joinToString("\n")
+        val embed = config.getBoolean("embed.enabled")
+        val color = Color(config.getInt("embed.color.r"), config.getInt("embed.color.g"), config.getInt("embed.color.b"))
+        sendWebhook(format, title, color, embed, url, ping, username)
     }
 
     private fun run(url: String, username: String) {

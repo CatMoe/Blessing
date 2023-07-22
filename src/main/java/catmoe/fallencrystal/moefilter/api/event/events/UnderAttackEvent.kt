@@ -14,13 +14,10 @@
  * limitations under the License.
  *
  */
+package catmoe.fallencrystal.moefilter.api.event.events
 
-package catmoe.fallencrystal.moefilter.common.counter.type
-
+import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
 import catmoe.fallencrystal.moefilter.common.state.AttackState
 
-enum class BlockType(@JvmField val state: AttackState) {
-    FIREWALL(AttackState.FIREWALL),
-    JOIN(AttackState.JOIN),
-    PING(AttackState.PING),
-}
+@Suppress("unused")
+class UnderAttackEvent(val state: Collection<AttackState>) : MoeAsyncEvent
