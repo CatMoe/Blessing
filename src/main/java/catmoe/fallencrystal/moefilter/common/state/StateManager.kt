@@ -27,25 +27,23 @@ import java.util.concurrent.atomic.AtomicBoolean
 object StateManager {
 
     val inAttack = AtomicBoolean(false)
-    var attackMethod: MutableCollection<AttackState> = CopyOnWriteArrayList()
+    var attackMethods: MutableCollection<AttackState> = CopyOnWriteArrayList()
     val duration = AttackDuration()
 
     fun setAttackMethod(method: Collection<AttackState>) {
         if (!inAttack.get()) return
-        attackMethod.clear(); attackMethod.addAll(method)
-        EventManager.triggerEvent(UnderAttackEvent(attackMethod))
+        attackMethods.clear(); attackMethods.addAll(method)
+        EventManager.triggerEvent(UnderAttackEvent(attackMethods))
     }
 
     fun fireAttackEvent() {
-        EventManager.triggerEvent(UnderAttackEvent(attackMethod))
+        EventManager.triggerEvent(UnderAttackEvent(attackMethods))
         inAttack.set(true)
         if (inAttack.get()) {
             duration.start()
         }
     }
 
-    fun fireNotInAttackEvent() { EventManager.triggerEvent(AttackStoppedEvent()); attackMethod.clear(); inAttack.set(false); duration.stop() }
-
-    fun getDuration(): AttackDuration { return duration }
+    fun fireNotInAttackEvent() { EventManager.triggerEvent(AttackStoppedEvent()); attackMethods.clear(); inAttack.set(false); duration.stop() }
 
 }

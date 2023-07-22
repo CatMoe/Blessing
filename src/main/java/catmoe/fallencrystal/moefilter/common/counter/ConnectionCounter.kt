@@ -58,7 +58,7 @@ object ConnectionCounter {
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
         val cps = getConnectionPerSec()
         val inc = conf.getInt("incoming")
-        if (cps < inc && StateManager.attackMethod.isNotEmpty()) {
+        if (cps < inc && StateManager.attackMethods.isNotEmpty()) {
             StateManager.setAttackMethod(listOf()); return
         }
         val methodSize = AttackState.values().size

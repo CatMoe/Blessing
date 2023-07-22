@@ -29,7 +29,7 @@ import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 class AttackCounterListener : EventListener {
     private var inAttack = false
     @FilterEvent
-    fun startSessionCount(event: UnderAttackEvent) {
+    fun startSessionCount(ignore: UnderAttackEvent) {
         if (!inAttack) {
             inAttack=true; ConnectionCounter.setInAttack(true);
             Notifications.onAddAutoNotificationPlayer()
@@ -37,7 +37,7 @@ class AttackCounterListener : EventListener {
         }
     }
     @FilterEvent
-    fun stopSessionCount(event: AttackStoppedEvent) {
+    fun stopSessionCount(ignore: AttackStoppedEvent) {
         if (inAttack) {
             inAttack=false; ConnectionCounter.setInAttack(false);
             Notifications.onInvalidateAutoNotificationPlayer()

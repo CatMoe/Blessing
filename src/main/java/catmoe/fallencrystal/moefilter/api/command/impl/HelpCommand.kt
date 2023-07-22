@@ -58,7 +58,7 @@ class HelpCommand : ICommand {
                 val command = parsedInfo.command
                 // sendMessage(sender, "  &f/moefilter $command &b- &f$description")
                 val commandUsage = parsedInfo.usage
-                val message = listOf(
+                listOf(
                     "",
                     "  <aqua>命令: &f$command",
                     "  <aqua>描述: &f$description",
