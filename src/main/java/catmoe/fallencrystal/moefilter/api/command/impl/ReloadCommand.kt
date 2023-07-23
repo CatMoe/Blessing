@@ -31,7 +31,7 @@ import net.md_5.bungee.api.CommandSender
 @CommandPermission("moefilter.reload")
 class ReloadCommand : ICommand {
 
-    override fun execute(sender: CommandSender, args: Array<out String>?) { EventManager.triggerEvent(PluginReloadEvent(sender)) }
+    override fun execute(sender: CommandSender, args: Array<out String>) { EventManager.triggerEvent(PluginReloadEvent(sender)) }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
 }

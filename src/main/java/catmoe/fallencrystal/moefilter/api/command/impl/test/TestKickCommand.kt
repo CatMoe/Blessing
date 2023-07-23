@@ -32,7 +32,7 @@ import net.md_5.bungee.api.CommandSender
 @CommandUsage(["/moefilter testkick"])
 @CommandDescription(DescriptionFrom.STRING, "testkick")
 class TestKickCommand : ICommand {
-    override fun execute(sender: CommandSender, args: Array<out String>?) {
+    override fun execute(sender: CommandSender, args: Array<out String>) {
         val connection = ConnectionUtil((sender as UserConnection).pendingConnection)
         FastDisconnect.disconnect(connection, DisconnectType.ALREADY_ONLINE)
     }

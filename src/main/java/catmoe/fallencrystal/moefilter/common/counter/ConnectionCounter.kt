@@ -32,58 +32,63 @@ import java.util.concurrent.atomic.AtomicInteger
 @Suppress("MemberVisibilityCanBePrivate")
 object ConnectionCounter {
     var total: Long = 0
-    var totalInSession: Long = 0
-    var peakCpsInSession: Int = 0
-    var peakIpSecInSession: Int = 0
+    var sessionTotal: Long = 0
+    var sessionPeakCps = 0
     private var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
+
     init { Scheduler(MoeFilter.instance).repeatScheduler(50, TimeUnit.MILLISECONDS) { schedule() } }
 
     fun schedule() {
-        putCPStoCache(); putIpSecToCache()
+        putCPStoCache()
         if (StateManager.inAttack.get()) {
-            if (inAttack) { attackEndedDetector(); attackMethodAnalyser()
-            } else {
-                inAttack = false; totalInSession = 0; peakCpsInSession = 0; peakIpSecInSession = 0
-                sessionBlocked.clear()
-            }
-        } else if (getConnectionPerSec() >= LocalConfig.getAntibot().getInt("attack-mode.incoming"))
-        { StateManager.fireAttackEvent() }
+            attackEndedDetector(); attackMethodAnalyser()
+        } else if (getConnectionPerSec() >= LocalConfig.getAntibot().getInt("attack-mode.incoming")) {
+            StateManager.fireAttackEvent()
+            inAttack = false
+            sessionTotal = 0
+            sessionPeakCps = 0
+            sessionTotalIps = 0
+            sessionBlocked.clear()
+            lastMethod.clear()
+        }
     }
 
     private val attackEndedWaiter = AtomicBoolean(false)
     private val attackEndedCount = AtomicInteger(0)
+
+    private val lastMethod: MutableCollection<AttackState> = ArrayList()
 
     private fun attackMethodAnalyser() {
         if (!StateManager.inAttack.get()) return
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
         val cps = getConnectionPerSec()
         val inc = conf.getInt("incoming")
-        if (cps < inc && StateManager.attackMethods.isNotEmpty()) {
-            StateManager.setAttackMethod(listOf()); return
-        }
+        if (cps < inc && StateManager.attackMethods.isNotEmpty()) return
         val methodSize = AttackState.values().size
         if (cps >= methodSize) {
             val method: MutableCollection<AttackState> = ArrayList()
             if (cps > methodSize * 2) {
                 BlockType.values().forEach { if ((sessionBlocked[it] ?: 0) > cps / methodSize) { method.add(it.state) } }
+                if (method == lastMethod) return
+                lastMethod.clear(); lastMethod.addAll(method)
                 StateManager.setAttackMethod(method); return
             }
         }
     }
 
     private fun attackEndedDetector() {
-        val conf = LocalConfig.getAntibot().getConfig("attack-mode")
+        val conf = LocalConfig.getAntibot().getConfig("attack-mode.un-attacked")
         val cps = getConnectionPerSec()
         if (inAttack && cps == 0) {
-            if (conf.getBoolean("un-attacked.instant")) { StateManager.fireNotInAttackEvent() }
+            if (conf.getBoolean("instant")) { StateManager.fireNotInAttackEvent() }
             else {
                 if (!attackEndedWaiter.get()) {
                     attackEndedWaiter.set(true)
                     Scheduler(MoeFilter.instance).repeatScheduler(1, 1, TimeUnit.SECONDS) {
-                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("un-attacked.wait")); return@repeatScheduler }
+                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); return@repeatScheduler }
                         if (getConnectionPerSec() != 0) {
-                            attackEndedCount.set(conf.getInt("un-attacked.wait"))
+                            attackEndedCount.set(conf.getInt("wait"))
                             attackEndedWaiter.set(false); return@repeatScheduler
                         }
                         val c = attackEndedCount.get()
@@ -98,30 +103,27 @@ object ConnectionCounter {
     private val ticks = 1..20
     // in time (50ms)
     private var tempCPS = 0
-    private var tempIpSec = 0
     var peakCps = 0
-    var peakIpSec = 0
     /*
     Int, Int = Ticks, Count
      */
     private val perSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
-    private val ipCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<InetAddress, Int>()
-    private val ipPerSecCache =  Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
+    private val ipCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
+
+    var totalIps: Long = 0
+    var sessionTotalIps: Long = 0
+
     fun getConnectionPerSec(): Int { var cps=0; ticks.forEach { cps+=(perSecCache.getIfPresent(it) ?: 0) }; cps+= tempCPS; return cps }
-    fun getIpPerSec(): Int { var ipPerSec=0; ticks.forEach { ipPerSec+=(ipPerSecCache.getIfPresent(it) ?: 0) }; ipPerSec+= tempIpSec; return ipPerSec }
     fun increase(address: InetAddress) {
-        val singleIpCount = ipCache.getIfPresent(address) ?: 0
-        if (singleIpCount == 0) { tempIpSec++; ipCache.put(address, 1) }
-        total++; tempCPS++; if (inAttack) { totalInSession++; } else { totalInSession = 0 }
+        if (ipCache.getIfPresent(address) != true) { totalIps++; sessionTotalIps++; ipCache.put(address, true) }
+        total++; tempCPS++; if (inAttack) { sessionTotal++; }
         /* if (getConnectionPerSec() > peakCPS) { peakCPS = getConnectionPerSec(); peakCpsInSession = if (inAttack) peakCPS else 0 } */
         val cps = getConnectionPerSec()
-        val ipSec = getIpPerSec()
-        if (cps > peakCps) { peakCps = cps }; if (ipSec > peakIpSec) { peakIpSec = ipSec }
-        if (inAttack) { if (cps > peakCpsInSession) { peakCpsInSession = cps }; if (ipSec > peakIpSecInSession) { peakCpsInSession = ipSec } }
+        if (cps > peakCps) { peakCps = cps }
+        if (inAttack) { if (cps > sessionPeakCps) { sessionPeakCps = cps } }
     }
     // fun getPeakSession(): Int { return peakInSession }
     private fun putCPStoCache() { ticks.forEach { if (perSecCache.getIfPresent(it) == null) { perSecCache.put(it, tempCPS); tempCPS = 0; return } } }
-    private fun putIpSecToCache() { ticks.forEach { if (ipPerSecCache.getIfPresent(it) == null) { ipPerSecCache.put(it, tempIpSec); tempIpSec = 0; return } } }
     fun setInAttack(inAttacking: Boolean) { inAttack = inAttacking }
 
 
@@ -131,7 +133,7 @@ object ConnectionCounter {
     val sessionBlocked: MutableMap<BlockType, Long> = mutableMapOf()
 
     fun countBlocked(type: BlockType) {
-        blocked[type] = ((blocked[type] ?: 0) +1);
+        blocked[type] = ((blocked[type] ?: 0) +1)
         if (inAttack) { sessionBlocked[type] = ((sessionBlocked[type] ?: 0)+1) }
     }
 

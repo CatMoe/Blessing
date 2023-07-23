@@ -41,8 +41,19 @@ class ToggleNotificationCommand : ICommand {
     private val enable = config.getString("actionbar.command.enable")
     private val disable = config.getString("actionbar.command.disable")
 
-    override fun execute(sender: CommandSender, args: Array<out String>?) {
-        if (Notifications.toggleSpyNotificationPlayer(sender as ProxiedPlayer)) { MessageUtil.sendMessage("$prefix$enable", MessagesType.CHAT, sender) } else { MessageUtil.sendMessage("$prefix$disable", MessagesType.CHAT, sender) }
+    override fun execute(sender: CommandSender, args: Array<out String>) {
+        if (Notifications.autoNotification.contains(sender as ProxiedPlayer)) {
+            Notifications.autoNotification.remove(sender)
+            MessageUtil.sendMessage("$prefix$disable", MessagesType.CHAT, sender)
+            return
+        }
+        if (Notifications.switchNotification.contains(sender)) {
+            Notifications.switchNotification.remove(sender);
+            MessageUtil.sendMessage("$prefix$disable", MessagesType.CHAT, sender)
+        } else {
+            Notifications.switchNotification.add(sender)
+            MessageUtil.sendMessage("$prefix$enable", MessagesType.CHAT, sender)
+        }
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }

@@ -26,8 +26,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
-import kotlin.concurrent.schedule
 
 @Suppress("SpellCheckingInspection")
 class LoadConfig {
@@ -188,8 +186,18 @@ class LoadConfig {
                     # %prefix% (返回上面的prefix)
                     # 更多占位符会随着功能的增加而添加.
                     format {
-                        idle="%prefix%<gradient:green:yellow:aqua> CPU proc. %process_cpu%% sys. %system_cpu%% - CPS %cps% - IpSec %ipsec% - Total %total%</gradient>"
-                        attack=""
+                        idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
+                        attack="%prefix% <white>Type %type%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total_session%  <aqua>Total IPs <white>%total_ips%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
+                    }
+                    types {
+                        firewall="<yellow>Firewall</yellow>"
+                        join="<yellow>Join</yellow>"
+                        ping="<yellow>Ping</yellow>"
+                        not-handled="<yellow>NotHandled</yellow>"
+                        lockdown="<yellow>Lockdown</yellow>"
+                        
+                        null="<white>Unknown</white>"
+                        join-to-line="<white>, </white>"
                     }
                     # 更新频率 (tick为单位)
                     update-delay=1
@@ -514,12 +522,11 @@ class LoadConfig {
             "我们已将您旧的配置文件重命名并生成新的一份.",
             "旧的配置文件将被命名成 ${newFile.fileName}",
             "",
-            "代理将在10秒后关闭 避免插件可能不按照您的预期工作.",
-            "即使您仍然不修改任何内容. 在下次启动时也会使用默认的配置文件.",
+            "插件可能将不按照您的预期工作. 建议编辑配置文件后重新启动代理",
+            "即使您仍然不修改任何内容. 在之后时也会使用默认的配置文件.",
             "-------------------- MoeFilter --------------------"
         )
         message.forEach { MessageUtil.logWarn(it) }
-        Timer().schedule(10000L) { proxy.stop() }
     }
 
     companion object {

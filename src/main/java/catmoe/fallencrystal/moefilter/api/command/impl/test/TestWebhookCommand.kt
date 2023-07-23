@@ -35,7 +35,7 @@ import java.awt.Color
 @CommandDescription(DescriptionFrom.STRING, "Send a test webhook")
 @ConsoleCanExecute
 class TestWebhookCommand : ICommand {
-    override fun execute(sender: CommandSender, args: Array<out String>?) {
+    override fun execute(sender: CommandSender, args: Array<out String>) {
         Scheduler(MoeFilter.instance).runAsync {
             val conf = LocalConfig.getConfig().getConfig("notifications.webhook.test")
             if (!conf.getBoolean("enabled")) { MessageUtil.sendMessage("<red>Rejected send request because this webhook is disabled", MessagesType.ACTION_BAR, sender); return@runAsync }

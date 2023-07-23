@@ -40,7 +40,7 @@ object ExceptionCatcher {
         if (cause is IOException) return
         if (cause is DebugException) { cause.printStackTrace(); return }
         if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { Firewall.addAddress(address); return }
-        if (cause is ConfigException) { MessageUtil.logError("<red>A connection force closed because your config has critical issue"); cause.printStackTrace(); return }
+        if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }
         Firewall.addAddressTemp(address)
         ConnectionCounter.countBlocked(BlockType.FIREWALL)
     }

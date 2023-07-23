@@ -36,9 +36,9 @@ class HelpCommand : ICommand {
     private val config = LocalConfig.getMessage()
     private val prefix: String = config.getString("prefix")
 
-    override fun execute(sender: CommandSender, args: Array<out String>?) {
+    override fun execute(sender: CommandSender, args: Array<out String>) {
         val line = ""
-        if (args!!.size < 2) {
+        if (args.size < 2) {
             MessageUtil.sendMessage(line, MessagesType.CHAT, sender)
             // OCommand.getCommandList(sender).forEach { sendMessage(sender, "  &f/moefilter ${it.command()} &b- &f ${it.description()}") }
             for (it in CommandManager.getCommandList(sender)) {

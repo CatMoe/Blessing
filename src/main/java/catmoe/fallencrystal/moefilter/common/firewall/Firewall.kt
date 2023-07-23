@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.common.firewall
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.FirewallType.*
+import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.common.firewall.system.ExecutorHelper
 import catmoe.fallencrystal.moefilter.common.firewall.system.OSFirewallLoader
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -59,7 +60,9 @@ object Firewall {
     @Suppress("unused")
     fun removeAddress(address: InetAddress) { cache.invalidate(address) }
 
-    fun isFirewalled(address: InetAddress): Boolean { return cache.getIfPresent(address) ?: false || tempCache.getIfPresent(address) ?: false }
+    fun isFirewalled(address: InetAddress): Boolean {
+        return if (LockdownManager.state.get()) !LockdownManager.verify(address) else cache.getIfPresent(address) ?: false || tempCache.getIfPresent(address) ?: false
+    }
 
     private fun logFirewalled(address: InetAddress, temp: Boolean) {
         if (!debug) return

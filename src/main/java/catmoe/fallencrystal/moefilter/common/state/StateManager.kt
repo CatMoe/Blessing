@@ -37,11 +37,13 @@ object StateManager {
     }
 
     fun fireAttackEvent() {
-        EventManager.triggerEvent(UnderAttackEvent(attackMethods))
-        inAttack.set(true)
-        if (inAttack.get()) {
-            duration.start()
+        if (attackMethods.isEmpty()) {
+            EventManager.triggerEvent(UnderAttackEvent(listOf(AttackState.NOT_HANDLED)))
+        } else {
+            EventManager.triggerEvent(UnderAttackEvent(attackMethods))
         }
+        inAttack.set(true)
+        if (inAttack.get()) { duration.start() }
     }
 
     fun fireNotInAttackEvent() { EventManager.triggerEvent(AttackStoppedEvent()); attackMethods.clear(); inAttack.set(false); duration.stop() }

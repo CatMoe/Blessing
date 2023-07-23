@@ -15,13 +15,17 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.state
+package catmoe.fallencrystal.moefilter.util.message.group
+
+import net.md_5.bungee.api.chat.BaseComponent
 
 @Suppress("unused")
-enum class AttackState(@JvmField val raw: String) {
-    FIREWALL("Firewall"),
-    JOIN("Join"),
-    PING("Ping"),
-    NOT_HANDLED("Not-Handled"),
-    LOCKDOWN("Lockdown"),
-}
+class MessageGroup(
+    val message: BaseComponent,
+    val title: BaseComponent,
+    val subtitle: BaseComponent,
+    val titleFadeIn: Int,
+    val titleStay: Int,
+    val titleFadeOut: Int,
+    val actionbar: BaseComponent
+)

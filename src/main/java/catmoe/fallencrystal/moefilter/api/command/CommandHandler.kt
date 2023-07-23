@@ -33,9 +33,9 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
     private val prefix: String = config.getString("prefix")
     private val fullHideCommand = config.getBoolean("command.full-hide-command")
 
-    override fun execute(sender: CommandSender?, args: Array<out String>?) {
+    override fun execute(sender: CommandSender, args: Array<out String>) {
         // 当玩家没有权限或未输入任何子命令时  详见 infoCommand 方法.
-        if (args.isNullOrEmpty() || !sender!!.hasPermission("moefilter")) { infoCommand(sender!!); return }
+        if (args.isEmpty() || !sender.hasPermission("moefilter")) { infoCommand(sender); return }
         val command = CommandManager.getICommand(args[0])
         if (command != null) {
             val parsedInfo = getParsedCommand(command)!!
@@ -49,11 +49,11 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
     }
 
-    override fun onTabComplete(sender: CommandSender?, args: Array<out String>?): List<String> {
+    override fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         val noPermission = if (config.getString("command.tabComplete.no-permission").isNotEmpty()) { listOf(config.getString("command.tabComplete.no-permission")) } else listOf()
         val noSubPermission = if (config.getString("command.tabComplete.no-subcommand-permission").isNotEmpty()) listOf(config.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", permission)) else listOf()
-        if (!sender!!.hasPermission("moefilter")) return noPermission
-        if (args!!.size == 1) { val list = mutableListOf<String>(); getCommandList(sender).forEach { list.add(getParsedCommand(it)!!.command) }; return list }
+        if (!sender.hasPermission("moefilter")) return noPermission
+        if (args.size == 1) { val list = mutableListOf<String>(); getCommandList(sender).forEach { list.add(getParsedCommand(it)!!.command) }; return list }
         val command = CommandManager.getICommand(args[0])
         return if (command != null) {
             val permission = getParsedCommand(command)!!.permission

@@ -32,8 +32,8 @@ import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.AttackCounterListener
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase

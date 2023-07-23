@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 
 @Suppress("unused")
 class AttackCounterListener : EventListener {
@@ -32,16 +33,19 @@ class AttackCounterListener : EventListener {
     fun startSessionCount(ignore: UnderAttackEvent) {
         if (!inAttack) {
             inAttack=true; ConnectionCounter.setInAttack(true);
-            Notifications.onAddAutoNotificationPlayer()
+            Notifications.autoNotificationPlayer()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-start"))
+            MessageUtil.logWarn("[MoeFilter] [AntiBot] The server is under attack!")
         }
     }
+
     @FilterEvent
     fun stopSessionCount(ignore: AttackStoppedEvent) {
         if (inAttack) {
             inAttack=false; ConnectionCounter.setInAttack(false);
-            Notifications.onInvalidateAutoNotificationPlayer()
+            Notifications.autoNotification.clear()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-stopped"))
+            MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")
         }
     }
 }
