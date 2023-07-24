@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.FirewallType.*
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.common.firewall.system.ExecutorHelper
-import catmoe.fallencrystal.moefilter.common.firewall.system.OSFirewallLoader
+import catmoe.fallencrystal.moefilter.common.firewall.system.FirewallLoader
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
@@ -33,7 +33,7 @@ object Firewall {
     private var debug = LocalConfig.getConfig().getBoolean("debug")
     private val cache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val tempCache = Caffeine.newBuilder().expireAfterWrite(config.getLong("temp-expire-time"), TimeUnit.SECONDS).build<InetAddress, Boolean>()
-    private val osFirewall = OSFirewallLoader("MoeFilter", 600)
+    private val osFirewall = FirewallLoader("MoeFilter", 600)
     private val executor = ExecutorHelper("sudo ipset add MoeFilter {chain}")
     private var mode = FirewallType.valueOf(config.getAnyRef("mode").toString())
 

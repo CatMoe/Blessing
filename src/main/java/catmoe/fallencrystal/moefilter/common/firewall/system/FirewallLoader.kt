@@ -19,14 +19,13 @@ package catmoe.fallencrystal.moefilter.common.firewall.system
 
 import catmoe.fallencrystal.moefilter.common.utils.system.CommandUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import com.sun.jna.Platform
 import net.md_5.bungee.BungeeCord
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-class OSFirewallLoader(private val groupName: String, private val timeout: Int) {
+class FirewallLoader(private val groupName: String, private val timeout: Int) {
 
     fun initFirewall() {
-        if (Platform.isWindows()) { logError("This features is not available on windows.") }
+        if (System.getProperty("os.name").toLowerCase().contains("win")) { logError("This features is not available on windows.") }
         if (!checkPermission()) { logError("No enough permission to setup firewall. Do you running proxy on non-root user?"); shutdown() }
         if (!checkAvailable()) { logError("Permission denied or iptables & ipset not installed. Check it before setup firewall."); shutdown() }
         start()
