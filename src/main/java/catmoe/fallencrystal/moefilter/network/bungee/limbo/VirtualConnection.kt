@@ -17,16 +17,13 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import io.netty.channel.Channel
+import java.net.SocketAddress
 
-class MoeLimbo {
-
-    fun initDimension() {
-        val dimension = DimensionType.OVERWORLD
-        DimensionRegistry
-        DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
-        DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
-    }
-
+class VirtualConnection {
+    val channel: Channel? = null
+    val username: String? = null
+    val version: Version? = null
+    val address: SocketAddress? = null
 }

@@ -75,7 +75,8 @@ enum class Version(val protocolNumber: Int) {
 
     companion object {
         private var VERSION_MAP: MutableMap<Int, Version>? = null
-        var max: Version? = null
+        var max: Version
+            get() = V1_20
 
         init {
             val values = values()

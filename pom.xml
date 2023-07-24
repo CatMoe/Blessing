@@ -208,6 +208,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.grack</groupId>
+            <artifactId>nanojson</artifactId>
+            <version>1.8</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <scope>compile</scope>

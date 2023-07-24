@@ -15,18 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
+import io.netty.channel.Channel
 
-class MoeLimbo {
+class PacketInitLogin : LimboC2SPacket() {
 
-    fun initDimension() {
-        val dimension = DimensionType.OVERWORLD
-        DimensionRegistry
-        DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
-        DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
-    }
+    var username = ""
 
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { username = packet.readString(packet.readVarInt()) }
 }

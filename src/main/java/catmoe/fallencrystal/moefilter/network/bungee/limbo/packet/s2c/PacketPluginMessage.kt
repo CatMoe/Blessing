@@ -15,18 +15,20 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
+import io.netty.channel.Channel
 
-class MoeLimbo {
+class PacketPluginMessage : LimboS2CPacket() {
 
-    fun initDimension() {
-        val dimension = DimensionType.OVERWORLD
-        DimensionRegistry
-        DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
-        DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
+    var channel: String? = null
+    var message: String? = null
+
+    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+        listOf(this.channel!!, this.message!!).forEach { packet.writeString(it) }
     }
 
 }

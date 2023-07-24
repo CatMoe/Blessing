@@ -25,7 +25,8 @@ object DimensionRegistry {
     var defaultDimension1_16 : Dimension? = null
     var defaultDimension1_18_2 : Dimension? = null
 
-    var legacy = readString("""
+    // Legacy Start
+    var codec_Legacy = readString("""
         {
             "dimension": [
                 {
@@ -113,6 +114,7 @@ object DimensionRegistry {
             ]
         }
     """.trimIndent())
+    // Legacy End
 
     // 1.16 Start
     var codec_1_16 = readString("""
@@ -14424,6 +14426,7 @@ object DimensionRegistry {
             }
         }
     """.trimIndent())
+    //
 
     private fun readString(i: String): CompoundBinaryTag { return TagStringIO.get().asCompound(i) }
 

@@ -15,18 +15,6 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.exception
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
-
-class MoeLimbo {
-
-    fun initDimension() {
-        val dimension = DimensionType.OVERWORLD
-        DimensionRegistry
-        DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
-        DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
-    }
-
-}
+class InvalidLimboPingException(override val message: String) : Exception(message)
