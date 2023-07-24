@@ -20,14 +20,11 @@ package catmoe.fallencrystal.moefilter.common.counter
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
-import catmoe.fallencrystal.moefilter.common.state.AttackState
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 
 @Suppress("MemberVisibilityCanBePrivate")
 object ConnectionCounter {
@@ -42,7 +39,7 @@ object ConnectionCounter {
     fun schedule() {
         putCPStoCache()
         if (StateManager.inAttack.get()) {
-            attackEndedDetector(); attackMethodAnalyser()
+            StateManager.attackMethodAnalyser(); StateManager.attackEndedDetector()
         } else if (getConnectionPerSec() >= LocalConfig.getAntibot().getInt("attack-mode.incoming")) {
             StateManager.fireAttackEvent()
             inAttack = false
@@ -50,53 +47,7 @@ object ConnectionCounter {
             sessionPeakCps = 0
             sessionTotalIps = 0
             sessionBlocked.clear()
-            lastMethod.clear()
-        }
-    }
-
-    private val attackEndedWaiter = AtomicBoolean(false)
-    private val attackEndedCount = AtomicInteger(0)
-
-    private val lastMethod: MutableCollection<AttackState> = ArrayList()
-
-    private fun attackMethodAnalyser() {
-        if (!StateManager.inAttack.get()) return
-        val conf = LocalConfig.getAntibot().getConfig("attack-mode")
-        val cps = getConnectionPerSec()
-        val inc = conf.getInt("incoming")
-        if (cps < inc && StateManager.attackMethods.isNotEmpty()) return
-        val methodSize = AttackState.values().size
-        if (cps >= methodSize) {
-            val method: MutableCollection<AttackState> = ArrayList()
-            if (cps > methodSize * 2) {
-                BlockType.values().forEach { if ((sessionBlocked[it] ?: 0) > cps / methodSize) { method.add(it.state) } }
-                if (method == lastMethod) return
-                lastMethod.clear(); lastMethod.addAll(method)
-                StateManager.setAttackMethod(method); return
-            }
-        }
-    }
-
-    private fun attackEndedDetector() {
-        val conf = LocalConfig.getAntibot().getConfig("attack-mode.un-attacked")
-        val cps = getConnectionPerSec()
-        if (inAttack && cps == 0) {
-            if (conf.getBoolean("instant")) { StateManager.fireNotInAttackEvent() }
-            else {
-                if (!attackEndedWaiter.get()) {
-                    attackEndedWaiter.set(true)
-                    Scheduler(MoeFilter.instance).repeatScheduler(1, 1, TimeUnit.SECONDS) {
-                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); return@repeatScheduler }
-                        if (getConnectionPerSec() != 0) {
-                            attackEndedCount.set(conf.getInt("wait"))
-                            attackEndedWaiter.set(false); return@repeatScheduler
-                        }
-                        val c = attackEndedCount.get()
-                        if (c == 0) { StateManager.fireNotInAttackEvent(); return@repeatScheduler }
-                        attackEndedCount.set(c - 1)
-                    }
-                }
-            }
+            StateManager.lastMethod.clear()
         }
     }
 

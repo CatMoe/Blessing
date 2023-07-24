@@ -42,7 +42,7 @@ class LockdownCommand : ICommand {
         if (args.size < 2 || args.size > 3) {
             listOf(
                 "",
-                " <aqua>Lockdown状态 <white>: ${if (LockdownManager.state.get()) "<green>启用" else "禁用"}",
+                " <aqua>Lockdown状态 <white>: ${if (LockdownManager.state.get()) "<green>启用" else "<red>禁用"}",
                 "",
                 " lockdown toggle <aqua>-<white> 开启/关闭锁定模式",
                 " lockdown add <Address> <aqua>-<white> 允许指定地址可以在锁定状态下加入",
