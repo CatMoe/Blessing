@@ -38,7 +38,7 @@ class ExecutorHelper(private val command: String) {
     val debug = AtomicBoolean(false)
     private val idle = AtomicBoolean(true)
     private val watchdog = AtomicBoolean(false)
-    private val core = Runtime.getRuntime().availableProcessors()
+    private val thread = Runtime.getRuntime().availableProcessors() * 2
     private val count = AtomicInteger(0)
     private val scheduler = Scheduler(MoeFilter.instance)
     private val schedules: MutableCollection<ScheduledTask> = CopyOnWriteArrayList()
@@ -47,7 +47,7 @@ class ExecutorHelper(private val command: String) {
     private val intThread = Caffeine.newBuilder().build<Int, ScheduledTask>()
 
     private fun init(process: Int) {
-        val taskCount = (if (process >= core) core else process) - count.get()
+        val taskCount = (if (process >= thread) thread else process) - count.get()
         if (taskCount != 0) { (1..taskCount).forEach { _ -> schedule() } }
         if (!watchdog.get()) { watchDog() }
     }
@@ -68,7 +68,7 @@ class ExecutorHelper(private val command: String) {
 
     @Suppress("UNUSED_VARIABLE")
     private fun schedule() {
-        if (count.get() >= core) return
+        if (count.get() >= thread) return
         count.set(count.get() + 1)
         val threads = this.threads.get() + 1
         this.threads.set(threads)
