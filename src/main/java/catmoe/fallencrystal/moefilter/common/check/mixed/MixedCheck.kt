@@ -24,58 +24,99 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedType.*
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.RemovalCause
 import com.typesafe.config.ConfigException
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 object MixedCheck {
 
-    private var conf = LocalConfig.getAntibot().getConfig("general")
+    private var conf = LocalConfig.getAntibot().getConfig("mixed-check")
     private var maxCacheTime = conf.getLong("max-cache-time")
     private var cache = Caffeine.newBuilder().expireAfterWrite(maxCacheTime, TimeUnit.SECONDS)
 
-    private var joinCache = cache.build<InetAddress, String>()
+    private var suspicionDecay = conf.getLong("blacklist.decay")
+    private var blacklistSuspicion = conf.getInt("blacklist.suspicion")
+    private var suspicionOnlyInAttack = conf.getBoolean("blacklist.only-in-attack")
+
+    private val protocolCache = Caffeine.newBuilder().build<InetAddress, Int>()
+
+    private var joinCache = cache.build<InetAddress, Joining>()
     private var pingCache = cache.build<InetAddress, Boolean>()
+
+    private var suspicionCount = Caffeine.newBuilder()
+        .expireAfterWrite(suspicionDecay, TimeUnit.SECONDS)
+        .evictionListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
+        .build<InetAddress, Int>()
+
+    private fun suspicionEvictionListener(address: InetAddress?, suspicion: Int?, cause: RemovalCause?) {
+        if (suspicion == null || suspicion == 1 || address == null || cause != RemovalCause.EXPIRED) return
+        if (suspicion >= blacklistSuspicion) {
+            if (suspicionOnlyInAttack) { if (StateManager.inAttack.get()) Firewall.addAddressTemp(address) }
+            else { Firewall.addAddressTemp(address) }; suspicionCount.invalidate(address); return }
+        suspicionAdd(address, suspicion - 1)
+    }
+
     private var type: MixedType = loadType()
+
+    private fun suspicionAdd(address: InetAddress, suspicion: Int?) {
+        val s = suspicion ?: suspicionCount.getIfPresent(address) ?: -1
+        suspicionCount.put(address, s)
+    }
 
     fun increase(info: CheckInfo): DisconnectType? {
         if (info is Joining) {
+            val address = info.address
             return when (type) {
-                RECONNECT -> { if (cacheJoin(info)) null else DisconnectType.REJOIN }
-                JOIN_AFTER_PING -> { if (cachePing(info.address, false)) null else DisconnectType.PING }
+                RECONNECT -> {
+                    if (cacheJoin(info)) null else DisconnectType.REJOIN
+                }
+                JOIN_AFTER_PING -> { if (cachePing(address, false)) null else DisconnectType.PING }
                 RECONNECT_AFTER_PING -> {
-                    if (!cachePing(info.address, false)) { DisconnectType.PING }
+                    if (!cachePing(address, false)) { DisconnectType.PING }
                     else if (!cacheJoin(info)) { DisconnectType.REJOIN }
                     else null
                 }
                 PING_AFTER_RECONNECT -> {
-                    if (cacheJoin(info)) { if (cachePing(info.address, false)) null else DisconnectType.PING }
-                    else { pingCache.invalidate(info.address); DisconnectType.REJOIN }
+                    if (cacheJoin(info)) { if (cachePing(address, false)) null else DisconnectType.PING }
+                    else { pingCache.invalidate(address); DisconnectType.REJOIN }
                 }
                 STABLE -> {
-                    if (!cacheJoin(info)) DisconnectType.REJOIN else if (!cachePing(info.address, false)) DisconnectType.PING else null
+                    if (!cacheJoin(info)) DisconnectType.REJOIN else if (!cachePing(address, false)) DisconnectType.PING else null
                 }
                 DISABLED -> { null }
             }
         }
         if (info is Pinging) {
-            if (Throttler.isThrottled(info.address)) { Firewall.addAddressTemp(info.address) }
-            else { cachePing(info.address, true) }
+            val address = info.address
+            if (Throttler.isThrottled(address)) { Firewall.addAddressTemp(address) }
+            else { cachePing(address, true); protocolCache.put(address, info.protocol) }
             return null
         }
         return null
     }
 
     private fun cacheJoin(info: CheckInfo): Boolean {
-        if (info is Joining) { return if (joinCache.getIfPresent(info.address) != null) true else { joinCache.put(info.address, info.username); false } }
-        return false
+        val joining = info as Joining
+        val address = joining.address
+        val protocol = info.protocol
+        val result = if (joinCache.getIfPresent(address) != null) true else { joinCache.put(address, info); false }
+        if (result) {
+            if ((protocolCache.getIfPresent(address) ?: protocol) != protocol || joinCache.getIfPresent(address)!!.username != info.username) {
+                joinCache.invalidate(address)
+                pingCache.invalidate(address)
+                return false
+            }
+        }
+        return result
     }
 
     private fun cachePing(address: InetAddress, write: Boolean): Boolean {
-        return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, write) }; false }
+        return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, true) }; false }
     }
 
     private fun loadType(): MixedType {
@@ -90,12 +131,23 @@ object MixedCheck {
         if (type == DISABLED && this.type == DISABLED) return
         this.type = type
         cache = Caffeine.newBuilder().expireAfterWrite(conf.getLong("max-cache-time"), TimeUnit.SECONDS)
+        blacklistSuspicion = conf.getInt("blacklist.suspicion")
+        conf.getBoolean("blacklist.only-in-attack")
         val maxCacheTime = conf.getLong("max-cache-time")
+        val suspicionDecay = conf.getLong("blacklist.decay")
         if (this.maxCacheTime != maxCacheTime) {
             joinCache = cache.build()
             pingCache = cache.build()
             this.maxCacheTime = maxCacheTime
             MessageUtil.logWarn("[MoeFilter] [MixedCheck] Original mode is not disabled. If someone try to pass checking. They need to do it again.")
+        }
+        if (this.suspicionDecay != suspicionDecay) {
+            this.suspicionDecay = suspicionDecay
+            this.suspicionCount = Caffeine.newBuilder()
+                .expireAfterWrite(MixedCheck.suspicionDecay, TimeUnit.SECONDS)
+                .evictionListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
+                .build<InetAddress, Int>()
+            MessageUtil.logWarn("[MoeFilter] [MixedCheck] You changed suspicion decay value. All suspicion level will be clear.")
         }
     }
 

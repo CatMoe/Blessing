@@ -1,6 +1,8 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
@@ -12,6 +14,8 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handl
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.bungee.util.exception.PacketOutOfBoundsException
+import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -38,6 +42,7 @@ class MoeInitialHandler(
     private var inetSocketAddress: InetSocketAddress? = null
     private var inetAddress: InetAddress? = null
     private var pipeline: ChannelPipeline? = null
+    private val packetHandler = PacketHandler()
     @Throws(Exception::class)
     override fun connected(wrapper: ChannelWrapper) {
         super.connected(wrapper)
@@ -47,7 +52,7 @@ class MoeInitialHandler(
     }
 
     @Throws(Exception::class)
-    override fun exception(t: Throwable) { handle(ctx.channel(), t) }
+    override fun exception(t: Throwable) { handle(channel, t) }
 
     @Throws(Exception::class)
     override fun handle(packet: PacketWrapper?) {
@@ -66,12 +71,18 @@ class MoeInitialHandler(
         currentState = ConnectionState.PROCESSING
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
-            2 -> { ConnectionState.JOINING }
+            2 -> {
+                if (DomainCheck.instance.increase(AddressCheck(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port)))) {
+                    FastDisconnect.disconnect(channel, DisconnectType.INVALID_HOST); return
+                }
+                ConnectionState.JOINING
+            }
             else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
-        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, PacketHandler())
+        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, packetHandler)
+        packetHandler.protocol.set(handshake.protocolVersion)
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
-        if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); ctx.channel().close() } }
+        if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); channel.close() } }
     }
 
     private var hasRequestedPing = false
@@ -97,7 +108,7 @@ class MoeInitialHandler(
            if (!isConnected) { ConnectionCounter.countBlocked(BlockType.PING); throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
-           MixedCheck.increase(Pinging(inetAddress ?: return@runAsync))
+           MixedCheck.increase(Pinging((inetAddress ?: return@runAsync), packetHandler.protocol.get()))
            try { super.handle(statusRequest) } catch (_: NoSuchElementException) {} catch (_: NullPointerException) {} // Actually inject netty failed.
         }
     }

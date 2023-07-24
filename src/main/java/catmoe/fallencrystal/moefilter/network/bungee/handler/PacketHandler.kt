@@ -31,12 +31,15 @@ import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.*
 import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 @RequiredArgsConstructor
 class PacketHandler : ChannelDuplexHandler() {
     @Suppress("OVERRIDE_DEPRECATION")
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
+
+    val protocol = AtomicInteger(0)
 
     private val proxy = ProxyServer.getInstance()
 
@@ -98,13 +101,14 @@ class PacketHandler : ChannelDuplexHandler() {
 
     private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String): Boolean {
         val inetAddress = inetSocketAddress.address
-        if (ValidNameCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, INVALID_NAME); return true }
+        val protocol = this.protocol.get()
+        if (ValidNameCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return true }
         if (ProxyCheck().increase(AddressCheck(inetSocketAddress, null))) { kick(channel, PROXY); return true }
-        val mixinKick = MixedCheck.increase(Joining(name, inetAddress))
+        val mixinKick = MixedCheck.increase(Joining(name, inetAddress, protocol))
         if (mixinKick != null) { kick(channel, mixinKick); return true }
         if (CountryCheck().increase(AddressCheck(inetSocketAddress, null))) { kick(channel, COUNTRY); return true }
-        if (SimilarityCheck.instance.increase(Joining(name, inetAddress))) { kick(channel, INVALID_NAME); return true }
-        if (AlreadyOnlineCheck().increase(Joining(name, inetAddress))) { kick(channel, ALREADY_ONLINE); return true }
+        if (SimilarityCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return true }
+        if (AlreadyOnlineCheck().increase(Joining(name, inetAddress, protocol))) { kick(channel, ALREADY_ONLINE); return true }
         return false
     }
 

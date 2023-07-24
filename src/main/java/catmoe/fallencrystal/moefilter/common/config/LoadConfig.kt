@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.util.CreateConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.typesafe.config.Config
-import net.md_5.bungee.api.ProxyServer
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,8 +36,6 @@ class LoadConfig {
     private val antibotFile = File(path, "antibot.conf")
 
     private val version = MoeFilter.instance.description.version
-
-    private val proxy = ProxyServer.getInstance()
 
     init { instance=this }
 
@@ -187,7 +184,7 @@ class LoadConfig {
                     # 更多占位符会随着功能的增加而添加.
                     format {
                         idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
-                        attack="%prefix% <white>Type %type%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total_session%  <aqua>Total IPs <white>%total_ips%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
+                        attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total_session%  <aqua>Total IPs <white>%total_ips%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
                     }
                     types {
                         firewall="<yellow>Firewall</yellow>"
@@ -313,7 +310,7 @@ class LoadConfig {
                     }
                 }
                 
-                general {
+                mixed-check {
                     # RECONNECT: 仅重新连接
                     # JOIN_AFTER_PING: Ping后加入
                     # RECONNECT_AFTER_PING: Ping后重新连接
@@ -327,6 +324,20 @@ class LoadConfig {
                     # 请尝试将值调高直到适合您或您的玩家通过检查
                     # 但也不要填写一个较大的值.
                     max-cache-time=10
+                    
+                    # 自动黑名单
+                    blacklist {
+                        # 如果此IP在经过此检查时被认为嫌疑的次数
+                        # 等于或大于此数字 将会被临时列入黑名单
+                        suspicion=4
+                        # 仅在攻击下将其列入黑名单 
+                        # 如果否 无论是否正在遭到攻击 都会立即列入黑名单
+                        only-in-attack=false
+                        # 每秒衰减嫌疑间隔. 
+                        # 在嫌疑数增加之后如果此时间内未增加嫌疑
+                        # 则嫌疑-1
+                        decay=4
+                    }
                 }
                 
                 name-check {

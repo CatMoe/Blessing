@@ -70,6 +70,7 @@ object MainListener {
         if (Firewall.isFirewalled(inetAddress)) { connection.close(); return }
         if (Throttler.isThrottled(inetAddress)) { connection.close() }
         val packetHandler = PacketHandler()
+        packetHandler.protocol.set(handshake.protocolVersion)
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
 
         // Firewall who connected after an instant disconnected.
@@ -82,7 +83,7 @@ object MainListener {
         }
 
         when (handshake.requestedProtocol) {
-            1 -> { MixedCheck.increase(Pinging(inetAddress)) }
+            1 -> { MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get())) }
             2 -> { if (checkHost(connection)) { FastDisconnect.disconnect(connection, DisconnectType.INVALID_HOST); return } }
             else -> { connection.close(); addFirewall(connection, false) }
         }
