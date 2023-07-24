@@ -51,8 +51,8 @@ class LockdownCommand : ICommand {
             ).forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
             return
         }
-        val args2 = args[2]
-        val prefix = LocalConfig.getConfig().getString("prefix")
+        val args2 = args[1]
+        val prefix = LocalConfig.getMessage().getString("prefix")
         if (args2.equals("toggle", ignoreCase = true)) {
             when (LockdownManager.state.get()) {
                 true -> {
@@ -66,7 +66,7 @@ class LockdownCommand : ICommand {
             }
         }
         if (args2.equals("add", ignoreCase = true)) {
-            val address: InetAddress? = try { InetAddress.getByName(args[3]) } catch (_: Exception) { null }
+            val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
             if (address == null) { MessageUtil.sendMessage("$prefix<red>请键入一个有效的地址", MessagesType.CHAT, sender); return }
             if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
                 MessageUtil.sendMessage("$prefix<red>此地址已在允许连接的列表中了!", MessagesType.CHAT, sender); return
@@ -76,7 +76,7 @@ class LockdownCommand : ICommand {
             }
         }
         if (args2.equals("remove", ignoreCase = true)) {
-            val address: InetAddress? = try { InetAddress.getByName(args[3]) } catch (_: Exception) { null }
+            val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
             if (address == null) { MessageUtil.sendMessage("$prefix<red>请键入一个有效的地址", MessagesType.CHAT, sender); return }
             if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
                 LockdownManager.whitelistCache.invalidate(address)
