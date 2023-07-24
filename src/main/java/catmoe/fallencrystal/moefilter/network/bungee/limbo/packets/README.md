@@ -1,1 +1,0 @@
-Thanks, Leymooo's BotFilter. Translate to kotlin by @FallenCrystal
