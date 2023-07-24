@@ -227,9 +227,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>se.llbit</groupId>
-            <artifactId>jo-nbt</artifactId>
-            <version>1.3.0</version>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-nbt</artifactId>
+            <version>4.14.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -259,19 +260,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.28</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.13.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!--suppress VulnerableLibrariesLocal -->
-        <dependency>
-            <groupId>br.com.azalim</groupId>
-            <artifactId>mcserverping</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>
