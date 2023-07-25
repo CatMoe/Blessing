@@ -17,22 +17,28 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import io.netty.channel.Channel
 
-@Suppress("MemberVisibilityCanBePrivate")
-class PacketPluginResponse : LimboC2SPacket() {
-
-    var messageId: Int? = null
-    var successful: Boolean? = null
-    var data: ByteMessage? = null
+class PacketClientPositionLook : LimboC2SPacket() {
+    var readLoc : LimboLocation? = null
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        messageId = packet.readVarInt()
-        successful = packet.readBoolean()
-        val rb = packet.readableBytes()
-        if (rb > 0) { ByteMessage(packet.readBytes(rb)) }
+        readLoc = LimboLocation(
+            packet.readDouble(),
+            packet.readDouble(),
+            packet.readDouble(),
+            packet.readFloat(),
+            packet.readFloat(),
+            packet.readBoolean()
+        )
+    }
+
+    override fun handle(handler: LimboHandler) {
+
     }
 }

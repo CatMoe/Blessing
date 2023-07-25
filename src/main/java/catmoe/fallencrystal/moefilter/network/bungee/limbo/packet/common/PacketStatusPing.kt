@@ -15,23 +15,28 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common
 
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import java.util.*
+import io.netty.channel.Channel
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketLoginSuccess : LimboS2CPacket() {
-    var uuid: UUID? = null
-    var username = ""
+class PacketStatusPing : LimboPacket {
+
+    private var randomId: Long? = null
+
     override fun encode(packet: ByteMessage, version: Version?) {
-        val uuid = this.uuid ?: UUID.randomUUID()
-        if (version!!.moreOrEqual(Version.V1_16)) packet.writeUuid(uuid)
-        else if (version.moreOrEqual(Version.V1_7_6)) packet.writeString(uuid.toString())
-        else packet.writeString(uuid.toString().replace("-", ""))
-        packet.writeString(username)
-        if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
+        packet.writeLong(randomId ?: 0)
+    }
+
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        randomId = packet.readLong()
+    }
+
+    override fun handle(handler: LimboHandler) {
+
     }
 }

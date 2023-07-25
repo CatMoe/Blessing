@@ -17,20 +17,18 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
-import io.netty.channel.Channel
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketSpawnPosition : LimboS2CPacket() {
 
-    var x = 0
-    var y = 255
-    var z = 0
+    var location = LimboLocation(0.0, 400.0, 0.0, 0f, 0f, false)
 
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
-        packet.writeLong((x and 0x3FFFFFF shl 38 or (z and 0x3FFFFFF shl 12) or (y and 0xFFF)).toLong())
+    override fun encode(packet: ByteMessage, version: Version?) {
+        packet.writeLong((location.x.toInt() and 0x3FFFFFF shl 38 or (location.z.toInt() and 0x3FFFFFF shl 12) or (location.y.toInt() and 0xFFF)).toLong())
         packet.writeFloat(0f) // Actually that is yaw + pitch. but now we don't need that.
     }
 

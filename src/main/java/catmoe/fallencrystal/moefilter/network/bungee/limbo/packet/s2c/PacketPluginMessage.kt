@@ -17,17 +17,16 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
-import io.netty.channel.Channel
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 
 class PacketPluginMessage : LimboS2CPacket() {
 
     var channel: String? = null
     var message: String? = null
 
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun encode(packet: ByteMessage, version: Version?) {
         listOf(this.channel!!, this.message!!).forEach { packet.writeString(it) }
     }
 

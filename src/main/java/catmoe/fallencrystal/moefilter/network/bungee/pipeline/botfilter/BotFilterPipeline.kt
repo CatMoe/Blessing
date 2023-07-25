@@ -13,7 +13,7 @@ class BotFilterPipeline : AbstractPipeline(), IPipeline {
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         try {
-            // Use original Varint21FrameDecoder for BotFilter.
+            // Use original VarInt21FrameDecoder for BotFilter.
             super.handlerAdded(ctx)
             if (ctx.channel().isActive) { ctx.pipeline().replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, Varint21FrameDecoder()) }
         } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } }

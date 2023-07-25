@@ -44,7 +44,7 @@ object StateManager {
     val lastMethod: MutableCollection<AttackState> = ArrayList()
 
     fun attackMethodAnalyser() {
-        if (!StateManager.inAttack.get()) return
+        if (!inAttack.get()) return
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
         val cps = ConnectionCounter.getConnectionPerSec()
         val inc = conf.getInt("incoming")

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import io.netty.channel.Channel
 import java.net.SocketAddress
 

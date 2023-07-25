@@ -17,20 +17,19 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import io.netty.buffer.ByteBuf
-import io.netty.channel.Channel
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketPluginRequest() : LimboS2CPacket() {
+class PacketPluginRequest : LimboS2CPacket() {
 
     val messageId: Int? = null
     val channel: String? = null
     val data: ByteBuf? = null
 
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun encode(packet: ByteMessage, version: Version?) {
         packet.writeVarInt(messageId ?: return)
         packet.writeString(this.channel)
         packet.writeBytes(data ?: return)

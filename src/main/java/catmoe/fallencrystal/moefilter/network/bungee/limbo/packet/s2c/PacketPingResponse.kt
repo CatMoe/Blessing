@@ -20,18 +20,17 @@ package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import java.util.*
 
-@Suppress("MemberVisibilityCanBePrivate")
-class PacketLoginSuccess : LimboS2CPacket() {
-    var uuid: UUID? = null
-    var username = ""
+class PacketPingResponse : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
-        val uuid = this.uuid ?: UUID.randomUUID()
-        if (version!!.moreOrEqual(Version.V1_16)) packet.writeUuid(uuid)
-        else if (version.moreOrEqual(Version.V1_7_6)) packet.writeString(uuid.toString())
-        else packet.writeString(uuid.toString().replace("-", ""))
-        packet.writeString(username)
-        if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
+        val protocol = version!!.protocolNumber
+        val brand = "MoeLimbo"
+        val description = "{\"text\": \"&dMoeLimbo\"}"
+        // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
+        val output =
+            "{ \"version\": { \"name\": \"$brand\", \"protocol\": $protocol }, " +
+                    "\"players\": { \"max\": ${1}, \"online\": ${0}, \"sample\": [] }, " +
+                    "\"description\": $description }"
+        packet.writeString(output)
     }
 }

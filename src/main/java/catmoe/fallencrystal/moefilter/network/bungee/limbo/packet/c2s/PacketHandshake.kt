@@ -17,19 +17,30 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
 import io.netty.channel.Channel
-import java.net.InetSocketAddress
 
 class PacketHandshake : LimboC2SPacket() {
 
-    var host: InetSocketAddress? = null
-    var version: Version? = null
+    var version: Version = Version.min
+    var nextState = HandshakeState.HANDSHAKING
+    private var handler: LimboHandler? = null
+    var host = "localhost"
+    var port = 25565
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        host = InetSocketAddress(packet.readString(packet.readVarInt()), packet.readUnsignedShort())
         this.version = Version.of(packet.readVarInt())
+        nextState = HandshakeState.STATE_BY_ID[packet.readVarInt()]!!
+        this.host = packet.readString(packet.readVarInt())
+        this.port = packet.readUnsignedShort()
+    }
+
+    override fun handle(handler: LimboHandler) {
+        this.handler=handler
+        handler.packetHandler.handle(handler, this)
     }
 }

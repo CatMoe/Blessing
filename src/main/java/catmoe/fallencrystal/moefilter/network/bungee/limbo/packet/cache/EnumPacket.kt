@@ -15,18 +15,17 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import io.netty.channel.Channel
-
-interface LimboPacket {
-    fun encode(packet: ByteMessage, version: Version?)
-
-    fun decode(packet: ByteMessage, channel: Channel, version: Version?)
-
-    fun handle(handler: LimboHandler) {
-        // Ignored by default
-    }
+@Suppress("unused")
+enum class EnumPacket {
+    LOGIN_SUCCESS,
+    JOIN_GAME,
+    SPAWN_POSITION,
+    PLUGIN_MESSAGE,
+    PLAYER_ABILITIES,
+    PLAYER_INFO,
+    JOIN_MESSAGE,
+    POS_AND_LOOK_LEGACY,
+    POS_AND_LOOK,
 }

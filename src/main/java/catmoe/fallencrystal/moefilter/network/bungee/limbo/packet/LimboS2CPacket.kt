@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet
 
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.exception.InvalidPacketOperation
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import io.netty.channel.Channel
 
 abstract class LimboS2CPacket : LimboPacket {

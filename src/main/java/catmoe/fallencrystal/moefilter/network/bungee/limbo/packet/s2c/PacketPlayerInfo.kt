@@ -16,18 +16,17 @@
  */
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
-import io.netty.channel.Channel
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import java.util.*
 
 class PacketPlayerInfo : LimboS2CPacket() {
-    private var gameMode = 3
-    private var username = ""
-    private var uuid: UUID? = null
+    var gameMode = 3
+    var username = ""
+    var uuid: UUID? = null
 
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun encode(packet: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_8)) {
             packet.writeString(username)
             packet.writeBoolean(true) // online

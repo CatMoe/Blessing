@@ -18,11 +18,10 @@
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet
 
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.exception.InvalidPacketOperation
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
-import io.netty.channel.Channel
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 
 abstract class LimboC2SPacket : LimboPacket {
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun encode(packet: ByteMessage, version: Version?) {
         throw InvalidPacketOperation("encode does not work with C2S packet")
     }
 }

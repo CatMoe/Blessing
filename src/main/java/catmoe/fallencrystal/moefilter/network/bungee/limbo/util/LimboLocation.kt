@@ -15,15 +15,14 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline.limbo
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.util
 
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractPipeline
-import io.netty.channel.ChannelHandlerContext
-
-class LimboPipeline : AbstractPipeline() {
-
-    override fun handlerAdded(ctx: ChannelHandlerContext) {
-        TODO()
-    }
-
-}
+@Suppress("unused")
+class LimboLocation(
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val yaw: Float,
+    val pitch: Float,
+    val onGround: Boolean
+)

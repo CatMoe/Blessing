@@ -32,7 +32,7 @@ class AttackCounterListener : EventListener {
     @FilterEvent
     fun startSessionCount(ignore: UnderAttackEvent) {
         if (!inAttack) {
-            inAttack=true; ConnectionCounter.setInAttack(true);
+            inAttack=true; ConnectionCounter.setInAttack(true)
             Notifications.autoNotificationPlayer()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-start"))
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The server is under attack!")
@@ -42,7 +42,7 @@ class AttackCounterListener : EventListener {
     @FilterEvent
     fun stopSessionCount(ignore: AttackStoppedEvent) {
         if (inAttack) {
-            inAttack=false; ConnectionCounter.setInAttack(false);
+            inAttack=false; ConnectionCounter.setInAttack(false)
             Notifications.autoNotification.clear()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-stopped"))
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")

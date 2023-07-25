@@ -15,22 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s
 
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+import io.netty.channel.Channel
 
-@Suppress("MemberVisibilityCanBePrivate")
-class PacketPlayerAbilities : LimboS2CPacket() {
+class PacketStatusRequest : LimboC2SPacket() {
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {}
 
-    var flags: Int? = null
-    var flyingSpeed: Float = 0f
-    var fieldOfView: Float = 0.1f
-
-    override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeByte(flags ?: 0x02)
-        listOf(flyingSpeed, fieldOfView).forEach { packet.writeFloat(it) }
-    }
-
+    override fun handle(handler: LimboHandler) { handler.packetHandler.handle(handler, this) }
 }

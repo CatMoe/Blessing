@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.util
 
 enum class Version(val protocolNumber: Int) {
     UNDEFINED(-1),

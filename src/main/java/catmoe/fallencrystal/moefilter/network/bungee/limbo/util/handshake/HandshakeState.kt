@@ -14,26 +14,34 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version.Companion.max
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version.Companion.min
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.PacketHandshake
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.PacketInitLogin
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.PacketPluginResponse
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common.PacketKeepAlive
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c.*
-import java.util.*
-import java.util.function.Supplier
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version.Companion.max
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version.Companion.min
 
-@Suppress("ReplaceWithEnumMap")
-enum class HandshakeState(private var stateId: Int) {
+
+enum class HandshakeState(var stateId: Int) {
+    @JvmStatic
     HANDSHAKING(0) {
         init {
             serverBound.register({ PacketHandshake() }, map(0x00, min, max))
         }
     },
-    STATUS(1),
+    @JvmStatic
+    STATUS(1) {
+       init {
+           serverBound.register({ PacketStatusRequest() }, map(0x00, min, max))
+           clientBound.register({ PacketPingResponse() }, map(0x00, min, max))
+           serverBound.register({ PacketStatusPing() }, map(0x01, min, max))
+           clientBound.register({ PacketStatusPing() }, map(0x01, min, max))
+       }
+    },
+    @JvmStatic
     LOGIN(2) {
         init {
             serverBound.register({ PacketInitLogin() }, map(0x00, min, max))
@@ -42,6 +50,7 @@ enum class HandshakeState(private var stateId: Int) {
             clientBound.register({ PacketPluginRequest() }, map(0x04, min, max))
         }
     },
+    @JvmStatic
     PLAY(3) {
         init {
             serverBound.register(
@@ -103,7 +112,7 @@ enum class HandshakeState(private var stateId: Int) {
                 map(0x34, Version.V1_19_4, Version.V1_20)
             )
             clientBound.register(
-                { PacketPositionAndLook() },
+                { PacketServerPositionLook() },
                 map(0x08, Version.V1_7_2, Version.V1_8),
                 map(0x2E, Version.V1_9, Version.V1_12),
                 map(0x2F, Version.V1_12_1, Version.V1_12_2),
@@ -117,6 +126,21 @@ enum class HandshakeState(private var stateId: Int) {
                 map(0x39, Version.V1_19_1, Version.V1_19_1),
                 map(0x38, Version.V1_19_3, Version.V1_19_3),
                 map(0x3C, Version.V1_19_4, Version.V1_20)
+            )
+            serverBound.register(
+                { PacketClientPositionLook() },
+                map(0x06, Version.V1_8, Version.V1_8),
+                map(0x0D, Version.V1_9, Version.V1_11_1),
+                map(0x0f, Version.V1_12, Version.V1_12),
+                map(0x0E, Version.V1_12_1, Version.V1_12_2),
+                map(0x11, Version.V1_13, Version.V1_13_2),
+                map(0x12, Version.V1_14, Version.V1_15_2),
+                map(0x13, Version.V1_16, Version.V1_16_4),
+                map(0x12, Version.V1_17, Version.V1_18_2),
+                map(0x14, Version.V1_19, Version.V1_19),
+                map(0x15, Version.V1_19_1, Version.V1_19_1),
+                map(0x14, Version.V1_19_3, Version.V1_19_3),
+                map(0x15, Version.V1_19_4, Version.V1_20)
             )
             clientBound.register(
                 { PacketKeepAlive() },
@@ -157,62 +181,25 @@ enum class HandshakeState(private var stateId: Int) {
         }
     };
 
+    fun map(packetId: Int, from: Version, to: Version): Mapping {
+        return Mapping(packetId, from, to)
+    }
+
+
     val serverBound = ProtocolMappings()
     val clientBound = ProtocolMappings()
-    fun state(stateId: Int) {
-        this.stateId = stateId
-    }
+    fun state(stateId: Int) { this.stateId = stateId }
 
-    class ProtocolMappings {
-        private val registry: MutableMap<Version?, PacketRegistry?> = HashMap()
 
-        fun register(packet: Supplier<*>, vararg mappings: Mapping) {
-            for (mapping in mappings) {
-                for (ver in getRange(mapping)) {
-                    val reg = registry.computeIfAbsent(ver) { version: Version? -> PacketRegistry(version) }
-                    reg!!.register(mapping.packetId, packet)
-                }
-            }
-        }
-
-        private fun getRange(mapping: Mapping): Collection<Version?> {
-            val from = mapping.from
-            var curr: Version? = mapping.to
-            if (curr === from) return listOf(from)
-            val versions: MutableList<Version?> = LinkedList()
-            while (curr !== from) {
-                versions.add(curr)
-                if (curr != null) {
-                    curr = curr.prev
-                }
-            }
-            versions.add(from)
-            return versions
-        }
-    }
-
-    class PacketRegistry(val version: Version?) {
-        private val packetsById: MutableMap<Int, Supplier<*>> = HashMap()
-        private val packetIdByClass: MutableMap<Class<*>, Int> = HashMap()
-
-        fun register(packetId: Int, supplier: Supplier<*>) {
-            packetsById[packetId] = supplier
-            packetIdByClass[supplier.get().javaClass] = packetId
-        }
-    }
-
-    class Mapping(val packetId: Int, val from: Version, val to: Version)
     companion object {
-        private val STATE_BY_ID: MutableMap<Int, HandshakeState> = HashMap()
+        val STATE_BY_ID: MutableMap<Int, HandshakeState> = HashMap()
 
+        /*
         init {
             for (registry in values()) {
                 STATE_BY_ID[registry.stateId] = registry
             }
         }
-
-        private fun map(packetId: Int, from: Version, to: Version): Mapping {
-            return Mapping(packetId, from, to)
-        }
+         */
     }
 }

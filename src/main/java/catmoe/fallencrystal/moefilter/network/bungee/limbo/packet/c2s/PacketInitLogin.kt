@@ -17,9 +17,10 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import io.netty.channel.Channel
 
 class PacketInitLogin : LimboC2SPacket() {
@@ -27,4 +28,6 @@ class PacketInitLogin : LimboC2SPacket() {
     var username = ""
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { username = packet.readString(packet.readVarInt()) }
+
+    override fun handle(handler: LimboHandler) { handler.packetHandler.handle(handler, this) }
 }

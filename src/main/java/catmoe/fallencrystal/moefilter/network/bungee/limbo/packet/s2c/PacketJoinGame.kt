@@ -19,30 +19,29 @@ package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.handshake.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
-import io.netty.channel.Channel
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 
 
-@Suppress("unused", "KotlinConstantConditions")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class PacketJoinGame : LimboS2CPacket() {
 
-    private val entityId = 12345
-    private val isHardcore = false
-    private val gameMode = 2
-    private val previousGameMode = -1
-    private val worldNames: Array<String?>? = null
-    private val worldName: String = DimensionType.OVERWORLD.name
-    private val hashedSeed: Long = 0
-    private val maxPlayers = 0
-    private val viewDistance = 2
-    private val reducedDebugInfo = false
-    private val enableRespawnScreen = false
-    private val isDebug = false
-    private val isFlat = false
+    var entityId = 12345
+    var isHardcore = false
+    var gameMode = 2
+    var previousGameMode = -1
+    val worldNames: Array<String?>? = null
+    var worldName: String = DimensionType.OVERWORLD.name
+    var hashedSeed: Long = 0
+    var maxPlayers = 0
+    var viewDistance = 2
+    var reducedDebugInfo = false
+    var enableRespawnScreen = false
+    var isDebug = false
+    var isFlat = false
 
-    override fun encode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun encode(packet: ByteMessage, version: Version?) {
         packet.writeInt(entityId)
 
         val worldNames: Array<String?> = this.worldNames ?: arrayOf(

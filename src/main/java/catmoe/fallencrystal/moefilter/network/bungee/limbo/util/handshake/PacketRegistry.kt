@@ -15,26 +15,25 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake
 
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import io.netty.channel.Channel
+import java.util.function.Supplier
 
-class PacketKeepAlive : LimboPacket {
+class PacketRegistry(val version: Version) {
+    private val packetsById: MutableMap<Int, Supplier<*>> = HashMap()
+    private val packetIdByClass: MutableMap<Class<*>, Int> = HashMap()
 
-    var id = 1234
-
-    override fun encode(packet: ByteMessage, version: Version?) {
-        if (version!!.moreOrEqual(Version.V1_12_2)) packet.writeLong(id.toLong())
-        else if (version.moreOrEqual(Version.V1_8)) packet.writeVarInt(id)
-        else packet.writeInt(id)
+    fun getPacket(packetId: Int): LimboPacket? {
+        val supplier = packetsById[packetId]
+        return if (supplier == null) null else supplier.get() as LimboPacket
     }
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        id = if (version!!.moreOrEqual(Version.V1_12_2)) packet.readLong().toInt()
-        else if (version.moreOrEqual(Version.V1_8)) packet.readVarInt()
-        else packet.readInt()
+    fun getPacketId(packetClass: Class<*>?): Int { return packetIdByClass.getOrDefault(packetClass!!, -1) }
+
+    fun register(packetId: Int, supplier: Supplier<*>) {
+        packetsById[packetId] = supplier
+        packetIdByClass[supplier.get().javaClass] = packetId
     }
 }

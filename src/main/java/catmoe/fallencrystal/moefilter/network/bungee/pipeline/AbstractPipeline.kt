@@ -23,10 +23,10 @@ import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
 
 abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
-    private val bungee = BungeeCord.getInstance()
-    private val throttler = bungee.connectionThrottle
-    private val legacyKicker = KickStringWriter()
-    private val protocol = 0
+    val bungee = BungeeCord.getInstance()
+    val throttler = bungee.connectionThrottle
+    val legacyKicker = KickStringWriter()
+    val protocol = 0
 
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {

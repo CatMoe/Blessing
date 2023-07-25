@@ -19,14 +19,20 @@ package catmoe.fallencrystal.moefilter.network.bungee.limbo
 
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionRegistry
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension.DimensionType
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache.PacketCache
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
 
-class MoeLimbo {
+object MoeLimbo {
+
+    val connections: MutableCollection<LimboHandler> = ArrayList()
 
     fun initDimension() {
+        HandshakeState.values().forEach { HandshakeState.STATE_BY_ID[it.stateId] = it }
         val dimension = DimensionType.OVERWORLD
         DimensionRegistry
         DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
         DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
+        PacketCache.initPacket()
     }
 
 }

@@ -17,6 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.network
 
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.util.ReflectionUtils
@@ -39,11 +42,41 @@ class InitChannel {
         log("Starting inject MoeFilter Pipeline...")
         val proxyName = bungee.name
         bungee.getConfig().listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol = true } }
-        if (isProxyProtocol) { log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.") }
-        for (it in knownIncompatibilitiesBungee) { if (it.contains(proxyName)) { log("<red>Failed to inject because incompatibilities for $it bungeecord fork!"); bungee.stop(); return } }
-        for (it in knownIncompatibilitiesPlugin) { if (bungee.pluginManager.getPlugin(it) != null) { log("<red>Failed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first."); bungee.stop(); return } }
-        if (proxyName.contains("BotFilter")) { pipeline=BotFilterPipeline() }
-        try { if (!inject(pipeline).get()) { log("<red>Failed to inject pipeline. Please report this issue for CatMoe!") } else { log("<green>Pipeline inject successfully.") } } catch (err: UnsupportedClassVersionError) { err.printStackTrace(); bungee.stop() }
+        if (isProxyProtocol) {
+            log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.")
+        }
+        for (it in knownIncompatibilitiesBungee) {
+            if (it.contains(proxyName)) {
+                log("<red>Failed to inject because incompatibilities for $it bungeecord fork!")
+                bungee.stop()
+                return
+            }
+        }
+        for (it in knownIncompatibilitiesPlugin) {
+            if (bungee.pluginManager.getPlugin(it) != null) {
+                log("<red>Failed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first.")
+                bungee.stop()
+                return
+            }
+        }
+        if (proxyName.contains("BotFilter")) {
+            log("BotFilter is detected. Using compatibilities choose for it.")
+            pipeline=BotFilterPipeline()
+        }
+        if (LocalConfig.getConfig().getBoolean("debug")) {
+            log("Debug mode is on. Player now will connect to MoeLimbo instead of bungeecord itself.")
+            pipeline=LimboPipeline()
+            MoeLimbo.initDimension()
+        }
+        try {
+            if (!inject(pipeline).get()) {
+                log("<red>Failed to inject pipeline. Please report this issue for CatMoe!")
+            } else {
+                log("<green>Pipeline inject successfully.")
+            }
+        } catch (err: UnsupportedClassVersionError) {
+            err.printStackTrace(); bungee.stop()
+        }
     }
 
     private fun inject(pipeline: ChannelInitializer<Channel>): AtomicBoolean { return ReflectionUtils().inject(pipeline) }
