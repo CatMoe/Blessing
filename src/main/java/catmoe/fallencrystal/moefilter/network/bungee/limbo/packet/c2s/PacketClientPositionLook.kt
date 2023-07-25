@@ -39,6 +39,6 @@ class PacketClientPositionLook : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-
+        handler.packetHandler.handle(handler, this)
     }
 }

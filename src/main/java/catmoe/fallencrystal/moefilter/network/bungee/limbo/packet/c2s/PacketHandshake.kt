@@ -21,20 +21,20 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.Protocol
 import io.netty.channel.Channel
 
 class PacketHandshake : LimboC2SPacket() {
 
     var version: Version = Version.min
-    var nextState = HandshakeState.HANDSHAKING
+    var nextState = Protocol.HANDSHAKING
     private var handler: LimboHandler? = null
     var host = "localhost"
     var port = 25565
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         this.version = Version.of(packet.readVarInt())
-        nextState = HandshakeState.STATE_BY_ID[packet.readVarInt()]!!
+        nextState = Protocol.STATE_BY_ID[packet.readVarInt()]!!
         this.host = packet.readString(packet.readVarInt())
         this.port = packet.readUnsignedShort()
     }

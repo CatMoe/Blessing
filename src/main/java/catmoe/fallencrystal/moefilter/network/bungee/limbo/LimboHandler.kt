@@ -29,7 +29,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache.PacketCa
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import io.netty.channel.Channel
@@ -46,21 +46,17 @@ class LimboHandler(
     val channel: Channel
 ) : ChannelInboundHandlerAdapter() {
     val address: SocketAddress = channel.remoteAddress()
-    var state: HandshakeState? = null
+    var state: Protocol? = null
     var version: Version? = null
     var host: InetSocketAddress? = null
-    var profile: VirtualConnection? = null
+    var profile: VirtualConnection = VirtualConnection()
 
     val packetHandler = PacketHandler()
 
     var location: LimboLocation? = null
 
-    init {
-        MoeLimbo.connections.add(this)
-    }
-
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        if (state == HandshakeState.PLAY)  MoeLimbo.connections.remove(this)
+        if (state == Protocol.PLAY) MoeLimbo.connections.remove(this)
         super.channelInactive(ctx)
     }
 
@@ -71,13 +67,13 @@ class LimboHandler(
 
     fun fireLoginSuccess() {
         sendPacket(getCachedPacket(LOGIN_SUCCESS))
-        state = HandshakeState.PLAY
-        encoder.registry= HandshakeState.PLAY.clientBound.registry[encoder.version ?: Version.min]
-        decoder.mappings= HandshakeState.PLAY.serverBound.registry[decoder.version ?: Version.min]
+        state = Protocol.PLAY
+        MoeLimbo.connections.add(this)
+        updateVersion(version!!, state!!)
         sendPlayPackets()
     }
 
-    fun updateVersion(version: Version, state: HandshakeState) {
+    fun updateVersion(version: Version, state: Protocol) {
         this.version=version
         encoder.switchVersion(version, state)
         decoder.switchVersion(version, state)

@@ -15,15 +15,20 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import io.netty.channel.Channel
-import java.net.SocketAddress
 
-class VirtualConnection {
-    var channel: Channel? = null
-    var username: String? = null
-    var version: Version? = null
-    var address: SocketAddress? = null
+class PacketSetExperience : LimboS2CPacket() {
+
+    var expBar = 0f
+    var level = 0
+    var totalExp = 0
+
+    override fun encode(packet: ByteMessage, version: Version?) {
+        packet.writeFloat(expBar)
+        listOf(level, totalExp).forEach { packet.writeVarInt(it) }
+    }
 }

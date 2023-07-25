@@ -38,9 +38,15 @@ class PacketHandler {
     }
 
     fun handle(handler: LimboHandler, packet: PacketInitLogin) {
+        val profile = handler.profile
+        profile.username=packet.username
+        profile.address=handler.channel.remoteAddress()
+        profile.channel=handler.channel
+        profile.version=handler.version
         handler.fireLoginSuccess()
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun handle(handler: LimboHandler, packet: PacketStatusRequest) {
         handler.sendPacket(PacketPingResponse())
     }

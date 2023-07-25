@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.bungee.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.Protocol
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
@@ -27,9 +27,9 @@ import io.netty.handler.codec.MessageToMessageDecoder
 @Suppress("unused")
 class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
 
-    var mappings = HandshakeState.HANDSHAKING.serverBound.registry[version ?: Version.min]
+    var mappings = Protocol.HANDSHAKING.serverBound.registry[version ?: Version.min]
 
-    fun switchVersion(version: Version, state: HandshakeState) {
+    fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         mappings = state.serverBound.registry[version]
     }

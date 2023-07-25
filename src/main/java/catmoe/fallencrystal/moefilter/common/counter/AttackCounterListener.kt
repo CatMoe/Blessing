@@ -26,11 +26,11 @@ import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 
-@Suppress("unused")
 class AttackCounterListener : EventListener {
     private var inAttack = false
     @FilterEvent
-    fun startSessionCount(ignore: UnderAttackEvent) {
+    @Suppress("UNUSED_PARAMETER")
+    fun startSessionCount(event: UnderAttackEvent) {
         if (!inAttack) {
             inAttack=true; ConnectionCounter.setInAttack(true)
             Notifications.autoNotificationPlayer()
@@ -40,7 +40,8 @@ class AttackCounterListener : EventListener {
     }
 
     @FilterEvent
-    fun stopSessionCount(ignore: AttackStoppedEvent) {
+    @Suppress("UNUSED_PARAMETER")
+    fun stopSessionCount(event: AttackStoppedEvent) {
         if (inAttack) {
             inAttack=false; ConnectionCounter.setInAttack(false)
             Notifications.autoNotification.clear()

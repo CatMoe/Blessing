@@ -21,16 +21,16 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.HandshakeState
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.Protocol
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
 
 class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() {
 
-    var registry = HandshakeState.HANDSHAKING.clientBound.registry[version ?: Version.min]
+    var registry = Protocol.HANDSHAKING.clientBound.registry[version ?: Version.min]
 
-    fun switchVersion(version: Version, state: HandshakeState) {
+    fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         registry= state.clientBound.registry[version]
     }
