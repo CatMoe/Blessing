@@ -32,7 +32,7 @@ class PacketJoinGame : LimboS2CPacket() {
     var gameMode = 2
     var previousGameMode = -1
     val worldNames: Array<String?>? = null
-    var worldName: String = DimensionType.OVERWORLD.name
+    var worldName: String = DimensionType.OVERWORLD.dimensionName
     var hashedSeed: Long = 0
     var maxPlayers = 1
     var viewDistance = 2
@@ -45,9 +45,9 @@ class PacketJoinGame : LimboS2CPacket() {
         packet.writeInt(entityId)
 
         val worldNames: Array<String?> = this.worldNames ?: arrayOf(
-            DimensionType.OVERWORLD.name,
-            DimensionType.THE_NETHER.name,
-            DimensionType.THE_END.name
+            DimensionType.OVERWORLD.dimensionName,
+            DimensionType.THE_NETHER.dimensionName,
+            DimensionType.THE_END.dimensionName
         )
 
         if (version!!.fromTo(Version.V1_7_2, Version.V1_7_6)) {
