@@ -27,19 +27,19 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class PacketJoinGame : LimboS2CPacket() {
 
-    var entityId = 12345
-    var isHardcore = false
+    var entityId = 0
+    var isHardcore = true
     var gameMode = 2
     var previousGameMode = -1
     val worldNames: Array<String?>? = null
     var worldName: String = DimensionType.OVERWORLD.name
     var hashedSeed: Long = 0
-    var maxPlayers = 0
+    var maxPlayers = 1
     var viewDistance = 2
-    var reducedDebugInfo = false
-    var enableRespawnScreen = false
+    var reducedDebugInfo = true
+    var enableRespawnScreen = true
     var isDebug = false
-    var isFlat = false
+    var isFlat = true
 
     override fun encode(packet: ByteMessage, version: Version?) {
         packet.writeInt(entityId)
@@ -52,7 +52,7 @@ class PacketJoinGame : LimboS2CPacket() {
 
         if (version!!.fromTo(Version.V1_7_2, Version.V1_7_6)) {
             packet.writeByte(if (gameMode == 3) 1 else gameMode)
-            packet.writeByte(DimensionRegistry.defaultDimension1_16!!.id)
+            packet.writeByte(DimensionRegistry.defaultDimension1_16.id)
             packet.writeByte(0) // Difficulty
             packet.writeByte(maxPlayers)
             packet.writeString("flat") // Level type
@@ -60,7 +60,7 @@ class PacketJoinGame : LimboS2CPacket() {
 
         if (version.fromTo(Version.V1_8, Version.V1_9)) {
             packet.writeByte(gameMode)
-            packet.writeByte(DimensionRegistry.defaultDimension1_16!!.id)
+            packet.writeByte(DimensionRegistry.defaultDimension1_16.id)
             packet.writeByte(0) // Difficulty
             packet.writeByte(maxPlayers)
             packet.writeString("flat") // Level type
@@ -69,7 +69,7 @@ class PacketJoinGame : LimboS2CPacket() {
 
         if (version.fromTo(Version.V1_9_1, Version.V1_13_2)) {
             packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16!!.id)
+            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
             packet.writeByte(0) // Difficulty
             packet.writeByte(maxPlayers)
             packet.writeString("flat") // Level type
@@ -78,7 +78,7 @@ class PacketJoinGame : LimboS2CPacket() {
 
         if (version.fromTo(Version.V1_14, Version.V1_14_4)) {
             packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16!!.id)
+            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
             packet.writeByte(maxPlayers)
             packet.writeString("flat") // Level type
             packet.writeVarInt(viewDistance)
@@ -87,7 +87,7 @@ class PacketJoinGame : LimboS2CPacket() {
 
         if (version.fromTo(Version.V1_15, Version.V1_15_2)) {
             packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16!!.id)
+            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
             packet.writeLong(hashedSeed)
             packet.writeByte(maxPlayers)
             packet.writeString("flat") // Level type
@@ -101,7 +101,7 @@ class PacketJoinGame : LimboS2CPacket() {
             packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
             packet.writeCompoundTag(DimensionRegistry.codec_Legacy)
-            packet.writeString(DimensionRegistry.defaultDimension1_16!!.name)
+            packet.writeString(DimensionRegistry.defaultDimension1_16.name)
             packet.writeString(worldName)
             packet.writeLong(hashedSeed)
             packet.writeByte(maxPlayers)
@@ -118,7 +118,7 @@ class PacketJoinGame : LimboS2CPacket() {
             packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
             packet.writeCompoundTag(DimensionRegistry.codec_1_16)
-            packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16!!.data)
+            packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16.data)
             packet.writeString(worldName)
             packet.writeLong(hashedSeed)
             packet.writeVarInt(maxPlayers)
@@ -136,10 +136,10 @@ class PacketJoinGame : LimboS2CPacket() {
             packet.writeStringsArray(worldNames)
             if (version.moreOrEqual(Version.V1_18_2)) {
                 packet.writeCompoundTag(DimensionRegistry.codec_1_18_2)
-                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_18_2!!.data)
+                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_18_2.data)
             } else {
                 packet.writeCompoundTag(DimensionRegistry.codec_1_16)
-                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16!!.data)
+                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16.data)
             }
             packet.writeString(worldName)
             packet.writeLong(hashedSeed)

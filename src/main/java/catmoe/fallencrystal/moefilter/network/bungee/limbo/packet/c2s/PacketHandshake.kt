@@ -26,17 +26,17 @@ import io.netty.channel.Channel
 
 class PacketHandshake : LimboC2SPacket() {
 
-    var version: Version = Version.min
+    var version: Version = Version.UNDEFINED
     var nextState = Protocol.HANDSHAKING
     private var handler: LimboHandler? = null
     var host = "localhost"
     var port = 25565
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        this.version = Version.of(packet.readVarInt())
-        nextState = Protocol.STATE_BY_ID[packet.readVarInt()]!!
+        this.version = try { Version.of(packet.readVarInt()) } catch (e: IllegalArgumentException) { Version.UNDEFINED }
         this.host = packet.readString(packet.readVarInt())
         this.port = packet.readUnsignedShort()
+        nextState = Protocol.STATE_BY_ID[packet.readVarInt()]!!
     }
 
     override fun handle(handler: LimboHandler) {

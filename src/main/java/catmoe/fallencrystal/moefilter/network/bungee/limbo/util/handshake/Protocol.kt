@@ -71,6 +71,21 @@ enum class Protocol(var stateId: Int) {
                 map(0x12, V1_19_4, V1_20)
             )
             clientBound.register(
+                { PacketKeepAlive() },
+                map(0x00, V1_7_2, V1_8),
+                map(0x1F, V1_9, V1_12_2),
+                map(0x21, V1_13, V1_13_2),
+                map(0x20, V1_14, V1_14_4),
+                map(0x21, V1_15, V1_15_2),
+                map(0x20, V1_16, V1_16_1),
+                map(0x1F, V1_16_2, V1_16_4),
+                map(0x21, V1_17, V1_18_2),
+                map(0x1E, V1_19, V1_19),
+                map(0x20, V1_19_1, V1_19_1),
+                map(0x1F, V1_19_3, V1_19_3),
+                map(0x23, V1_19_4, V1_20)
+            )
+            clientBound.register(
                 { PacketJoinGame() },
                 map(0x01, V1_7_2, V1_8),
                 map(0x23, V1_9, V1_12_2),
@@ -143,21 +158,6 @@ enum class Protocol(var stateId: Int) {
                 map(0x15, V1_19_1, V1_19_1),
                 map(0x14, V1_19_3, V1_19_3),
                 map(0x15, V1_19_4, V1_20)
-            )
-            clientBound.register(
-                { PacketKeepAlive() },
-                map(0x00, V1_7_2, V1_8),
-                map(0x1F, V1_9, V1_12_2),
-                map(0x21, V1_13, V1_13_2),
-                map(0x20, V1_14, V1_14_4),
-                map(0x21, V1_15, V1_15_2),
-                map(0x20, V1_16, V1_16_1),
-                map(0x1F, V1_16_2, V1_16_4),
-                map(0x21, V1_17, V1_18_2),
-                map(0x1E, V1_19, V1_19),
-                map(0x20, V1_19_1, V1_19_1),
-                map(0x1F, V1_19_3, V1_19_3),
-                map(0x23, V1_19_4, V1_20)
             )
             clientBound.register(
                 { PacketPlayerInfo() },

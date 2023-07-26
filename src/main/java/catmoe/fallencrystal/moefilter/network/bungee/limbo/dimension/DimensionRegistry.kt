@@ -17,13 +17,12 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.limbo.dimension
 
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.TagStringIO
 
 @Suppress("unused")
 object DimensionRegistry {
-    var defaultDimension1_16 : Dimension? = null
-    var defaultDimension1_18_2 : Dimension? = null
 
     // Legacy Start
     var codec_Legacy = readString("""
@@ -14437,4 +14436,7 @@ object DimensionRegistry {
             ((tag.getCompound("minecraft:dimension_type").getList("value")[type.tagId] as CompoundBinaryTag) as? CompoundBinaryTag)!!
         )
     }
+
+    var defaultDimension1_16 : Dimension = getDimension(DimensionType.OVERWORLD, codec_1_16)
+    var defaultDimension1_18_2 : Dimension = getDimension(DimensionType.OVERWORLD, codec_1_18_2)
 }

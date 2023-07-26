@@ -27,10 +27,12 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache.EnumPack
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common.PacketKeepAlive
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c.PacketEmptyChunk
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
@@ -39,6 +41,7 @@ import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class LimboHandler(
     val encoder: LimboEncoder,
@@ -57,6 +60,7 @@ class LimboHandler(
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
         if (state == Protocol.PLAY) MoeLimbo.connections.remove(this)
+        MessageUtil.logInfo("[MoeLimbo] Client disconnected.")
         super.channelInactive(ctx)
     }
 
@@ -86,17 +90,19 @@ class LimboHandler(
 
         if (version.less(Version.V1_9)) writePacket(POS_AND_LOOK_LEGACY) else writePacket(POS_AND_LOOK)
         if (version.moreOrEqual(Version.V1_19_3)) writePacket(SPAWN_POSITION)
-        writePacket(PLAYER_INFO)
+        if (version == Version.V1_16_4) writePacket(PLAYER_INFO)
         writePacket(PLUGIN_MESSAGE)
+        val chunk = PacketEmptyChunk()
+        (0..3).forEach {x -> (0..3).forEach { z -> chunk.x=x; chunk.z=z; writePacket(chunk) } }
 
         keepAliveScheduler()
     }
 
     private fun keepAliveScheduler() {
-        Scheduler(MoeFilter.instance).repeatScheduler(5, TimeUnit.SECONDS) {
+        Scheduler(MoeFilter.instance).repeatScheduler( 10, TimeUnit.SECONDS) {
             if (!MoeLimbo.connections.contains(this)) return@repeatScheduler
             val keepAlive = PacketKeepAlive()
-            keepAlive.id= ThreadLocalRandom.current().nextInt()
+            keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)
         }
     }

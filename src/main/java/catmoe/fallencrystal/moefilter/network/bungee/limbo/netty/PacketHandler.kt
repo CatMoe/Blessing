@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.PacketInit
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.c2s.PacketStatusRequest
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c.PacketPingResponse
-import io.netty.channel.ChannelFutureListener
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import java.net.InetSocketAddress
 import java.util.concurrent.CompletableFuture
 
@@ -34,7 +34,9 @@ class PacketHandler {
         CompletableFuture.runAsync {
             handler.host = InetSocketAddress(packet.host, packet.port)
         }
+        MessageUtil.logInfo("[MoeLimbo] Processing Handshake: Version: ${packet.version.name}, State: ${packet.nextState.name}, Connection from ${packet.host}:${packet.port}")
         handler.updateVersion(packet.version, packet.nextState)
+
     }
 
     fun handle(handler: LimboHandler, packet: PacketInitLogin) {
@@ -56,9 +58,7 @@ class PacketHandler {
     }
 
     fun handle(handler: LimboHandler, packet: PacketStatusPing) {
-        if (handler.channel.isActive) {
-            handler.channel.writeAndFlush(packet).addListeners(ChannelFutureListener.CLOSE)
-        }
+        if (handler.channel.isActive) { handler.channel.writeAndFlush(packet) }
     }
 
 }

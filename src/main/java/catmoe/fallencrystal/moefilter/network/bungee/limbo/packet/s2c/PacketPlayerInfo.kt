@@ -19,12 +19,13 @@ package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 class PacketPlayerInfo : LimboS2CPacket() {
-    var gameMode = 3
-    var username = ""
-    var uuid: UUID? = null
+    var gameMode = 2
+    var username = "MoeLimbo"
+    var uuid: UUID = UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray(StandardCharsets.UTF_8))
 
     override fun encode(packet: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_8)) {
@@ -34,10 +35,12 @@ class PacketPlayerInfo : LimboS2CPacket() {
         } else {
             if (version.moreOrEqual(Version.V1_19_3)) {
                 val actions = EnumSet.noneOf(Action::class.java)
-                actions.addAll(listOf(Action.ADD_PLAYER, Action.UPDATE_LISTED, Action.UPDATE_GAMEMODE))
+                actions.add(Action.ADD_PLAYER)
+                actions.add(Action.UPDATE_LISTED)
+                actions.add(Action.UPDATE_GAMEMODE)
                 packet.writeEnumSet(actions, Action::class.java)
                 packet.writeVarInt(1) // Array length (1 element)
-                packet.writeUuid(uuid!!) // entity uuid
+                packet.writeUuid(uuid) // entity uuid
                 packet.writeString(username) // name
                 packet.writeVarInt(0)
                 packet.writeBoolean(true)
@@ -46,13 +49,13 @@ class PacketPlayerInfo : LimboS2CPacket() {
             }
             packet.writeVarInt(0)
             packet.writeVarInt(1)
-            packet.writeUuid(uuid!!)
+            packet.writeUuid(uuid)
             packet.writeString(username)
             packet.writeVarInt(0)
             packet.writeVarInt(gameMode)
             packet.writeVarInt(60)
             packet.writeBoolean(false)
-            if (version.moreOrEqual(Version.V1_19)) { packet.writeBoolean(false) }
+            if (version.moreOrEqual(Version.V1_19)) packet.writeBoolean(false)
         }
     }
 

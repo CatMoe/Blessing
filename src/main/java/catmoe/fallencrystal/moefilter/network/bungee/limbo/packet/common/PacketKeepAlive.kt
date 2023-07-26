@@ -24,17 +24,17 @@ import io.netty.channel.Channel
 
 class PacketKeepAlive : LimboPacket {
 
-    var id = 1234
+    var id: Long = 9876
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        if (version!!.moreOrEqual(Version.V1_12_2)) packet.writeLong(id.toLong())
-        else if (version.moreOrEqual(Version.V1_8)) packet.writeVarInt(id)
-        else packet.writeInt(id)
+        if (version!!.moreOrEqual(Version.V1_12_2)) packet.writeLong(id)
+        else if (version.moreOrEqual(Version.V1_8)) packet.writeVarInt(id.toInt())
+        else packet.writeInt(id.toInt())
     }
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        id = if (version!!.moreOrEqual(Version.V1_12_2)) packet.readLong().toInt()
-        else if (version.moreOrEqual(Version.V1_8)) packet.readVarInt()
-        else packet.readInt()
+        id = if (version!!.moreOrEqual(Version.V1_12_2)) packet.readLong()
+        else if (version.moreOrEqual(Version.V1_8)) packet.readVarInt().toLong()
+        else packet.readInt().toLong()
     }
 }

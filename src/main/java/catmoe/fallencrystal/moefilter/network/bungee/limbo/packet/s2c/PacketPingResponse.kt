@@ -25,7 +25,7 @@ class PacketPingResponse : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         val protocol = version!!.protocolNumber
         val brand = "MoeLimbo"
-        val description = "{\"text\": \"&dMoeLimbo\"}"
+        val description = "{\"text\": \"§dMoeLimbo\"}"
         // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
         val output =
             "{ \"version\": { \"name\": \"$brand\", \"protocol\": $protocol }, " +
