@@ -30,12 +30,14 @@ class PacketEmptyChunk : LimboS2CPacket() {
     var z: Int = 0
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        listOf(x, z).forEach { packet.writeInt(it) }
-        if (version!!.more(Version.V1_17)) packet.writeBoolean(true)
+        // Chunk pos
+        packet.writeInt(x)
+        packet.writeInt(z)
+        if (version!!.less(Version.V1_17)) packet.writeBoolean(true)
         if (version.moreOrEqual(Version.V1_16) && version.less(Version.V1_16_2)) packet.writeBoolean(true)
         if (version.less(Version.V1_17)) {
-            if (version.lessOrEqual(Version.V1_8)) packet.writeShort(1) else packet.writeVarInt(0)
-        } else if (version.more(Version.V1_18)) {
+            if (version == Version.V1_8) packet.writeShort(1) else packet.writeVarInt(0)
+        } else if (version.less(Version.V1_18)) {
             val bitSet = BitSet()
             for (it in 0..15) { bitSet[it] = false }
             val mask = bitSet.toLongArray()
@@ -43,41 +45,45 @@ class PacketEmptyChunk : LimboS2CPacket() {
             mask.forEach { packet.writeLong(it) }
         }
         if (version.moreOrEqual(Version.V1_14)) {
+            // Height maps << Start
             val output = ByteBufOutputStream(packet)
-            output.writeByte( 10 ) //CompoundTag
-            output.writeUTF( "" ) // CompoundName
-            output.writeByte( 10 ) //CompoundTag
-            output.writeUTF( "root" ) //root compound
-            output.writeByte( 12 ) //long array
+            output.writeByte(10) //CompoundTag
+            output.writeUTF("") // CompoundName
+            output.writeByte(10) //CompoundTag
+            output.writeUTF("root") //root compound
+            output.writeByte(12) //long array
             output.writeUTF( "MOTION_BLOCKING" )
-            val arrayTag = arrayOf((if (version.more(Version.V1_18)) 36 else 37).toLong())
+            //val arrayTag = arrayOf((if (version.less(Version.V1_18)) 36 else 37).toLong())
+            val arrayTag = LongArray(if (version.less(Version.V1_18)) 36 else 37)
+            //val longArrayTag = LongArray(if (version < ProtocolConstants.MINECRAFT_1_18) 36 else 37)
             output.writeInt(arrayTag.size)
-            for (element in arrayTag) { packet.writeLong(element) }
-            listOf(0, 0).forEach { _ -> packet.writeByte(0) }
+            arrayTag.forEach { element -> packet.writeLong(element) }
+            packet.writeByte(0)
+            packet.writeByte(0)
+            // Height maps >> End
             if (version.moreOrEqual(Version.V1_15) && version.less(Version.V1_18)) {
                 if (version.moreOrEqual(Version.V1_16_2)) {
                     packet.writeVarInt(1024)
                     (0..1023).forEach { _ -> packet.writeVarInt(1) }
                 } else {  (0..1023).forEach { _ -> packet.writeInt(0) } }
             }
-            if (version.less(Version.V1_13)) { packet.writeBytesArray(ByteArray(256))
-            } else if (version.less(Version.V1_15)) { packet.writeBytesArray(ByteArray(1024))
-            } else if (version.less(Version.V1_18)) { packet.writeVarInt(0)
-            } else {
-                val sectionData = byteArrayOf(0, 0, 0, 0, 0, 0, 1, 0)
-                packet.writeVarInt(sectionData.size * 16)
-                (0..15).forEach { _ -> packet.writeBytes(sectionData) }
-            }
-            if (version.moreOrEqual(Version.V1_9_4)) packet.writeVarInt(0)
-            if (version.moreOrEqual(Version.V1_18)) {
-                val lightData = byteArrayOf(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, -1, -1, 0, 0)
-                packet.ensureWritable(lightData.size)
-                if (version.moreOrEqual(Version.V1_20)) {
-                    packet.writeBytes(lightData, 1, lightData.size - 1)
-                } else {
-                    packet.writeBytes(lightData)
-                }
-            }
+        }
+        if (version.less(Version.V1_13))
+            //packet.writeBytesArray(ByteArray(256))
+            packet.writeBytesArray(byteArrayOf(256.toByte()))
+        else if (version.less(Version.V1_15)) packet.writeBytesArray(byteArrayOf(256.toByte()))
+        else if (version.less(Version.V1_18)) packet.writeVarInt(0)
+        else {
+            val sectionData = byteArrayOf(0, 0, 0, 0, 0, 0, 1, 0)
+            packet.writeVarInt(sectionData.size * 16)
+            (0..15).forEach { _ -> packet.writeBytes(sectionData) }
+        }
+        if (version.moreOrEqual(Version.V1_9_4)) packet.writeVarInt(0)
+        if (version.moreOrEqual(Version.V1_18)) { // Light data
+            val lightData = byteArrayOf(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, -1, -1, 0, 0)
+            packet.ensureWritable(lightData.size)
+            if (version.moreOrEqual(Version.V1_20)) packet.writeBytes(lightData, 1, lightData.size - 1)
+            else packet.writeBytes(lightData)
         }
     }
 }

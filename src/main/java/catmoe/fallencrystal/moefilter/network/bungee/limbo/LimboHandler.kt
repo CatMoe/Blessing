@@ -88,12 +88,12 @@ class LimboHandler(
         writePacket(JOIN_GAME)
         writePacket(PLAYER_ABILITIES)
 
-        if (version.less(Version.V1_9)) writePacket(POS_AND_LOOK_LEGACY) else writePacket(POS_AND_LOOK)
+        writePacket(POS_AND_LOOK)
         if (version.moreOrEqual(Version.V1_19_3)) writePacket(SPAWN_POSITION)
         if (version == Version.V1_16_4) writePacket(PLAYER_INFO)
         writePacket(PLUGIN_MESSAGE)
         val chunk = PacketEmptyChunk()
-        (0..3).forEach {x -> (0..3).forEach { z -> chunk.x=x; chunk.z=z; writePacket(chunk) } }
+        (-1..1).forEach {x -> (-1..1).forEach { z -> chunk.x=x; chunk.z=z; writePacket(chunk) } }
 
         keepAliveScheduler()
     }

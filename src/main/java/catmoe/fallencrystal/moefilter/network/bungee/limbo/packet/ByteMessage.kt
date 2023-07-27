@@ -36,7 +36,7 @@ import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("unused", "MemberVisibilityCanBePrivate", "Deprecation")
 class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     fun toByteArray(): ByteArray {
         val bytes = ByteArray(buf.readableBytes())
@@ -916,12 +916,12 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         return buf.hashCode()
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return buf == obj
+    override fun equals(other: Any?): Boolean {
+        return buf == other
     }
 
-    override fun compareTo(buffer: ByteBuf): Int {
-        return buf.compareTo(buffer)
+    override fun compareTo(other: ByteBuf): Int {
+        return buf.compareTo(other)
     }
 
     override fun toString(): String {

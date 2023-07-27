@@ -15,17 +15,18 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.cache
+package catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.s2c
 
-@Suppress("unused")
-enum class EnumPacket {
-    LOGIN_SUCCESS,
-    JOIN_GAME,
-    SPAWN_POSITION,
-    PLUGIN_MESSAGE,
-    PLAYER_ABILITIES,
-    PLAYER_INFO,
-    JOIN_MESSAGE,
-    POS_AND_LOOK,
-    UPDATE_TIME,
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.network.bungee.limbo.util.Version
+
+class PacketUpdateTime : LimboS2CPacket() {
+
+    var age: Long = 1
+    var time: Long = 23700
+
+    override fun encode(packet: ByteMessage, version: Version?) {
+        listOf(age, time).forEach { packet.writeLong(it) }
+    }
 }

@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network
 
+import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.bungee.limbo.netty.LimboPipeline
@@ -27,7 +28,9 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.config.ListenerInfo
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.system.exitProcess
 
 class InitChannel {
 
@@ -41,7 +44,17 @@ class InitChannel {
     fun initPipeline() {
         log("Starting inject MoeFilter Pipeline...")
         val proxyName = bungee.name
-        bungee.getConfig().listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol = true } }
+        val listener: MutableCollection<ListenerInfo> = bungee.getConfig().listeners
+            ?: if (LocalConfig.getConfig().getBoolean("fastboot")) {
+                MoeFilter.instance.injectPipelineAfterLoad.set(true)
+                return
+            } else {
+                try { throw NullPointerException("Listener cannot be null! Please report this issue to CatMoe!") }
+                catch (ex: NullPointerException) { ex.printStackTrace() }
+                MessageUtil.logError("[MoeFilter] Cannot start bungeecord because listener is null")
+                exitProcess(1)
+            }
+        listener.forEach { if (it.isProxyProtocol) { isProxyProtocol = true } }
         if (isProxyProtocol) {
             log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.")
         }
