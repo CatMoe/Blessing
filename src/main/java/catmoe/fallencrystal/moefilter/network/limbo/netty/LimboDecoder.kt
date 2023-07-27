@@ -42,8 +42,8 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
             val byteMessage = catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage(byteBuf)
             val id = byteMessage.readVarInt()
             val packet = mappings!!.getPacket(id)
-            if (packet == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled unsupported or invalid packet $id"); return }
-            MessageUtil.logInfo("[MoeLimbo] Decoding packet $id (${packet::class.java.simpleName}) for version (${(version ?: Version.UNDEFINED).name})")
+            if (packet == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled unsupported or invalid packet ${"0x%02X".format(id)} with ${byteBuf.readableBytes()} bytes length"); return }
+            MessageUtil.logInfo("[MoeLimbo] Decoding packet ${"0x%02X".format(id)} (${packet::class.java.simpleName}) for version ${(version ?: Version.UNDEFINED).name} with ${byteBuf.readableBytes()} bytes length")
             try {
                 val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_2 else this.version
                 packet.decode(byteMessage, ctx.channel(), version ?: Version.min)

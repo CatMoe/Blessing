@@ -17,12 +17,10 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketStatusRequest
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
+import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import java.net.InetSocketAddress
 import java.util.concurrent.CompletableFuture
@@ -54,6 +52,28 @@ class PacketHandler {
 
     fun handle(handler: LimboHandler, packet: PacketClientPositionLook) {
         handler.location=packet.readLoc
+    }
+
+    fun handle(handler: LimboHandler, packet: PacketClientPosition) {
+        val loc = handler.location
+        val lastLoc = packet.lastLoc ?: return
+        handler.location = if (loc == null) packet.lastLoc
+        else LimboLocation(
+            lastLoc.x, lastLoc.y, lastLoc.z,
+            loc.yaw, loc.pitch,
+            lastLoc.onGround
+        )
+    }
+
+    fun handle(handler: LimboHandler, packet: PacketClientLook) {
+        val loc = handler.location
+        val lastLok = packet.lastLook ?: return
+        if (loc == null) handler.location=packet.lastLook
+        else LimboLocation(
+            loc.x, loc.y, loc.z,
+            lastLok.yaw, lastLok.pitch,
+            lastLok.onGround
+        )
     }
 
     fun handle(handler: LimboHandler, packet: PacketStatusPing) {

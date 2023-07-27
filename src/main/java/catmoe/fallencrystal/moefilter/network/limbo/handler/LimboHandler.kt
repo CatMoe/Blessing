@@ -90,7 +90,7 @@ class LimboHandler(
 
         writePacket(POS_AND_LOOK)
         if (version.moreOrEqual(Version.V1_19_3)) writePacket(SPAWN_POSITION)
-        if (version == Version.V1_16_4) writePacket(PLAYER_INFO)
+        writePacket(PLAYER_INFO)
         writePacket(PLUGIN_MESSAGE)
         val chunk = PacketEmptyChunk()
         (-1..1).forEach {x -> (-1..1).forEach { z -> chunk.x=x; chunk.z=z; writePacket(chunk) } }

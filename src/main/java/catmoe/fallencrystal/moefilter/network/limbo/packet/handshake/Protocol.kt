@@ -146,9 +146,10 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketClientPositionLook() },
+                map(0x08, V1_7_2, V1_7_6),
                 map(0x06, V1_8, V1_8),
                 map(0x0D, V1_9, V1_11_1),
-                map(0x0f, V1_12, V1_12),
+                map(0x0F, V1_12, V1_12),
                 map(0x0E, V1_12_1, V1_12_2),
                 map(0x11, V1_13, V1_13_2),
                 map(0x12, V1_14, V1_15_2),
@@ -158,6 +159,33 @@ enum class Protocol(var stateId: Int) {
                 map(0x15, V1_19_1, V1_19_1),
                 map(0x14, V1_19_3, V1_19_3),
                 map(0x15, V1_19_4, V1_20)
+            )
+            serverBound.register(
+                { PacketClientPosition() },
+                map(0x04, V1_7_2, V1_8),
+                map(0x0C, V1_9, V1_11_1),
+                map(0x0E, V1_12, V1_12),
+                map(0X0D, V1_12_1, V1_12_2),
+                map(0x10, V1_13, V1_13_2),
+                map(0x11, V1_14, V1_15_2),
+                map(0x12, V1_16, V1_16_4),
+                map(0x11, V1_17, V1_18_2),
+                map(0x13, V1_19, V1_19),
+                map(0x14, V1_19_1, V1_19_1),
+                map(0x13, V1_19_3, V1_19_3),
+                map(0x14, V1_19_4, V1_20)
+            )
+            serverBound.register(
+                { PacketClientLook() },
+                map(0x05, V1_7_2, V1_7_6),
+                map(0x03, V1_8, V1_8),
+                map(0x0E, V1_9, V1_11_1),
+                map(0x10, V1_12, V1_12),
+                map(0x0F, V1_12_1, V1_12_2),
+                map(0x12, V1_13, V1_13_2),
+                map(0x13, V1_14, V1_14_3),
+                map(0x14, V1_14_4, V1_14_4)
+                // Unsupported on 1.15
             )
             clientBound.register(
                 { PacketPlayerInfo() },

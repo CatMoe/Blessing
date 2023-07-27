@@ -42,8 +42,10 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         val packetId = if (packet is PacketSnapshot) registry!!.getPacketId(packet.wrappedPacket::class.java) else registry!!.getPacketId(packet!!::class.java)
         if (packetId != -1) msg.writeVarInt(packetId)
         val pn = try { if (packet is PacketSnapshot) (registry!!.getPacket(registry!!.getPacketId(packet.wrappedPacket::class.java))!!)::class.java.simpleName else packet::class.java.simpleName } catch (npe: NullPointerException) { "null" }
-        MessageUtil.logInfo("[MoeLimbo] Encoding packet $packetId ($pn) for version (${(version ?: Version.UNDEFINED).name})")
-        if (packetId == -1) { MessageUtil.logWarn("[MoeLimbo] Cancelled for null packet") }
-        try { packet.encode(msg, version) } catch (ex: Exception) { ex.printStackTrace() }
+        if (packetId == -1) { MessageUtil.logWarn("[MoeLimbo] Cancelled for null packet"); return }
+        try {
+            packet.encode(msg, version)
+            MessageUtil.logInfo("[MoeLimbo] Encoding packet ${"0x%02X".format(packetId)} ($pn) for version ${(version ?: Version.UNDEFINED).name} with ${msg.readableBytes()} bytes length")
+        } catch (ex: Exception) { ex.printStackTrace() }
     }
 }
