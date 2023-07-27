@@ -24,6 +24,7 @@ import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
 
+@Suppress("MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate")
 class MessageActionbarPacket(
     val v119: SystemChat?,
     val v117: Chat?,

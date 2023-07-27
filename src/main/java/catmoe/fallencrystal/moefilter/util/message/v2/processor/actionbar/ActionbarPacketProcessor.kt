@@ -35,7 +35,7 @@ import net.md_5.bungee.protocol.packet.Title
 @PacketMessageType(MessagesType.ACTION_BAR)
 class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
-    val aOrdinal = ChatMessageType.ACTION_BAR.ordinal
+    private val aOrdinal = ChatMessageType.ACTION_BAR.ordinal
 
     override fun process(message: String, protocol: List<Int>): MessagePacket {
         val cached = MessagePacketCache.readPacket(this, message) as? MessageActionbarPacket

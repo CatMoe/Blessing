@@ -19,11 +19,11 @@ package catmoe.fallencrystal.moefilter.network
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.bungee.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.util.ReflectionUtils
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -77,8 +77,13 @@ class InitChannel {
             pipeline=BotFilterPipeline()
         }
         if (LocalConfig.getConfig().getBoolean("debug")) {
-            log("Debug mode is on. Player now will connect to MoeLimbo instead of bungeecord itself.")
-            pipeline=LimboPipeline()
+            listOf(
+                "Debug mode is on. Player now will connect to MoeLimbo instead of bungeecord itself.",
+                "If you want keep using bungeecord instead of testing MoeLimbo,",
+                "Turn off debug mode. And restart server.",
+                "You can enable debug mode when server is started. And reload to apply debug mode."
+            ).forEach { log(it) }
+            pipeline= LimboPipeline()
             MoeLimbo.initDimension()
         }
         try {

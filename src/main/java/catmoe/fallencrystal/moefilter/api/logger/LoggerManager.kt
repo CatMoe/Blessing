@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Filter
 import java.util.logging.LogRecord
 
+@Suppress("unused", "unused")
 object LoggerManager : Filter {
     private val logger: MutableList<ILogger> = CopyOnWriteArrayList()
 
@@ -50,7 +51,7 @@ object LoggerManager : Filter {
         Scheduler(MoeFilter.instance).runAsync {
             val removeLogger: MutableList<ILogger> = ArrayList()
             for (it in logger) { if (it::class.java == c::class.java) { removeLogger.add(it); break; } }
-            logger.removeAll(removeLogger)
+            logger.removeAll(removeLogger.toSet())
         }
     }
 

@@ -22,6 +22,7 @@ import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
 
+@Suppress("HasPlatformType")
 abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
     val bungee = BungeeCord.getInstance()
     val throttler = bungee.connectionThrottle

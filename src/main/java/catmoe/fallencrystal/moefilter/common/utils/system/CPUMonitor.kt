@@ -22,6 +22,7 @@ import com.sun.management.OperatingSystemMXBean
 import java.lang.management.ManagementFactory
 import java.util.concurrent.*
 
+@Suppress("unused", "unused", "unused", "unused", "unused", "unused", "unused")
 object CPUMonitor {
 
     private var latestCpuUsage: CpuUsage = CpuUsage(0.0, 0.0)

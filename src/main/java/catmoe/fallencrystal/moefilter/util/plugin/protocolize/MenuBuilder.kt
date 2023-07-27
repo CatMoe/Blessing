@@ -29,7 +29,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("unused")
+@Suppress("unused", "EmptyMethod")
 abstract class MenuBuilder {
     private var type: InventoryType = InventoryType.GENERIC_9X3
     private var player: ProxiedPlayer? = null

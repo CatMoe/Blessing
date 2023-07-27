@@ -30,6 +30,11 @@ class TestGui : MenuBuilder() {
             .lore(colorize("<reset><gradient:light_purple:aqua>That is nether or universe?"))
             .build()
         )
+        setItem(1, ItemBuilder(ItemType.BEACON)
+            .name(colorize("<reset><aqua>A beacon"))
+            .lore(colorize("<reset><aqua>It's brighter."))
+            .build()
+        )
     }
 
     fun colorize(text: String): Component { return ComponentUtil.parse(text) }

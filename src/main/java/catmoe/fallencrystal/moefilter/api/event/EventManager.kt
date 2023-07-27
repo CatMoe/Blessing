@@ -54,7 +54,7 @@ object EventManager {
         scheduler.runAsync(plugin) {
             val listenerToRemove = mutableListOf<EventListener>()
             listeners.forEach { if (it::class.java == c::class.java) { listenerToRemove.add(it); listenerPlugin.invalidate(it) } }
-            listeners.removeAll(listenerToRemove)
+            listeners.removeAll(listenerToRemove.toSet())
         }
     }
 

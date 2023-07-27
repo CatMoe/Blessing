@@ -48,7 +48,7 @@ class ToggleNotificationCommand : ICommand {
             return
         }
         if (Notifications.switchNotification.contains(sender)) {
-            Notifications.switchNotification.remove(sender);
+            Notifications.switchNotification.remove(sender)
             MessageUtil.sendMessage("$prefix$disable", MessagesType.CHAT, sender)
         } else {
             Notifications.switchNotification.add(sender)
