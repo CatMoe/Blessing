@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
+import io.netty.channel.ChannelFutureListener
 
 class PacketStatusPing : LimboPacket {
 
@@ -36,6 +37,6 @@ class PacketStatusPing : LimboPacket {
     }
 
     override fun handle(handler: LimboHandler) {
-
+        handler.channel.writeAndFlush(this).addListener(ChannelFutureListener.CLOSE)
     }
 }

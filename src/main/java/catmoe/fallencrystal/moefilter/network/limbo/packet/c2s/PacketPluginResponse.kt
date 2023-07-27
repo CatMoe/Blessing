@@ -33,8 +33,6 @@ class PacketPluginResponse : LimboC2SPacket() {
         messageId = packet.readVarInt()
         successful = packet.readBoolean()
         val rb = packet.readableBytes()
-        if (rb > 0) {
-            ByteMessage(packet.readBytes(rb))
-        }
+        if (rb > 0) { ByteMessage(packet.readBytes(rb)) }
     }
 }

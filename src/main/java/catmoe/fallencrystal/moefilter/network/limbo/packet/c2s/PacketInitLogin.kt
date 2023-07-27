@@ -29,5 +29,12 @@ class PacketInitLogin : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { username = packet.readString(packet.readVarInt()) }
 
-    override fun handle(handler: LimboHandler) { handler.packetHandler.handle(handler, this) }
+    override fun handle(handler: LimboHandler) {
+        val profile = handler.profile
+        profile.username=this.username
+        profile.address=handler.channel.remoteAddress()
+        profile.channel=handler.channel
+        profile.version=handler.version
+        handler.fireLoginSuccess()
+    }
 }

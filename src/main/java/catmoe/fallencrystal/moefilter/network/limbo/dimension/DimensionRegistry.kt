@@ -14432,7 +14432,7 @@ object DimensionRegistry {
         val dimension = (tag.getCompound("minecraft:dimension_type").getList("value")[type.dimensionId]
                 as CompoundBinaryTag)["element"]
                 as CompoundBinaryTag
-        return Dimension(type.dimensionId, type.dimensionName, dimension)
+        return Dimension(type.tagId, type.dimensionName, dimension)
     }
 
     var defaultDimension1_16 : Dimension = getDimension(DimensionType.OVERWORLD, codec_1_16)

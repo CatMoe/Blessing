@@ -20,11 +20,12 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
 
 class PacketStatusRequest : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {}
 
-    override fun handle(handler: LimboHandler) { handler.packetHandler.handle(handler, this) }
+    override fun handle(handler: LimboHandler) { handler.sendPacket(PacketPingResponse()) }
 }

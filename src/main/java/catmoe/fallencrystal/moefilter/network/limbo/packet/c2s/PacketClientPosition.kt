@@ -39,6 +39,13 @@ class PacketClientPosition : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-        handler.packetHandler.handle(handler, this)
+        val loc = handler.location
+        val lastLoc = lastLoc ?: return
+        handler.location = if (loc == null) lastLoc
+        else LimboLocation(
+            lastLoc.x, lastLoc.y, lastLoc.z,
+            loc.yaw, loc.pitch,
+            lastLoc.onGround
+        )
     }
 }

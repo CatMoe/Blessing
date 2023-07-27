@@ -22,13 +22,14 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
+import java.net.InetSocketAddress
 
 class PacketHandshake : LimboC2SPacket() {
 
     var version: Version = Version.UNDEFINED
     var nextState = Protocol.HANDSHAKING
-    private var handler: LimboHandler? = null
     var host = "localhost"
     var port = 25565
 
@@ -40,7 +41,8 @@ class PacketHandshake : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-        this.handler=handler
-        handler.packetHandler.handle(handler, this)
+        handler.host = InetSocketAddress(host, port)
+        MessageUtil.logInfo("[MoeLimbo] Processing Handshake: Version: ${version.name}, State: ${nextState.name}, Connection from $host:$port")
+        handler.updateVersion(version, nextState)
     }
 }

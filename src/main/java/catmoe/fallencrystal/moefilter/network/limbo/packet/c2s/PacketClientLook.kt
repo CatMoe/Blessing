@@ -25,7 +25,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
 
 // That packet is for legacy clients.
-@Suppress("MemberVisibilityCanBePrivate")
 class PacketClientLook : LimboC2SPacket() {
 
     var lastLook: LimboLocation? = null
@@ -39,6 +38,13 @@ class PacketClientLook : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-        handler.packetHandler.handle(handler, this)
+        val loc = handler.location
+        val lastLok = lastLook ?: return
+        if (loc == null) handler.location=lastLook
+        else LimboLocation(
+            loc.x, loc.y, loc.z,
+            lastLok.yaw, lastLok.pitch,
+            lastLok.onGround
+        )
     }
 }

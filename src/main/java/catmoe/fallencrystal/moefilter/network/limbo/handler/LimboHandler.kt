@@ -54,8 +54,6 @@ class LimboHandler(
     var host: InetSocketAddress? = null
     var profile: VirtualConnection = VirtualConnection()
 
-    val packetHandler = PacketHandler()
-
     var location: LimboLocation? = null
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
