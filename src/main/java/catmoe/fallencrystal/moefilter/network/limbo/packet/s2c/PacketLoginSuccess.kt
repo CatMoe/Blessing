@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import java.util.UUID
+import java.util.*
 
 class PacketLoginSuccess : LimboS2CPacket() {
     var uuid: UUID? = null
@@ -32,5 +32,9 @@ class PacketLoginSuccess : LimboS2CPacket() {
         else packet.writeString(uuid.toString().replace("-", ""))
         packet.writeString(username)
         if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
+    }
+
+    override fun toString(): String {
+         return "uuid=$uuid, username=$username"
     }
 }

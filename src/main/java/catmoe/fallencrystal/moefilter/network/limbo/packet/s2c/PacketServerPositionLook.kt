@@ -45,4 +45,8 @@ class PacketServerPositionLook: LimboS2CPacket() {
         if (version.fromTo(Version.V1_17, Version.V1_19_3)) packet.writeBoolean(false)
     }
 
+    override fun toString(): String {
+        return "location=$sendLoc, teleportId=$teleport"
+    }
+
 }

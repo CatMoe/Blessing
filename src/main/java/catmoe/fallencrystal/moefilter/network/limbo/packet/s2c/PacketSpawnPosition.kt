@@ -31,4 +31,8 @@ class PacketSpawnPosition : LimboS2CPacket() {
         packet.writeFloat(0f) // Actually, that is yaw + pitch. But now we don't need that.
     }
 
+    override fun toString(): String {
+        return "location=$location"
+    }
+
 }

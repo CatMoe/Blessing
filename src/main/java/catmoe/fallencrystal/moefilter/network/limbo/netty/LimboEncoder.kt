@@ -45,7 +45,9 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         if (packetId == -1) { MessageUtil.logWarn("[MoeLimbo] Cancelled for null packet"); return }
         try {
             packet.encode(msg, version)
-            MessageUtil.logInfo("[MoeLimbo] Encoding packet ${"0x%02X".format(packetId)} ($pn) for version ${(version ?: Version.UNDEFINED).name} with ${msg.readableBytes()} bytes length")
+            MessageUtil.logInfo(
+                "[MoeLimbo] Encoding packet ${"0x%02X".format(packetId)} ($packetId) ($pn) " +
+                    "for version ${(version ?: Version.UNDEFINED).name} with ${msg.readableBytes()} bytes length")
         } catch (ex: Exception) { ex.printStackTrace() }
     }
 }

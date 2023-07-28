@@ -46,6 +46,7 @@ class PacketEmptyChunk : LimboS2CPacket() {
         }
         if (version.moreOrEqual(Version.V1_14)) {
             // Height maps << Start
+            /*
             val output = ByteBufOutputStream(packet)
             output.writeByte(10) //CompoundTag
             output.writeUTF("") // CompoundName
@@ -60,6 +61,24 @@ class PacketEmptyChunk : LimboS2CPacket() {
             arrayTag.forEach { element -> packet.writeLong(element) }
             packet.writeByte(0)
             packet.writeByte(0)
+             */
+            ByteBufOutputStream(packet).use { output ->
+                output.writeByte(10) //CompoundTag
+                output.writeUTF("") // CompoundName
+                output.writeByte(10) //CompoundTag
+                output.writeUTF("root") //root compound
+                output.writeByte(12) //long array
+                output.writeUTF("MOTION_BLOCKING")
+                val arrayTag = LongArray(if (version.less(Version.V1_18)) 36 else 37)
+                output.writeInt(arrayTag.size)
+                var c = 0
+                while (c < arrayTag.size) {
+                    packet.writeLong(arrayTag[c])
+                    c++
+                }
+                packet.writeByte(0)
+                packet.writeByte(0)
+            }
             // Height maps >> End
             if (version.moreOrEqual(Version.V1_15) && version.less(Version.V1_18)) {
                 if (version.moreOrEqual(Version.V1_16_2)) {
@@ -70,8 +89,8 @@ class PacketEmptyChunk : LimboS2CPacket() {
         }
         if (version.less(Version.V1_13))
             //packet.writeBytesArray(ByteArray(256))
-            packet.writeBytesArray(byteArrayOf(256.toByte()))
-        else if (version.less(Version.V1_15)) packet.writeBytesArray(byteArrayOf(256.toByte()))
+            packet.writeBytesArray(ByteArray((256)))
+        else if (version.less(Version.V1_15)) packet.writeBytesArray(ByteArray(1024))
         else if (version.less(Version.V1_18)) packet.writeVarInt(0)
         else {
             val sectionData = byteArrayOf(0, 0, 0, 0, 0, 0, 1, 0)
@@ -86,4 +105,7 @@ class PacketEmptyChunk : LimboS2CPacket() {
             else packet.writeBytes(lightData)
         }
     }
+
+
+    override fun toString(): String { return "x=$x, z=$z" }
 }

@@ -34,4 +34,8 @@ class PacketPluginRequest : LimboS2CPacket() {
         packet.writeString(this.channel)
         packet.writeBytes(data ?: return)
     }
+
+    override fun toString(): String {
+        return "messageId=$messageId, channel=$channel, data=$data"
+    }
 }

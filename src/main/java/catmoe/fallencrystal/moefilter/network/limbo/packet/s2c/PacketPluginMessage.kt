@@ -30,4 +30,8 @@ class PacketPluginMessage : LimboS2CPacket() {
         listOf(this.channel!!, this.message!!).forEach { packet.writeString(it) }
     }
 
+    override fun toString(): String {
+        return "channel=$channel, message=$message"
+    }
+
 }

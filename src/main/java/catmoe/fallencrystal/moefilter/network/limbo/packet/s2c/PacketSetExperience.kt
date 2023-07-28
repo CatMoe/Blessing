@@ -32,4 +32,8 @@ class PacketSetExperience : LimboS2CPacket() {
         packet.writeFloat(expBar)
         listOf(level, totalExp).forEach { packet.writeVarInt(it) }
     }
+
+    override fun toString(): String {
+        return "expBar=$expBar, level=$level, totalExp=$totalExp"
+    }
 }

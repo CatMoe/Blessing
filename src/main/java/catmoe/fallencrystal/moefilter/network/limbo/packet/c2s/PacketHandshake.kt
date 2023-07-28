@@ -45,4 +45,8 @@ class PacketHandshake : LimboC2SPacket() {
         MessageUtil.logInfo("[MoeLimbo] Processing Handshake: Version: ${version.name}, State: ${nextState.name}, Connection from $host:$port")
         handler.updateVersion(version, nextState)
     }
+
+    override fun toString(): String {
+        return "version=$version, nextState=$nextState, host=$host, port=$port"
+    }
 }

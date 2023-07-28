@@ -30,4 +30,8 @@ class PacketUpdateTime : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         listOf(age, time).forEach { packet.writeLong(it) }
     }
+
+    override fun toString(): String {
+        return "age=$age, time=$time"
+    }
 }

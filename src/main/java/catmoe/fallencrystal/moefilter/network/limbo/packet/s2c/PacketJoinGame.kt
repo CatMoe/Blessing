@@ -199,4 +199,25 @@ class PacketJoinGame : LimboS2CPacket() {
             packet.writeVarInt(0)
         }
     }
+
+    override fun toString(): String {
+        return "" +
+                "entityId=$entityId," +
+                "isHardcore=$isHardcore," +
+                "gameMode=$gameMode," +
+                "previousGameMode=$previousGameMode," +
+                "worldNames=${this.worldNames ?: arrayOf(
+                    DimensionType.OVERWORLD.dimensionName,
+                    DimensionType.THE_NETHER.dimensionName,
+                    DimensionType.THE_END.dimensionName
+                )}," +
+                "worldName=$worldName," +
+                "hashedSeed=$hashedSeed," +
+                "maxPlayers=$maxPlayers," +
+                "viewDistance=$viewDistance," +
+                "reducedDebugInfo=$reducedDebugInfo," +
+                "enableRespawnScreen=$enableRespawnScreen," +
+                "isDebug=$isDebug," +
+                "isFlat=$isFlat"
+    }
 }

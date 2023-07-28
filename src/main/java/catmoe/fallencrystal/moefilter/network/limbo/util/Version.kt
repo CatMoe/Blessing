@@ -74,6 +74,10 @@ enum class Version(val protocolNumber: Int) {
     val isSupported: Boolean
         get() = this != UNDEFINED
 
+    override fun toString(): String {
+        return "enum=$name, protocol=$protocolNumber"
+    }
+
     companion object {
         private var VERSION_MAP: MutableMap<Int, Version>? = null
         var max = V1_20

@@ -35,4 +35,8 @@ class PacketPluginResponse : LimboC2SPacket() {
         val rb = packet.readableBytes()
         if (rb > 0) { ByteMessage(packet.readBytes(rb)) }
     }
+
+    override fun toString(): String {
+        return "messageId=$messageId, successful=$successful, data=$data"
+    }
 }

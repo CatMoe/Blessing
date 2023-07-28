@@ -21,16 +21,34 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 
+@Suppress("MemberVisibilityCanBePrivate")
 class PacketPingResponse : LimboS2CPacket() {
+
+    var protocol = Version.UNDEFINED
+    var brand = "MoeLimbo"
+    var description = "{\"text\": \"§dMoeLimbo\"}"
+    var max = 1
+    var online = 0
+    // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
+    var output =
+        "{ \"version\": { \"name\": \"[brand]\", \"protocol\": [protocol] }, " +
+                "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
+                "\"description\": [description] }"
+
     override fun encode(packet: ByteMessage, version: Version?) {
-        val protocol = version!!.protocolNumber
-        val brand = "MoeLimbo"
-        val description = "{\"text\": \"§dMoeLimbo\"}"
-        // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
-        val output =
-            "{ \"version\": { \"name\": \"$brand\", \"protocol\": $protocol }, " +
-                    "\"players\": { \"max\": ${1}, \"online\": ${0}, \"sample\": [] }, " +
-                    "\"description\": $description }"
+        val protocol = if (this.protocol == Version.UNDEFINED) version!! else this.protocol
+        val output = this.output
+            .replace("[brand]", brand)
+            .replace("[protocol]", protocol.protocolNumber.toString())
+            .replace("[max]", max.toString())
+            .replace("[online]", online.toString())
+            .replace("[description]", description)
         packet.writeString(output)
     }
+
+    override fun toString(): String {
+        return "brand=$brand, protocol=$protocol, max=$max, online=$online, description=$description"
+    }
+
+
 }

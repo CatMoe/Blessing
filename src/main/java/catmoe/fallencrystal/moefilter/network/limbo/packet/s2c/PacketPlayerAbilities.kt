@@ -33,4 +33,8 @@ class PacketPlayerAbilities : LimboS2CPacket() {
         listOf(flyingSpeed, fieldOfView).forEach { packet.writeFloat(it) }
     }
 
+    override fun toString(): String {
+        return "flags=$flags, flyingSpeed=$flyingSpeed, fieldOfView=$fieldOfView"
+    }
+
 }
