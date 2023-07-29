@@ -83,13 +83,12 @@ class LimboHandler(
 
     @Suppress("SpellCheckingInspection")
     private fun sendPlayPackets() {
-        val version = this.version!!
         writePacket(JOIN_GAME)
         // Weeee—— don't want player is flying, So don't send the packet insteadof apply flags.
         // writePacket(PLAYER_ABILITIES)
 
         writePacket(POS_AND_LOOK)
-        if (version.moreOrEqual(Version.V1_19_3)) writePacket(SPAWN_POSITION)
+        writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
         writePacket(PLUGIN_MESSAGE)
         keepAliveScheduler()

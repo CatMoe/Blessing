@@ -205,6 +205,17 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketSpawnPosition() },
+                map(0x05, V1_7_2, V1_8),
+                map(0x43, V1_9, V1_11_1),
+                map(0x45, V1_12, V1_12),
+                map(0x46, V1_12_1, V1_12_2),
+                map(0x49, V1_13, V1_13_2),
+                map(0x4D, V1_14, V1_14_4),
+                map(0x4E, V1_15, V1_15_2),
+                map(0x42, V1_16, V1_16_4),
+                map(0x4B, V1_17, V1_18_2),
+                map(0x4A, V1_19, V1_19),
+                map(0x4D, V1_19_1, V1_19_1),
                 map(0x4C, V1_19_3, V1_19_3),
                 map(0x50, V1_19_4, V1_20)
             )
