@@ -81,6 +81,8 @@ class LoadConfig {
                     protocol-always-unsupported=false
                     # 当Ping到达throttle时 使用缓存而不是为每个请求都呼叫ProxyPingEvent
                     disable-calling-throttle=10
+                    # VANILLA, FML, BUKKIT, UNKNOWN
+                    type=VANILLA
                 }
                 
                 # 每秒连接数限制. 当您正在使用PIPELINE模式时非常有用.

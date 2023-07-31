@@ -126,7 +126,7 @@ object MixedCheck {
     }
 
     fun reload() {
-        conf = LocalConfig.getAntibot().getConfig("general")
+        conf = LocalConfig.getAntibot().getConfig("mixed-check")
         val type = loadType()
         if (type == DISABLED && this.type == DISABLED) return
         this.type = type

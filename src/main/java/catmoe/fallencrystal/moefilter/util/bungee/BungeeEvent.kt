@@ -23,7 +23,9 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -78,4 +80,18 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) { PipelineUtil.invalidateChannel(event.player) }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onPing(event: ProxyPingEvent) {
+        val modInfo = event.response.modinfo
+        val rawType = LocalConfig.getConfig().getAnyRef("ping.type")
+        modInfo.type =
+            (try { PingServerType.valueOf(rawType.toString()) }
+            catch (_: IllegalArgumentException) {
+                MessageUtil.logWarn("[MoeFilter] [Ping] Unknown fml server type: $rawType, Fallback to VANILLA")
+                PingServerType.VANILLA
+            }).name
+        // If modList is null, Client will disconnect when reading data.
+        if (modInfo.type != PingServerType.FML.name) modInfo.modList = mutableListOf()
+    }
 }

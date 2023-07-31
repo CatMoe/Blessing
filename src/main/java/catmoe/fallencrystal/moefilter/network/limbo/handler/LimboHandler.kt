@@ -19,6 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
+import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
@@ -46,15 +48,20 @@ import kotlin.math.abs
 class LimboHandler(
     private val encoder: LimboEncoder,
     private val decoder: LimboDecoder,
-    val channel: Channel
+    val channel: Channel,
+    val ctx: ChannelHandlerContext
 ) : ChannelInboundHandlerAdapter() {
     val address: SocketAddress = channel.remoteAddress()
     var state: Protocol? = null
     var version: Version? = null
     var host: InetSocketAddress? = null
     var profile: VirtualConnection = VirtualConnection()
+    val fakeHandler: LimboCompat? = getFakeProxyHandler()
+
 
     var location: LimboLocation? = null
+
+   private fun getFakeProxyHandler(): LimboCompat { return FakeInitialHandler(ctx) }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
         if (state == Protocol.PLAY) MoeLimbo.connections.remove(this)
@@ -73,12 +80,14 @@ class LimboHandler(
         MoeLimbo.connections.add(this)
         updateVersion(version!!, state!!)
         sendPlayPackets()
+        if (fakeHandler is FakeInitialHandler) fakeHandler.username=profile.username
     }
 
     fun updateVersion(version: Version, state: Protocol) {
         this.version=version
         encoder.switchVersion(version, state)
         decoder.switchVersion(version, state)
+        if (fakeHandler is FakeInitialHandler) { fakeHandler.v = version }
     }
 
     @Suppress("SpellCheckingInspection")

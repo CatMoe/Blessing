@@ -61,7 +61,7 @@ class ReflectionUtils {
         return success
     }
 
-    private val version: Int
+    val version: Int
         get() = try {
             var version = System.getProperty("java.version")
             if (version.startsWith("1.")) { version = version.substring(2, 3) } else {

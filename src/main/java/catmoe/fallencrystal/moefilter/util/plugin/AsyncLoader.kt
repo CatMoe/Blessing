@@ -32,12 +32,12 @@ import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
-import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
+import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener
@@ -84,9 +84,18 @@ class AsyncLoader(val plugin: Plugin) {
 
 
     fun load() {
+        try {
+            configLoader.loadConfig()
+            loadAntibot()
+        } catch (ce: ConfigException) {
+            configIssue.forEach { MessageUtil.logError(it) }
+            ce.localizedMessage
+            ce.printStackTrace()
+            proxy.stop()
+            return
+        }
         scheduler.runAsync {
             try {
-                configLoader.loadConfig()
 
                 EventManager // 初始化
 
@@ -100,7 +109,6 @@ class AsyncLoader(val plugin: Plugin) {
                 ConnectionCounter
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
-                loadAntibot()
                 LoadCommand().load()
                 Firewall.reload()
                 loadProxyAPI()

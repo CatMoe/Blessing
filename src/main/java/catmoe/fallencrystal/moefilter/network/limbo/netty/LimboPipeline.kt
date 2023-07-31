@@ -23,10 +23,10 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.netty.PipelineUtils
@@ -61,7 +61,7 @@ class LimboPipeline : AbstractPipeline() {
             pipeline.addLast(PipelineUtils.FRAME_PREPENDER, VarIntLengthEncoder())
             pipeline.addLast(PipelineUtils.PACKET_DECODER, decoder)
             pipeline.addLast(PipelineUtils.PACKET_ENCODER, encoder)
-            pipeline.addLast(PipelineUtils.BOSS_HANDLER, LimboHandler(encoder, decoder, pipeline.channel()))
+            pipeline.addLast(PipelineUtils.BOSS_HANDLER, LimboHandler(encoder, decoder, pipeline.channel(), ctx))
         } finally {
             if (!ctx.isRemoved) ctx.pipeline().remove(this)
         }

@@ -30,19 +30,21 @@ class PacketPingResponse : LimboS2CPacket() {
     var max = 1
     var online = 0
     // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
-    var output =
-        "{ \"version\": { \"name\": \"[brand]\", \"protocol\": [protocol] }, " +
-                "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
-                "\"description\": [description] }"
+    var output: String? = null
+    private val template = "{ \"version\": { \"name\": \"[brand]\", \"protocol\": [protocol] }, " +
+            "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
+            "\"description\": [description] }"
 
     override fun encode(packet: ByteMessage, version: Version?) {
         val protocol = if (this.protocol == Version.UNDEFINED) version!! else this.protocol
-        val output = this.output
-            .replace("[brand]", brand)
-            .replace("[protocol]", protocol.protocolNumber.toString())
-            .replace("[max]", max.toString())
-            .replace("[online]", online.toString())
-            .replace("[description]", description)
+        val output = if (output != null && output != "") output else {
+            this.template
+                .replace("[brand]", brand)
+                .replace("[protocol]", protocol.protocolNumber.toString())
+                .replace("[max]", max.toString())
+                .replace("[online]", online.toString())
+                .replace("[description]", description)
+        }
         packet.writeString(output)
     }
 
