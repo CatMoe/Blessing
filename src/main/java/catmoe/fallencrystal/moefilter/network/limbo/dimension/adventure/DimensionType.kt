@@ -15,14 +15,15 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet
+package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidPacketOperation
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-
-abstract class LimboC2SPacket : LimboPacket {
-    override fun encode(packet: ByteMessage, version: Version?) {
-        throw InvalidPacketOperation("encode does not work with C2S packet")
-    }
+@Suppress("unused", "SpellCheckingInspection")
+enum class DimensionType(
+    @JvmField val dimensionId: Int,
+    @JvmField val dimensionName: String,
+    @JvmField val tagId: Int
+) {
+    OVERWORLD(0, "minecraft:overworld", 0),
+    THE_NETHER(-1, "minecraft:nether", 2),
+    THE_END(1, "minecraft:the_end", 3)
 }

@@ -98,6 +98,7 @@ class DownloadDatabase(folder: File) {
                     "And this problem always occurs. Please enable debug mode to print the error stack trace and report that.",
                     "If you close the proxy while downloading. This can also cause this to occur."
                 ).forEach { MessageUtil.logWarn("[MoeFilter] [GeoIP] $it") }
+                hasError.set(true)
             }
             countryDatabase.delete()
             cityDatabase.delete()

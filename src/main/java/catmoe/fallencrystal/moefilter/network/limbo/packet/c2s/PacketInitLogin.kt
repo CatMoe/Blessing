@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
@@ -37,4 +37,6 @@ class PacketInitLogin : LimboC2SPacket() {
         profile.version=handler.version
         handler.fireLoginSuccess()
     }
+
+    override fun toString(): String { return "username=$username" }
 }

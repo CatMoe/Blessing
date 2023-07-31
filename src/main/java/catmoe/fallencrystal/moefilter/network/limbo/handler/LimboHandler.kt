@@ -24,13 +24,14 @@ import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
+import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -92,6 +93,7 @@ class LimboHandler(
 
     @Suppress("SpellCheckingInspection")
     private fun sendPlayPackets() {
+        //writePacket(JOIN_GAME)
         writePacket(JOIN_GAME)
         // Weeee—— don't want player is flying, So don't send the packet insteadof apply flags.
         // writePacket(PLAYER_ABILITIES)

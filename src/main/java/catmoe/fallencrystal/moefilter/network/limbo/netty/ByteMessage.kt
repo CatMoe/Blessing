@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.limbo.packet
+package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.BitSetTooLargeException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
@@ -24,6 +24,8 @@ import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.BinaryTagIO
 import net.kyori.adventure.nbt.CompoundBinaryTag
+import se.llbit.nbt.Tag
+import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -35,6 +37,7 @@ import java.nio.channels.ScatteringByteChannel
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
+
 
 @Suppress("unused", "IdentifierGrammar", "SpellCheckingInspection", "DEPRECATION")
 class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
@@ -159,6 +162,8 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
             throw EncoderException("Cannot write NBT CompoundTag")
         }
     }
+
+    fun writeTag(tag: Tag) { tag.write(DataOutputStream(ByteBufOutputStream(this))) }
 
     fun <E : Enum<E>?> writeEnumSet(enumset: EnumSet<E>, oclass: Class<E>) {
         val enums = oclass.enumConstants

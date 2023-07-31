@@ -15,11 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.dimension
+package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
-@Suppress("unused", "SpellCheckingInspection")
-enum class DimensionType(@JvmField val dimensionId: Int, @JvmField val dimensionName: String, @JvmField val tagId: Int) {
-    OVERWORLD(0, "minecraft:overworld", 0),
-    THE_NETHER(-1, "minecraft:nether", 2),
-    THE_END(1, "minecraft:the_end", 3)
+import net.kyori.adventure.nbt.CompoundBinaryTag
+
+class Dimension(val id: Int, val name: String, val data: CompoundBinaryTag) {
+    override fun toString(): String {
+        return "id=$id, name=$name, data=$data"
+    }
 }

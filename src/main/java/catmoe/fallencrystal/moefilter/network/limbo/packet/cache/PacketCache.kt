@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.PacketSnapshot
+import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation

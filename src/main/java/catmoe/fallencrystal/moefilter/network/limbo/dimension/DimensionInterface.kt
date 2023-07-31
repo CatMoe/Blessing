@@ -17,6 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension
 
-import net.kyori.adventure.nbt.CompoundBinaryTag
-
-class Dimension(val id: Int, val name: String, val data: CompoundBinaryTag)
+@Suppress("SpellCheckingInspection")
+enum class DimensionInterface {
+    ADVENTURE,
+    LLBIT,
+}

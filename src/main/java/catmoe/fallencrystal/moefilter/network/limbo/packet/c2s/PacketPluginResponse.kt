@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
@@ -36,7 +36,5 @@ class PacketPluginResponse : LimboC2SPacket() {
         if (rb > 0) { ByteMessage(packet.readBytes(rb)) }
     }
 
-    override fun toString(): String {
-        return "messageId=$messageId, successful=$successful, data=$data"
-    }
+    override fun toString(): String { return "messageId=$messageId, successful=$successful, data=$data" }
 }

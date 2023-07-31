@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.limbo.packet
+package catmoe.fallencrystal.moefilter.network.limbo.packet.handshake
 
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.buffer.Unpooled
 import java.util.*
@@ -44,8 +46,8 @@ class PacketSnapshot(val wrappedPacket: LimboS2CPacket) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         val mapped = mappings[version]
-        val message = versionMessages[mapped]
-        if (message != null) packet.writeBytes(message) else throw IllegalArgumentException("No mappings for version $version")
+        val message = versionMessages[mapped] ?: throw IllegalArgumentException("No mappings for version $version")
+        packet.writeBytes(message)
     }
 
     companion object {

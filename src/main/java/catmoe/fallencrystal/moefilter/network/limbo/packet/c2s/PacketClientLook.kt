@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
@@ -49,7 +49,5 @@ class PacketClientLook : LimboC2SPacket() {
         )
     }
 
-    override fun toString(): String {
-        return "$lastLook"
-    }
+    override fun toString(): String { return "$lastLook" }
 }

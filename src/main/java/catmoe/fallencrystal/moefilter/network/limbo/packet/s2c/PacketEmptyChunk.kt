@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.buffer.ByteBufOutputStream
@@ -33,8 +33,7 @@ class PacketEmptyChunk : LimboS2CPacket() {
         // Chunk pos
         packet.writeInt(x)
         packet.writeInt(z)
-        if (version!!.less(Version.V1_17)) packet.writeBoolean(true)
-        if (version.moreOrEqual(Version.V1_16) && version.less(Version.V1_16_2)) packet.writeBoolean(true)
+        if (version!!.less(Version.V1_17) || version.fromTo(Version.V1_16, Version.V1_16_1)) packet.writeBoolean(true)
         if (version.less(Version.V1_17)) {
             if (version == Version.V1_8) packet.writeShort(1) else packet.writeVarInt(0)
         } else if (version.less(Version.V1_18)) {
@@ -80,7 +79,7 @@ class PacketEmptyChunk : LimboS2CPacket() {
                 packet.writeByte(0)
             }
             // Height maps >> End
-            if (version.moreOrEqual(Version.V1_15) && version.less(Version.V1_18)) {
+            if (version.fromTo(Version.V1_15_2, Version.V1_17_1)) {
                 if (version.moreOrEqual(Version.V1_16_2)) {
                     packet.writeVarInt(1024)
                     (0..1023).forEach { _ -> packet.writeVarInt(1) }

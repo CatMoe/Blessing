@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder

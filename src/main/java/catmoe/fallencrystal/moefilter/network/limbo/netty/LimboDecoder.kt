@@ -39,7 +39,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         try {
             if (!ctx.channel().isActive) return
             if (mappings == null) throw NullPointerException("Mappings cannot be null!")
-            val byteMessage = catmoe.fallencrystal.moefilter.network.limbo.packet.ByteMessage(byteBuf)
+            val byteMessage = ByteMessage(byteBuf)
             val id = byteMessage.readVarInt()
             val packet = mappings!!.getPacket(id)
             if (packet == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled unsupported or invalid packet ${"0x%02X".format(id)} with ${byteBuf.readableBytes()} bytes length"); return }
@@ -48,7 +48,8 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
                     "for version ${(version ?: Version.UNDEFINED).name} with ${byteBuf.readableBytes()} bytes length")
             try {
                 val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_2 else this.version
-                packet.decode(byteMessage, ctx.channel(), version ?: Version.min)
+                packet.decode(byteMessage, ctx.channel(), version)
+                MessageUtil.logInfo("[MoeLimbo] [Decoder] Packet data: $packet")
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

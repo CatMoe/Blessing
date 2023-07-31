@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet
 
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidPacketOperation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel

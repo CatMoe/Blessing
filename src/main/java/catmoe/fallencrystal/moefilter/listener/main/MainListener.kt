@@ -50,9 +50,7 @@ object MainListener {
 
     private var isProxyProtocol = false
 
-    fun init() {
-        bungee.config.listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol=true } }
-    }
+    init { bungee.config.listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol=true } } }
 
     fun initConnection(address: SocketAddress): Boolean {
         val inetAddress = (address as InetSocketAddress).address
