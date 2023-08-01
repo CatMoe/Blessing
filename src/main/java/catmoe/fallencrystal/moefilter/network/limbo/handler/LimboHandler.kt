@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilter
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
@@ -28,8 +28,8 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version

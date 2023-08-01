@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.limbo.packet.handshake
+package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
@@ -50,11 +50,27 @@ enum class Protocol(var stateId: Int) {
             serverBound.register({ PacketPluginResponse() }, map(0x02, min, max))
             clientBound.register({ PacketLoginSuccess() }, map(0x02, min, max))
             clientBound.register({ PacketPluginRequest() }, map(0x04, min, max))
+            clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
         }
     },
     @JvmStatic
     PLAY(3) {
         init {
+            clientBound.register(
+                { PacketDisconnect() },
+                map(0x40, V1_8, V1_8),
+                map(0x1A, V1_9, V1_12_2),
+                map(0x1B, V1_13, V1_13_2),
+                map(0x1A, V1_14, V1_14_4),
+                map(0x1B, V1_15, V1_15_2),
+                map(0x1A, V1_16, V1_16_1),
+                map(0x19, V1_16_2, V1_16_4),
+                map(0x1A, V1_17, V1_18_2),
+                map(0x17, V1_19, V1_19),
+                map(0x19, V1_19_1, V1_19_1),
+                map(0x17, V1_19_3, V1_19_3),
+                map(0x1A, V1_19_4, V1_20)
+            )
             serverBound.register(
                 { PacketKeepAlive() },
                 map(0x00, V1_7_2, V1_8),

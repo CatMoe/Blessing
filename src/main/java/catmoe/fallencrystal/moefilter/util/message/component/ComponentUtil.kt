@@ -35,7 +35,7 @@ object ComponentUtil {
 
     fun componentToRaw(component: Component): String { return MiniMessage.builder().strict(true).build().serialize(component) }
 
-    private fun toGson(component: Component): String { return GsonComponentSerializer.gson().serialize(component) }
+    fun toGson(component: Component): String { return GsonComponentSerializer.gson().serialize(component) }
 
     fun parse(str: String): Component { return MiniMessage.miniMessage().deserialize(str) }
 }

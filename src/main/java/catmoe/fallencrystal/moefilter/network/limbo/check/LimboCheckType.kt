@@ -15,8 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet.handshake
+package catmoe.fallencrystal.moefilter.network.limbo.check
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-
-class Mapping(val packetId: Int, val from: Version, val to: Version)
+@Suppress("unused")
+enum class LimboCheckType {
+    UNEXPECTED_KEEPALIVE,
+}

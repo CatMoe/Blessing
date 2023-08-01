@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet.handshake
+package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version

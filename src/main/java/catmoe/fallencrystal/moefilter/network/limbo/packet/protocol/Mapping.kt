@@ -15,9 +15,8 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.exception
+package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
-class PacketOutOfBoundsException(override val message: String) : RuntimeException(message) {
-    override fun initCause(cause: Throwable): Throwable { return this }
-    override fun fillInStackTrace(): Throwable { return this }
-}
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+
+class Mapping(val packetId: Int, val from: Version, val to: Version)

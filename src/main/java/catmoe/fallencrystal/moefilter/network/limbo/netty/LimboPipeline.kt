@@ -56,12 +56,15 @@ class LimboPipeline : AbstractPipeline() {
 
             val decoder = LimboDecoder(null)
             val encoder = LimboEncoder(null)
+            val handler = LimboHandler(encoder, decoder, channel, ctx)
+            decoder.handler=handler
+            encoder.handler=handler
             pipeline.addLast(PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().config.timeout.toLong()))
             pipeline.addLast(PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
             pipeline.addLast(PipelineUtils.FRAME_PREPENDER, VarIntLengthEncoder())
             pipeline.addLast(PipelineUtils.PACKET_DECODER, decoder)
             pipeline.addLast(PipelineUtils.PACKET_ENCODER, encoder)
-            pipeline.addLast(PipelineUtils.BOSS_HANDLER, LimboHandler(encoder, decoder, pipeline.channel(), ctx))
+            pipeline.addLast(PipelineUtils.BOSS_HANDLER, handler)
         } finally {
             if (!ctx.isRemoved) ctx.pipeline().remove(this)
         }

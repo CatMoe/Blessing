@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.Dimensio
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 
 object MoeLimbo {
 

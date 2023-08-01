@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.netty.HandlerBoss
 

@@ -1,7 +1,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeeHandler
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelHandler.Sharable
@@ -14,11 +14,9 @@ object MoeChannelHandler : IPipeline {
 
     @Sharable
     private class PacketExceptionHandler : ChannelDuplexHandler() {
-        @Deprecated("Deprecated in Java", ReplaceWith("handle(ctx.channel(), cause)", "catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher.handle"))
+        @Suppress("OVERRIDE_DEPRECATION")
         @Throws(Exception::class)
-        override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-            handle(ctx.channel(), cause)
-        }
+        override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
     }
 
     private val MOEFILTER_HANDLER = BungeeHandler()

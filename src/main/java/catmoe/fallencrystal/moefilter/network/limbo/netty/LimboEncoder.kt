@@ -17,9 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBuf
@@ -29,6 +31,7 @@ import io.netty.handler.codec.MessageToByteEncoder
 class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() {
 
     private var registry = Protocol.HANDSHAKING.clientBound.registry[version ?: Version.min]
+    var handler: LimboHandler? = null
 
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
@@ -48,11 +51,8 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         val pn = packetClazz?.javaClass?.simpleName ?: "null"
         if (packetId == -1 || packetClazz == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled for null packet"); return }
         try {
+            if (LimboListener.handleSend(packet, handler)) return
             packet.encode(msg, version)
-            MessageUtil.logInfo(
-                "[MoeLimbo] Encoding packet ${"0x%02X".format(packetId)} ($packetId) ($pn) " +
-                    "for version ${(version ?: Version.UNDEFINED).name} with ${msg.readableBytes()} bytes length")
-            MessageUtil.logInfo("[MoeLimbo] [Encoder] Packet data: $packetClazz")
         } catch (ex: Exception) { ex.printStackTrace() }
     }
 }

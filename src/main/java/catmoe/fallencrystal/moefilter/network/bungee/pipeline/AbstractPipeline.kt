@@ -9,9 +9,9 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer

@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
@@ -27,7 +28,10 @@ class PacketInitLogin : LimboC2SPacket() {
 
     var username = ""
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { username = packet.readString(packet.readVarInt()) }
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        username = packet.readString(packet.readVarInt())
+        if (username == "") throw InvalidUsernameException("Username is empty!")
+    }
 
     override fun handle(handler: LimboHandler) {
         val profile = handler.profile

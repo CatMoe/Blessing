@@ -2,7 +2,7 @@ package catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter
 
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.ChannelHandlerContext
 import lombok.RequiredArgsConstructor
 import net.md_5.bungee.netty.PipelineUtils

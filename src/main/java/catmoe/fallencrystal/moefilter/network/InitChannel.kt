@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.ReflectionUtils
+import catmoe.fallencrystal.moefilter.network.common.ReflectionUtils
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil

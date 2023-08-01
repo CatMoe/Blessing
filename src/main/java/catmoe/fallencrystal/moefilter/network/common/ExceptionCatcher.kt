@@ -15,15 +15,15 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util
+package catmoe.fallencrystal.moefilter.network.common
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
-import catmoe.fallencrystal.moefilter.network.bungee.util.exception.DebugException
-import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidHandshakeStatusException
-import catmoe.fallencrystal.moefilter.network.bungee.util.exception.InvalidStatusPingException
+import catmoe.fallencrystal.moefilter.network.common.exception.DebugException
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeStatusException
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.typesafe.config.ConfigException
 import io.netty.channel.Channel

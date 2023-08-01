@@ -28,7 +28,7 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil

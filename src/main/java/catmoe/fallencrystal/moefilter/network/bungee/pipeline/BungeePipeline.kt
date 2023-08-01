@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.ChannelHandlerContext
 
 class BungeePipeline : AbstractPipeline(), IPipeline {

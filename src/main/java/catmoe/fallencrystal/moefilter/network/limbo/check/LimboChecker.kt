@@ -15,9 +15,5 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.exception
-
-class DebugException(override val message: String) : RuntimeException(message) {
-    override fun initCause(cause: Throwable): Throwable { return this }
-    override fun fillInStackTrace(): Throwable { return this }
-}
+package catmoe.fallencrystal.moefilter.network.limbo.check
+interface LimboChecker

@@ -17,7 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBuf
@@ -28,6 +30,7 @@ import io.netty.handler.codec.MessageToMessageDecoder
 class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
 
     var mappings = Protocol.HANDSHAKING.serverBound.registry[version ?: Version.min]
+    var handler: LimboHandler? = null
 
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
@@ -41,15 +44,11 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
             if (mappings == null) throw NullPointerException("Mappings cannot be null!")
             val byteMessage = ByteMessage(byteBuf)
             val id = byteMessage.readVarInt()
-            val packet = mappings!!.getPacket(id)
-            if (packet == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled unsupported or invalid packet ${"0x%02X".format(id)} with ${byteBuf.readableBytes()} bytes length"); return }
-            MessageUtil.logInfo(
-                "[MoeLimbo] Decoding packet ${"0x%02X".format(id)} ($id) (${packet::class.java.simpleName}) " +
-                    "for version ${(version ?: Version.UNDEFINED).name} with ${byteBuf.readableBytes()} bytes length")
+            val packet = mappings!!.getPacket(id) ?: return
             try {
                 val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_2 else this.version
                 packet.decode(byteMessage, ctx.channel(), version)
-                MessageUtil.logInfo("[MoeLimbo] [Decoder] Packet data: $packet")
+                LimboListener.handleReceived(packet, handler)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

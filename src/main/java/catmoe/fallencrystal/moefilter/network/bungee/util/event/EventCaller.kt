@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ChannelInitEvent
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
-import catmoe.fallencrystal.moefilter.network.bungee.util.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ListenerInfo
