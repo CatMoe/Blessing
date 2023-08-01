@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
@@ -38,7 +37,7 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
     }
 
     override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket?, out: ByteBuf?) {
-        if (out == null || packet == null || packet !is LimboS2CPacket) return
+        if (out == null || packet == null) return
         val msg = ByteMessage(out)
         val packetId = if (packet is PacketSnapshot) registry!!.getPacketId(packet.wrappedPacket::class.java) else registry!!.getPacketId(packet::class.java)
         if (packetId != -1) msg.writeVarInt(packetId)

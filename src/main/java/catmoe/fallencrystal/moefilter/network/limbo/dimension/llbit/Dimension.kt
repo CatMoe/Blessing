@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import se.llbit.nbt.*
+import java.util.*
 
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate", "unused")
 class Dimension(
@@ -57,7 +58,8 @@ class Dimension(
         data.add("element", attributes)
         val d = CompoundTag()
         d.add("type", StringTag("minecraft:dimension_type"))
-        d.add("value", ListTag(Tag.TAG_COMPOUND, listOf(data)))
+        d.add("value", ListTag(Tag.TAG_COMPOUND, Collections.singletonList(data)))
+        // dimensions.add("value", ListTag(Tag.TAG_COMPOUND, Collections.singletonList(dimensionData)))
         val root = CompoundTag()
         root.add("minecraft:dimension_type", d)
         root.add("minecraft:worldgen/biome", createBiomeRegistry())
@@ -116,7 +118,7 @@ class Dimension(
 
     fun encodeBiome(biome: Biome): CompoundTag {
         val biomeTag = CompoundTag()
-        biomeTag.add("name", StringTag(biome.name))
+        biomeTag.add("name", StringTag(biome.biome))
         biomeTag.add("id", IntTag(biome.id))
         val element = CompoundTag()
         element.add("precipitation", StringTag(biome.precipitation))

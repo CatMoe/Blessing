@@ -31,7 +31,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAliv
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.handshake.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
-import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -43,6 +42,7 @@ import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -59,6 +59,8 @@ class LimboHandler(
     var profile: VirtualConnection = VirtualConnection()
     val fakeHandler: LimboCompat? = getFakeProxyHandler()
 
+    val disconnected = AtomicBoolean(false)
+
 
     var location: LimboLocation? = null
 
@@ -66,7 +68,8 @@ class LimboHandler(
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
         if (state == Protocol.PLAY) MoeLimbo.connections.remove(this)
-        MessageUtil.logInfo("[MoeLimbo] Client disconnected.")
+        MessageUtil.logInfo("[MoeLimbo] Client disconnected.");
+        disconnected.set(true)
         super.channelInactive(ctx)
     }
 
@@ -109,10 +112,11 @@ class LimboHandler(
         (-1..1).forEach {x -> (-1..1).forEach { z -> chunk.x=x; chunk.z=z; writePacket(chunk) } }
     }
 
+    val keepAlive = PacketKeepAlive()
+
     private fun keepAliveScheduler() {
         Scheduler(MoeFilter.instance).repeatScheduler( 10, TimeUnit.SECONDS) {
-            if (!MoeLimbo.connections.contains(this)) return@repeatScheduler
-            val keepAlive = PacketKeepAlive()
+            if (disconnected.get()) return@repeatScheduler
             keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)
         }

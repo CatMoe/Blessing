@@ -44,8 +44,8 @@ class PacketJoinGame : LimboS2CPacket() {
     var gameMode = 2
     var previousGameMode = -1
     var worldName: String = when (MoeLimbo.dimLoaderMode) {
-        ADVENTURE -> catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType.OVERWORLD.dimensionName
-        LLBIT -> catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType.OVERWORLD.dimension.key
+        ADVENTURE -> MoeLimbo.dimensionType.adventure.dimensionName
+        LLBIT -> MoeLimbo.dimensionType.llbit.dimension.key
     }
     var worldNames: Array<String?> = arrayOf(worldName)
     var hashedSeed: Long = 0
@@ -67,7 +67,6 @@ class PacketJoinGame : LimboS2CPacket() {
         packet.writeInt(entityId)
         val dim = StaticDimension.dim.dimension
         val tag = StaticDimension.cacheDimension.getIfPresent(version)!!
-        if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
         // Hardcore
         if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
         // Game mode
@@ -171,7 +170,7 @@ class PacketJoinGame : LimboS2CPacket() {
         }
         if (version.moreOrEqual(V1_19)) {
             packet.writeBoolean(false) // lastDeathPos
-            if (version.moreOrEqual(V1_20)) packet.writeVarInt(0) // Pearl cool down
+            if (version.moreOrEqual(V1_20)) packet.writeVarInt(0) // Pearl cooldown
         }
 
         // Legacy
@@ -343,6 +342,8 @@ class PacketJoinGame : LimboS2CPacket() {
                 "reducedDebugInfo=$reducedDebugInfo," +
                 "enableRespawnScreen=$enableRespawnScreen," +
                 "isDebug=$isDebug," +
-                "isFlat=$isFlat"
+                "isFlat=$isFlat," +
+                "Type=${MoeLimbo.dimensionType.name}," +
+                "Dimension=${MoeLimbo.dimensionType.name}"
     }
 }
