@@ -21,8 +21,8 @@ import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.*
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.CommandSender
 

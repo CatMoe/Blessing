@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -69,6 +69,14 @@ object PacketCache {
         brand.message="MoeFilter <- MoeLimbo"
         packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(brand))
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
+
+        val chunk = PacketEmptyChunk()
+
+        (-1..1).forEach { x -> (-1..1).forEach { z ->
+            val enum = EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")
+            packetCache.put(enum, PacketSnapshot.of(chunk))
+        }}
+
     }
 
 }

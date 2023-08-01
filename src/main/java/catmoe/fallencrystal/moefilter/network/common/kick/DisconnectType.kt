@@ -15,24 +15,15 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
+package catmoe.fallencrystal.moefilter.network.common.kick
 
-enum class EnumPacket {
-    LOGIN_SUCCESS,
-    JOIN_GAME,
-    SPAWN_POSITION,
-    PLUGIN_MESSAGE,
-    PLAYER_ABILITIES,
-    PLAYER_INFO,
-    POS_AND_LOOK,
-    UPDATE_TIME,
-    CHUNK_0_0,
-    CHUNK_0_1,
-    CHUNK_0_2,
-    CHUNK_1_0,
-    CHUNK_1_1,
-    CHUNK_1_2,
-    CHUNK_2_0,
-    CHUNK_2_1,
-    CHUNK_2_2,
+enum class DisconnectType(@JvmField val messagePath: String) {
+    ALREADY_ONLINE("kick.already-online"),
+    REJOIN("kick.rejoin"),
+    PING("kick.ping"),
+    INVALID_NAME("kick.invalid-name"),
+    INVALID_HOST("kick.invalid-host"),
+    COUNTRY("kick.country"),
+    PROXY("kick.proxy"),
+    UNEXPECTED_PING("kick.unexpected-ping"),
 }

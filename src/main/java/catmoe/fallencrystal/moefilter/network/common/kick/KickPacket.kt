@@ -15,14 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.kick
+package catmoe.fallencrystal.moefilter.network.common.kick
 
-enum class DisconnectType(@JvmField val messagePath: String) {
-    ALREADY_ONLINE("kick.already-online"),
-    REJOIN("kick.rejoin"),
-    PING("kick.ping"),
-    INVALID_NAME("kick.invalid-name"),
-    INVALID_HOST("kick.invalid-host"),
-    COUNTRY("kick.country"),
-    PROXY("kick.proxy"),
-}
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
+import net.md_5.bungee.protocol.packet.Kick
+
+class KickPacket(
+    val bungeecord: Kick,
+    val moelimbo: PacketDisconnect
+)

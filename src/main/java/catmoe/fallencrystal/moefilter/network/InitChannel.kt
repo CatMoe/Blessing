@@ -84,7 +84,7 @@ class InitChannel {
                 "You can enable debug mode when server is started. And reload to apply debug mode."
             ).forEach { log(it) }
             pipeline= LimboPipeline()
-            MoeLimbo.initDimension()
+            MoeLimbo.initLimbo()
         }
         try {
             if (!inject(pipeline).get()) {

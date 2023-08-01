@@ -14,8 +14,9 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBoundsException
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -73,7 +74,7 @@ class MoeInitialHandler(
             1 -> { ConnectionState.STATUS }
             2 -> {
                 if (DomainCheck.instance.increase(AddressCheck(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port)))) {
-                    FastDisconnect.disconnect(channel, DisconnectType.INVALID_HOST); return
+                    FastDisconnect.disconnect(channel, DisconnectType.INVALID_HOST, ServerKickType.BUNGEECORD); return
                 }
                 ConnectionState.JOINING
             }

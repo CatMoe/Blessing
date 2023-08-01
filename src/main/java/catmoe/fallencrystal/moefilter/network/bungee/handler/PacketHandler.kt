@@ -14,9 +14,10 @@ import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType.*
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
+import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
@@ -113,7 +114,7 @@ class PacketHandler : ChannelDuplexHandler() {
     }
 
     private fun kick(channel: Channel, type: DisconnectType) {
-        FastDisconnect.disconnect(channel, type)
+        FastDisconnect.disconnect(channel, type, ServerKickType.BUNGEECORD)
         cancelled.set(true)
     }
 }

@@ -23,7 +23,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
@@ -36,7 +35,6 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         registry = state.clientBound.registry[version]
-        MessageUtil.logInfo("[MoeLimbo] Encoder mappings refreshed. Now switch to state ${state.name} for version ${version.name}")
     }
 
     override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket?, out: ByteBuf?) {
@@ -48,8 +46,7 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
             try {
                 if (packet is PacketSnapshot) registry!!.getPacket(registry!!.getPacketId(packet.wrappedPacket.javaClass)) else packet
             } catch (npe: NullPointerException) { null }
-        val pn = packetClazz?.javaClass?.simpleName ?: "null"
-        if (packetId == -1 || packetClazz == null) { MessageUtil.logWarn("[MoeLimbo] Cancelled for null packet"); return }
+        if (packetId == -1 || packetClazz == null) return
         try {
             if (LimboListener.handleSend(packet, handler)) return
             packet.encode(msg, version)

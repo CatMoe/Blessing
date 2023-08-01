@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
@@ -35,7 +34,6 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         mappings = state.serverBound.registry[version]
-        MessageUtil.logInfo("[MoeLimbo] Decoder mappings refreshed. Now switch to state ${state.name} for version ${version.name}")
     }
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {

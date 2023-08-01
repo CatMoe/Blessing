@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import java.net.InetSocketAddress
 
@@ -41,8 +40,8 @@ class PacketHandshake : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
+        if (host.endsWith("FML")) { host.replace("FML", "") }
         handler.host = InetSocketAddress(host, port)
-        MessageUtil.logInfo("[MoeLimbo] Processing Handshake: Version: ${version.name}, State: ${nextState.name}, Connection from $host:$port")
         handler.updateVersion(version, nextState)
     }
 

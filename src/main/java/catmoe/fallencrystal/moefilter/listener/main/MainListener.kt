@@ -30,8 +30,8 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.DisconnectType
-import catmoe.fallencrystal.moefilter.network.bungee.util.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.PendingConnection

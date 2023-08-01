@@ -15,10 +15,13 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.kick
+package catmoe.fallencrystal.moefilter.network.common.kick
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
+import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
+import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.Channel
@@ -37,14 +40,18 @@ object FastDisconnect {
         return resultMap
     }
 
-    fun disconnect(channel: Channel, type: DisconnectType) {
-        val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, TextComponent(""))).packet
+    fun disconnect(channel: Channel, type: DisconnectType, platform: ServerKickType) {
+        val p = (reasonCache.getIfPresent(type) ?: getCacheReason(type, TextComponent(""))).packet
+        val packet: Any = when (platform) {
+            BUNGEECORD -> p.bungeecord
+            MOELIMBO -> p.moelimbo
+        }
         channel.writeAndFlush(packet); channel.close()
     }
 
     fun disconnect(connection: ConnectionUtil, type: DisconnectType) {
         if (connection.isConnected()) {
-            val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, TextComponent(""))).packet
+            val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, TextComponent(""))).packet.bungeecord
             connection.writePacket(packet); connection.close()
         }
     }
@@ -60,5 +67,10 @@ object FastDisconnect {
 
     private fun replacePlaceholder(message: String, placeholder: Map<String, String>): String { var output = message; placeholder.forEach { output=output.replace(it.key, it.value) }; return output }
 
-    private fun getCacheReason(type: DisconnectType, baseComponent: BaseComponent): DisconnectReason { return DisconnectReason(type, baseComponent, Kick(ComponentSerializer.toString(baseComponent))) }
+    private fun getCacheReason(type: DisconnectType, baseComponent: BaseComponent): DisconnectReason {
+        val cs = ComponentSerializer.toString(baseComponent)
+        val ml = PacketDisconnect()
+        ml.setReason(cs)
+        return DisconnectReason(type, baseComponent, KickPacket(Kick(cs), ml))
+    }
 }

@@ -272,6 +272,11 @@ class LoadConfig {
                         "<red>This server is not allowed proxy/vpn.",
                         ""
                     ]
+                    unexpected-ping=[
+                        "",
+                        "<red>Your ping looks a little strange. Please try again later.",
+                        ""
+                    ]
                 }
             """.trimIndent()
 

@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
+import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.LLBIT
@@ -32,7 +33,7 @@ object MoeLimbo {
     val dimensionType = CommonDimensionType.OVERWORLD
     var dimLoaderMode = LLBIT
 
-    fun initDimension() {
+    fun initLimbo() {
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         when (dimLoaderMode) {
             ADVENTURE -> {
@@ -45,6 +46,7 @@ object MoeLimbo {
             }
         }
         PacketCache.initPacket()
+        UnexpectedKeepAlive
     }
 
 }
