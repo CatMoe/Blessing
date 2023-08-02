@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
@@ -38,24 +39,40 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketStatusRequest
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.md_5.bungee.protocol.ProtocolConstants
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.util.concurrent.TimeUnit
 
 @Checker(LimboCheckType.TRANSLATE_JOIN_CHECK)
-@HandlePacket(PacketHandshake::class, PacketInitLogin::class, PacketJoinGame::class, Disconnect::class)
+@HandlePacket(
+    PacketHandshake::class,
+    PacketInitLogin::class,
+    PacketJoinGame::class,
+    PacketEmptyChunk::class,
+    Disconnect::class
+)
 @Suppress("unused")
 object CommonJoinCheck : LimboChecker, ILimboListener {
 
     private val onlineAddress = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val onlineUser = Caffeine.newBuilder().build<String, Boolean>()
+    private val cancelled = Caffeine.newBuilder().expireAfterWrite(250, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()
 
     override fun received(packet: LimboPacket, handler: LimboHandler) {
         val inetSocketAddress = handler.address as InetSocketAddress
         val inetAddress = inetSocketAddress.address
+        if (packet is PacketStatusRequest) {
+            MixedCheck.increase(Pinging(inetAddress, handler.version!!.protocolNumber))
+        }
         if (packet is PacketHandshake && packet.nextState == Protocol.LOGIN) {
             val addressCheck = AddressCheck(inetSocketAddress, handler.host)
             // Domain check
@@ -82,6 +99,13 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
             }
             // Similarity name check
             if (SimilarityCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return }
+
+            val version = handler.version!!
+            if (!version.isSupported || !ProtocolConstants.SUPPORTED_VERSION_IDS.contains(version.protocolNumber)) {
+                val kick = PacketDisconnect()
+                kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
+                handler.channel.write(kick); handler.channel.close(); return
+            }
         }
         if (packet is PacketJoinGame) {
             onlineAddress.put(inetAddress, true)
@@ -89,13 +113,17 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
         }
         if (packet is Disconnect) {
             onlineAddress.invalidate(inetAddress)
-            onlineUser.invalidate(handler.profile.username!!.lowercase())
+            onlineUser.invalidate((handler.profile.username ?: return).lowercase())
         }
     }
 
     private fun kick(handler: LimboHandler, type: DisconnectType) {
+        cancelled.put(handler, true)
         FastDisconnect.disconnect(handler.channel, type, ServerKickType.MOELIMBO)
     }
 
-    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return cancelled }
+    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
+        return if (packet is PacketDisconnect) false
+        else this.cancelled.getIfPresent(handler) != null
+    }
 }

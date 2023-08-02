@@ -32,6 +32,7 @@ enum class Protocol(var stateId: Int) {
     HANDSHAKING(0) {
         init {
             serverBound.register({ PacketHandshake() }, map(0x00, min, max))
+            clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
         }
     },
     @JvmStatic

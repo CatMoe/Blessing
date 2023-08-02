@@ -273,9 +273,22 @@ class LoadConfig {
                         "<red>This server is not allowed proxy/vpn.",
                         ""
                     ]
+                    # Only limbo
                     unexpected-ping=[
                         "",
                         "<red>Your ping looks a little strange. Please try again later.",
+                        ""
+                    ]
+                    detected=[
+                        "",
+                        "<red>You act like a robot.",
+                        "<red>If not. Please try again.",
+                        ""
+                    ]
+                    passed-check=[
+                        "",
+                        "<green>Congratulations! You have passed all the checks",
+                        "<white>Rejoin the server to enjoy game!",
                         ""
                     ]
                 }

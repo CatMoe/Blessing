@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.netty
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.buffer.ByteBuf

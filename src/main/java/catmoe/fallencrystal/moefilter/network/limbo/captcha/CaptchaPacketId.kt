@@ -15,11 +15,23 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.check
+package catmoe.fallencrystal.moefilter.network.limbo.captcha
+
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
 
 @Suppress("unused")
-enum class LimboCheckType {
-    UNEXPECTED_KEEPALIVE,
-    TRANSLATE_JOIN_CHECK,
-    FALLING_CHECK,
+enum class CaptchaPacketId(@JvmField val i: Int, @JvmField val v: Version) {
+    A(0x34, V1_8),
+    B(0x24, V1_9),
+    C(0x26, V1_13),
+    D(0x26, V1_14),
+    E(0x27, V1_15),
+    F(0x26, V1_16),
+    G(0x25, V1_16_2),
+    H(0x27, V1_17),
+    I(0x24, V1_19),
+    J(0x26, V1_19_1),
+    K(0x25, V1_19_3),
+    L(0x29, V1_19_4)
 }

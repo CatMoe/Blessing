@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
-import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
+import catmoe.fallencrystal.moefilter.network.limbo.captcha.CachedCaptcha
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -29,10 +29,11 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketSetHeldSlot
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -110,13 +111,13 @@ class LimboHandler(
         writePacket(PLUGIN_MESSAGE)
         keepAliveScheduler()
 
-        UnexpectedKeepAlive.check(this)
-
         // Empty chunk still is beta.
         (-1..1).forEach { x -> (-1..1).forEach { z ->
             val enum = EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")
             writePacket(enum)
         }}
+
+        // sendCaptcha()
     }
 
     val keepAlive = PacketKeepAlive()
@@ -135,6 +136,15 @@ class LimboHandler(
 
     private fun writePacket(packet: EnumPacket) { writePacket(getCachedPacket(packet)) }
 
+    private fun sendCaptcha() {
+        val captcha = CachedCaptcha.captcha.poll()
+        val slot = PacketSetHeldSlot()
+        slot.item=358
+        slot.slot=38
+        writePacket(slot)
+        val answer = captcha.a!!
+        captcha.n(channel, version!!, false)
+    }
     fun writePacket(packet: Any?) { if (channel.isActive && packet != null) channel.write(packet, channel.voidPromise()) }
 
     fun sendPacket(packet: Any?) { if (channel.isActive && packet != null) channel.writeAndFlush(packet, channel.voidPromise()) }

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
+package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket

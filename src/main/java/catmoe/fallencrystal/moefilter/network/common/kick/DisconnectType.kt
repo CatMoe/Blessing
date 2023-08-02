@@ -26,4 +26,6 @@ enum class DisconnectType(@JvmField val messagePath: String) {
     COUNTRY("kick.country"),
     PROXY("kick.proxy"),
     UNEXPECTED_PING("kick.unexpected-ping"),
+    DETECTED("kick.detected"),
+    PASSED_CHECK("kick.passed-check"),
 }
