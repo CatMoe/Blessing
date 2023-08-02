@@ -2,7 +2,6 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
@@ -11,8 +10,8 @@ import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
-import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
@@ -103,11 +102,10 @@ class PacketHandler : ChannelDuplexHandler() {
     private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String): Boolean {
         val inetAddress = inetSocketAddress.address
         val protocol = this.protocol.get()
-        if (ValidNameCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return true }
-        if (ProxyCheck().increase(AddressCheck(inetSocketAddress, null))) { kick(channel, PROXY); return true }
-        val mixinKick = MixedCheck.increase(Joining(name, inetAddress, protocol))
+        val joining = Joining(name, inetAddress, protocol)
+        if (ValidNameCheck.instance.increase(joining)) { kick(channel, INVALID_NAME); return true }
+        val mixinKick = MixedCheck.increase(joining)
         if (mixinKick != null) { kick(channel, mixinKick); return true }
-        if (CountryCheck().increase(AddressCheck(inetSocketAddress, null))) { kick(channel, COUNTRY); return true }
         if (SimilarityCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return true }
         if (AlreadyOnlineCheck().increase(Joining(name, inetAddress, protocol))) { kick(channel, ALREADY_ONLINE); return true }
         return false

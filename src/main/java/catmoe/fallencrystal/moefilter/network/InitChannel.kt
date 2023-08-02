@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
 import catmoe.fallencrystal.moefilter.network.common.ReflectionUtils
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
@@ -39,6 +38,7 @@ class InitChannel {
 
     private val bungee = BungeeCord.getInstance()
     private var isProxyProtocol = false
+    private val injectLimbo = LocalConfig.getLimbo().getBoolean("enabled")
     private var pipeline: ChannelInitializer<Channel> = BungeePipeline()
 
     fun initPipeline() {
@@ -57,6 +57,7 @@ class InitChannel {
         listener.forEach { if (it.isProxyProtocol) { isProxyProtocol = true } }
         if (isProxyProtocol) {
             log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.")
+            bungee.stop()
         }
         for (it in knownIncompatibilitiesBungee) {
             if (it.contains(proxyName)) {
@@ -76,15 +77,8 @@ class InitChannel {
             log("BotFilter is detected. Using compatibilities choose for it.")
             pipeline=BotFilterPipeline()
         }
-        if (LocalConfig.getConfig().getBoolean("debug")) {
-            listOf(
-                "Debug mode is on. Player now will connect to MoeLimbo instead of bungeecord itself.",
-                "If you want keep using bungeecord instead of testing MoeLimbo,",
-                "Turn off debug mode. And restart server.",
-                "You can enable debug mode when server is started. And reload to apply debug mode."
-            ).forEach { log(it) }
-            pipeline= LimboPipeline()
-            MoeLimbo.initLimbo()
+        if (injectLimbo) {
+            pipeline = LimboPipeline()
         }
         try {
             if (!inject(pipeline).get()) {

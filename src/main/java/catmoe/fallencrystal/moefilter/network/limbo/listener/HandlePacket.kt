@@ -22,4 +22,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class IListenerPacket(vararg val packets: KClass<out LimboPacket>)
+annotation class HandlePacket(vararg val packets: KClass<out LimboPacket>)

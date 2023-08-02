@@ -19,7 +19,9 @@ package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
+import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -82,7 +84,13 @@ object MainListener {
 
         when (handshake.requestedProtocol) {
             1 -> { MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get())) }
-            2 -> { if (checkHost(connection)) { FastDisconnect.disconnect(connection, DisconnectType.INVALID_HOST); return } }
+            2 -> {
+                val info = AddressCheck(connection.inetSocketAddress(), connection.virtualHost())
+                if (DomainCheck.instance.increase(info)) { kick(connection, DisconnectType.INVALID_HOST); return }
+                if (CountryCheck().increase(info)) { kick(connection, DisconnectType.COUNTRY); return }
+                if (ProxyCheck().increase(info)) { kick(connection, DisconnectType.PROXY); return }
+            }
+            // That is impossible
             else -> { connection.close(); addFirewall(connection, false) }
         }
 
@@ -108,14 +116,13 @@ object MainListener {
         } else { if (method != 1) { Firewall.addAddressTemp(inetAddress) } }
     }
 
+    private fun kick(connection: ConnectionUtil, type: DisconnectType) {
+        FastDisconnect.disconnect(connection, type)
+    }
+
     private fun addFirewall(connection: ConnectionUtil, temp: Boolean) {
         val address = connection.inetAddress()
         if (temp) Firewall.addAddressTemp(address) else Firewall.addAddress(address)
         connection.close()
-    }
-
-    private fun checkHost(connection: ConnectionUtil): Boolean {
-        val info = AddressCheck(connection.inetSocketAddress(), connection.virtualHost())
-        return DomainCheck.instance.increase(info)
     }
 }

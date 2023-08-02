@@ -15,14 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.listener
+package catmoe.fallencrystal.moefilter.network.limbo.packet.common
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import io.netty.channel.Channel
 
-interface ILimboListener {
-    fun received(packet: LimboPacket, handler: LimboHandler)
+// This is fake packet. To announce who disconnected.
+class Disconnect : LimboPacket {
+    override fun encode(packet: ByteMessage, version: Version?) { throw UnsupportedOperationException() }
 
-    // Cancel
-    fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { throw UnsupportedOperationException() }
 }

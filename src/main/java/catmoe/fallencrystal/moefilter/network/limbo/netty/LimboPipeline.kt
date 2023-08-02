@@ -24,9 +24,8 @@ import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
-import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.netty.PipelineUtils
@@ -36,21 +35,19 @@ class LimboPipeline : AbstractPipeline() {
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         try {
-
             val channel = ctx.channel()
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
             val inetAddress = (remoteAddress as InetSocketAddress).address
+            if (MoeLimbo.bungeeQueue.getIfPresent(inetAddress) != null) {
+                try { super.handlerAdded(ctx) } finally { ctx.pipeline().remove(this) }
+                return
+            }
             val pipeline = channel.pipeline()
-            val listener = channel.attr(PipelineUtils.LISTENER).get()
-            val eventCaller = EventCaller(ctx, listener)
 
             ConnectionCounter.increase(inetAddress)
-            eventCaller.call(EventCallMode.AFTER_INIT)
             if (Firewall.isFirewalled(inetAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
-            eventCaller.call(EventCallMode.NON_FIREWALL)
             if (Throttler.increase(inetAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
             if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
-            eventCaller.call(EventCallMode.READY_DECODING)
 
             if (!channel.isActive) { return }
 

@@ -2,7 +2,9 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
+import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
@@ -17,6 +19,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBounds
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
+import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -73,9 +76,10 @@ class MoeInitialHandler(
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
             2 -> {
-                if (DomainCheck.instance.increase(AddressCheck(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port)))) {
-                    FastDisconnect.disconnect(channel, DisconnectType.INVALID_HOST, ServerKickType.BUNGEECORD); return
-                }
+                val info = AddressCheck(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port))
+                if (DomainCheck.instance.increase(info)) { kick(channel, DisconnectType.INVALID_HOST); return }
+                if (CountryCheck().increase(info)) { kick(channel, DisconnectType.COUNTRY); return }
+                if (ProxyCheck().increase(info)) { kick(channel, DisconnectType.PROXY); return }
                 ConnectionState.JOINING
             }
             else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
@@ -150,6 +154,10 @@ class MoeInitialHandler(
     override fun handle(encryptResponse: EncryptionResponse?) {
         if (encryptResponse == null) return
         super.handle(encryptResponse)
+    }
+
+    private fun kick(channel: Channel, type: DisconnectType) {
+        FastDisconnect.disconnect(channel, type, ServerKickType.BUNGEECORD)
     }
 
     override fun toString(): String {

@@ -29,23 +29,20 @@ object LimboListener {
         .build<Class<out LimboPacket>, MutableCollection<ILimboListener>>()
 
     fun register(clazz: ILimboListener) {
-        val packets = clazz::class.java.getAnnotation(IListenerPacket::class.java).packets.toList()
-        // packets.forEach { listener.put(it.java, clazz) }
+        val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
         packets.forEach {
             val o = listener.getIfPresent(it.java)
             if (o == null) { listener.put(it.java, mutableListOf(clazz)) }
             else {
-                var conflict: ILimboListener? = null
-                o.forEach { c -> if (c::class.java == clazz::class.java) conflict=c }
-                if (conflict != null) o.remove(conflict)
-                o.add(clazz)
+                var conflict: ILimboListener? = null; o.forEach { c -> if (c::class.java == clazz::class.java) conflict=c }
+                if (conflict != null) o.remove(conflict); o.add(clazz)
                 listener.put(it.java, o)
             }
         }
     }
 
     fun unregister(clazz: ILimboListener) {
-        val packets = clazz::class.java.getAnnotation(IListenerPacket::class.java).packets.toList()
+        val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
         packets.forEach {
             val o = listener.getIfPresent(it.java) ?: return
             var t: ILimboListener? = null
@@ -64,7 +61,7 @@ object LimboListener {
     fun handleSend(packet: LimboPacket, handler: LimboHandler?): Boolean {
         val cancelled = AtomicBoolean(false)
         val listeners = this.listener.getIfPresent(packet::class.java) ?: return false
-        listeners.forEach { if (it.send(packet, handler ?: return false)) cancelled.set(true) }
+        listeners.forEach { if (it.send(packet, handler ?: return false, cancelled.get())) cancelled.set(true) }
         return cancelled.get()
     }
 

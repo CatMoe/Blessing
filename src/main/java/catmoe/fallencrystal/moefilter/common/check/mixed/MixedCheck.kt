@@ -26,6 +26,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
@@ -71,6 +72,7 @@ object MixedCheck {
     fun increase(info: CheckInfo): DisconnectType? {
         if (info is Joining) {
             val address = info.address
+            if (MoeLimbo.bungeeQueue.getIfPresent(address) != null) return null
             return when (type) {
                 RECONNECT -> {
                     if (cacheJoin(info)) null else DisconnectType.REJOIN

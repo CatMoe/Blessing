@@ -22,12 +22,14 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
+import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
@@ -44,7 +46,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "RedundantNullableReturnType")
 class LimboHandler(
     private val encoder: LimboEncoder,
     private val decoder: LimboDecoder,
@@ -66,7 +68,10 @@ class LimboHandler(
    private fun getFakeProxyHandler(): LimboCompat { return FakeInitialHandler(ctx) }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        if (state == Protocol.PLAY) MoeLimbo.connections.remove(this)
+        if (state == Protocol.PLAY) {
+            MoeLimbo.connections.remove(this)
+        }
+        LimboListener.handleReceived(Disconnect(), this)
         disconnected.set(true)
         super.channelInactive(ctx)
     }
@@ -81,8 +86,8 @@ class LimboHandler(
         state = Protocol.PLAY
         MoeLimbo.connections.add(this)
         updateVersion(version!!, state!!)
-        sendPlayPackets()
         if (fakeHandler is FakeInitialHandler) fakeHandler.username=profile.username
+        sendPlayPackets()
     }
 
     fun updateVersion(version: Version, state: Protocol) {

@@ -25,9 +25,8 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
 import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
-import catmoe.fallencrystal.moefilter.network.limbo.listener.IListenerPacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -35,17 +34,11 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 @Checker(LimboCheckType.UNEXPECTED_KEEPALIVE)
-@IListenerPacket(PacketKeepAlive::class)
+@HandlePacket(PacketKeepAlive::class)
 @Suppress("unused")
 object UnexpectedKeepAlive : LimboChecker, ILimboListener {
 
-    private val detectorCache = Caffeine.newBuilder()
-        .expireAfterWrite(350, TimeUnit.MILLISECONDS)
-        .build<LimboHandler, Boolean>()
-
-    init {
-        LimboListener.register(this)
-    }
+    private val detectorCache = Caffeine.newBuilder().expireAfterWrite(350, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()
 
     fun check(handler: LimboHandler) {
         handler.sendPacket(handler.keepAlive)
@@ -60,7 +53,7 @@ object UnexpectedKeepAlive : LimboChecker, ILimboListener {
         }
     }
 
-    override fun send(packet: LimboPacket, handler: LimboHandler): Boolean {
+    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
         if (ProxyCache.isProxy((handler.address as InetSocketAddress).address)) {
             FastDisconnect.disconnect(handler.channel, DisconnectType.PROXY, ServerKickType.MOELIMBO)
             return true

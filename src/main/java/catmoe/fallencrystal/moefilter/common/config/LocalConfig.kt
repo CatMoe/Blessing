@@ -21,10 +21,11 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
 object LocalConfig {
-    private var config = ConfigFactory.parseFile(LoadConfig.instance.getConfigFile())
-    private var message = ConfigFactory.parseFile(LoadConfig.instance.getMessage())
-    private var proxy = ConfigFactory.parseFile(LoadConfig.instance.getProxy())
-    private var antibot: Config = ConfigFactory.parseFile(LoadConfig.instance.getAntibot())
+    private var config = ConfigFactory.parseFile(LoadConfig.instance.configFile)
+    private var message = ConfigFactory.parseFile(LoadConfig.instance.messageFile)
+    private var proxy = ConfigFactory.parseFile(LoadConfig.instance.proxyFile)
+    private var antibot = ConfigFactory.parseFile(LoadConfig.instance.antibotFile)
+    private var limbo = ConfigFactory.parseFile(LoadConfig.instance.limboFile)
 
     fun getConfig(): Config { return config }
 
@@ -34,10 +35,13 @@ object LocalConfig {
 
     fun getAntibot(): Config { return antibot }
 
+    fun getLimbo(): Config { return limbo }
+
     fun reloadConfig() {
-        config = ConfigFactory.parseFile(LoadConfig.instance.getConfigFile())
-        message = ConfigFactory.parseFile(LoadConfig.instance.getMessage())
-        proxy = ConfigFactory.parseFile(LoadConfig.instance.getProxy())
-        antibot = ConfigFactory.parseFile(LoadConfig.instance.getAntibot())
+        config = ConfigFactory.parseFile(LoadConfig.instance.configFile)
+        message = ConfigFactory.parseFile(LoadConfig.instance.messageFile)
+        proxy = ConfigFactory.parseFile(LoadConfig.instance.proxyFile)
+        antibot = ConfigFactory.parseFile(LoadConfig.instance.antibotFile)
+        limbo = ConfigFactory.parseFile(LoadConfig.instance.limboFile)
     }
 }

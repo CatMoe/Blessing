@@ -30,10 +30,11 @@ import java.nio.file.Paths
 class LoadConfig {
     private val path = MoeFilter.instance.dataFolder.absolutePath
 
-    private val configFile = File(path, "config.conf")
-    private val messageFile = File(path, "message.conf")
-    private val proxyFile = File(path, "proxy.conf")
-    private val antibotFile = File(path, "antibot.conf")
+    val configFile = File(path, "config.conf")
+    val messageFile = File(path, "message.conf")
+    val proxyFile = File(path, "proxy.conf")
+    val antibotFile = File(path, "antibot.conf")
+    val limboFile = File(path, "limbo.conf")
 
     private val version = MoeFilter.instance.description.version
 
@@ -484,16 +485,51 @@ class LoadConfig {
                 
     """.trimIndent()
 
+    private val defaultLimbo = """
+                # 这些设置皆在调整MoeLimbo
+                # 其中的设置大部分不可reload 请提前在投入生产环境中测试
+                version=$version
+                
+                # 是否使用Limbo? 仅在使用PIPELINE模式下有效.
+                enabled=true
+                
+                # 群戏加载模式
+                # 可用模式: ADVENTURE, LLBIT
+                # 如果您不知道这是什么 应该保持默认值!
+                dim-loader=LLBIT
+                
+                # 维度设置:
+                # OVERWORLD, NETHER, THE_END
+                dimension=OVERWORLD
+                
+                # 玩家在通过Limbo检查后 需要在多少秒内重新连接以加入服务器?
+                bungee-queue=10
+                
+                check {
+                    # 此检查用于检测异常的KeepAlive
+                    unexpected-keepalive {
+                        # 启用检查? 启用后将一次发送2个KeepAlive用于检测.
+                        enabled=true
+                        # 两次KeepAlive间隔必须大于多少毫秒?
+                        # 修改此项需要重启服务器
+                        # 如果您不知道调整会带来什么后果 请不要随意调整
+                        least-allow-delay=350
+                    }
+                }
+    """.trimIndent()
+
     fun loadConfig() {
         createDefaultConfig()
         val config = LocalConfig.getConfig()
         val message = LocalConfig.getMessage()
         val proxy = LocalConfig.getProxy()
         val antibot = LocalConfig.getAntibot()
+        val limbo = LocalConfig.getLimbo()
         if (config.getString("version") != version || config.isEmpty) { updateConfig("config", config) }
         if (message.getString("version") != version || message.isEmpty) { updateConfig("message", message) }
         if (proxy.getString("version") != version || proxy.isEmpty) { updateConfig("proxy", proxy) }
         if (antibot.getString("version") != version || antibot.isEmpty) { updateConfig("antibot", antibot) }
+        if (limbo.getString("version") != version || limbo.isEmpty) { updateConfig("limbo", limbo) }
         LocalConfig.reloadConfig()
     }
 
@@ -513,7 +549,8 @@ class LoadConfig {
             configFile to defaultConfig,
             messageFile to defaultMessage,
             proxyFile to defaultProxy,
-            antibotFile to defaultAntiBot
+            antibotFile to defaultAntiBot,
+            limboFile to defaultLimbo
         )
         defaultConfigMap.forEach { (file, config) ->
             val createConfig = CreateConfig(pluginFolder)
@@ -522,14 +559,6 @@ class LoadConfig {
             createConfig.onLoad()
         }
     }
-
-    fun getConfigFile(): File { return configFile }
-
-    fun getMessage(): File { return messageFile }
-
-    fun getProxy(): File { return proxyFile }
-
-    fun getAntibot(): File { return antibotFile }
 
     private fun broadcastUpdate(newFile: Path) {
         val message: List<String> = listOf(
