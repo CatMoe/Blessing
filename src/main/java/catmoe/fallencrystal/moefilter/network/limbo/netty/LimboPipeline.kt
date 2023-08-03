@@ -25,7 +25,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractPipeline
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.netty.PipelineUtils
@@ -38,7 +38,7 @@ class LimboPipeline : AbstractPipeline() {
             val channel = ctx.channel()
             val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
             val inetAddress = (remoteAddress as InetSocketAddress).address
-            if (MoeLimbo.bungeeQueue.getIfPresent(inetAddress) != null) {
+            if (BungeeSwitcher.connectToBungee(inetAddress)) {
                 try { super.handlerAdded(ctx) } finally { ctx.pipeline().remove(this) }
                 return
             }

@@ -86,7 +86,7 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.fromTo(V1_7_2, V1_13_2)) packet.writeByte(0) // Difficulty
         if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
         if (version.fromTo(V1_7_2, V1_15_2)) packet.writeString("flat")
-        if (version.moreOrEqual(V1_7_2)) packet.writeVarInt(viewDistance)
+        if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
         if (version.moreOrEqual(V1_15)) packet.writeBoolean(enableRespawnScreen)
@@ -329,7 +329,7 @@ class PacketJoinGame : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "" +
+        return "PacketJoinGame(" +
                 "entityId=$entityId," +
                 "isHardcore=$isHardcore," +
                 "gameMode=$gameMode," +
@@ -344,6 +344,6 @@ class PacketJoinGame : LimboS2CPacket() {
                 "isDebug=$isDebug," +
                 "isFlat=$isFlat," +
                 "Type=${MoeLimbo.dimensionType.name}," +
-                "Dimension=${MoeLimbo.dimensionType.name}"
+                "Dimension=${MoeLimbo.dimensionType.name})"
     }
 }

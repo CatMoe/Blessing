@@ -37,4 +37,6 @@ class PacketDisconnect : LimboS2CPacket() {
     fun setReason(component: Component) { this.message=ComponentUtil.toGson(component) }
 
     override fun encode(packet: ByteMessage, version: Version?) { packet.writeString(message) }
+
+    override fun toString(): String { return "PacketDisconnect(message=$message)" }
 }

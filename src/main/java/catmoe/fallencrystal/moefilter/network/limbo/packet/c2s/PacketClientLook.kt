@@ -49,5 +49,5 @@ class PacketClientLook : LimboC2SPacket() {
         )
     }
 
-    override fun toString(): String { return "$lastLook" }
+    override fun toString(): String { return "PacketClientLook(look=$lastLook)" }
 }

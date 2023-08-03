@@ -33,9 +33,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import com.github.benmanes.caffeine.cache.Caffeine
-import java.net.InetAddress
-import java.util.concurrent.TimeUnit
 
 object MoeLimbo {
 
@@ -43,12 +40,10 @@ object MoeLimbo {
     val dimensionType = CommonDimensionType.OVERWORLD
     private val rawDimType = LocalConfig.getLimbo().getAnyRef("dim-loader").toString()
     private var conf = LocalConfig.getLimbo()
-    var bungeeQueue = Caffeine.newBuilder()
-        .expireAfterWrite(conf.getLong("bungee-queue"), TimeUnit.SECONDS)
-        .build<InetAddress, Boolean>()
     var dimLoaderMode = try { DimensionInterface.valueOf(rawDimType) } catch (_: IllegalArgumentException) {
         MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
     }
+    var debug = LocalConfig.getConfig().getBoolean("debug")
 
     fun reload() {
         LockdownManager.setLockdown(true)
@@ -63,9 +58,7 @@ object MoeLimbo {
         }
         initDimension()
         if (!conf.getBoolean("check.unexpected-keepalive.enabled")) { LimboListener.unregister(UnexpectedKeepAlive) }
-        bungeeQueue = Caffeine.newBuilder()
-            .expireAfterWrite(conf.getLong("bungee-queue"), TimeUnit.SECONDS)
-            .build()
+        debug = LocalConfig.getConfig().getBoolean("debug")
     }
 
     private fun initDimension() {
@@ -77,6 +70,10 @@ object MoeLimbo {
             }
             LLBIT -> { StaticDimension.init() }
         }
+    }
+
+    fun debug(log: String) {
+        if (debug) MessageUtil.logInfo("[MoeLimbo] $log")
     }
 
     private fun initCheck() {

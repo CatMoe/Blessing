@@ -49,7 +49,7 @@ class PacketPingResponse : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "brand=$brand, protocol=$protocol, max=$max, online=$online, description=$description"
+        return "PacketPingResponse($output)"
     }
 
 

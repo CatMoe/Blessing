@@ -69,6 +69,6 @@ class PacketSetHeldSlot : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "windowId=$windowId, slot=$slot, item=$item, count=$count, data=$data"
+        return "PacketSetHeldSlot(windowId=$windowId, slot=$slot, item=$item, count=$count, data=$data)"
     }
 }

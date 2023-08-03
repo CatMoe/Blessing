@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
@@ -35,6 +36,7 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         registry = state.clientBound.registry[version]
+        MoeLimbo.debug("Encoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
     override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket?, out: ByteBuf?) {
@@ -48,8 +50,10 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
             } catch (npe: NullPointerException) { null }
         if (packetId == -1 || packetClazz == null) return
         try {
-            if (LimboListener.handleSend(packet, handler)) return
+            if (LimboListener.handleSend(packetClazz, handler)) return
             packet.encode(msg, version)
+            MoeLimbo.debug("Encoding ${"0x%02X".format(packetId)} packet with ${msg.readableBytes()}")
+            MoeLimbo.debug(packetClazz.toString())
         } catch (ex: Exception) { ex.printStackTrace() }
     }
 }

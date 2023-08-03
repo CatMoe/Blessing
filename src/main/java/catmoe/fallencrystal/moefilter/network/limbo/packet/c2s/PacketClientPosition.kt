@@ -50,5 +50,5 @@ class PacketClientPosition : LimboC2SPacket() {
         )
     }
 
-    override fun toString(): String { return "location=$lastLoc" }
+    override fun toString(): String { return "PacketClientPosition(location=$lastLoc)" }
 }

@@ -45,11 +45,11 @@ object PacketCache {
         val teleportId = ThreadLocalRandom.current().nextInt()
 
         val pal = PacketServerPositionLook()
-        pal.sendLoc = LimboLocation(7.5, 450.0, 7.5, 90f, 10f, false)
+        pal.sendLoc = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
         pal.teleport=teleportId
 
         val spawnLocation = PacketSpawnPosition()
-        spawnLocation.location = LimboLocation(7.5, 450.0, 7.5, 90f, 10f, false)
+        spawnLocation.location = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
 
         val info = PacketPlayerInfo()
         info.username=username
@@ -69,9 +69,9 @@ object PacketCache {
         packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(brand))
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
 
-        val chunk = PacketEmptyChunk()
-
         (-1..1).forEach { x -> (-1..1).forEach { z ->
+            val chunk = PacketEmptyChunk()
+            chunk.x=x; chunk.z=z
             val enum = EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")
             packetCache.put(enum, PacketSnapshot.of(chunk))
         }}

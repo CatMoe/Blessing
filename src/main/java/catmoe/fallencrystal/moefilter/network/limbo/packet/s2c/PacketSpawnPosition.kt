@@ -39,7 +39,7 @@ class PacketSpawnPosition : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "location=$location"
+        return "PacketSpawnPosition(location=$location)"
     }
 
 }

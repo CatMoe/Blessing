@@ -29,8 +29,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version.Companion.min
 @Suppress("unused")
 enum class Protocol(var stateId: Int) {
     @JvmStatic
-    HANDSHAKING(0) {
-        init {
+    HANDSHAKING(0) {init {
             serverBound.register({ PacketHandshake() }, map(0x00, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
         }

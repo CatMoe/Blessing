@@ -46,6 +46,6 @@ class PacketHandshake : LimboC2SPacket() {
     }
 
     override fun toString(): String {
-        return "version=$version, nextState=$nextState, host=$host, port=$port"
+        return "PacketHandshake(version=$version, nextState=$nextState, host=$host, port=$port)"
     }
 }

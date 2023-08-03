@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
@@ -34,6 +35,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         mappings = state.serverBound.registry[version]
+        MoeLimbo.debug("Decoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {
@@ -42,15 +44,21 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
             if (mappings == null) throw NullPointerException("Mappings cannot be null!")
             val byteMessage = ByteMessage(byteBuf)
             val id = byteMessage.readVarInt()
-            val packet = mappings!!.getPacket(id) ?: return
+            val packet = mappings!!.getPacket(id)
+            if (packet == null) {
+                MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
+                return
+            }
             try {
                 val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_2 else this.version
                 packet.decode(byteMessage, ctx.channel(), version)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
-            ctx.fireChannelRead(packet)
             LimboListener.handleReceived(packet, handler)
+            MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()}")
+            MoeLimbo.debug(packet.toString())
+            ctx.fireChannelRead(packet)
         } catch (ex: NullPointerException) {
             ex.printStackTrace()
         }

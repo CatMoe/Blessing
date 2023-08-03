@@ -67,54 +67,61 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
     private val onlineUser = Caffeine.newBuilder().build<String, Boolean>()
     private val cancelled = Caffeine.newBuilder().expireAfterWrite(250, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()
 
-    override fun received(packet: LimboPacket, handler: LimboHandler) {
+    override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
+        if (cancelledRead) return true
         val inetSocketAddress = handler.address as InetSocketAddress
         val inetAddress = inetSocketAddress.address
         if (packet is PacketStatusRequest) {
             MixedCheck.increase(Pinging(inetAddress, handler.version!!.protocolNumber))
+            return false
         }
         if (packet is PacketHandshake && packet.nextState == Protocol.LOGIN) {
             val addressCheck = AddressCheck(inetSocketAddress, handler.host)
             // Domain check
-            if (DomainCheck.instance.increase(addressCheck)) { kick(handler, DisconnectType.INVALID_HOST); return }
+            if (DomainCheck.instance.increase(addressCheck)) { kick(handler, DisconnectType.INVALID_HOST); return true }
             // Country check
-            if (CountryCheck().increase(addressCheck)) { kick(handler, DisconnectType.COUNTRY); return }
+            if (CountryCheck().increase(addressCheck)) { kick(handler, DisconnectType.COUNTRY); return true }
             // Proxy check
-            if (ProxyCheck().increase(addressCheck)) { kick(handler, DisconnectType.PROXY); return }
+            if (ProxyCheck().increase(addressCheck)) { kick(handler, DisconnectType.PROXY); return true }
             // Limbo online check (address)
-            if (onlineAddress.getIfPresent(inetAddress) != null) { kick(handler, DisconnectType.ALREADY_ONLINE); return }
+            if (onlineAddress.getIfPresent(inetAddress) != null) { kick(handler, DisconnectType.ALREADY_ONLINE); return true }
+            return false
         }
-        val protocol = handler.version!!.protocolNumber
         if (packet is PacketInitLogin) {
+            val protocol = handler.version!!.protocolNumber
             val username = packet.username
             val joining = Joining(username, inetAddress, protocol)
             // Invalid name check
-            if (ValidNameCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return }
+            if (ValidNameCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
             // Ping & Join mixin check
             val mixinKick = MixedCheck.increase(joining)
-            if (mixinKick != null) { kick(handler, mixinKick); return }
+            if (mixinKick != null) { kick(handler, mixinKick); return true }
             // Limbo & Bungee online check (username)
             if (onlineUser.getIfPresent(username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
-                kick(handler, DisconnectType.ALREADY_ONLINE); return
+                kick(handler, DisconnectType.ALREADY_ONLINE); return true
             }
             // Similarity name check
-            if (SimilarityCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return }
+            if (SimilarityCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
 
             val version = handler.version!!
             if (!version.isSupported || !ProtocolConstants.SUPPORTED_VERSION_IDS.contains(version.protocolNumber)) {
                 val kick = PacketDisconnect()
                 kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
-                handler.channel.write(kick); handler.channel.close(); return
+                handler.channel.write(kick); handler.channel.close(); return true
             }
+            return false
         }
         if (packet is PacketJoinGame) {
             onlineAddress.put(inetAddress, true)
             onlineUser.put(handler.profile.username!!.lowercase(), true)
+            return false
         }
         if (packet is Disconnect) {
             onlineAddress.invalidate(inetAddress)
-            onlineUser.invalidate((handler.profile.username ?: return).lowercase())
+            onlineUser.invalidate((handler.profile.username ?: return false).lowercase())
+            return false
         }
+        return false
     }
 
     private fun kick(handler: LimboHandler, type: DisconnectType) {

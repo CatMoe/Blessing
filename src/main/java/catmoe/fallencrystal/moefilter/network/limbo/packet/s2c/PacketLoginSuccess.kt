@@ -34,7 +34,5 @@ class PacketLoginSuccess : LimboS2CPacket() {
         if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
     }
 
-    override fun toString(): String {
-         return "uuid=$uuid, username=$username"
-    }
+    override fun toString(): String { return "PacketLoginSuccess(uuid=$uuid, username=$username)" }
 }

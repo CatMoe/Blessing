@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 
 interface ILimboListener {
-    fun received(packet: LimboPacket, handler: LimboHandler)
+    fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean
 
     // Cancel
     fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean

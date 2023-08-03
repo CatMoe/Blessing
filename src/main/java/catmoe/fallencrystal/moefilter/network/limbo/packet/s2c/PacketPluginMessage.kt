@@ -31,7 +31,7 @@ class PacketPluginMessage : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "channel=$channel, message=$message"
+        return "PacketPluginMessage(channel=$channel, message=$message)"
     }
 
 }

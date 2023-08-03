@@ -28,4 +28,5 @@ enum class DisconnectType(@JvmField val messagePath: String) {
     UNEXPECTED_PING("kick.unexpected-ping"),
     DETECTED("kick.detected"),
     PASSED_CHECK("kick.passed-check"),
+    RECHECK("kick.recheck"),
 }

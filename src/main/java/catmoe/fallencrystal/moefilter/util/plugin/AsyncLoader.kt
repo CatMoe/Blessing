@@ -46,6 +46,7 @@ import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.bungee.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -112,7 +113,10 @@ class AsyncLoader(val plugin: Plugin) {
                 LoadCommand().load()
                 Firewall.reload()
                 loadProxyAPI()
-                if (LocalConfig.getLimbo().getBoolean("enabled")) MoeLimbo.initLimbo()
+                if (LocalConfig.getLimbo().getBoolean("enabled")) {
+                    MoeLimbo.initLimbo()
+                    EventManager.registerListener(plugin, BungeeSwitcher)
+                }
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage

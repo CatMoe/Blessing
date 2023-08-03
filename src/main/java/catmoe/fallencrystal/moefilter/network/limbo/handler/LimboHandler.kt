@@ -73,6 +73,7 @@ class LimboHandler(
             MoeLimbo.connections.remove(this)
         }
         LimboListener.handleReceived(Disconnect(), this)
+        MoeLimbo.debug("Client disconnected")
         disconnected.set(true)
         super.channelInactive(ctx)
     }
@@ -98,6 +99,8 @@ class LimboHandler(
         if (fakeHandler is FakeInitialHandler) { fakeHandler.v = version }
     }
 
+    val keepAlive = PacketKeepAlive()
+
     @Suppress("SpellCheckingInspection")
     private fun sendPlayPackets() {
         //writePacket(JOIN_GAME)
@@ -110,17 +113,16 @@ class LimboHandler(
         writePacket(PLAYER_INFO)
         writePacket(PLUGIN_MESSAGE)
         keepAliveScheduler()
+        keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
+        sendPacket(keepAlive)
 
         // Empty chunk still is beta.
-        (-1..1).forEach { x -> (-1..1).forEach { z ->
-            val enum = EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")
-            writePacket(enum)
-        }}
+
+        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+
 
         // sendCaptcha()
     }
-
-    val keepAlive = PacketKeepAlive()
 
     private fun keepAliveScheduler() {
         Scheduler(MoeFilter.instance).repeatScheduler( 10, TimeUnit.SECONDS) {

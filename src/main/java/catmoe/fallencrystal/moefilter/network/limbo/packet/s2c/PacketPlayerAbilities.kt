@@ -34,7 +34,7 @@ class PacketPlayerAbilities : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "flags=$flags, flyingSpeed=$flyingSpeed, fieldOfView=$fieldOfView"
+        return "PacketPlayerAbilities(flags=$flags, flyingSpeed=$flyingSpeed, fieldOfView=$fieldOfView)"
     }
 
 }

@@ -42,5 +42,5 @@ class PacketInitLogin : LimboC2SPacket() {
         handler.fireLoginSuccess()
     }
 
-    override fun toString(): String { return "username=$username" }
+    override fun toString(): String { return "PacketInitLogin(username=$username)" }
 }

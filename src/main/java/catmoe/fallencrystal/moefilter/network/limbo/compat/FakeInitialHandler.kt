@@ -75,7 +75,7 @@ class FakeInitialHandler(
     override fun setUniqueId(p0: UUID?) { throw UnsupportedOperationException() }
     override fun isOnlineMode(): Boolean { return false }
     override fun setOnlineMode(p0: Boolean) { throw UnsupportedOperationException() }
-    override fun isLegacy(): Boolean { return false }
+    override fun isLegacy(): Boolean { return true } // Still always true -- Prevent protocolize inject pipeline.
 
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {

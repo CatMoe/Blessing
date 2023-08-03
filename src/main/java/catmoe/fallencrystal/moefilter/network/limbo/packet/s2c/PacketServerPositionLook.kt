@@ -46,7 +46,7 @@ class PacketServerPositionLook: LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "location=$sendLoc, teleportId=$teleport"
+        return "PacketServerPositionLook(location=$sendLoc, teleportId=$teleport)"
     }
 
 }

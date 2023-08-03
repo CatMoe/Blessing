@@ -33,8 +33,17 @@ import kotlin.system.exitProcess
 
 class InitChannel {
 
-    private val knownIncompatibilitiesBungee = listOf("NullCordX", "XCord", "BetterBungee")
-    private val knownIncompatibilitiesPlugin = listOf("AntiAttackRL", "HAProxyDetector", "JH_AntiBot", "nAntiBot", "BotSentry")
+    private val incompatibility = listOf(
+        "NullCordX",
+        "XCord",
+        "BetterBungee",
+        "AntiAttackRL",
+        "HAProxyDetector",
+        "JH_AntiBot",
+        "nAntiBot",
+        "BotSentry"
+    )
+    private val incompatibilityLimbo = listOf("BotFilter")
 
     private val bungee = BungeeCord.getInstance()
     private var isProxyProtocol = false
@@ -59,18 +68,11 @@ class InitChannel {
             log("<red>PIPELINE mode is incompatibility proxy_protocol! Please switch to EVENT mode.")
             bungee.stop()
         }
-        for (it in knownIncompatibilitiesBungee) {
-            if (it.contains(proxyName)) {
-                log("<red>Failed to inject because incompatibilities for $it bungeecord fork!")
-                bungee.stop()
-                return
-            }
-        }
-        for (it in knownIncompatibilitiesPlugin) {
-            if (bungee.pluginManager.getPlugin(it) != null) {
-                log("<red>Failed to inject because the plugin $it is competing for the pipeline. Please unload that plugin first.")
-                bungee.stop()
-                return
+        incompatibility.forEach {
+            if (it.contains(proxyName) || bungee.pluginManager.getPlugin(it) != null) {
+                log("$it plugin or bungeecord (forks) is not compatibility with MoeFilter PIPELINE mode.")
+                log("Please switch to EVENT mode. or give up use MoeFilter.")
+                bungee.stop(); return
             }
         }
         if (proxyName.contains("BotFilter")) {
@@ -79,6 +81,13 @@ class InitChannel {
         }
         if (injectLimbo) {
             pipeline = LimboPipeline()
+            incompatibilityLimbo.forEach {
+                if (it.contains(proxyName) || bungee.pluginManager.getPlugin(it) != null) {
+                    log("$it plugin or bungeecord forks is not compatibility with limbo features.")
+                    log("Switching to use common bungee pipeline.")
+                    pipeline=BungeePipeline()
+                }
+            }
         }
         try {
             if (!inject(pipeline).get()) {

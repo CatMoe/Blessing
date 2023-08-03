@@ -106,5 +106,5 @@ class PacketEmptyChunk : LimboS2CPacket() {
     }
 
 
-    override fun toString(): String { return "x=$x, z=$z" }
+    override fun toString(): String { return "PacketEmptyChunk(TargetX=$x, TargetZ=$z)" }
 }

@@ -15,23 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
+package catmoe.fallencrystal.moefilter.api.event.events
 
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import java.net.InetAddress
 
-@Suppress("MemberVisibilityCanBePrivate")
-class PacketUpdateTime : LimboS2CPacket() {
-
-    var age: Long = 1
-    var time: Long = 23700
-
-    override fun encode(packet: ByteMessage, version: Version?) {
-        listOf(age, time).forEach { packet.writeLong(it) }
-    }
-
-    override fun toString(): String {
-        return "PacketUpdateTime(age=$age, time=$time)"
-    }
-}
+class LimboCheckPassedEvent(val version: Version, val username: String, val address: InetAddress): MoeAsyncEvent

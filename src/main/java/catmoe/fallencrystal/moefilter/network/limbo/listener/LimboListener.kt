@@ -52,9 +52,11 @@ object LimboListener {
         }
     }
 
-    fun handleReceived(packet: LimboPacket, handler: LimboHandler?) {
-        val listeners = this.listener.getIfPresent(packet::class.java) ?: return
-        listeners.forEach { it.received(packet, handler ?: return) }
+    fun handleReceived(packet: LimboPacket, handler: LimboHandler?): Boolean {
+        val isCancelled = AtomicBoolean(false)
+        val listeners = this.listener.getIfPresent(packet::class.java) ?: return isCancelled.get()
+        listeners.forEach { if (it.received(packet, handler ?: return isCancelled.get(), isCancelled.get())) isCancelled.set(true) }
+        return isCancelled.get()
     }
 
     // return true = cancel send

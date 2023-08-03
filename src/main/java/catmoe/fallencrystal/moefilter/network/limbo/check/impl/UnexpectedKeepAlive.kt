@@ -45,13 +45,15 @@ object UnexpectedKeepAlive : LimboChecker, ILimboListener {
         handler.sendPacket(handler.keepAlive)
     }
 
-    override fun received(packet: LimboPacket, handler: LimboHandler) {
-        if (packet !is PacketKeepAlive) return
+    override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
+        if (cancelledRead) return true
+        if (packet !is PacketKeepAlive) return false
         val h = detectorCache.getIfPresent(handler)
         if (h == null) { detectorCache.put(handler, true) } else {
-            FastDisconnect.disconnect(handler.channel, DisconnectType.UNEXPECTED_PING, ServerKickType.MOELIMBO); return
+            FastDisconnect.disconnect(handler.channel, DisconnectType.UNEXPECTED_PING, ServerKickType.MOELIMBO); return true
         }
         check(handler)
+        return false
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {

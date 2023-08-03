@@ -291,6 +291,12 @@ class LoadConfig {
                         "<white>Rejoin the server to enjoy game!",
                         ""
                     ]
+                    recheck=[
+                        "",
+                        "<red>There is an exception in your session",
+                        "<red>Please complete the certification again."
+                        ""
+                    ]
                 }
             """.trimIndent()
 
@@ -506,7 +512,7 @@ class LoadConfig {
                 # 是否使用Limbo? 仅在使用PIPELINE模式下有效.
                 enabled=true
                 
-                # 群戏加载模式
+                # 群系加载模式
                 # 可用模式: ADVENTURE, LLBIT
                 # 如果您不知道这是什么 应该保持默认值!
                 dim-loader=LLBIT

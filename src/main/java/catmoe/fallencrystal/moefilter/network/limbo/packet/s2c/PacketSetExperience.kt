@@ -34,6 +34,6 @@ class PacketSetExperience : LimboS2CPacket() {
     }
 
     override fun toString(): String {
-        return "expBar=$expBar, level=$level, totalExp=$totalExp"
+        return "PacketSetExperience(expBar=$expBar, level=$level, totalExp=$totalExp)"
     }
 }

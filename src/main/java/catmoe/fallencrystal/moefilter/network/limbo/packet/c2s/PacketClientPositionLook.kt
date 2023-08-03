@@ -41,5 +41,5 @@ class PacketClientPositionLook : LimboC2SPacket() {
 
     override fun handle(handler: LimboHandler) { handler.location=this.readLoc }
 
-    override fun toString(): String { return "location=$readLoc" }
+    override fun toString(): String { return "PacketClientPositionLook(location=$readLoc)" }
 }

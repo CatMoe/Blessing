@@ -68,4 +68,8 @@ class PacketPlayerInfo : LimboS2CPacket() {
         UPDATE_LATENCY,
         UPDATE_DISPLAY_NAME
     }
+
+    override fun toString(): String {
+        return "PacketPlayerInfo(gameMode=$gameMode, username=$username, uuid=$uuid)"
+    }
 }

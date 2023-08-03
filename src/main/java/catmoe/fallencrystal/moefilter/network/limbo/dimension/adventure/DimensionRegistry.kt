@@ -30,15 +30,13 @@ import java.util.stream.Collectors
 @Suppress("SpellCheckingInspection")
 object DimensionRegistry {
 
-    var codec_Legacy = readFromFile("dim/d0.snbt")
-    var codec_1_16 = readFromFile("dim/d1.snbt")
+    var codec_Legacy = readFromFile("dim/d1.snbt")
+    var codec_1_16 = readFromFile("dim/d0.snbt")
     var codec_1_18_2 = readFromFile("dim/d2.snbt")
     var codec_1_19 = readFromFile("dim/d3.snbt")
     var codec_1_19_1 = readFromFile("dim/d4.snbt")
     var codec_1_19_4 = readFromFile("dim/d5.snbt")
     var codec_1_20 = readFromFile("dim/d6.snbt")
-
-    private fun readString(i: String): CompoundBinaryTag { return TagStringIO.get().asCompound(i) }
 
 /*
     fun test() {
