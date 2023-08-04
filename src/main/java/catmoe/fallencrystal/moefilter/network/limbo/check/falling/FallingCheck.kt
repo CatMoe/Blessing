@@ -20,6 +20,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
@@ -208,6 +210,7 @@ object FallingCheck: LimboChecker, ILimboListener {
 
     private fun kick(handler: LimboHandler) {
         FastDisconnect.disconnect(handler.channel, DisconnectType.DETECTED, ServerKickType.MOELIMBO)
+        ConnectionCounter.countBlocked(BlockType.JOIN)
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return false }

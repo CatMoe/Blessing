@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
@@ -118,6 +119,7 @@ object MainListener {
 
     private fun kick(connection: ConnectionUtil, type: DisconnectType) {
         FastDisconnect.disconnect(connection, type)
+        ConnectionCounter.countBlocked(BlockType.JOIN)
     }
 
     private fun addFirewall(connection: ConnectionUtil, temp: Boolean) {
