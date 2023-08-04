@@ -1,5 +1,5 @@
 name: MoeFilter
-version: '0.0.5'
+version: '0.1.0-Final'
 author: CatMoe
 main: catmoe.fallencrystal.moefilter.MoeFilter
 description: 'A antibot & utils for BungeeCord'

@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
+import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.impl.FallingCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
@@ -77,7 +77,6 @@ object MoeLimbo {
     }
 
     private fun initCheck() {
-        val conf = this.conf.getConfig("check")
         LimboListener.register(CommonJoinCheck)
         LimboListener.register(FallingCheck)
         // if (conf.getBoolean("unexpected-keepalive.enabled")) { LimboListener.register(UnexpectedKeepAlive) }

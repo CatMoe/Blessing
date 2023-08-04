@@ -64,9 +64,9 @@ class LoadConfig {
                     allow-lists=["127.0.0.1", "localhost", "mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 
-                # Ping选项 该选项仅当antibot.conf中的mode为PIPELINE时有效 (临时废弃)
+                # Ping选项
                 ping {
-                    # 缓存选项
+                    # 缓存选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
                     cache {
                         # 缓存有效时间. 单位为秒
                         max-life-time=5
@@ -80,9 +80,10 @@ class LoadConfig {
                         cancel-send-icon-during-attack=true
                     }
                     # 服务端标识选项 通常会在客户端版本不支持时显示
-                    # 仅支持经典MC16色.
+                    # 仅支持经典MC16色. 为空 = 不更改
                     brand="<red>Requires MC 1.8 - 1.20"
                     # 无论协议是否支持都向客户端发送不支持的协议? 这么做会导致brand总是显示在motd中.
+                    # 如果motd缓存可用 此行为也会影响到缓存返回的内容 并不需要因为版本更改而刷新motd
                     protocol-always-unsupported=false
                     # 欺骗FML客户端服务器属于哪些类型的服务器
                     # VANILLA, FML, BUKKIT, UNKNOWN
@@ -290,7 +291,7 @@ class LoadConfig {
                     ]
                     passed-check=[
                         "",
-                        "<green>Congratulations! You have passed all the checks",
+                        "<green>You have passed all the checks",
                         "<white>Rejoin the server to enjoy game!",
                         ""
                     ]
@@ -525,7 +526,9 @@ class LoadConfig {
                 dimension=OVERWORLD
                 
                 # 玩家在通过Limbo检查后 需要在多少秒内重新连接以加入服务器?
-                bungee-queue=10
+                bungee-queue=15
+                # 总是检查玩家 如果为false 则无视bungee-queue直接加入服务器
+                always-check=true
                 
                 check {
                     # 此检查用于检测异常的KeepAlive
@@ -536,6 +539,31 @@ class LoadConfig {
                         # 修改此项需要重启服务器
                         # 如果您不知道调整会带来什么后果 请不要随意调整
                         least-allow-delay=350
+                    }
+                    # 掉落检查
+                    falling {
+                        # 每tick运动的最大速度(方块)
+                        # 如果您不知道调整后有什么后果 应保持默认值.
+                        max-x=2.88
+                        max-y=3.9200038147009764
+                        max-z=2.88
+                        # 当玩家的Pitch为 > 90.0 或 < -90.0(不可能)时 踢出Limbo
+                        wrong-turn=true
+                        # 如果玩家试图向上移动 则踢出Limbo
+                        invalid-y-up=true
+                        # 如果玩家的onGround为true 则踢出Limbo
+                        invalid-on-ground=true
+                        # 如果玩家尝试移动两次但Y轴却没有改变 则踢出Limbo
+                        same-y-position=true
+                        # 超时时间 单位为秒
+                        timeout=10
+                        
+                        # 持续掉落检查测量模式:
+                        # DISTANCE: 根据掉落的距离测量
+                        # COUNT: 根据玩家(发送数据包)的移动次数测量
+                        calculate-type=DISTANCE
+                        # 测量的距离 如果达到此值 将通过检查
+                        range=100
                     }
                 }
     """.trimIndent()

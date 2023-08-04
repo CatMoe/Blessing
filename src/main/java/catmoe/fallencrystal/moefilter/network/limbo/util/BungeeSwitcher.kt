@@ -30,36 +30,47 @@ import java.util.concurrent.TimeUnit
 
 object BungeeSwitcher : EventListener {
 
-    private val limbo = LocalConfig.getLimbo().getBoolean("enabled")
-    private var timeout = LocalConfig.getLimbo().getLong("bungee-queue")
+    private var conf = LocalConfig.getLimbo()
+    private val limbo = conf.getBoolean("enabled")
+    private var timeout = conf.getLong("bungee-queue")
     private var bungeeQueue = Caffeine.newBuilder()
         .expireAfterWrite(timeout, TimeUnit.SECONDS)
         .build<InetAddress, VerifyInfo>()
+    private val foreverQueue = Caffeine.newBuilder().build<InetAddress, VerifyInfo>()
+    private var alwaysCheck = conf.getBoolean("always-check")
 
     @FilterEvent
     fun reload(event: PluginReloadEvent) {
         if (event.executor == null || !limbo) return
-        val timeout = LocalConfig.getLimbo().getLong("bungee-queue")
+        val conf = LocalConfig.getLimbo()
+        val timeout = conf.getLong("bungee-queue")
         if (this.timeout == timeout) return
         this.timeout=timeout
         bungeeQueue = Caffeine.newBuilder()
             .expireAfterWrite(BungeeSwitcher.timeout, TimeUnit.SECONDS)
             .build()
+        alwaysCheck = conf.getBoolean("always-check")
+        this.conf=conf
     }
 
     @FilterEvent
-    fun passed(event: LimboCheckPassedEvent) { bungeeQueue.put(event.address, VerifyInfo(event.username, event.version)) }
+    fun passed(event: LimboCheckPassedEvent) {
+        val info = VerifyInfo(event.username, event.version)
+        bungeeQueue.put(event.address, info)
+        if (!alwaysCheck) foreverQueue.put(event.address, info)
+    }
 
     fun connectToBungee(address: InetAddress): Boolean {
-        return if (limbo) bungeeQueue.getIfPresent(address) != null else true
+        return if (limbo) bungeeQueue.getIfPresent(address) != null
+        else if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else true
     }
 
     fun verify(info: CheckInfo): Boolean {
         if (!limbo) return false
         info as Joining
-        val a = bungeeQueue.getIfPresent(info.address) ?: return false
+        val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
         val result = a.username == info.username && a.version.protocolNumber == info.protocol
-        if (!result) bungeeQueue.invalidate(info.address)
+        if (!result) { bungeeQueue.invalidate(info.address); foreverQueue.invalidate(info.address) }
         return result
     }
 

@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit
 object PingManager {
     private var conf = LocalConfig.getConfig().getConfig("ping.cache")
 
-    private var useStandardDomainCache = conf.getBoolean("stable-domain-cache")
-    private var protocolAlwaysUnsupport = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
+    private var useStandardDomain = conf.getBoolean("stable-domain-cache")
+    private var protocolAlwaysUnsupported = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
     private var fullCacheInAttack = conf.getBoolean("full-cache-during-attack")
     private var sendIconOnce = conf.getBoolean("send-icon-once")
     private var cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
@@ -48,6 +48,7 @@ object PingManager {
         }
         .build<String, MutableMap<Version, MotdInfo>>()
     private val onceIconCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
+    private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
 
     fun a(p1: String, p2: MutableMap<Version, MotdInfo>) {
         if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(p1, p2)
@@ -55,8 +56,8 @@ object PingManager {
 
     fun reload() {
         conf = LocalConfig.getConfig().getConfig("ping.cache")
-        useStandardDomainCache = conf.getBoolean("stable-domain-cache")
-        protocolAlwaysUnsupport = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
+        useStandardDomain = conf.getBoolean("stable-domain-cache")
+        protocolAlwaysUnsupported = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
         fullCacheInAttack = conf.getBoolean("full-cache-during-attack")
         sendIconOnce = conf.getBoolean("send-icon-once")
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
@@ -74,7 +75,7 @@ object PingManager {
 
     fun handlePing(handler: LimboHandler) {
         val version = handler.version!!
-        val cache = motdCache.getIfPresent(handler.host!!.hostString)
+        val cache = motdCache.getIfPresent(if (useStandardDomain) handler.host!!.hostString else "")
         val c = if (cache?.get(version) == null) createMap(handler, cache) else cache
         val address = (handler.address as InetSocketAddress).address
         if (cancelSendIconDuringAttack && StateManager.inAttack.get()) { sendMotd(c, handler, true); return }
@@ -86,7 +87,7 @@ object PingManager {
     }
 
     private fun sendMotd(map: MutableMap<Version, MotdInfo>, handler: LimboHandler, noIcon: Boolean) {
-        val p = map[handler.version!!]!!
+        val p = map[dv ?: handler.version!!]!!
         // handler.writePacket(if (noIcon) packet.bmNoIcon else packet.bm)
         val packet = PacketPingResponse()
         packet.bm = if (noIcon) p.bmNoIcon else p.bm
@@ -103,8 +104,8 @@ object PingManager {
             process(packet, handler.version!!, true),
             handler.version!!
         )
-        m[handler.version!!] = i
-        motdCache.put(handler.host!!.hostString, m)
+        m[dv ?: handler.version!!] = i
+        motdCache.put(if (useStandardDomain) handler.host!!.hostString else "", m)
         return m
     }
 
