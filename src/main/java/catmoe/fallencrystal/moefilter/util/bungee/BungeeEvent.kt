@@ -83,8 +83,9 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPing(event: ProxyPingEvent) {
+        val conf = LocalConfig.getConfig().getConfig("ping")
         val modInfo = event.response.modinfo
-        val rawType = LocalConfig.getConfig().getAnyRef("ping.type")
+        val rawType = conf.getAnyRef("type")
         modInfo.type =
             (try { PingServerType.valueOf(rawType.toString()) }
             catch (_: IllegalArgumentException) {
@@ -93,5 +94,7 @@ class BungeeEvent : Listener {
             }).name
         // If modList is null, Client will disconnect when reading data.
         if (modInfo.type != PingServerType.FML.name) modInfo.modList = mutableListOf()
+        event.response.version.name=MessageUtil.colorize(conf.getString("brand")).toLegacyText()
+        if (conf.getBoolean("protocol-always-unsupported")) event.response.version.protocol=0
     }
 }

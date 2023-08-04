@@ -70,18 +70,21 @@ class LoadConfig {
                     cache {
                         # 缓存有效时间. 单位为秒
                         max-life-time=5
-                        # 即使缓存了也呼叫ProxyPingEvent. 如果返回内容不同 则刷新缓存
-                        still-call-event=true
                         # 是否为独立的域创建MOTD缓存?
                         stable-domain-cache=true
+                        # 在攻击时仅使用缓存而不是呼叫ProxyPingEvent
+                        full-cache-during-attack=true
+                        # 一分钟内只发送一次avatar
+                        send-icon-once=true
+                        # 在攻击时不发送图标信息. 覆盖send-icon-once选项.
+                        cancel-send-icon-during-attack=true
                     }
                     # 服务端标识选项 通常会在客户端版本不支持时显示
                     # 仅支持经典MC16色.
-                    brand="Requires MC 1.8 - 1.20"
+                    brand="<red>Requires MC 1.8 - 1.20"
                     # 无论协议是否支持都向客户端发送不支持的协议? 这么做会导致brand总是显示在motd中.
                     protocol-always-unsupported=false
-                    # 当Ping到达throttle时 使用缓存而不是为每个请求都呼叫ProxyPingEvent
-                    disable-calling-throttle=10
+                    # 欺骗FML客户端服务器属于哪些类型的服务器
                     # VANILLA, FML, BUKKIT, UNKNOWN
                     type=VANILLA
                 }

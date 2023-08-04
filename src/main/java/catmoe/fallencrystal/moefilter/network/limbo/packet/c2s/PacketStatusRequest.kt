@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.PingManager
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
@@ -30,12 +31,6 @@ class PacketStatusRequest : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {}
 
     override fun handle(handler: LimboHandler) {
-        // handler.sendPacket(PacketPingResponse())
-        val fakeHandler = handler.fakeHandler
-        val packet = PacketPingResponse()
-        packet.output = fakeHandler?.handlePing(
-            (handler.host ?: InetSocketAddress("localhost", 25565)), (handler.version ?: Version.V1_20)
-        )?.description
-        handler.sendPacket(packet)
+        PingManager.handlePing(handler)
     }
 }
