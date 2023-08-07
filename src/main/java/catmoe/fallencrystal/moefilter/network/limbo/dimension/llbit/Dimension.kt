@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import se.llbit.nbt.*
 import java.util.*
 
-@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate", "unused")
+@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class Dimension(
     val key: String,
     val dimensionId: Int,

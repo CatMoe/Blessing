@@ -29,5 +29,9 @@ interface MessagePacket {
 
     fun getBaseComponent(): BaseComponent
 
+    fun getLegacyComponent(): BaseComponent
+
     fun getComponentSerializer(): String
+
+    fun getLegacySerializer(): String
 }

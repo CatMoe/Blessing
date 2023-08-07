@@ -29,6 +29,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePac
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.chat.ChatPacketProcessor
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.BaseComponent
@@ -53,8 +54,8 @@ object MessageUtil {
 
     fun sendMessage(message: String, type: MessagesType, connection: ConnectionUtil) {
         scheduler.runAsync {
-            var packet = packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(connection.getVersion()))
-            if (!packet.supportChecker(connection.getVersion())) packet = packetBuilder(message, type, listOf(connection.getVersion()))
+            var packet = packetCache.getIfPresent("${type.prefix}$message") ?: packetBuilder(message, type, listOf(connection.version))
+            if (!packet.supportChecker(connection.version)) packet = packetBuilder(message, type, listOf(connection.version))
             packetSender(packet, connection)
         }
     }
@@ -69,7 +70,7 @@ object MessageUtil {
 
     fun sendMessage(message: String, type: MessagesType, sender: ProxiedPlayer) {
         val connection = ConnectionUtil(sender.pendingConnection)
-        val packet =  MessagePacketCache.readPacket(type.processor, message) ?: packetBuilder(message, type, listOf(connection.getVersion()))
+        val packet =  MessagePacketCache.readPacket(type.processor, message) ?: packetBuilder(message, type, listOf(connection.version))
         packetSender(packet, connection)
     }
 
@@ -97,6 +98,14 @@ object MessageUtil {
     fun logError(message: String) { logger.log(Level.SEVERE, logColorize(message)) }
 
     fun colorize(message: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) }
+
+    fun colorize(message: String, hex: Boolean): BaseComponent {
+        val c = ComponentUtil.parse(message)
+        return when (hex) {
+            true -> { ComponentUtil.toBaseComponents(c) }
+            false -> { BungeeComponentSerializer.legacy().serialize(c)[0] }
+        }
+    }
 
     private fun logColorize(message: String): String {
         return if (message.contains(">") && message.contains(">")) colorize(message).toLegacyText() else message

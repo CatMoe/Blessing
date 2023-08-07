@@ -24,7 +24,7 @@ import com.maxmind.geoip2.DatabaseReader
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 object GeoIPManager {
     val available = AtomicBoolean(false)
     private var conf = LocalConfig.getProxy().getConfig("country")

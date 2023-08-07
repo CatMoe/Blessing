@@ -26,10 +26,14 @@ import net.md_5.bungee.protocol.packet.SystemChat
 class MessageChatPacket(
     val v119: SystemChat?,
     val legacy: Chat?,
+    val legacy2: Chat?,
     val has119Data: Boolean,
     val hasLegacyData: Boolean,
+    val hasLegacy2Data: Boolean,
     val bc: BaseComponent,
     val cs: String,
+    val legacyBc: BaseComponent,
+    val legacyCs: String,
     val originalMessage: String
 ) : MessagePacket {
     override fun getType(): MessagesType { return MessagesType.CHAT }
@@ -45,4 +49,8 @@ class MessageChatPacket(
     override fun getComponentSerializer(): String { return cs }
 
     override fun getOriginal(): String { return originalMessage }
+
+    override fun getLegacyComponent(): BaseComponent { return legacyBc }
+
+    override fun getLegacySerializer(): String { return legacyCs }
 }

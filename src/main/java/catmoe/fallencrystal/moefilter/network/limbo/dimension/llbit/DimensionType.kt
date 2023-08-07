@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
-@Suppress("SpellCheckingInspection", "unused")
+@Suppress("SpellCheckingInspection")
 enum class DimensionType(@JvmField val dimension: Dimension) {
     OVERWORLD(Dimension(
         "minecraft:overworld", 0, 0,

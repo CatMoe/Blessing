@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
-@Suppress("unused", "SpellCheckingInspection")
+@Suppress("SpellCheckingInspection")
 enum class DimensionType(
     @JvmField val dimensionId: Int,
     @JvmField val dimensionName: String,

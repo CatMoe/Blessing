@@ -23,7 +23,6 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("unused")
 object LockdownManager {
     val whitelistCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     val state = AtomicBoolean(false)

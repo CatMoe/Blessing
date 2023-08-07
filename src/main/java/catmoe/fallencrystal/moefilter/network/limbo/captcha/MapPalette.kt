@@ -19,10 +19,10 @@ package catmoe.fallencrystal.moefilter.network.limbo.captcha
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate")
 object MapPalette {
     private val rgbBuffer = ThreadLocal.withInitial { IntArray(128 * 128) }
-    public val colors = arrayOf(
+    val colors = arrayOf(
         c(0, 0, 0),
         c(0, 0, 0),
         c(0, 0, 0),

@@ -65,7 +65,7 @@ object MainListener {
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
-        val inetAddress = connection.inetAddress()
+        val inetAddress = connection.inetAddress
         if (isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
         connectionCache.invalidate(inetAddress)
         if (Firewall.isFirewalled(inetAddress)) { connection.close(); return }
@@ -77,7 +77,7 @@ object MainListener {
         // Firewall who connected after an instant disconnected.
 
         CompletableFuture.runAsync {
-            if (!connection.isConnected() && !packetHandler.cancelled.get() && packetHandler.isAvailable.get()) { addFirewall(
+            if (!connection.isConnected && !packetHandler.cancelled.get() && packetHandler.isAvailable.get()) { addFirewall(
                 connection,
                 true
             ) }
@@ -86,7 +86,7 @@ object MainListener {
         when (handshake.requestedProtocol) {
             1 -> { MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get())) }
             2 -> {
-                val info = AddressCheck(connection.inetSocketAddress(), connection.virtualHost())
+                val info = AddressCheck(connection.inetSocketAddress, connection.virtualHost)
                 if (DomainCheck.instance.increase(info)) { kick(connection, DisconnectType.INVALID_HOST); return }
                 if (CountryCheck().increase(info)) { kick(connection, DisconnectType.COUNTRY); return }
                 if (ProxyCheck().increase(info)) { kick(connection, DisconnectType.PROXY); return }
@@ -108,8 +108,8 @@ object MainListener {
         val method = handshake.requestedProtocol
         if (method > 2 || method < 1) { connection.close(); Firewall.addAddress(inetAddress); return }
 
-        if (connection.isConnected()) {
-            val pipeline = connection.getPipeline() ?: return
+        if (connection.isConnected) {
+            val pipeline = connection.pipeline ?: return
             if (pipeline.channel().parent() != null && pipeline.channel().parent().javaClass.canonicalName.startsWith("org.geysermc.geyser")) return
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
             pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
@@ -123,7 +123,7 @@ object MainListener {
     }
 
     private fun addFirewall(connection: ConnectionUtil, temp: Boolean) {
-        val address = connection.inetAddress()
+        val address = connection.inetAddress
         if (temp) Firewall.addAddressTemp(address) else Firewall.addAddress(address)
         connection.close()
     }

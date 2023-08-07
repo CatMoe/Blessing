@@ -84,7 +84,6 @@ object Notifications {
         return output
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
     private fun onBroadcast() {
         val config = LocalConfig.getMessage()
         if (autoNotification.isEmpty() && switchNotification.isEmpty()) return

@@ -24,18 +24,22 @@ import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
 
-@Suppress("MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 class MessageActionbarPacket(
     val v119: SystemChat?,
     val v117: Chat?,
+    val v116: Title?,
     val v111: Title?,
     val v110: Chat?,
     val has119Data: Boolean,
     val has117Data: Boolean,
+    val has116Data: Boolean,
     val has111Data: Boolean,
     val has110Data: Boolean,
     val bc: BaseComponent,
     val cs: String,
+    val legacyBc: BaseComponent,
+    val legacyCs: String,
     val originalMessage: String,
 ) : MessagePacket {
     override fun getType(): MessagesType { return MessagesType.ACTION_BAR }
@@ -48,8 +52,10 @@ class MessageActionbarPacket(
     }
 
     override fun getBaseComponent(): BaseComponent { return bc }
+    override fun getLegacyComponent(): BaseComponent { return legacyBc }
 
     override fun getComponentSerializer(): String { return cs }
+    override fun getLegacySerializer(): String { return legacyCs }
 
     override fun getOriginal(): String { return originalMessage }
 }

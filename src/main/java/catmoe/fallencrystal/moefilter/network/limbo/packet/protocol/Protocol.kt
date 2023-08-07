@@ -297,9 +297,7 @@ enum class Protocol(var stateId: Int) {
         }
     };
 
-    fun map(packetId: Int, from: Version, to: Version): Mapping {
-        return Mapping(packetId, from, to)
-    }
+    fun map(packetId: Int, from: Version, to: Version): Mapping { return Mapping(packetId, from, to) }
 
 
     val serverBound = ProtocolMappings()

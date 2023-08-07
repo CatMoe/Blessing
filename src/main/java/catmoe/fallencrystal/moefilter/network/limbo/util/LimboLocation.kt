@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.util
 
-@Suppress("unused")
 class LimboLocation(
     val x: Double,
     val y: Double,

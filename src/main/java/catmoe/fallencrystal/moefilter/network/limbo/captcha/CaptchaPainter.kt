@@ -29,7 +29,7 @@ import java.util.*
 import kotlin.math.min
 import kotlin.math.sign
 
-@Suppress("UNUSED_VARIABLE", "unused", "UNUSED_PARAMETER")
+@Suppress("UNUSED_VARIABLE", "UNUSED_PARAMETER")
 class CaptchaPainter {
     private val width = 128
     private val height = 128

@@ -40,23 +40,28 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
     override fun process(message: String, protocol: List<Int>): MessagePacket {
         val cached = MessagePacketCache.readPacket(this, message) as? MessageActionbarPacket
         val baseComponent = getBaseComponent(cached, message)
+        val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, baseComponent)
+        val legacySerializer = getLegacySerializer(cached, legacyComponent)
         var need119 = cached?.has119Data ?: false
         var need117 = cached?.has117Data ?: false
+        var need116 = cached?.has116Data ?: false
         var need111 = cached?.has111Data ?: false
         var need110 = cached?.has110Data ?: false
         protocol.forEach {
-            if (it >= ProtocolConstants.MINECRAFT_1_19) { need119=true } else if (it > ProtocolConstants.MINECRAFT_1_17) { need117=true }
-            else if (it > ProtocolConstants.MINECRAFT_1_10) { need111=true } else { need110=true }
+            if (it >= ProtocolConstants.MINECRAFT_1_19) need119=true else if (it > ProtocolConstants.MINECRAFT_1_17) need117=true
+            else if (it > ProtocolConstants.MINECRAFT_1_16) need116=true
+            else if (it > ProtocolConstants.MINECRAFT_1_10) need111=true else need110=true
         }
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
         val p117 = if (cached?.v117 != null) cached.v117 else get117(serializer, need117)
-        val p111 = if (cached?.v111 != null) cached.v111 else get111(serializer, need111)
-        val p110 = if (cached?.v110 != null) cached.v110 else get110(baseComponent, need110)
+        val p116 = cached?.v116 ?: get116(legacySerializer, need116)
+        val p111 = if (cached?.v111 != null) cached.v111 else get111(legacySerializer, need111)
+        val p110 = if (cached?.v110 != null) cached.v110 else get110(legacyComponent, need110)
         val packet = MessageActionbarPacket(
-            p119, p117, p111, p110,
-            need119, need117, need111, need110,
-            baseComponent, serializer, message
+            p119, p117, p116, p111, p110,
+            need119, need117, need116, need111, need110,
+            baseComponent, serializer, legacyComponent, legacySerializer, message
         )
         MessagePacketCache.writePacket(this, packet)
         return packet
@@ -64,10 +69,11 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     override fun send(packet: MessagePacket, connection: ConnectionUtil) {
         var p = packet as MessageActionbarPacket
-        val version = connection.getVersion()
+        val version = connection.version
         if (!p.supportChecker(version)) p = process(p.originalMessage, listOf(version)) as MessageActionbarPacket
         if (version >= ProtocolConstants.MINECRAFT_1_19) { connection.writePacket(p.v119!!); return }
         if (version > ProtocolConstants.MINECRAFT_1_17) { connection.writePacket(p.v117!!); return }
+        if (version >= ProtocolConstants.MINECRAFT_1_16) { connection.writePacket(p.v116!!); return }
         if (version > ProtocolConstants.MINECRAFT_1_10) { connection.writePacket(p.v111!!); return }
         if (version >= ProtocolConstants.MINECRAFT_1_8) { connection.writePacket(p.v110!!); return }
         throw IllegalStateException("Need send protocol $version but not available packets for this version.")
@@ -76,6 +82,14 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
     private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, aOrdinal) else null }
 
     private fun get117(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, aOrdinal.toByte(), null) else null }
+
+    private fun get116(serializer: String, need: Boolean): Title? {
+        if (!need) return null
+        val t = Title()
+        t.action=Title.Action.ACTIONBAR
+        t.text=serializer
+        return t
+    }
 
     private fun get111(serializer: String, need: Boolean): Title? {
         if (!need) return null

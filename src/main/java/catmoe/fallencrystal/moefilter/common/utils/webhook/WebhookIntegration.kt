@@ -135,7 +135,6 @@ open class WebhookIntegration {
         } else null
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
     internal inner class JSONObject {
         private val map = HashMap<String, Any>()
         fun put(s: String, value: Any?) { if (value != null) { map[s] = value } }

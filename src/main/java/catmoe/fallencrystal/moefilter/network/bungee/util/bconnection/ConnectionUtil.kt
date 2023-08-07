@@ -34,29 +34,20 @@ import java.net.SocketAddress
 class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
-    private val pipeline: ChannelPipeline? = (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } ) ?: initChannelWrapper()?.handle?.pipeline()
+    val pipeline: ChannelPipeline? = (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } ) ?: initChannelWrapper()?.handle?.pipeline()
 
-    fun from(): String { return connection.virtualHost.hostString }
-
-    fun getVersion(): Int { return connection.version }
-
-    fun isConnected(): Boolean { return connection.isConnected }
-
-    fun socketAddress(): SocketAddress { return connection.socketAddress }
-
-    fun inetSocketAddress(): InetSocketAddress { return socketAddress() as InetSocketAddress }
-
-    fun virtualHost(): InetSocketAddress { return connection.virtualHost }
-
-    fun inetAddress(): InetAddress { return inetSocketAddress().address }
+    val version get() = connection.version
+    val isConnected get() = connection.isConnected
+    val socketAddress: SocketAddress get() = connection.socketAddress
+    val inetSocketAddress get() = socketAddress as InetSocketAddress
+    val inetAddress: InetAddress get() = inetSocketAddress.address
+    val virtualHost: InetSocketAddress? get() = connection.virtualHost
 
     fun close() { pipeline?.close() ?: connection.disconnect() }
 
     fun writePacket(packet: DefinedPacket) { connection.unsafe().sendPacket(packet) }
 
     fun writePacket(packet: Any) { pipeline!!.write(packet) }
-
-    fun getPipeline(): ChannelPipeline? { return pipeline }
 
     private fun initChannelWrapper(): ChannelWrapper? {
         val initialHandler = connection as InitialHandler

@@ -27,7 +27,7 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("unused", "unused", "unused", "unused")
+@Suppress("unused")
 object CommandManager {
     private val command = Caffeine.newBuilder().build<String, ICommand>()
     private val commands: MutableList<String> = CopyOnWriteArrayList()

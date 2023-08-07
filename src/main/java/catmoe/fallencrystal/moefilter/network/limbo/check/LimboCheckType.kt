@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check
 
-@Suppress("unused")
 enum class LimboCheckType {
     UNEXPECTED_KEEPALIVE,
     TRANSLATE_JOIN_CHECK,

@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit
 
 @Checker(LimboCheckType.UNEXPECTED_KEEPALIVE)
 @HandlePacket(PacketKeepAlive::class)
-@Suppress("unused")
 object UnexpectedKeepAlive : LimboChecker, ILimboListener {
 
     private val detectorCache = Caffeine.newBuilder().expireAfterWrite(350, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()

@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
 import io.netty.channel.Channel
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
 class CaptchaHolder{
 
     var a: String? = null

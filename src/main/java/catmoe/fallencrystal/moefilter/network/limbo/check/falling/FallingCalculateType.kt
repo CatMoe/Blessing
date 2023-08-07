@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
-@Suppress("unused")
 enum class FallingCalculateType {
     DISTANCE,
     COUNT,

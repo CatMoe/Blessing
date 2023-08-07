@@ -31,7 +31,6 @@ import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Suppress("unused")
 object PingManager {
     private var conf = LocalConfig.getConfig().getConfig("ping.cache")
 

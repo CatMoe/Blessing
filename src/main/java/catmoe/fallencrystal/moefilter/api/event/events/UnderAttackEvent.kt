@@ -19,5 +19,4 @@ package catmoe.fallencrystal.moefilter.api.event.events
 import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
 import catmoe.fallencrystal.moefilter.common.state.AttackState
 
-@Suppress("unused")
 class UnderAttackEvent(val state: Collection<AttackState>) : MoeAsyncEvent

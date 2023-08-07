@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
-@Suppress("unused")
 enum class AttackState(@JvmField val raw: String) {
     FIREWALL("Firewall"),
     JOIN("Join"),

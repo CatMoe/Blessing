@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("unused")
 object LimboListener {
 
     val listener = Caffeine.newBuilder()

@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
 
-@Suppress("unused")
 interface LimboPacket {
     fun encode(packet: ByteMessage, version: Version?)
 

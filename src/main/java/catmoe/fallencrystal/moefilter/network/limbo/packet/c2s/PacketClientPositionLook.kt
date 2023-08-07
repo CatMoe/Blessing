@@ -24,7 +24,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
 
-@Suppress("MemberVisibilityCanBePrivate")
 class PacketClientPositionLook : LimboC2SPacket() {
     var readLoc : LimboLocation? = null
 

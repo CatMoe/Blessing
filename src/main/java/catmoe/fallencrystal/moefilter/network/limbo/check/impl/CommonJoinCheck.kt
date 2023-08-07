@@ -59,10 +59,10 @@ import java.util.concurrent.TimeUnit
     PacketHandshake::class,
     PacketInitLogin::class,
     PacketJoinGame::class,
+    PacketStatusRequest::class,
     PacketEmptyChunk::class,
     Disconnect::class
 )
-@Suppress("unused")
 object CommonJoinCheck : LimboChecker, ILimboListener {
 
     private val onlineAddress = Caffeine.newBuilder().build<InetAddress, Boolean>()

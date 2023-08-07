@@ -24,7 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.logging.Filter
 import java.util.logging.LogRecord
 
-@Suppress("unused", "unused")
+@Suppress("unused")
 object LoggerManager : Filter {
     private val logger: MutableList<ILogger> = CopyOnWriteArrayList()
 
