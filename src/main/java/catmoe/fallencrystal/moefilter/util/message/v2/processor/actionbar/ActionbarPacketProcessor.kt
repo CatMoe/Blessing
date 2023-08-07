@@ -18,6 +18,8 @@
 package catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar
 
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageActionbarPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
@@ -27,7 +29,6 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePac
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.protocol.ProtocolConstants
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
@@ -49,9 +50,14 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         var need111 = cached?.has111Data ?: false
         var need110 = cached?.has110Data ?: false
         protocol.forEach {
+            /*
             if (it >= ProtocolConstants.MINECRAFT_1_19) need119=true else if (it > ProtocolConstants.MINECRAFT_1_17) need117=true
             else if (it > ProtocolConstants.MINECRAFT_1_16) need116=true
             else if (it > ProtocolConstants.MINECRAFT_1_10) need111=true else need110=true
+             */
+            if (it >= V1_19.number) need119=true else if (it > V1_17.number) need117=true
+            else if (it > V1_16.number) need116=true else if (it > V1_10.number) need111=true
+            else need110 = true
         }
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
         val p117 = if (cached?.v117 != null) cached.v117 else get117(serializer, need117)
@@ -69,14 +75,22 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     override fun send(packet: MessagePacket, connection: ConnectionUtil) {
         var p = packet as MessageActionbarPacket
-        val version = connection.version
-        if (!p.supportChecker(version)) p = process(p.originalMessage, listOf(version)) as MessageActionbarPacket
+        val version = Version.of(connection.version)
+        if (!p.supportChecker(version.number)) p = process(p.originalMessage, listOf(version.number)) as MessageActionbarPacket
+        /*
         if (version >= ProtocolConstants.MINECRAFT_1_19) { connection.writePacket(p.v119!!); return }
         if (version > ProtocolConstants.MINECRAFT_1_17) { connection.writePacket(p.v117!!); return }
         if (version >= ProtocolConstants.MINECRAFT_1_16) { connection.writePacket(p.v116!!); return }
         if (version > ProtocolConstants.MINECRAFT_1_10) { connection.writePacket(p.v111!!); return }
         if (version >= ProtocolConstants.MINECRAFT_1_8) { connection.writePacket(p.v110!!); return }
         throw IllegalStateException("Need send protocol $version but not available packets for this version.")
+         */
+        if (version.moreOrEqual(V1_19)) { connection.writePacket(p.v119!!); return }
+        if (version.moreOrEqual(V1_17)) { connection.writePacket(p.v117!!); return }
+        if (version.moreOrEqual(V1_16)) { connection.writePacket(p.v116!!); return }
+        if (version.more(V1_10)) { connection.writePacket(p.v111!!); return }
+        if (version.moreOrEqual(V1_7_6)) { connection.writePacket(p.v110!!); return }
+        throw IllegalStateException("Need send protocol ${version.number} but not available packets for this version.")
     }
 
     private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, aOrdinal) else null }

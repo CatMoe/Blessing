@@ -28,10 +28,12 @@ class PacketClientPositionLook : LimboC2SPacket() {
     var readLoc : LimboLocation? = null
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        val x = packet.readDouble()
+        val y = packet.readDouble()
+        if (version == Version.V1_7_6) packet.readDouble() // Head y. Deprecated
+        val z = packet.readDouble()
         readLoc = LimboLocation(
-            packet.readDouble(),
-            packet.readDouble(),
-            packet.readDouble(),
+            x, y, z,
             packet.readFloat(),
             packet.readFloat(),
             packet.readBoolean()

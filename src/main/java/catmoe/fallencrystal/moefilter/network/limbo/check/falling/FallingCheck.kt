@@ -135,16 +135,15 @@ object FallingCheck: LimboChecker, ILimboListener {
             val loc = packet.readLoc!!
             x=loc.x; y=loc.y; z=loc.z; yaw=loc.yaw; pitch=loc.pitch; onGround=loc.onGround
         }
-        FallingCheck.lastLocation.put(handler, LimboLocation(x ?: 0.0, y ?: 0.0, z ?: 0.0, yaw ?: 0f, pitch ?: 0f, onGround ?: false)
-        )
+        FallingCheck.lastLocation.put(handler, LimboLocation(x ?: 0.0, y ?: 0.0, z ?: 0.0, yaw ?: 0f, pitch ?: 0f, onGround ?: false))
+        val range = rangeCounter.getIfPresent(handler) ?: 0
         // Wrong rotations turn check
         if (pitch != null && wrongTurn) { if (abs(pitch) > 90) { kick(handler); return true } }
         // Y-axis cannot more than last y.
         if ((lastLocation?.y ?: y!!) < y!! && invalidYUp) { kick(handler); return true }
-        if (lastLocation != null && lastLocation.y == y && sameYPosition && (rangeCounter.getIfPresent(handler)
-                ?: 0) >= 4
-        ) { kick(handler); return true }
+        if (lastLocation != null && lastLocation.y == y && sameYPosition && (rangeCounter.getIfPresent(handler) ?: 0) >= 4) { kick(handler); return true }
         // OnGround cannot be true.
+        // Until 1.8. Position
         if (onGround == true && invalidOnGround) { kick(handler); return true }
         if (lastLocation != null) {
             val cx = calculateRange(lastLocation.x, x!!)
@@ -160,7 +159,6 @@ object FallingCheck: LimboChecker, ILimboListener {
                 if (max.z == cz && cz != 0.0) MoeLimbo.debug("Final max z speed: $cz")
             }
         }
-        val range = rangeCounter.getIfPresent(handler) ?: 0
         /*
         if (range == this.range && calculateType == FallingCalculateType.COUNT) {
             FastDisconnect.disconnect(handler.channel, DisconnectType.PASSED_CHECK, ServerKickType.MOELIMBO)

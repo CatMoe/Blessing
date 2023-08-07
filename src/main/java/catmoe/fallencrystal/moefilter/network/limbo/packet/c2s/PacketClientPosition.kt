@@ -29,10 +29,12 @@ class PacketClientPosition : LimboC2SPacket() {
     var lastLoc: LimboLocation? = null
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        val x = packet.readDouble()
+        val y = packet.readDouble()
+        if (version == Version.V1_7_6) packet.readDouble() // Head y. Deprecated
+        val z = packet.readDouble()
         lastLoc = LimboLocation(
-            packet.readDouble(), // x
-            packet.readDouble(), // y
-            packet.readDouble(), // z
+            x, y, z,
             0f, 0f, // PlayerPosition don't have any method to read yaw & pitch.
             packet.readBoolean() // onGround
         )

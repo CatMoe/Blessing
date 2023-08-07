@@ -17,7 +17,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.util
 
 @Suppress("unused")
-enum class Version(val protocolNumber: Int) {
+enum class Version(val number: Int) {
     UNDEFINED(-1),
     V1_7_6(5),
     V1_8(47),
@@ -60,21 +60,21 @@ enum class Version(val protocolNumber: Int) {
     var prev: Version? = null
         private set
 
-    fun more(another: Version): Boolean { return protocolNumber > another.protocolNumber }
+    fun more(another: Version): Boolean { return number > another.number }
 
-    fun moreOrEqual(another: Version): Boolean { return protocolNumber >= another.protocolNumber }
+    fun moreOrEqual(another: Version): Boolean { return number >= another.number }
 
-    fun less(another: Version): Boolean { return protocolNumber < another.protocolNumber }
+    fun less(another: Version): Boolean { return number < another.number }
 
-    fun lessOrEqual(another: Version): Boolean { return protocolNumber <= another.protocolNumber }
+    fun lessOrEqual(another: Version): Boolean { return number <= another.number }
 
-    fun fromTo(min: Version, max: Version): Boolean { return protocolNumber >= min.protocolNumber && protocolNumber <= max.protocolNumber }
+    fun fromTo(min: Version, max: Version): Boolean { return number >= min.number && number <= max.number }
 
     val isSupported: Boolean
         get() = this != UNDEFINED
 
     override fun toString(): String {
-        return "enum=$name, protocol=$protocolNumber"
+        return "enum=$name, protocol=$number"
     }
 
     companion object {
@@ -89,7 +89,7 @@ enum class Version(val protocolNumber: Int) {
             for (version in values) {
                 version.prev = last
                 last = version
-                (VERSION_MAP as HashMap<Int, Version>)[version.protocolNumber] = version
+                (VERSION_MAP as HashMap<Int, Version>)[version.number] = version
             }
         }
 

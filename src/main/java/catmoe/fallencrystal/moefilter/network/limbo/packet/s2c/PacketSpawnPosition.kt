@@ -29,17 +29,21 @@ class PacketSpawnPosition : LimboS2CPacket() {
     var angle = 0f
 
     override fun encode(packet: ByteMessage, version: Version?) {
+
         packet.writeLong(
             if (version!!.less(Version.V1_14))
                 (location.x.toInt() and 0x3FFFFFF shl 38 or (location.y.toInt() and 0xFFF shl 26) or (location.z.toInt() and 0x3FFFFFF)).toLong()
             else
                 (location.x.toInt() and 0x3FFFFFF shl 38 or (location.z.toInt() and 0x3FFFFFF shl 12) or (location.y.toInt() and 0xFFF)).toLong()
         )
-        if (version.moreOrEqual(Version.V1_17)) { packet.writeFloat(angle) /* Actually, that angle for 1.17+. But now we don't need that. */ }
+        if (version.moreOrEqual(Version.V1_17) || version == Version.V1_7_6) { packet.writeFloat(angle) /* Actually, that angle for 1.17+. But now we don't need that. */ }
+
+        /*
+        packet.writeLong((location.x.toInt() and 0x3FFFFFF shl 38 or (location.z.toInt() and 0x3FFFFFF shl 12) or (location.y.toInt() and 0xFFF)).toLong())
+        packet.writeFloat(angle)
+         */
     }
 
-    override fun toString(): String {
-        return "PacketSpawnPosition(location=$location)"
-    }
+    override fun toString(): String { return "PacketSpawnPosition(location=$location)" }
 
 }

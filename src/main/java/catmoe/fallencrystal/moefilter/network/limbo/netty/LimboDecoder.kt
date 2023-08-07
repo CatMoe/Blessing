@@ -57,7 +57,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
                 ex.printStackTrace()
             }
             LimboListener.handleReceived(packet, handler)
-            MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()}")
+            MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
             MoeLimbo.debug(packet.toString())
             ctx.fireChannelRead(packet)
         } catch (ex: NullPointerException) {

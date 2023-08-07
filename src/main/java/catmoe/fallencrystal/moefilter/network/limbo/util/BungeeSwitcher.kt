@@ -69,7 +69,7 @@ object BungeeSwitcher : EventListener {
         if (!limbo) return false
         info as Joining
         val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
-        val result = a.username == info.username && a.version.protocolNumber == info.protocol
+        val result = a.username == info.username && a.version.number == info.protocol
         if (!result) { bungeeQueue.invalidate(info.address); foreverQueue.invalidate(info.address) }
         return result
     }

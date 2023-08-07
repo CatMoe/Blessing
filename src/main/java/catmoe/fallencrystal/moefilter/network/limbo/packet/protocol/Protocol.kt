@@ -58,7 +58,7 @@ enum class Protocol(var stateId: Int) {
         init {
             clientBound.register(
                 { PacketDisconnect() },
-                map(0x40, V1_8, V1_8),
+                map(0x40, V1_7_6, V1_8),
                 map(0x1A, V1_9, V1_12_2),
                 map(0x1B, V1_13, V1_13_2),
                 map(0x1A, V1_14, V1_14_4),
@@ -162,8 +162,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketClientPositionLook() },
-                map(0x08, V1_7_6, V1_7_6),
-                map(0x06, V1_8, V1_8),
+                map(0x06, V1_7_6, V1_8),
                 map(0x0D, V1_9, V1_11_1),
                 map(0x0F, V1_12, V1_12),
                 map(0x0E, V1_12_1, V1_12_2),

@@ -74,7 +74,7 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
         val inetSocketAddress = handler.address as InetSocketAddress
         val inetAddress = inetSocketAddress.address
         if (packet is PacketStatusRequest) {
-            MixedCheck.increase(Pinging(inetAddress, handler.version!!.protocolNumber))
+            MixedCheck.increase(Pinging(inetAddress, handler.version!!.number))
             return false
         }
         if (packet is PacketHandshake && packet.nextState == Protocol.LOGIN) {
@@ -90,7 +90,7 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
             return false
         }
         if (packet is PacketInitLogin) {
-            val protocol = handler.version!!.protocolNumber
+            val protocol = handler.version!!.number
             val username = packet.username
             val joining = Joining(username, inetAddress, protocol)
             // Invalid name check
@@ -106,7 +106,7 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
             if (SimilarityCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
 
             val version = handler.version!!
-            if (!version.isSupported || !ProtocolConstants.SUPPORTED_VERSION_IDS.contains(version.protocolNumber)) {
+            if (!version.isSupported || !ProtocolConstants.SUPPORTED_VERSION_IDS.contains(version.number)) {
                 val kick = PacketDisconnect()
                 kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
                 handler.channel.write(kick); handler.channel.close(); return true

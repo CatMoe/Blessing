@@ -20,7 +20,6 @@ package catmoe.fallencrystal.moefilter.network.limbo.compat
 import catmoe.fallencrystal.moefilter.network.limbo.compat.converter.PingConverter
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.Callback
@@ -66,7 +65,7 @@ class FakeInitialHandler(
     override fun isConnected(): Boolean { return channel.isActive }
     override fun unsafe(): Connection.Unsafe { return unsafe }
     override fun getName(): String? { return username }
-    override fun getVersion(): Int { return (v ?: Version.UNDEFINED).protocolNumber }
+    override fun getVersion(): Int { return (v ?: Version.UNDEFINED).number }
     override fun getVirtualHost(): InetSocketAddress? { return connectionFrom }
     override fun getListener(): ListenerInfo? { return null }
     @Deprecated("Use getUniqueId")
@@ -95,7 +94,7 @@ class FakeInitialHandler(
         }
         pingBack.done(
             ServerPing(
-                ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).protocolNumber),
+                ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).number),
                 ServerPing.Players(-1, MoeLimbo.connections.size, null),
                 "§dMoeLimbo", null as Favicon?
             ), null

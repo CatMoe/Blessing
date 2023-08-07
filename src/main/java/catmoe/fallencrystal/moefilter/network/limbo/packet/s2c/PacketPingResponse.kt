@@ -42,7 +42,7 @@ class PacketPingResponse : LimboS2CPacket() {
         val output = if (output != null && output != "") output else {
             this.template
                 .replace("[brand]", brand)
-                .replace("[protocol]", protocol.protocolNumber.toString())
+                .replace("[protocol]", protocol.number.toString())
                 .replace("[max]", max.toString())
                 .replace("[online]", online.toString())
                 .replace("[description]", description)

@@ -29,13 +29,46 @@ class PacketEmptyChunk : LimboS2CPacket() {
     var x: Int = 0
     var z: Int = 0
 
+    /*
+    fun write(buf: ByteBuf, direction: ProtocolConstants.Direction?, version: Int) {
+        buf.writeInt(x)
+        buf.writeInt(z)
+        buf.writeBoolean(true)
+        if (version <= ProtocolConstants.MINECRAFT_1_8) {
+            buf.writeShort(if (unload) 0 else 1)
+            if (version <= ProtocolConstants.MINECRAFT_1_7_6) {
+                buf.writeShort(if (unload) 0 else 1)
+            }
+        } else {
+            buf.writeShort(if (unload) 0 else 1)
+        }
+        if (version <= ProtocolConstants.MINECRAFT_1_7_6) {
+            buf.writeInt(data.length)
+        } else {
+            DefinedPacket.writeVarInt(data.length, buf)
+        }
+        buf.writeBytes(this.data)
+        if (version >= ProtocolConstants.MINECRAFT_1_9_4) {
+            DefinedPacket.writeVarInt(0, buf)
+        }
+    }
+
+     */
+
     override fun encode(packet: ByteMessage, version: Version?) {
         // Chunk pos
         packet.writeInt(x)
         packet.writeInt(z)
-        if (version!!.less(Version.V1_17) || version.fromTo(Version.V1_16, Version.V1_16_1)) packet.writeBoolean(true)
+        if (version!!.less(Version.V1_17) || version.fromTo(Version.V1_16, Version.V1_16_1) || version == Version.V1_7_6) packet.writeBoolean(true)
         if (version.less(Version.V1_17)) {
-            if (version == Version.V1_8) packet.writeShort(1) else packet.writeVarInt(0)
+            if (version.lessOrEqual(Version.V1_8)) packet.writeShort(1) else packet.writeVarInt(0)
+            if (version == Version.V1_7_6) {
+                packet.writeShort(1)
+                val l = byteArrayOf(63)
+                packet.writeInt(l.size)
+                packet.writeBytes(l)
+                return
+            }
         } else if (version.less(Version.V1_18)) {
             val bitSet = BitSet()
             for (it in 0..15) { bitSet[it] = false }
