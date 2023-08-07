@@ -1,4 +1,4 @@
-package catmoe.fallencrystal.moefilter.network.bungee.decoder
+package catmoe.fallencrystal.moefilter.network.common.varint
 
 enum class DecoderResult {
     SUCCESS,

@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -63,4 +64,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
             ex.printStackTrace()
         }
     }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(ctx.channel(), cause) }
 }

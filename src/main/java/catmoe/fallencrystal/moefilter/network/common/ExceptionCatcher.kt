@@ -21,9 +21,11 @@ import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.common.exception.DebugException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeStatusException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
+import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.typesafe.config.ConfigException
 import io.netty.channel.Channel
@@ -38,6 +40,11 @@ object ExceptionCatcher {
         if (debug) { cause.printStackTrace() }
         val address = (channel.remoteAddress() as InetSocketAddress).address
         if (cause is IOException) return
+        if (cause is InvalidVarIntException) {
+            if (Throttler.isThrottled(address)) Firewall.addAddress(address)
+            ConnectionCounter.countBlocked(BlockType.FIREWALL)
+            return
+        }
         if (cause is DebugException) { cause.printStackTrace(); return }
         if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { Firewall.addAddress(address); return }
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }

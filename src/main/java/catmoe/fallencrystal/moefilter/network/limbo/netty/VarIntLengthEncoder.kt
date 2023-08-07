@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
@@ -32,4 +33,7 @@ class VarIntLengthEncoder : MessageToByteEncoder<ByteBuf>() {
         val anticipatedRequiredCapacity = 5 + msg.readableBytes()
         return ctx.alloc().heapBuffer(anticipatedRequiredCapacity)
     }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(ctx.channel(), cause) }
 }

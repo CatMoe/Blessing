@@ -4,7 +4,7 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
-import catmoe.fallencrystal.moefilter.network.bungee.decoder.VarIntFrameDecoder
+import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
