@@ -2,25 +2,7 @@
 
 ⚡ 强大的,为BungeeCord设计的高性能实用工具兼反机器人.
 
----
-
-## 公告:  
-### 🚧️ 此项目将不再保证提供更新!
-
-这是因为我完成了我(自认为)基本需要的功能  
-  
-而且处于某些原因 我不得不面对现实中突如其来的麻烦的事情 抱歉..
-
-#### 如果你想要一个新功能:
-  - 开发者:
-     - 您可以创建一个拉去请求并在里面实施更改  
-     - 如果您的代码段借鉴了含有许可证的储存库中的代码  
-       您应该在文件头部添加相同的许可证声明 并添加原储存库地址  
-       否则我有权关闭您的拉取请求
-  - 服主/服务器管理员
-     - [打开一个issue](https://github.com/CatMoe/MoeFilter/issues/new)  
-     - ~~但是.. 如果您未购买插件 我可能会直接关闭您的功能请求.~~  
-     - 功能请求可能会被无限期忽略  
+--- 
 
 ### ⚠️ 依赖项警告:  
 
@@ -112,10 +94,13 @@ MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.co
 ## 📚 学分
 
 此储存库借用了以下储存库的代码
-  - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
-- [Velocity](https://github.com/PaperMC/Velocity) `一些解码器之类的参考`
-- [Sonar](https://github.com/jonesdevelopment/sonar) `劫持 SERVER_CHILD 以及初始化管道的反射代码`
-- [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP的初始化以及检查`
+ - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
+ - [Velocity](https://github.com/PaperMC/Velocity) `一些解码器之类的参考`
+ - [Sonar](https://github.com/jonesdevelopment/sonar) `劫持 SERVER_CHILD 以及初始化管道的反射代码`
+ - [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP的初始化以及检查`
+ - [NanoLimbo](https://github.com/Nan1t/NanoLimbo) `基础的Limbo服务器`
+ - [BotFilter](https://github.com/Leymooo/BungeeCord) `群戏, 群戏数据包等`
+ - [wiki.vg](https://wiki.vg/Protocol) `1.7.6至最新的Minecraft版本的协议支持.`
 
 ---
 

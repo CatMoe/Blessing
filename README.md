@@ -10,25 +10,6 @@
 
 ---
 
-## Announces:
-### 🚧️ Project no longer in the stage of vigorous development!
-
-This is due to the fact that it already has the features I currently need.
-
-And for a some reasons. I had to reduce the time I spent on the project.  
-Turning to coping with what happened to me in reality.
-
-#### If you want to add a new feature:
-- For developers:
-    - You can create a pull request
-    - If the code contains content borrowed from a licensed repo.  
-      Must be declared at the beginning of the code.  
-      Otherwise I will close the pull request
-- For server administrator(s)
-    - [Open an issue](https://github.com/CatMoe/MoeFilter/issues/new)
-    - ~~But… If you're not a customer. Your request may be closed directly.~~
-    - May be put on hold indefinitely
-
 ### ⚠️ Dependency warning:
 
 You need [BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib).  
@@ -46,6 +27,7 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
   - Do not call `PreLoginEvent` for clients when they are already disconnected
   - Clean console. Don't even need a log filter.
   - You can customize how all inspection modules work
+  - Virtual server to prevent bot / attack bypass / overload proxy.
 
    Checks that have been implemented:
    - Ping & Join Combined checks.
@@ -54,7 +36,8 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
    - Geolocation (GeoIP) check
    - Check if the player is already online (Avoid forcing kick online player for same username)
    - Similar Name Check (Beta)
-   - Prevent bot/player using proxy (built-in proxy scanner + third-party interface)
+   - Prevent bot/player using proxy (built-in proxy scanner + third-party api)
+   - Falling check in virtual server.
 
 > The final effect depends on the working mode you choose in `antibot.conf`
 
@@ -119,19 +102,16 @@ If you want to publish your own preview. Please dm me `FallenCrystal`
 
 ## 📚 Credits
 
-This project contains code borrowed from the following repository.
+This project contains code borrowed from the following website/repository.
 - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
 - [Velocity](https://github.com/PaperMC/Velocity) `References such as decoders`
 - [Sonar](https://github.com/jonesdevelopment/sonar) `Code that reflects SERVER_CHILD aspects of robbery`
 - [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP initialization and checking`
+- [NanoLimbo](https://github.com/Nan1t/NanoLimbo) `Basic limbo server`
+- [BotFilter](https://github.com/Leymooo/BungeeCord) `Dimension, Chunk packets`
+- [wiki.vg](https://wiki.vg/Protocol) `1.7.6-Latest Minecraft version protocol`
 
----
-
-#### I want see the old readme!?
-
-[Here](https://github.com/CatMoe/MoeFilter/blob/stray/readme/legacy.md)
-
-> Chinese only.
+Thanks for all the above items. to help us structure these things better.
 
 ---
 
