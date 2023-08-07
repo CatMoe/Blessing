@@ -19,7 +19,6 @@ package catmoe.fallencrystal.moefilter.network.limbo.util
 @Suppress("unused")
 enum class Version(val protocolNumber: Int) {
     UNDEFINED(-1),
-    V1_7_2(4),
     V1_7_6(5),
     V1_8(47),
     V1_9(107),
@@ -94,7 +93,7 @@ enum class Version(val protocolNumber: Int) {
             }
         }
 
-        val min = V1_7_2
+        val min = V1_7_6
 
         fun of(protocolNumber: Int): Version {
             return VERSION_MAP!!.getOrDefault(protocolNumber, UNDEFINED)

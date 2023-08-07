@@ -51,7 +51,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
                 return
             }
             try {
-                val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_2 else this.version
+                val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_6 else this.version
                 packet.decode(byteMessage, ctx.channel(), version)
             } catch (ex: Exception) {
                 ex.printStackTrace()

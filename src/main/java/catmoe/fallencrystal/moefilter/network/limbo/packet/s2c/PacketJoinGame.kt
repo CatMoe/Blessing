@@ -70,7 +70,7 @@ class PacketJoinGame : LimboS2CPacket() {
         // Hardcore
         if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
         // Game mode
-        if (version.fromTo(V1_7_2, V1_7_6)) packet.writeByte(if (gameMode == 3) 1 else gameMode) else packet.writeByte(gameMode)
+        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 else gameMode) else packet.writeByte(gameMode)
         if (version.moreOrEqual(V1_16)) {
             packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
@@ -80,12 +80,12 @@ class PacketJoinGame : LimboS2CPacket() {
             else packet.writeTag(dim.getAttributes(version))
             packet.writeString(worldName)
         }
-        if (version.fromTo(V1_7_2, V1_9)) { packet.writeByte(dim.dimensionId) }
+        if (version.fromTo(V1_7_6, V1_9)) { packet.writeByte(dim.dimensionId) }
         else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(dim.dimensionId)
         if (version.moreOrEqual(V1_15)) packet.writeLong(hashedSeed)
-        if (version.fromTo(V1_7_2, V1_13_2)) packet.writeByte(0) // Difficulty
+        if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty
         if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
-        if (version.fromTo(V1_7_2, V1_15_2)) packet.writeString("flat")
+        if (version.fromTo(V1_7_6, V1_15_2)) packet.writeString("flat")
         if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
@@ -107,7 +107,7 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
 
         // Game mode
-        if (version.fromTo(V1_7_2, V1_7_6)) packet.writeByte(if (gameMode == 3) 1 else gameMode)
+        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 else gameMode)
         else packet.writeByte(gameMode)
 
         // Previous game mode & world names
@@ -125,7 +125,7 @@ class PacketJoinGame : LimboS2CPacket() {
         }
 
         // Dimension
-        if (version.fromTo(V1_7_2, V1_9)) packet.writeByte(defaultDimension1_16.id)
+        if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(defaultDimension1_16.id)
         else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(defaultDimension1_16.id)
         else if (version.fromTo(V1_16, V1_16_1)) {
             packet.writeCompoundTag(codec_Legacy)
@@ -151,11 +151,11 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.moreOrEqual(V1_15)) packet.writeLong(hashedSeed)
 
         // Legacy difficulty & maxPlayers
-        if (version.fromTo(V1_7_2, V1_13_2)) packet.writeByte(0) // Difficulty
+        if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty
         if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
 
         // Legacy level type
-        if (version.fromTo(V1_7_2, V1_15_2)) packet.writeString("flat")
+        if (version.fromTo(V1_7_6, V1_15_2)) packet.writeString("flat")
 
         // View distance
         if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)

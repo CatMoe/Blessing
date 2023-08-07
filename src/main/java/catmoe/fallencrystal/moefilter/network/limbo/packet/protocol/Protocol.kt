@@ -73,7 +73,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketKeepAlive() },
-                map(0x00, V1_7_2, V1_8),
+                map(0x00, V1_7_6, V1_8),
                 map(0x0B, V1_9, V1_11_1),
                 map(0x0C, V1_12, V1_12),
                 map(0x0B, V1_12_1, V1_12_2),
@@ -88,7 +88,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketKeepAlive() },
-                map(0x00, V1_7_2, V1_8),
+                map(0x00, V1_7_6, V1_8),
                 map(0x1F, V1_9, V1_12_2),
                 map(0x21, V1_13, V1_13_2),
                 map(0x20, V1_14, V1_14_4),
@@ -103,7 +103,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketJoinGame() },
-                map(0x01, V1_7_2, V1_8),
+                map(0x01, V1_7_6, V1_8),
                 map(0x23, V1_9, V1_12_2),
                 map(0x25, V1_13, V1_14_4),
                 map(0x26, V1_15, V1_15_2),
@@ -130,7 +130,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketPlayerAbilities() },
-                map(0x39, V1_7_2, V1_8),
+                map(0x39, V1_7_6, V1_8),
                 map(0x2B, V1_9, V1_12),
                 map(0x2C, V1_12_1, V1_12_2),
                 map(0x2E, V1_13, V1_13_2),
@@ -146,7 +146,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketServerPositionLook() },
-                map(0x08, V1_7_2, V1_8),
+                map(0x08, V1_7_6, V1_8),
                 map(0x2E, V1_9, V1_12),
                 map(0x2F, V1_12_1, V1_12_2),
                 map(0x32, V1_13, V1_13_2),
@@ -162,7 +162,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketClientPositionLook() },
-                map(0x08, V1_7_2, V1_7_6),
+                map(0x08, V1_7_6, V1_7_6),
                 map(0x06, V1_8, V1_8),
                 map(0x0D, V1_9, V1_11_1),
                 map(0x0F, V1_12, V1_12),
@@ -178,7 +178,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketClientPosition() },
-                map(0x04, V1_7_2, V1_8),
+                map(0x04, V1_7_6, V1_8),
                 map(0x0C, V1_9, V1_11_1),
                 map(0x0E, V1_12, V1_12),
                 map(0X0D, V1_12_1, V1_12_2),
@@ -193,7 +193,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketClientLook() },
-                map(0x05, V1_7_2, V1_7_6),
+                map(0x05, V1_7_6, V1_7_6),
                 map(0x03, V1_8, V1_8),
                 map(0x0E, V1_9, V1_11_1),
                 map(0x10, V1_12, V1_12),
@@ -205,7 +205,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketPlayerInfo() },
-                map(0x38, V1_7_2, V1_8),
+                map(0x38, V1_7_6, V1_8),
                 map(0x2D, V1_9, V1_12),
                 map(0x2E, V1_12_1, V1_12_2),
                 map(0x30, V1_13, V1_13_2),
@@ -221,7 +221,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketSpawnPosition() },
-                map(0x05, V1_7_2, V1_8),
+                map(0x05, V1_7_6, V1_8),
                 map(0x43, V1_9, V1_11_1),
                 map(0x45, V1_12, V1_12),
                 map(0x46, V1_12_1, V1_12_2),
@@ -237,7 +237,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketEmptyChunk() },
-                map(0x21, V1_7_2, V1_8),
+                map(0x21, V1_7_6, V1_8),
                 map(0x20, V1_9, V1_12_2),
                 map(0x22, V1_13, V1_13_2),
                 map(0x21, V1_14, V1_14_4),
@@ -252,7 +252,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketSetHeldSlot() },
-                map(0x2F, V1_7_2, V1_8),
+                map(0x2F, V1_7_6, V1_8),
                 map(0x16, V1_9, V1_12_2),
                 map(0x17, V1_13, V1_13_2),
                 map(0x16, V1_14, V1_14_4),
@@ -266,7 +266,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketSetExperience() },
-                map(0x1F, V1_7_2, V1_8),
+                map(0x1F, V1_7_6, V1_8),
                 map(0x3D, V1_9, V1_11_1),
                 map(0x3F, V1_12, V1_12),
                 map(0x40, V1_12_1, V1_12_2),
@@ -280,7 +280,7 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketUpdateTime() },
-                map(0x03, V1_7_2, V1_8),
+                map(0x03, V1_7_6, V1_8),
                 map(0x44, V1_9, V1_11_1),
                 map(0x46, V1_12, V1_12),
                 map(0x47, V1_12_1, V1_12_2),
