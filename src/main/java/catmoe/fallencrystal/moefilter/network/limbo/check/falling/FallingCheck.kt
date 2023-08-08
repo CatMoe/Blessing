@@ -38,6 +38,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -49,6 +50,7 @@ import kotlin.math.abs
 @Checker(LimboCheckType.FALLING_CHECK)
 @HandlePacket(
     PacketJoinGame::class,
+    PacketPluginMessage::class,
     PacketClientPosition::class,
     PacketClientPositionLook::class,
     Disconnect::class
@@ -80,6 +82,7 @@ object FallingCheck: LimboChecker, ILimboListener {
 
     private var range = conf.getInt("range")
     private val rangeCounter = Caffeine.newBuilder().build<LimboHandler, Int>()
+    private val brand = Caffeine.newBuilder().build<LimboHandler, String>()
 
     fun reload() {
         conf = LocalConfig.getLimbo().getConfig("check.falling")
@@ -114,9 +117,15 @@ object FallingCheck: LimboChecker, ILimboListener {
             maxSpeed.invalidate(handler)
             return false
         }
+        if (packet is PacketPluginMessage) {
+            if (packet.channel == "MC|Brand" || packet.channel == "minecraft:brand") brand.put(handler, packet.message)
+            return false
+        }
         timeoutHandler.put(handler, true)
         timeoutHandler.put(handler, true)
         if (packet is PacketJoinGame) return false
+
+        if (brand.getIfPresent(handler) == null) { kick(handler); return true }
 
         val lastLocation = lastLocation.getIfPresent(handler)
 

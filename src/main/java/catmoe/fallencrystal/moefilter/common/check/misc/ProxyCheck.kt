@@ -37,7 +37,7 @@ class ProxyCheck : AbstractCheck() {
         val inetAddress = (info as AddressCheck).address.address
         val result = ProxyCache.getProxy(inetAddress)
         if (result == null) { apiCheck(inetAddress); return false }
-        if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress)}
+        if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress) }
         else if (Throttler.isThrottled(inetAddress)) { Firewall.addAddress(inetAddress) }
         return true
     }

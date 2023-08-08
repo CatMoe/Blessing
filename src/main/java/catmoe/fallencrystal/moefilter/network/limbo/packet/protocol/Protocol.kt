@@ -18,6 +18,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
@@ -117,6 +118,8 @@ enum class Protocol(var stateId: Int) {
             )
             clientBound.register(
                 { PacketPluginMessage() },
+                map(0x3F, V1_7_6, V1_8),
+                map(0x18, V1_9, V1_12_2),
                 map(0x19, V1_13, V1_13_2),
                 map(0x18, V1_14, V1_14_4),
                 map(0x19, V1_15, V1_15_2),
@@ -127,6 +130,20 @@ enum class Protocol(var stateId: Int) {
                 map(0x16, V1_19_1, V1_19_1),
                 map(0x15, V1_19_3, V1_19_3),
                 map(0x17, V1_19_4, V1_20)
+            )
+            serverBound.register(
+                { PacketPluginMessage() },
+                map(0x17, V1_7_6, V1_8),
+                map(0x09, V1_9, V1_11_1),
+                map(0x0A, V1_12, V1_12),
+                map(0x09, V1_12_1, V1_12_2),
+                map(0x0A, V1_13, V1_13_2),
+                map(0x0B, V1_14, V1_16_4),
+                map(0x0A, V1_17, V1_18_2),
+                map(0x0C, V1_19, V1_19),
+                map(0x0D, V1_19_1, V1_19_1),
+                map(0x0C, V1_19_3, V1_19_3),
+                map(0x0D, V1_19_4, V1_20)
             )
             clientBound.register(
                 { PacketPlayerAbilities() },

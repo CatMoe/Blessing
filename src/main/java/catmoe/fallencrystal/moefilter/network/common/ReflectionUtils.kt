@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 // Borrowed from :
 // https://github.com/jonesdevelopment/sonar/blob/main/src/main/java/jones/sonar/bungee/util/Reflection.java
 class ReflectionUtils {
+    @Suppress("DEPRECATION")
     fun inject(initializer: ChannelInitializer<Channel>): AtomicBoolean {
         val version = version
         if (version < 8) {

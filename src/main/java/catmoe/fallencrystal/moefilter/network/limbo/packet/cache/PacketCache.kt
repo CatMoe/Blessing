@@ -63,10 +63,6 @@ object PacketCache {
         packetCache.put(PLAYER_ABILITIES, PacketSnapshot.of(abilities))
         packetCache.put(PLAYER_INFO, PacketSnapshot.of(info))
 
-        val brand = PacketPluginMessage()
-        brand.channel="minecraft:brand"
-        brand.message="MoeFilter <- MoeLimbo"
-        packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(brand))
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
