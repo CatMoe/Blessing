@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.common.geoip
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.DISABLED
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.WHITELIST
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.maxmind.geoip2.DatabaseReader
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
@@ -32,21 +33,31 @@ object GeoIPManager {
     private var type = try { CountryMode.valueOf(conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
     var country: DatabaseReader? = null
     var city: DatabaseReader? = null
+    private val cache = Caffeine.newBuilder().build<String, Boolean>()
+    private val regex = "^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\.\\d{1,3}\$".toRegex()
 
     fun reload() {
         val conf = LocalConfig.getProxy().getConfig("country")
         this.list = conf.getStringList("list")
-        this.type = try { CountryMode.valueOf(conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
+        val type = try { CountryMode.valueOf(conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
         this.conf = conf
+        if (this.type != type) {
+            cache.invalidateAll()
+            this.type=type
+        }
     }
 
     fun checkCountry(address: InetAddress): Boolean { return checkCountry(address, type) }
 
     fun checkCountry(address: InetAddress, type: CountryMode): Boolean {
         if (!available.get() || type == DISABLED) return false
+        val m = regex.find(address.hostAddress)
+        if (m != null && cache.getIfPresent(m.value) == true) return true
         val country = getISOCode(address)
         if (country == "NULL") return false
-        return if (type == WHITELIST) !list.contains(country) else list.contains(country)
+        val result = if (type == WHITELIST) !list.contains(country) else list.contains(country)
+        if (result && m != null) cache.put(m.value, true)
+        return result
     }
 
     fun getISOCode(address: InetAddress): String { return try { (country ?: return "NULL").country(address).country.isoCode } catch (_: Exception) { "NULL" } }

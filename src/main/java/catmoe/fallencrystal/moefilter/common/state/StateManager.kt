@@ -53,7 +53,9 @@ object StateManager {
         if (cps >= methodSize) {
             val method: MutableCollection<AttackState> = ArrayList()
             if (cps > methodSize * 2) {
-                BlockType.values().forEach { if ((ConnectionCounter.sessionBlocked[it] ?: 0) > cps / methodSize) { method.add(it.state) } }
+                BlockType.values().forEach {
+                    if ((ConnectionCounter.sessionBlocked.getIfPresent(it) ?: 0) > cps / methodSize) { method.add(it.state) }
+                }
                 if (method == lastMethod) return
                 lastMethod.clear(); lastMethod.addAll(method)
                 setAttackMethod(method); return

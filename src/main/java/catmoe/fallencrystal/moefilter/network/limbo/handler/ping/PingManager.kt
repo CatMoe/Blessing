@@ -24,7 +24,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.RemovalCause
 import io.netty.buffer.Unpooled
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -42,9 +41,6 @@ object PingManager {
     private var cacheLifeTime = conf.getLong("max-life-time")
     private var motdCache = Caffeine.newBuilder()
         .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
-        .removalListener { p1: String?, p2: MutableMap<Version,MotdInfo>?, _: RemovalCause? ->
-            if (p1 == null || p2 == null) return@removalListener; a(p1, p2)
-        }
         .build<String, MutableMap<Version, MotdInfo>>()
     private val onceIconCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
@@ -66,15 +62,13 @@ object PingManager {
         }
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
-            .removalListener { p1: String?, p2: MutableMap<Version,MotdInfo>?, _: RemovalCause? ->
-                if (p1 == null || p2 == null) return@removalListener; a(p1, p2)
-            }
             .build()
     }
 
     fun handlePing(handler: LimboHandler) {
         val version = handler.version!!
-        val cache = motdCache.getIfPresent(if (useStandardDomain) handler.host!!.hostString else "")
+        val i = if (useStandardDomain) handler.host!!.hostString else ""
+        val cache = motdCache.getIfPresent(i)
         val c = if (cache?.get(version) == null) createMap(handler, cache) else cache
         val address = (handler.address as InetSocketAddress).address
         if (cancelSendIconDuringAttack && StateManager.inAttack.get()) { sendMotd(c, handler, true); return }
@@ -83,6 +77,7 @@ object PingManager {
             if (!noIcon) onceIconCache.put(address, true)
             sendMotd(c, handler, noIcon)
         }
+        if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(i, c)
     }
 
     private fun sendMotd(map: MutableMap<Version, MotdInfo>, handler: LimboHandler, noIcon: Boolean) {

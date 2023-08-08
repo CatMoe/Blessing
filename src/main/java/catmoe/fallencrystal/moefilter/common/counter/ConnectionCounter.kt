@@ -46,7 +46,7 @@ object ConnectionCounter {
             sessionTotal = 0
             sessionPeakCps = 0
             sessionTotalIps = 0
-            sessionBlocked.clear()
+            sessionBlocked.invalidateAll()
             StateManager.lastMethod.clear()
         }
     }
@@ -80,6 +80,22 @@ object ConnectionCounter {
 
     /* Block */
 
+    val blocked = Caffeine.newBuilder().build<BlockType, Long>()
+    val sessionBlocked = Caffeine.newBuilder().build<BlockType, Long>()
+
+    fun countBlocked(type: BlockType) {
+        blocked.put(type, (blocked.getIfPresent(type) ?: 0) + 1)
+        if (inAttack) sessionBlocked.put(type, (sessionBlocked.getIfPresent(type) ?: 0) + 1)
+    }
+
+    fun totalBlocked(): Long {
+        var c: Long = 0; BlockType.values().forEach { c += blocked.getIfPresent(it) ?: 0  }; return c
+    }
+
+    fun totalSessionBlocked(): Long {
+        var c: Long = 0; BlockType.values().forEach { c += sessionBlocked.getIfPresent(it) ?: 0 }; return c
+    }
+    /*
     val blocked: MutableMap<BlockType, Long> = mutableMapOf()
     val sessionBlocked: MutableMap<BlockType, Long> = mutableMapOf()
 
@@ -99,5 +115,6 @@ object ConnectionCounter {
         BlockType.values().forEach { count += sessionBlocked[it] ?: 0 }
         return count
     }
+     */
 
 }
