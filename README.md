@@ -1,6 +1,6 @@
 # Moe Filter  
   
-⚡ Powerful high-performance bungeecord utils. Including built-in antibot features.  
+⚡ Powerful high-performance bungeecord utils. Including built-in antibot features.  (Minecraft 1.7.6-1.20.1)
 
   
 #### Looking for readme in other languages?
