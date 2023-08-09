@@ -59,10 +59,10 @@ class HelpCommand : ICommand {
                 // sendMessage(sender, "  &f/moefilter $command &b- &f$description")
                 val commandUsage = parsedInfo.usage
                 listOf(
-                    "",
-                    "  <aqua>命令: &f$command",
-                    "  <aqua>描述: &f$description",
-                    "",
+                    " ",
+                    "  <aqua>命令: <white>$command",
+                    "  <aqua>描述: <white>$description",
+                    " ",
                     "  <yellow>此命令一共有${commandUsage.size} 个用法"
                 ).forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
                 if (commandUsage.isNotEmpty()) { commandUsage.forEach { MessageUtil.sendMessage("  <yellow>$it", MessagesType.CHAT, sender) } }
