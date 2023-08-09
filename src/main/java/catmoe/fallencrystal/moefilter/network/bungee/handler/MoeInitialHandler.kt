@@ -88,6 +88,7 @@ class MoeInitialHandler(
         packetHandler.protocol.set(handshake.protocolVersion)
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); channel.close() } }
+        MoeChannelHandler.sentHandshake.put(channel, true)
     }
 
     private var hasRequestedPing = false

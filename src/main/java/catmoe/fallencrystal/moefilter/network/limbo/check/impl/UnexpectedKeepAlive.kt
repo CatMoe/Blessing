@@ -33,7 +33,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
-@Checker(LimboCheckType.UNEXPECTED_KEEPALIVE)
+@Checker(LimboCheckType.UNEXPECTED_KEEP_ALIVE)
 @HandlePacket(PacketKeepAlive::class)
 object UnexpectedKeepAlive : LimboChecker, ILimboListener {
 

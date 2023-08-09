@@ -2,15 +2,18 @@ package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
 import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeeHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
-import io.netty.channel.ChannelDuplexHandler
-import io.netty.channel.ChannelHandler
+import com.github.benmanes.caffeine.cache.Caffeine
+import io.netty.channel.*
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelPipeline
+import java.util.concurrent.TimeUnit
 
 object MoeChannelHandler : IPipeline {
     @JvmField
     val EXCEPTION_HANDLER: ChannelHandler = PacketExceptionHandler()
+
+    val sentHandshake = Caffeine.newBuilder()
+        .expireAfterWrite(30, TimeUnit.SECONDS)
+        .build<Channel, Boolean>()
 
     @Sharable
     private class PacketExceptionHandler : ChannelDuplexHandler() {

@@ -4,7 +4,6 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
-import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
@@ -12,6 +11,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipel
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
@@ -81,6 +81,13 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }
+
+    override fun channelInactive(ctx: ChannelHandlerContext) {
+        if (MoeChannelHandler.sentHandshake.getIfPresent(ctx.channel()) != true) {
+            Firewall.addAddressTemp((ctx.channel().remoteAddress() as InetSocketAddress).address)
+        }
+        super.channelInactive(ctx)
+    }
 
 
     @Suppress("OVERRIDE_DEPRECATION")

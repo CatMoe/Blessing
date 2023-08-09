@@ -18,7 +18,8 @@
 package catmoe.fallencrystal.moefilter.network.limbo.check
 
 enum class LimboCheckType {
-    UNEXPECTED_KEEPALIVE,
+    UNEXPECTED_KEEP_ALIVE,
     TRANSLATE_JOIN_CHECK,
     FALLING_CHECK,
+    INSTANT_DISCONNECT,
 }
