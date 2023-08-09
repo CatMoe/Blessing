@@ -33,6 +33,8 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import com.github.benmanes.caffeine.cache.Caffeine
+import java.util.concurrent.TimeUnit
 
 object MoeLimbo {
 
@@ -44,6 +46,10 @@ object MoeLimbo {
         MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
     }
     var debug = LocalConfig.getConfig().getBoolean("debug")
+
+    val sentHandshake = Caffeine.newBuilder()
+        .expireAfterWrite(30, TimeUnit.SECONDS)
+        .build<LimboHandler, Boolean>()
 
     fun reload() {
         LockdownManager.setLockdown(true)

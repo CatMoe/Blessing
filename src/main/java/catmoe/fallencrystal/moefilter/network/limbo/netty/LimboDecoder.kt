@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -45,6 +46,8 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
             if (mappings == null) throw NullPointerException("Mappings cannot be null!")
             val byteMessage = ByteMessage(byteBuf)
             val id = byteMessage.readVarInt()
+            if (id == 0x00) { MoeLimbo.sentHandshake.put(handler!!, true) }
+            else if (MoeLimbo.sentHandshake.getIfPresent(handler!!) != true) throw InvalidPacketException("No valid handshake packet received")
             val packet = mappings!!.getPacket(id)
             if (packet == null) {
                 MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
