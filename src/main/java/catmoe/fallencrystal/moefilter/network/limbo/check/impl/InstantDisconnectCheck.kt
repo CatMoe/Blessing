@@ -35,8 +35,10 @@ import java.net.InetSocketAddress
 @HandlePacket(Disconnect::class)
 object InstantDisconnectCheck : LimboChecker, ILimboListener {
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
+        val address = (handler.address as InetSocketAddress).address
+        if (Firewall.isFirewalled(address)) return false
         if (MoeLimbo.sentHandshake.getIfPresent(handler) != true) {
-            Firewall.addAddressTemp((handler.address as InetSocketAddress).address)
+            Firewall.addAddressTemp(address)
             ConnectionCounter.countBlocked(BlockType.FIREWALL)
         }
         return false

@@ -83,9 +83,9 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
     override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        if (MoeChannelHandler.sentHandshake.getIfPresent(ctx.channel()) != true) {
-            Firewall.addAddressTemp((ctx.channel().remoteAddress() as InetSocketAddress).address)
-        }
+        val address = (ctx.channel().remoteAddress() as InetSocketAddress).address
+        if (Firewall.isFirewalled(address)) { super.channelInactive(ctx); return }
+        if (MoeChannelHandler.sentHandshake.getIfPresent(ctx.channel()) != true) { Firewall.addAddressTemp(address) }
         super.channelInactive(ctx)
     }
 
