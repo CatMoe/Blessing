@@ -17,6 +17,7 @@ import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
@@ -49,17 +50,17 @@ class PacketHandler : ChannelDuplexHandler() {
     @Throws(Exception::class)
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
         isAvailable.set(true)
-        if (msg is PluginMessage) {
+        if (msg is PluginMessage && LocalConfig.getConfig().getBoolean("f3-brand.enabled")) {
             val pmTag = msg.tag
             if (pmTag.equals("mc|brand", ignoreCase = true) || pmTag.equals("minecraft:brand", ignoreCase = true)) {
                 val backend: String
                 val data = String(msg.data)
                 backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
                 val brand = ByteBufAllocator.DEFAULT.heapBuffer()
-                val target = LocalConfig.getConfig().getString("f3-brand")
+                val target = LocalConfig.getConfig().getString("f3-brand.custom")
                     .replace("%bungee%", proxy.name)
                     .replace("%version%", proxy.version)
-                    .replace("%backend%", backend)
+                    .replace("%backend%", ComponentUtil.componentToRaw(ComponentUtil.legacyToComponent(backend)))
                 DefinedPacket.writeString((MessageUtil.colorize(target)).toLegacyText(), brand)
                 msg.data = DefinedPacket.toArray(brand)
                 brand.release()

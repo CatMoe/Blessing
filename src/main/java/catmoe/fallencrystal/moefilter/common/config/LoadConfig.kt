@@ -51,8 +51,11 @@ class LoadConfig {
                 
                 # f3服务端标识. 在较高版本的客户端上按F3即可看到.
                 # gradient和其它标签e.x <newline> 不可在此处使用
-                # 占位符: %bungee%: BungeeCord名称, %version%: 版本名称, %backend%: 后端服务器名称
-                f3-brand="<light_purple>MoeFilter <aqua><- <green>%backend%"
+                # 占位符: %bungee%: BungeeCord名称, %version%: BungeeCord版本, %backend%: 后端服务器名称
+                f3-brand {
+                    enabled=true
+                    custom="<light_purple>MoeFilter <aqua><- <green>%backend%"
+                }
                 
                 # TCP FAST OPEN (TFO) 配置. 该选项仅当antibot.conf中的mode为PIPELINE时有效
                 # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
