@@ -54,7 +54,7 @@ object Notifications {
 
     private fun initSchedule() {
         this.schedule=scheduler.repeatScheduler(
-            LocalConfig.getMessage().getInt("actionbar.update-delay") * 50.toLong(),
+            LocalConfig.getMessage().getInt("statistics.actionbar-update-delay") * 50.toLong(),
             TimeUnit.MILLISECONDS)
         { onBroadcast() }
     }
@@ -88,7 +88,7 @@ object Notifications {
         val config = LocalConfig.getMessage()
         if (autoNotification.isEmpty() && switchNotification.isEmpty()) return
         if (autoNotification.isNotEmpty()) { autoNotification.removeAll(switchNotification) }
-        val message = placeholder(if (StateManager.inAttack.get()) { config.getString("actionbar.format.attack") } else config.getString("actionbar.format.idle"))
+        val message = placeholder(if (StateManager.inAttack.get()) { config.getString("statistics.actionbar-format.attack") } else config.getString("statistics.actionbar-format.idle"))
         if (autoNotification.isNotEmpty()) { sendActionbar(autoNotification, message) }
         if (switchNotification.isNotEmpty()) { sendActionbar(switchNotification, message) }
     }
@@ -113,12 +113,12 @@ object Notifications {
     private val typeMap: MutableMap<AttackState, String> = EnumMap(AttackState::class.java)
 
     private fun initType() {
-        val conf = LocalConfig.getMessage().getConfig("actionbar.types")
+        val conf = LocalConfig.getMessage().getConfig("statistics.types")
          try { AttackState.values().forEach { typeMap[it] = conf.getString(it.raw.lowercase()) } } catch (_: NullPointerException) {  }
     }
 
     private fun getType(): String {
-        val config = LocalConfig.getMessage().getConfig("actionbar.types")
+        val config = LocalConfig.getMessage().getConfig("statistics.types")
         val methods = StateManager.attackMethods
         if (methods.isEmpty()) return config.getString("null")
         val sb = StringBuilder()

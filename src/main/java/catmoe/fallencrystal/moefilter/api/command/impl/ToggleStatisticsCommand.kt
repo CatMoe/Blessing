@@ -31,15 +31,15 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 @Command("actionbar")
-@CommandDescription(DescriptionFrom.MESSAGE_PATH, "actionbar.command.description")
+@CommandDescription(DescriptionFrom.MESSAGE_PATH, "statistics.command.actionbar.description")
 @CommandUsage(["/moefilter actionbar"])
 @CommandPermission("moefilter.notification")
 // ConsoleCanExecute is not here. so only can execute this command by who online player has permission.
-class ToggleNotificationCommand : ICommand {
+class ToggleStatisticsCommand : ICommand {
     private val config = LocalConfig.getMessage()
     private val prefix = config.getString("prefix")
-    private val enable = config.getString("actionbar.command.enable")
-    private val disable = config.getString("actionbar.command.disable")
+    private val enable = config.getString("statistics.command.actionbar.enable")
+    private val disable = config.getString("statistics.command.actionbar.disable")
 
     override fun execute(sender: CommandSender, args: Array<out String>) {
         if (Notifications.autoNotification.contains(sender as ProxiedPlayer)) {

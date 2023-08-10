@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.common.exception.DebugException
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeStatusException
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
@@ -47,7 +47,7 @@ object ExceptionCatcher {
             return
         }
         if (cause is DebugException) { cause.printStackTrace(); return }
-        if (cause is InvalidStatusPingException || cause is InvalidHandshakeStatusException) { Firewall.addAddress(address); return }
+        if (cause is InvalidStatusPingException || cause is InvalidHandshakeException) { Firewall.addAddress(address); return }
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }
         if (cause is InvalidPacketException) Firewall.addAddress(address)
         Firewall.addAddressTemp(address)

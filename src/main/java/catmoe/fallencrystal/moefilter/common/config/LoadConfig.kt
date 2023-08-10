@@ -186,15 +186,35 @@ class LoadConfig {
                 prefix="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient> <gray>>> "
                 reload-warn="<green>已重新加载配置文件 部分内容可能需要重启代理生效."
                 
-                actionbar {
-                    # 可用占位符: 
-                    # %process_cpu% (BungeeCord CPU用量) %system_cpu% (系统使用CPU用量)
-                    # %cps% (每秒涌入连接数) %ipsec% (每秒涌入连接的ip数) %peak_cps% (历史最高每秒涌入连接数) %total% (共涌入连接数)
-                    # %prefix% (返回上面的prefix)
-                    # 更多占位符会随着功能的增加而添加.
-                    format {
+                statistics {
+                    # 可用占位符描述已被移除 如果您想知道各个占位符有什么用 请看chat-format中使用的占位符..
+                    actionbar-format {
                         idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
                         attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total_session%  <aqua>Total IPs <white>%total_ips%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
+                    }
+                    chat-format {
+                        idle=[
+                            "",
+                            " <aqua>是否处于攻击状态: <green>否",
+                            " <aqua>CPU使用率: <white>%process_cpu%% <gray>/ <white>%system_cpu%% <gray>(进程, 系统)",
+                            " <aqua>共计连接过服务器的IP数: <white>%total_ips%",
+                            " <aqua>已阻止的连接数: <white>%blocked%",
+                            " <aqua>接受连接次数: <white>%total%",
+                            " <aqua>每秒接受连接数记录: <white>%peak_cps%",
+                            ""
+                        ]
+                        attack=[
+                            "",
+                            " <aqua>是否处于攻击状态: <red>是",
+                            " <aqua>防御模式: %type%",
+                            " <aqua>CPU使用率: <white>%process_cpu%% <gray>/ <white>%system_cpu%% <gray>(进程, 系统)",
+                            "",
+                            "<yellow>在攻击发生期间发生了什么?:",
+                            " <aqua>此攻击持续了 <white>%duration%  <aqua>每秒连接数最高记录为 <white>%peak_cps_session% <aqua>!",
+                            " <aqua>一共传入了 <white>%total_session% <aqua>个连接, 但已经阻止了 <white>%blocked_session% <aqua>个传入的连接",
+                            " <aqua>从攻击开始到现在一共有 <white>%total_ips_session% 个地址尝试连接到服务器",
+                            ""
+                        ]
                     }
                     types {
                         firewall="<yellow>Firewall</yellow>"
@@ -207,13 +227,49 @@ class LoadConfig {
                         join-to-line="<white>, </white>"
                     }
                     # 更新频率 (tick为单位)
-                    update-delay=1
+                    actionbar-update-delay=1
                     command {
-                        description="在actionbar查看MoeFilter状态."
-                        enable="<hover:show_text:'<red>点击来切换actionbar'><click:run_command:/moefilter actionbar><green>已切换actionbar</click>"
-                        disable="<hover:show_text:'<green>点击来切换actionbar'><click:run_command:/moefilter actionbar><red>已切换actionbar</click>"
+                        actionbar {
+                            description="在actionbar查看MoeFilter状态."
+                            enable="<hover:show_text:'<red>点击来切换actionbar'><click:run_command:/moefilter actionbar><green>已切换actionbar</click>"
+                            disable="<hover:show_text:'<green>点击来切换actionbar'><click:run_command:/moefilter actionbar><red>已切换actionbar</click>"
+                        }
+                        chat-description="查看MoeFilter的状态"
                     }
                 }
+                
+                # 锁定服务器命令
+                lockdown {
+                    enabled="<green>启用"
+                    disabled="<red>禁用"
+                    description="锁定您的服务器"
+                    enable-first="<red>要想添加或移除白名单 请先打开锁定模式"
+                    toggle {
+                        enable="<red>已开启锁定模式"
+                        disable="<green>已关闭锁定模式"
+                    }
+                    parse-error="<red>请键入一个有效的地址"
+                    already-added="<red>此地址已在允许连接的列表中了!"
+                    not-found="<red>允许连接的列表中没有该地址!"
+                    add="<green>已将此地址加入允许连接的列表中"
+                    remove="<green>已将此地址从允许连接的列表中移除"
+                    state-message=[
+                        "",
+                        " <aqua>Lockdown状态 <white>: [state]",
+                        "",
+                        " lockdown toggle <aqua>-<white> 开启/关闭锁定模式",
+                        " lockdown add <Address> <aqua>-<white> 允许指定地址可以在锁定状态下加入",
+                        " lockdown remove <Address> <aqua>-<white> 禁止指定地址可以在锁定状态下加入",
+                        ""
+                    ]
+                }
+                
+                # 清空防火墙/黑名单地址命令
+                drop-command {
+                    description="丢弃已被列入防火墙/黑名单的地址"
+                    dropped="<green>所有防火墙/黑名单中的地址已被清空 他们可以再次连接到服务器."
+                }
+                
                 
                 # [permission] = 当前命令权限占位符
                 command {

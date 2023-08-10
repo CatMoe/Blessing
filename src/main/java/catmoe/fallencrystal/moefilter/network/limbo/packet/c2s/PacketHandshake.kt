@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
@@ -35,7 +36,10 @@ class PacketHandshake : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         this.version = try { Version.of(packet.readVarInt()) } catch (e: IllegalArgumentException) { Version.UNDEFINED }
         this.host = packet.readString(packet.readVarInt())
+        // Legacy的FML客户端会在host后面加上FML标签 所以为253 + 3
+        if (host.length >= 256 || host.isEmpty()) throw InvalidHandshakeException("Host length check failed")
         this.port = packet.readUnsignedShort()
+        if (port <= 0 || port > 65535) throw InvalidHandshakeException("Port must be higher than 0 and lower than 65535 (Non-vanilla?)")
         nextState = Protocol.STATE_BY_ID[packet.readVarInt()]!!
     }
 

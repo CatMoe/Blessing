@@ -29,7 +29,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 import java.net.InetAddress
 
-@CommandDescription(DescriptionFrom.STRING, "Lockdown your server")
+@CommandDescription(DescriptionFrom.MESSAGE_PATH, "lockdown.description")
 @CommandUsage([
     "/moefilter lockdown toggle",
     "/moefilter lockdown add \"<Address>\"",
@@ -39,16 +39,11 @@ import java.net.InetAddress
 class LockdownCommand : ICommand {
 
     override fun execute(sender: CommandSender, args: Array<out String>) {
+        val conf = LocalConfig.getMessage().getConfig("lockdown")
         if (args.size < 2 || args.size > 3) {
-            listOf(
-                "",
-                " <aqua>Lockdown状态 <white>: ${if (LockdownManager.state.get()) "<green>启用" else "<red>禁用"}",
-                "",
-                " lockdown toggle <aqua>-<white> 开启/关闭锁定模式",
-                " lockdown add <Address> <aqua>-<white> 允许指定地址可以在锁定状态下加入",
-                " lockdown remove <Address> <aqua>-<white> 禁止指定地址可以在锁定状态下加入",
-                "",
-            ).forEach { MessageUtil.sendMessage(it, MessagesType.CHAT, sender) }
+            val state = if (LockdownManager.state.get()) conf.getString("enabled") else conf.getString("disabled")
+            val stateMessage = conf.getStringList("state-message").joinToString("\n").replace("[state]", state)
+            MessageUtil.sendMessage(stateMessage, MessagesType.CHAT, sender)
             return
         }
         val args2 = args[1]
@@ -57,32 +52,32 @@ class LockdownCommand : ICommand {
             when (LockdownManager.state.get()) {
                 true -> {
                     LockdownManager.setLockdown(false)
-                    MessageUtil.sendMessage("$prefix<green>已关闭锁定模式", MessagesType.CHAT, sender)
+                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.enable")}", MessagesType.CHAT, sender)
                 }
                 false -> {
                     LockdownManager.setLockdown(true)
-                    MessageUtil.sendMessage("$prefix<red>已开启锁定模式", MessagesType.CHAT, sender)
+                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.disable")}", MessagesType.CHAT, sender)
                 }
             }
         }
         if (args2.equals("add", ignoreCase = true)) {
             val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
-            if (address == null) { MessageUtil.sendMessage("$prefix<red>请键入一个有效的地址", MessagesType.CHAT, sender); return }
+            if (address == null) { MessageUtil.sendMessage("$prefix${conf.getString("parse-error")}", MessagesType.CHAT, sender); return }
             if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
-                MessageUtil.sendMessage("$prefix<red>此地址已在允许连接的列表中了!", MessagesType.CHAT, sender); return
+                MessageUtil.sendMessage("$prefix${conf.getString("already-added")}", MessagesType.CHAT, sender); return
             } else {
                 LockdownManager.whitelistCache.put(address, true)
-                MessageUtil.sendMessage("$prefix<green>已将此地址加入允许连接的列表中", MessagesType.CHAT, sender)
+                MessageUtil.sendMessage("$prefix${conf.getString("add")}", MessagesType.CHAT, sender)
             }
         }
         if (args2.equals("remove", ignoreCase = true)) {
             val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
-            if (address == null) { MessageUtil.sendMessage("$prefix<red>请键入一个有效的地址", MessagesType.CHAT, sender); return }
+            if (address == null) { MessageUtil.sendMessage("$prefix${conf.getString("parse-error")}", MessagesType.CHAT, sender); return }
             if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
                 LockdownManager.whitelistCache.invalidate(address)
-                MessageUtil.sendMessage("$prefix<green>已将此地址从允许连接的列表中删除", MessagesType.CHAT, sender); return
+                MessageUtil.sendMessage("$prefix${conf.getString("remove")}", MessagesType.CHAT, sender); return
             } else {
-                MessageUtil.sendMessage("$prefix<red>允许连接的列表中没有该地址!", MessagesType.CHAT, sender)
+                MessageUtil.sendMessage("$prefix${conf.getString("not-found")}", MessagesType.CHAT, sender)
             }
         }
     }

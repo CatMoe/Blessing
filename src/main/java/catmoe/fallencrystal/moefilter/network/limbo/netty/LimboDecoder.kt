@@ -41,31 +41,25 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
     }
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {
-        try {
-            if (!ctx.channel().isActive) return
-            if (mappings == null) throw NullPointerException("Mappings cannot be null!")
-            val byteMessage = ByteMessage(byteBuf)
-            val id = byteMessage.readVarInt()
-            if (id == 0x00) { MoeLimbo.sentHandshake.put(handler!!, true) }
-            else if (MoeLimbo.sentHandshake.getIfPresent(handler!!) != true) throw InvalidPacketException("No valid handshake packet received")
-            val packet = mappings!!.getPacket(id)
-            if (packet == null) {
-                MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
-                return
-            }
-            try {
-                val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_6 else this.version
-                packet.decode(byteMessage, ctx.channel(), version)
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-            LimboListener.handleReceived(packet, handler)
-            MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
-            MoeLimbo.debug(packet.toString())
-            ctx.fireChannelRead(packet)
-        } catch (ex: NullPointerException) {
-            ex.printStackTrace()
+        if (!ctx.channel().isActive) return
+        if (mappings == null) throw NullPointerException("Mappings cannot be null!")
+        val byteMessage = ByteMessage(byteBuf)
+        val id = byteMessage.readVarInt()
+        if (id == 0x00) { MoeLimbo.sentHandshake.put(handler!!, true) }
+        else if (MoeLimbo.sentHandshake.getIfPresent(handler!!) != true) throw InvalidPacketException("No valid handshake packet received")
+        val packet = mappings!!.getPacket(id)
+        if (packet == null) {
+            MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
+            return
         }
+        val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_6 else this.version
+        // Try-catch 语句已被删除 因为对于某些异常解码的抛出可以直接顺着exception Caught方法直接切断连接并列入黑名单
+        // 进行数据包调试时首选打开debug模式
+        packet.decode(byteMessage, ctx.channel(), version)
+        LimboListener.handleReceived(packet, handler)
+        MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
+        MoeLimbo.debug(packet.toString())
+        ctx.fireChannelRead(packet)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

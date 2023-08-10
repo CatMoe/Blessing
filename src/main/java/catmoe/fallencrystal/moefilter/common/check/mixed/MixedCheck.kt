@@ -51,7 +51,7 @@ object MixedCheck {
 
     private var suspicionCount = Caffeine.newBuilder()
         .expireAfterWrite(suspicionDecay, TimeUnit.SECONDS)
-        .evictionListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
+        .removalListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
         .build<InetAddress, Int>()
 
     private fun suspicionEvictionListener(address: InetAddress?, suspicion: Int?, cause: RemovalCause?) {
@@ -65,7 +65,7 @@ object MixedCheck {
     private var type: MixedType = loadType()
 
     private fun suspicionAdd(address: InetAddress, suspicion: Int?) {
-        val s = suspicion ?: suspicionCount.getIfPresent(address) ?: -1
+        val s = suspicion ?: (suspicionCount.getIfPresent(address)?.plus(1)) ?: 1
         suspicionCount.put(address, s)
     }
 
@@ -112,8 +112,10 @@ object MixedCheck {
         val result = if (joinCache.getIfPresent(address) != null) true else { joinCache.put(address, info); false }
         if (result) {
             if ((protocolCache.getIfPresent(address) ?: protocol) != protocol || joinCache.getIfPresent(address)!!.username != info.username) {
-                joinCache.invalidate(address)
+                joinCache.put(address, info) // Rewrite info but add suspicion point.
                 pingCache.invalidate(address)
+                protocolCache.invalidate(address)
+                suspicionAdd(address, null)
                 return false
             }
         }
@@ -150,7 +152,7 @@ object MixedCheck {
             this.suspicionDecay = suspicionDecay
             this.suspicionCount = Caffeine.newBuilder()
                 .expireAfterWrite(MixedCheck.suspicionDecay, TimeUnit.SECONDS)
-                .evictionListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
+                .removalListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
                 .build<InetAddress, Int>()
             MessageUtil.logWarn("[MoeFilter] [MixedCheck] You changed suspicion decay value. All suspicion level will be clear.")
         }

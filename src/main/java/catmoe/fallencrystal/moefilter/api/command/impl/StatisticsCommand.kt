@@ -18,26 +18,32 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.*
+import catmoe.fallencrystal.moefilter.api.command.annotation.Command
+import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
+import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
+import catmoe.fallencrystal.moefilter.api.command.annotation.ConsoleCanExecute
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 
-@Command("drop")
-@CommandDescription(DescriptionFrom.MESSAGE_PATH, "drop-command.description")
-@CommandPermission("moefilter.drop")
-@CommandUsage(["/moefilter drop"])
 @ConsoleCanExecute
-class DropFirewallCommand : ICommand {
+@CommandDescription(DescriptionFrom.MESSAGE_PATH, "command.chat-description")
+@Command("status")
+@CommandUsage(["/moefilter status"])
+class StatisticsCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
-        Firewall.cache.invalidateAll()
-        Firewall.tempCache.invalidateAll()
-        val conf = LocalConfig.getMessage()
-        MessageUtil.sendMessage("${conf.getString("prefix")}${conf.getString("drop-command.dropped")}", MessagesType.CHAT, sender)
+        if (args.size < 2 || args.size > 3) {
+            val conf = LocalConfig.getMessage().getConfig("statistics")
+            val message = Notifications.placeholder((if (StateManager.inAttack.get()) conf.getStringList("chat-format.attack") else conf.getStringList("chat-format.idle")).joinToString("\n"))
+            MessageUtil.sendMessage(message, MessagesType.CHAT, sender)
+        }
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
+        return mutableMapOf()
+    }
 }

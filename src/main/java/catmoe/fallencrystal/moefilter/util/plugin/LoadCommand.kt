@@ -31,7 +31,7 @@ class LoadCommand {
 
     private fun loadCommand() {
         CommandManager.register(HelpCommand())
-        CommandManager.register(ToggleNotificationCommand())
+        CommandManager.register(ToggleStatisticsCommand())
         CommandManager.register(ReloadCommand())
 
         // All debug command managers by @DebugCommand annotation
@@ -40,5 +40,6 @@ class LoadCommand {
         CommandManager.register(TestWebhookCommand())
         CommandManager.register(LockdownCommand())
         CommandManager.register(DropFirewallCommand())
+        CommandManager.register(StatisticsCommand())
     }
 }

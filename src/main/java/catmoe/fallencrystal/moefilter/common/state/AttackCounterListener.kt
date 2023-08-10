@@ -48,6 +48,7 @@ class AttackCounterListener : EventListener {
             Notifications.autoNotification.clear()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-stopped"))
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")
+            ConnectionCounter.sessionIpCache.invalidateAll()
         }
     }
 }

@@ -13,7 +13,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companio
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeStatusException
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBoundsException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
@@ -71,7 +71,7 @@ class MoeInitialHandler(
 
     @Throws(Exception::class)
     override fun handle(handshake: Handshake) {
-        if (currentState !== ConnectionState.HANDSHAKE) { throw InvalidHandshakeStatusException("") }
+        if (currentState !== ConnectionState.HANDSHAKE) { throw InvalidHandshakeException("") }
         currentState = ConnectionState.PROCESSING
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
@@ -82,7 +82,7 @@ class MoeInitialHandler(
                 if (ProxyCheck().increase(info)) { kick(channel, DisconnectType.PROXY); return }
                 ConnectionState.JOINING
             }
-            else -> { throw InvalidHandshakeStatusException("Invalid handshake protocol ${handshake.requestedProtocol}") }
+            else -> { throw InvalidHandshakeException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, packetHandler)
         packetHandler.protocol.set(handshake.protocolVersion)
@@ -132,7 +132,7 @@ class MoeInitialHandler(
 
     @Throws(Exception::class)
     override fun handle(loginRequest: LoginRequest) {
-        if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeStatusException("") }
+        if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeException("") }
         super.handle(loginRequest)
     }
 

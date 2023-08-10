@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import com.typesafe.config.ConfigFactory
+import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -32,7 +33,11 @@ class MoeFilter : Plugin() {
     val injectPipelineAfterLoad = AtomicBoolean(false)
     private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
 
-    init { instance=this }
+    init {
+        instance=this
+        if (BungeeCord.getInstance().pluginManager.getPlugin("BungeeKotlinLib") == null)
+            throw NoClassDefFoundError("BungeeKotlinLib is not installed! Please install it first.")
+    }
 
     override fun onEnable() {
         if(!fastboot) { load() }

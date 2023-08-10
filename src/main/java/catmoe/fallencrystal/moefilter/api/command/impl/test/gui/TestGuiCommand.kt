@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl.test.gui
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
+import catmoe.fallencrystal.moefilter.api.command.annotation.DebugCommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
@@ -27,6 +28,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 
 @CommandDescription(DescriptionFrom.STRING, "open a test gui")
 @CommandUsage(["/moefilter gui"])
+@DebugCommand
 class TestGuiCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         ProxyServer.getInstance().pluginManager.getPlugin("Protocolize") ?: return

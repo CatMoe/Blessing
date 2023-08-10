@@ -60,18 +60,19 @@ object ConnectionCounter {
      */
     private val perSecCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<Int, Int>()
     private val ipCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
+    val sessionIpCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
 
     var totalIps: Long = 0
     var sessionTotalIps: Long = 0
 
     fun getConnectionPerSec(): Int { var cps=0; ticks.forEach { cps+=(perSecCache.getIfPresent(it) ?: 0) }; cps+= tempCPS; return cps }
     fun increase(address: InetAddress) {
-        if (ipCache.getIfPresent(address) != true) { totalIps++; sessionTotalIps++; ipCache.put(address, true) }
+        if (ipCache.getIfPresent(address) != true) { totalIps++; ipCache.put(address, true) }
         total++; tempCPS++; if (inAttack) { sessionTotal++; }
         /* if (getConnectionPerSec() > peakCPS) { peakCPS = getConnectionPerSec(); peakCpsInSession = if (inAttack) peakCPS else 0 } */
         val cps = getConnectionPerSec()
         if (cps > peakCps) { peakCps = cps }
-        if (inAttack) { if (cps > sessionPeakCps) { sessionPeakCps = cps } }
+        if (inAttack) { if (cps > sessionPeakCps) { sessionPeakCps = cps }; if (sessionIpCache.getIfPresent(address) != true) { sessionIpCache.put(address, true); sessionTotalIps++ } }
     }
     // fun getPeakSession(): Int { return peakInSession }
     private fun putCPStoCache() { ticks.forEach { if (perSecCache.getIfPresent(it) == null) { perSecCache.put(it, tempCPS); tempCPS = 0; return } } }
