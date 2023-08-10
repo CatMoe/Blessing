@@ -1,6 +1,6 @@
 # Moe Filter
 
-⚡ Powerful high-performance bungeecord utils. Including built-in antibot features.  (Minecraft 1.7.6-1.20.1)
+⚡ Powerful high-performance BungeeCord utils. Including built-in antibot features.  (Minecraft 1.7.6-1.20.1)
 
 ---
 
@@ -15,7 +15,8 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
 
 ## ✨ Features:
 ### Antibot:
-- Players connected via geyser are not checked `Only Geyser-BungeeCord!`
+- Players connected via geyser will be bypassed
+> Only working with you are using Geyser-BungeeCord and Floodgate!
 - Configurable Ping & Join mixed checks
 - Disconnect with pre-made packets to preserve performance
 - Do not call `PreLoginEvent` for clients when they are already disconnected

@@ -15,7 +15,7 @@ MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.co
 
 ## ✨ 功能/特点:
 ### 对于反机器人:  
-  - 通过Geyser连接的玩家将跳过检查直接加入服务器 `仅限Geyser-BungeeCord!`
+  - 通过Geyser连接的玩家将跳过检查直接加入服务器 `仅限Geyser-BungeeCord和Floodgate!`
   - 可配置的 Ping & Join 检查 阻止绝大多数机器人
   - 预缓存踢出数据包 在遭受攻击时可以保留CPU使用率 并显著降低切断连接所需要的时间
   - 不要为被踢出服务器的客户端呼叫`PreLoginEvent`
