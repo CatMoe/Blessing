@@ -54,6 +54,8 @@ object MoeLimbo {
 
     fun reload() {
         LockdownManager.setLockdown(true)
+        connections.forEach { it.channel.close() }
+        connections.clear()
         init()
         LockdownManager.setLockdown(false)
     }

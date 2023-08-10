@@ -69,9 +69,7 @@ class LimboHandler(
    private fun getFakeProxyHandler(): LimboCompat { return FakeInitialHandler(ctx) }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        if (state == Protocol.PLAY) {
-            MoeLimbo.connections.remove(this)
-        }
+        MoeLimbo.connections.remove(this)
         LimboListener.handleReceived(Disconnect(), this)
         MoeLimbo.debug("Client disconnected")
         disconnected.set(true)

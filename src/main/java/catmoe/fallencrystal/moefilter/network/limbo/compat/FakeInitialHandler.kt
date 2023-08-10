@@ -78,7 +78,7 @@ class FakeInitialHandler(
 
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {
-        MoeLimbo.debug("[MoeLimbo] Try to call ProxyPingEvent for bungee")
+        MoeLimbo.debug("Try to call ProxyPingEvent for bungee")
         var pingResult = ""
         val pingBack = Callback<ServerPing> {
             r, t ->
@@ -95,8 +95,8 @@ class FakeInitialHandler(
         pingBack.done(
             ServerPing(
                 ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).number),
-                ServerPing.Players(-1, MoeLimbo.connections.size, null),
-                "§dMoeLimbo", null as Favicon?
+                ServerPing.Players(-1, MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount,
+                    null), "§dMoeLimbo", null as Favicon?
             ), null
         )
         return PingConverter(pingResult)
