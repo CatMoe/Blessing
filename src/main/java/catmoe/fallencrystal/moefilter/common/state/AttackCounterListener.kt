@@ -25,6 +25,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEven
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 
@@ -47,6 +48,7 @@ class AttackCounterListener : EventListener {
         if (inAttack) {
             inAttack=false; ConnectionCounter.setInAttack(false)
             Notifications.autoNotification.clear()
+            MoeLimbo.calibrateConnections()
             WebhookSender().sendWebhook(LocalConfig.getConfig().getConfig("notifications.webhook.attack-stopped"))
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")
             ConnectionCounter.sessionIpCache.invalidateAll()

@@ -54,10 +54,15 @@ object MoeLimbo {
 
     fun reload() {
         LockdownManager.setLockdown(true)
-        connections.forEach { it.channel.close() }
-        connections.clear()
+        calibrateConnections()
         init()
         LockdownManager.setLockdown(false)
+    }
+
+    fun calibrateConnections() {
+        val connections: MutableCollection<LimboHandler> = ArrayList()
+        this.connections.forEach { try { it.channel } catch (npe: java.lang.NullPointerException) { connections.add(it) } }
+        this.connections.removeAll(connections.toSet())
     }
 
     private fun init() {
