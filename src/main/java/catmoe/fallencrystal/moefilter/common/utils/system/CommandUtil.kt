@@ -24,7 +24,7 @@ import java.io.InputStreamReader
 object CommandUtil {
     fun execute(vararg command: String): Process? {
         return try {
-            val commands = arrayOf("/bin/bash", "-c") + command
+            val commands = arrayOf("/usr/bin/bash", "-c") + command
             return ProcessBuilder(*commands).start()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -34,7 +34,7 @@ object CommandUtil {
 
     fun executeAndGetOutput(command: String): String {
         try {
-            val args = arrayOf("/bin/bash", "-c", command)
+            val args = arrayOf("/usr/bin/bash", "-c", command)
             val sb = StringBuilder()
             val proc = ProcessBuilder(*args).start()
             val bfr1 = BufferedReader(InputStreamReader(proc.inputStream))

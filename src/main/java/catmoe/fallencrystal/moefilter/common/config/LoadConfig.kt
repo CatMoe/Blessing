@@ -200,7 +200,7 @@ class LoadConfig {
                             " <aqua>共计连接过服务器的IP数: <white>%total_ips%",
                             " <aqua>已阻止的连接数: <white>%blocked%",
                             " <aqua>接受连接次数: <white>%total%",
-                            " <aqua>每秒接受连接数记录: <white>%peak_cps%",
+                            " <aqua>每秒接受连接数纪录: <white>%peak_cps%",
                             ""
                         ]
                         attack=[
@@ -210,7 +210,7 @@ class LoadConfig {
                             " <aqua>CPU使用率: <white>%process_cpu%% <gray>/ <white>%system_cpu%% <gray>(进程, 系统)",
                             "",
                             "<yellow>在攻击发生期间发生了什么?:",
-                            " <aqua>此攻击持续了 <white>%duration%  <aqua>每秒连接数最高记录为 <white>%peak_cps_session% <aqua>!",
+                            " <aqua>此攻击持续了 <white>%duration%  <aqua>每秒连接数最高纪录为 <white>%peak_cps_session% <aqua>!",
                             " <aqua>一共传入了 <white>%total_session% <aqua>个连接, 但已经阻止了 <white>%blocked_session% <aqua>个传入的连接",
                             " <aqua>从攻击开始到现在一共有 <white>%total_ips_session% 个地址尝试连接到服务器",
                             ""
@@ -474,7 +474,7 @@ class LoadConfig {
     private val defaultProxy = """
                 version="$version"
         
-                # 内置的反代理. 自动从网站上抓取代理并使用换成记录
+                # 内置的反代理. (自动从网站上抓取代理并将其放置在缓存中)
                 internal: {
                     enabled=true
                     # 启用调试 (大量垃圾邮件警告!)
@@ -574,6 +574,12 @@ class LoadConfig {
                 
                 # 是否使用Limbo? 仅在使用PIPELINE模式下有效.
                 enabled=true
+                
+                # 是否只在攻击状态下将连接转发到limbo
+                only-connect-during-attack=false
+                
+                # 如果您在Ping时出现了一点小错误 请尝试启用此项
+                instant-close-after-ping=false
                 
                 # 群系加载模式
                 # 可用模式: ADVENTURE, LLBIT

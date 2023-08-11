@@ -23,7 +23,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.Callback
-import net.md_5.bungee.api.Favicon
 import net.md_5.bungee.api.ServerPing
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.config.ListenerInfo
@@ -41,6 +40,12 @@ import java.util.*
 class FakeInitialHandler(
     val ctx: ChannelHandlerContext
 ) : PacketHandler(), PendingConnection, LimboCompat {
+
+    init {
+        if (listener == null) {
+            BungeeCord.getInstance().config.listeners.forEach { if (it != null) { listenerInfo=it; return@forEach } }
+        }
+    }
 
     val ch = ChannelWrapper(ctx)
     private val channel = ctx.channel()
@@ -95,11 +100,17 @@ class FakeInitialHandler(
         pingBack.done(
             ServerPing(
                 ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).number),
-                ServerPing.Players(-1, MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount,
-                    null), "§dMoeLimbo", null as Favicon?
+                ServerPing.Players(
+                    (listenerInfo.maxPlayers), MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount,
+                    null), listenerInfo.motd, BungeeCord.getInstance().config.faviconObject
             ), null
         )
         return PingConverter(pingResult)
+    }
+
+    companion object {
+        lateinit var listenerInfo: ListenerInfo
+            private set
     }
 
 

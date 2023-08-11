@@ -44,6 +44,7 @@ object PingManager {
     private val onceIconCache = Caffeine.newBuilder()
         .expireAfterWrite(5, TimeUnit.MINUTES)
         .build<InetAddress, Boolean>()
+    private var instantCloseAfterPing = LocalConfig.getLimbo().getBoolean("instant-close-after-ping")
 
     private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
 
@@ -65,6 +66,7 @@ object PingManager {
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
             .build()
+        instantCloseAfterPing = LocalConfig.getLimbo().getBoolean("instant-close-after-ping")
     }
 
     fun handlePing(handler: LimboHandler) {
@@ -88,6 +90,7 @@ object PingManager {
         val packet = PacketPingResponse()
         packet.bm = if (noIcon) p.bmNoIcon else p.bm
         handler.sendPacket(packet)
+        if (instantCloseAfterPing) handler.channel.close()
     }
 
     private fun createMap(handler: LimboHandler, map: MutableMap<Version, MotdInfo>?): MutableMap<Version, MotdInfo> {
@@ -107,7 +110,7 @@ object PingManager {
 
     private fun process(packet: PacketPingResponse, version: Version, noIcon: Boolean): ByteArray {
         val bm = ByteMessage(Unpooled.buffer())
-        if (noIcon) packet.output!!.replace(""","favicon":"data:(.*?)"""".toRegex(), "")
+        if (noIcon) packet.output=packet.output!!.replace(""","favicon":"data:(.*?)"""".toRegex(), "")
         MoeLimbo.debug("${packet.output}")
         packet.encode(bm, version)
         val array = bm.toByteArray()

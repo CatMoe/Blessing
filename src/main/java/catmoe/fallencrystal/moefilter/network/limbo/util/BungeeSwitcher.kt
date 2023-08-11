@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
@@ -38,6 +39,7 @@ object BungeeSwitcher : EventListener {
         .build<InetAddress, VerifyInfo>()
     private val foreverQueue = Caffeine.newBuilder().build<InetAddress, VerifyInfo>()
     private var alwaysCheck = conf.getBoolean("always-check")
+    private var connectDuringAttack = conf.getBoolean("only-connect-during-attack")
 
     @FilterEvent
     fun reload(event: PluginReloadEvent) {
@@ -51,6 +53,7 @@ object BungeeSwitcher : EventListener {
             .build()
         alwaysCheck = conf.getBoolean("always-check")
         this.conf=conf
+        connectDuringAttack = BungeeSwitcher.conf.getBoolean("only-connect-during-attack")
     }
 
     @FilterEvent
@@ -61,12 +64,18 @@ object BungeeSwitcher : EventListener {
     }
 
     fun connectToBungee(address: InetAddress): Boolean {
+        /*
         return if (limbo) bungeeQueue.getIfPresent(address) != null
         else if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else true
+         */
+        return (!limbo)
+                || (StateManager.inAttack.get() && connectDuringAttack)
+                || (bungeeQueue.getIfPresent(address) != null)
+                || (if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else false)
     }
 
     fun verify(info: CheckInfo): Boolean {
-        if (!limbo) return true
+        if (!limbo || (StateManager.inAttack.get() && connectDuringAttack)) return true
         info as Joining
         val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
         val result = a.username == info.username && a.version.number == info.protocol
