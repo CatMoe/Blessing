@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.impl.*
+import catmoe.fallencrystal.moefilter.api.command.impl.test.RegexParseCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestWebhookCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.gui.TestGuiCommand
@@ -41,5 +42,6 @@ class LoadCommand {
         CommandManager.register(LockdownCommand())
         CommandManager.register(DropFirewallCommand())
         CommandManager.register(StatisticsCommand())
+        CommandManager.register(RegexParseCommand())
     }
 }

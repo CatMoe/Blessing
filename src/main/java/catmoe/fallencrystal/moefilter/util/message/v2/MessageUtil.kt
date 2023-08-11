@@ -87,7 +87,8 @@ object MessageUtil {
 
     fun argsBuilder(startIndex: Int, args: Array<out String>?): StringBuilder {
         val message = StringBuilder()
-        if (args != null) { for (i in startIndex until args.size) { message.append(args[i]).append(" ") } }
+        if (args != null) { for (i in startIndex until args.size - 1) { message.append(args[i]).append(" ") } }
+        message.append(args?.get(args.size - 1) ?: return message)
         return message
     }
 

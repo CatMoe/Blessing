@@ -84,11 +84,19 @@ class MoeInitialHandler(
             }
             else -> { throw InvalidHandshakeException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
+        handshake.host=checkHost(handshake.host)
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, packetHandler)
         packetHandler.protocol.set(handshake.protocolVersion)
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); channel.close() } }
         MoeChannelHandler.sentHandshake.put(channel, true)
+    }
+
+    private fun checkHost(host: String): String {
+        val h = host.replace("FML$".toRegex(), "").replace("\\.$".toRegex(), "")
+        if (host.length >= 256 || host.isEmpty() || host == "0" /* Prevent EndMinecraftPlus ping ——They host is still 0 */)
+            throw InvalidHandshakeException("Host length check failed")
+        return h
     }
 
     private var hasRequestedPing = false

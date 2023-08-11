@@ -26,6 +26,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.channel.Channel
 import java.net.InetSocketAddress
 
+@Suppress("MemberVisibilityCanBePrivate")
 class PacketHandshake : LimboC2SPacket() {
 
     var version: Version = Version.UNDEFINED
@@ -35,7 +36,7 @@ class PacketHandshake : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         this.version = try { Version.of(packet.readVarInt()) } catch (e: IllegalArgumentException) { Version.UNDEFINED }
-        this.host = packet.readString(packet.readVarInt())
+        this.host = packet.readString(packet.readVarInt()).replace("FML$".toRegex(), "").replace("\\.$".toRegex(), "")
         // Legacy的FML客户端会在host后面加上FML标签 所以为253 + 3
         if (host.length >= 256 || host.isEmpty() || host == "0" /* Prevent EndMinecraftPlus ping ——They host is still 0 */)
             throw InvalidHandshakeException("Host length check failed")
@@ -45,7 +46,6 @@ class PacketHandshake : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-        if (host.endsWith("FML")) { host.replace("FML", "") }
         handler.host = InetSocketAddress(host, port)
         handler.updateVersion(version, nextState)
     }

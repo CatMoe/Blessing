@@ -435,7 +435,7 @@ class LoadConfig {
                     valid-check {
                         # 有效名称正则. 默认正则的规则. 如需禁用检查 将其设为 "" 即可.
                         # 即名称不能包含mcstorm, mcdown或bot字样. 名称只能含有数字 字母以及下划线 且长度限制在3-16
-                        valid-regex="^(?!.*(?:mcstorm|mcdown|bot|cuute|DosHacker))[A-Za-z0-9_]{3,16}${'$'}"
+                        valid-regex="^(?i)(?!.*(?:mcstorm|mcdown|bot|cuute|doshacker))([A-Za-z0-9_]{3,16})${'$'}"
                         # 自动防火墙配置 (此选项将会将触发此检查的玩家列入临时黑名单)
                         # THROTTLE: 当触发此检查时如果刚好触发连接限制 则黑名单
                         # ALWAYS: 始终将触发此检查的IP列入黑名单
