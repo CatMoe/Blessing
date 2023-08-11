@@ -15,11 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.handler.ping
+package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
@@ -42,7 +41,10 @@ object PingManager {
     private var motdCache = Caffeine.newBuilder()
         .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
         .build<String, MutableMap<Version, MotdInfo>>()
-    private val onceIconCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
+    private val onceIconCache = Caffeine.newBuilder()
+        .expireAfterWrite(5, TimeUnit.MINUTES)
+        .build<InetAddress, Boolean>()
+
     private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
 
     fun a(p1: String, p2: MutableMap<Version, MotdInfo>) {
@@ -57,8 +59,8 @@ object PingManager {
         sendIconOnce = conf.getBoolean("send-icon-once")
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
         val cacheLifeTime = conf.getLong("max-life-time")
-        if (this.cacheLifeTime != cacheLifeTime) {
-            this.cacheLifeTime=cacheLifeTime
+        if (PingManager.cacheLifeTime != cacheLifeTime) {
+            PingManager.cacheLifeTime =cacheLifeTime
         }
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
@@ -105,7 +107,8 @@ object PingManager {
 
     private fun process(packet: PacketPingResponse, version: Version, noIcon: Boolean): ByteArray {
         val bm = ByteMessage(Unpooled.buffer())
-        if (noIcon) packet.output!!.replace(",\\s*\"favicon\":\\s*\".*?\"".toRegex(), "")
+        if (noIcon) packet.output!!.replace(""","favicon":"data:(.*?)"""".toRegex(), "")
+        MoeLimbo.debug("${packet.output}")
         packet.encode(bm, version)
         val array = bm.toByteArray()
         bm.release()

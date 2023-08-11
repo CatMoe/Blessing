@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 object BungeeSwitcher : EventListener {
 
     private var conf = LocalConfig.getLimbo()
-    private val limbo = conf.getBoolean("enabled")
+    val limbo = conf.getBoolean("enabled")
     private var timeout = conf.getLong("bungee-queue")
     private var bungeeQueue = Caffeine.newBuilder()
         .expireAfterWrite(timeout, TimeUnit.SECONDS)
@@ -66,7 +66,7 @@ object BungeeSwitcher : EventListener {
     }
 
     fun verify(info: CheckInfo): Boolean {
-        if (!limbo) return false
+        if (!limbo) return true
         info as Joining
         val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
         val result = a.username == info.username && a.version.number == info.protocol

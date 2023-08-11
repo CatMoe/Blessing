@@ -77,7 +77,7 @@ class LoadConfig {
                         stable-domain-cache=true
                         # 在攻击时仅使用缓存而不是呼叫ProxyPingEvent
                         full-cache-during-attack=true
-                        # 一分钟内只发送一次avatar
+                        # 五分钟内只发送一次avatar
                         send-icon-once=true
                         # 在攻击时不发送图标信息. 覆盖send-icon-once选项.
                         cancel-send-icon-during-attack=true

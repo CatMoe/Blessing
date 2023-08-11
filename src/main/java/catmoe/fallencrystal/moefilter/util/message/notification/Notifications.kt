@@ -142,6 +142,7 @@ object Notifications {
         players.forEach {
             try { MessageUtil.sendMessage(string, MessagesType.ACTION_BAR , ConnectionUtil(it.pendingConnection)) }
             catch (_: NullPointerException) { autoNotification.remove(it); switchNotification.remove(it) }
+            catch (_: NoSuchFieldException) { autoNotification.remove(it); switchNotification.remove(it) }
         }
     }
 }

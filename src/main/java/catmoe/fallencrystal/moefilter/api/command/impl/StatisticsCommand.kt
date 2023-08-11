@@ -31,7 +31,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender
 
 @ConsoleCanExecute
-@CommandDescription(DescriptionFrom.MESSAGE_PATH, "command.chat-description")
+@CommandDescription(DescriptionFrom.MESSAGE_PATH, "statistics.command.chat-description")
 @Command("status")
 @CommandUsage(["/moefilter status"])
 class StatisticsCommand : ICommand {

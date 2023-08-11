@@ -110,7 +110,7 @@ class AsyncLoader(val plugin: Plugin) {
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
                 LoadCommand().load()
-                Firewall.reload()
+                Firewall.load()
                 loadProxyAPI()
                 if (LocalConfig.getLimbo().getBoolean("enabled")) {
                     MoeLimbo.initLimbo()
@@ -146,10 +146,10 @@ class AsyncLoader(val plugin: Plugin) {
                     catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
                 else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
                 pluginManager.registerListener(plugin, choose)
-                LoggerManager.registerFilter(ExceptionFilter())
             }
             DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }
+        LoggerManager.registerFilter(ExceptionFilter())
     }
 
     private fun loadProxyAPI() {

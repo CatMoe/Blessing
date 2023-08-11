@@ -34,6 +34,7 @@ object Firewall {
     val cache = Caffeine.newBuilder().build<InetAddress, Boolean>()
     val tempCache = Caffeine.newBuilder().expireAfterWrite(config.getLong("temp-expire-time"), TimeUnit.SECONDS).build<InetAddress, Boolean>()
     private val osFirewall = FirewallLoader("MoeFilter", 600)
+    @Suppress("SpellCheckingInspection")
     private val executor = ExecutorHelper("sudo ipset add MoeFilter {chain}")
     private var mode = FirewallType.valueOf(config.getAnyRef("mode").toString())
 
@@ -80,12 +81,12 @@ object Firewall {
     private fun loadSystem() {
         osFirewall.initFirewall()
         executor.maxSize.set(1000000)
-        executor.debug.set(debug)
+        executor.debug.set(true)
     }
 
     fun reload() {
         this.config = LocalConfig.getAntibot().getConfig("firewall")
-        debug = LocalConfig.getConfig().getBoolean("debug")
+        // debug = LocalConfig.getConfig().getBoolean("debug")
         mode = FirewallType.valueOf(config.getAnyRef("mode").toString())
         executor.debug.set(debug)
     }

@@ -73,7 +73,7 @@ object MixedCheck {
         if (info is Joining) {
             val address = info.address
             // if (MoeLimbo.bungeeQueue.getIfPresent(address) != null) return null
-            if (BungeeSwitcher.connectToBungee(info.address)) {
+            if (BungeeSwitcher.connectToBungee(info.address) && BungeeSwitcher.limbo) {
                 return if (BungeeSwitcher.verify(info)) null else DisconnectType.RECHECK
             }
             return when (type) {

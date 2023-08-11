@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class ExecutorHelper(private val command: String) {
     private val queue: Queue<String> = ArrayDeque()
 
-    val maxSize = AtomicInteger(1000)
+    val maxSize = AtomicInteger(10000000)
     val debug = AtomicBoolean(false)
     private val idle = AtomicBoolean(true)
     private val watchdog = AtomicBoolean(false)

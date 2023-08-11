@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.listener.main
 
 import catmoe.fallencrystal.moefilter.api.logger.ILogger
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 import java.util.logging.LogRecord
 
 class ExceptionFilter : ILogger {
@@ -31,6 +32,8 @@ class ExceptionFilter : ILogger {
 
     override fun isLoggable(record: LogRecord?, isCancelled: Boolean): Boolean {
         if (isCancelled || record == null) return false
-        return if (record.thrown?.cause != null) { !filterException.contains(record.thrown.cause!!::class.java.name) } else record.message?.contains("InitialHandler - encountered exception") != true
+        val a = if (record.thrown?.cause != null) { !filterException.contains(record.thrown.cause!!::class.java.name) } else record.message?.contains("InitialHandler - encountered exception") != true
+        val b = if (StateManager.inAttack.get()) record.message.contains("{0} has ") else false
+        return a || b
     }
 }

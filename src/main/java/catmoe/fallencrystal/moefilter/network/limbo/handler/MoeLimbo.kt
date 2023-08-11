@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.impl.InstantDisconnectCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
@@ -94,7 +93,7 @@ object MoeLimbo {
         LimboListener.register(CommonJoinCheck)
         LimboListener.register(FallingCheck)
         // if (conf.getBoolean("unexpected-keepalive.enabled")) { LimboListener.register(UnexpectedKeepAlive) }
-        LimboListener.register(InstantDisconnectCheck)
+        // LimboListener.register(InstantDisconnectCheck)
     }
 
     fun initLimbo() {

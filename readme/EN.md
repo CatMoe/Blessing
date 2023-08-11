@@ -20,7 +20,7 @@ MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMem
 - Configurable Ping & Join mixed checks
 - Disconnect with pre-made packets to preserve performance
 - Do not call `PreLoginEvent` for clients when they are already disconnected
-- Clean console. Don't even need a log filter.
+- Clean console. Don't even need a log filter. `Only when using limbo.`
 - You can customize how all inspection modules work
 - Virtual server to prevent bot / attack bypass / overload proxy.
 
