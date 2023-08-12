@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 
 @Sharable
-class BungeeHandler : ChannelInboundHandlerAdapter() {
+class ByteBufHandler : ChannelInboundHandlerAdapter() {
     @Suppress("OVERRIDE_DEPRECATION")
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }

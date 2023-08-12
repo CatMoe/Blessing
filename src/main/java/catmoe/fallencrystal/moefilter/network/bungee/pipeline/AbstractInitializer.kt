@@ -7,23 +7,26 @@ import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
-import io.netty.channel.Channel
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInitializer
-import io.netty.channel.ChannelOption
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
+import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
+import catmoe.fallencrystal.moefilter.network.limbo.netty.VarIntLengthEncoder
+import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
+import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
 
-@Suppress("HasPlatformType")
-abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
+@Suppress("HasPlatformType", "MemberVisibilityCanBePrivate")
+abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     val bungee = BungeeCord.getInstance()
     val throttler = bungee.connectionThrottle
     val legacyKicker = KickStringWriter()
@@ -33,7 +36,7 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
     override fun initChannel(channel: Channel) {
         val parent = channel.parent()
         val isGeyser = parent != null && parent.javaClass.canonicalName.startsWith("org.geysermc.geyser")
-        if (isGeyser) { GeyserPipeline().handle(channel, protocol) }
+        if (isGeyser) { GeyserInitializer().handle(channel, protocol) }
     }
 
     @Throws(Exception::class)
@@ -52,8 +55,26 @@ abstract class AbstractPipeline : ChannelInitializer<Channel>(), IPipeline {
         if (Throttler.increase(inetAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
         if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
         eventCaller.call(EventCallMode.READY_DECODING)
-
         if (!channel.isActive) { return }
+        if (BungeeSwitcher.connectToBungee(inetAddress)) connectToBungee(ctx, pipeline, channel, eventCaller, listener)
+        else connectToLimbo(ctx, pipeline, channel)
+    }
+
+    open fun connectToLimbo(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel) {
+        val decoder = LimboDecoder(null)
+        val encoder = LimboEncoder(null)
+        val handler = LimboHandler(encoder, decoder, channel, ctx)
+        decoder.handler=handler
+        encoder.handler=handler
+        pipeline.addLast(PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().config.timeout.toLong()))
+        pipeline.addLast(PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
+        pipeline.addLast(PipelineUtils.FRAME_PREPENDER, VarIntLengthEncoder())
+        pipeline.addLast(PipelineUtils.PACKET_DECODER, decoder)
+        pipeline.addLast(PipelineUtils.PACKET_ENCODER, encoder)
+        pipeline.addLast(PipelineUtils.BOSS_HANDLER, handler)
+    }
+
+    open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, eventCaller: EventCaller, listener: ListenerInfo) {
         MoeChannelHandler.register(pipeline)
         PipelineUtils.BASE.initChannel(channel)
 

@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeeHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.ByteBufHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.*
@@ -22,7 +22,7 @@ object MoeChannelHandler : IPipeline {
         override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
     }
 
-    private val MOEFILTER_HANDLER = BungeeHandler()
+    private val MOEFILTER_HANDLER = ByteBufHandler()
 
     fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
 }

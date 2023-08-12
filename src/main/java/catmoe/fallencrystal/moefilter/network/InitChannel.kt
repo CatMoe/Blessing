@@ -19,10 +19,9 @@ package catmoe.fallencrystal.moefilter.network
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeePipeline
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterPipeline
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeeInitializer
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterInitializer
 import catmoe.fallencrystal.moefilter.network.common.ReflectionUtils
-import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboPipeline
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -43,12 +42,10 @@ class InitChannel {
         "nAntiBot",
         "BotSentry"
     )
-    private val incompatibilityLimbo = listOf("BotFilter")
 
     private val bungee = BungeeCord.getInstance()
     private var isProxyProtocol = false
-    private val injectLimbo = LocalConfig.getLimbo().getBoolean("enabled")
-    private var pipeline: ChannelInitializer<Channel> = BungeePipeline()
+    private var pipeline: ChannelInitializer<Channel> = BungeeInitializer()
 
     fun initPipeline() {
         log("Starting inject MoeFilter Pipeline...")
@@ -77,17 +74,7 @@ class InitChannel {
         }
         if (proxyName.contains("BotFilter")) {
             log("BotFilter is detected. Using compatibilities choose for it.")
-            pipeline=BotFilterPipeline()
-        }
-        if (injectLimbo) {
-            pipeline = LimboPipeline()
-            incompatibilityLimbo.forEach {
-                if (it.contains(proxyName) || bungee.pluginManager.getPlugin(it) != null) {
-                    log("$it plugin or bungeecord forks is not compatibility with limbo features.")
-                    log("Switching to use common bungee pipeline.")
-                    pipeline=BungeePipeline()
-                }
-            }
+            pipeline=BotFilterInitializer()
         }
         try {
             if (!inject(pipeline).get()) {

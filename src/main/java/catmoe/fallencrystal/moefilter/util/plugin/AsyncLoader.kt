@@ -146,6 +146,7 @@ class AsyncLoader(val plugin: Plugin) {
                     catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
                 else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
                 pluginManager.registerListener(plugin, choose)
+                MessageUtil.logWarn("[MoeFilter] EVENT mode is deprecated. Don't expect strong protection!")
             }
             DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }

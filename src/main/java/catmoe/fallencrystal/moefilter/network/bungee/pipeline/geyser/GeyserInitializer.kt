@@ -8,7 +8,7 @@ import net.md_5.bungee.netty.HandlerBoss
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 
-class GeyserPipeline {
+class GeyserInitializer {
     private val legacyKicker = KickStringWriter()
 
     @Throws(Exception::class)
