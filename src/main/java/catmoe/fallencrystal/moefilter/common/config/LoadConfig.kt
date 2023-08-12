@@ -385,7 +385,7 @@ class LoadConfig {
                 
                 # 攻击模式激活设置
                 attack-mode { 
-                    # 当一秒内的连接超过此数字 将激活攻击模式
+                    # 当一秒内的连接超过此设定的值 将激活攻击模式
                     incoming=5
                     # 模式激活设置
                     mode {
@@ -399,6 +399,11 @@ class LoadConfig {
                         wait=5
                     }
                 }
+                
+                # 当服务器遭受攻击时 对于新连接的超时时间应该为多少?
+                # -1则为BungeeCord的默认值.
+                # 修改此项需要重启服务器.
+                dynamic-timeout=1000
                 
                 mixed-check {
                     # RECONNECT: 仅重新连接

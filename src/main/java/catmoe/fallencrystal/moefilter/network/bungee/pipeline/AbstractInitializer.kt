@@ -66,7 +66,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         val handler = LimboHandler(encoder, decoder, channel, ctx)
         decoder.handler=handler
         encoder.handler=handler
-        pipeline.addLast(PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().config.timeout.toLong()))
+        pipeline.addLast(PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
         pipeline.addLast(PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
         pipeline.addLast(PipelineUtils.FRAME_PREPENDER, VarIntLengthEncoder())
         pipeline.addLast(PipelineUtils.PACKET_DECODER, decoder)
@@ -81,7 +81,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         // MoeFilter has VarIntFrameDecoder, TimeoutHandler and InboundHandler itself.
         pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
         // like https://github.com/PaperMC/Waterfall/commit/6702e0f69b2fa32c1046d277ade2107e22ba9134
-        pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(bungee.getConfig().timeout.toLong()))
+        pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
         pipeline.replace(PipelineUtils.BOSS_HANDLER, PipelineUtils.BOSS_HANDLER, InboundHandler())
 
         // Init default bungeecord pipeline

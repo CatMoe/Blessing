@@ -78,7 +78,7 @@ object StateManager {
                             attackEndedWaiter.set(false); return@repeatScheduler
                         }
                         val c = attackEndedCount.get()
-                        if (c == 0) { fireNotInAttackEvent(); return@repeatScheduler }
+                        if (c == 0) { fireNotInAttackEvent(); attackEndedWaiter.set(false); return@repeatScheduler }
                         attackEndedCount.set(c - 1)
                     }
                 }

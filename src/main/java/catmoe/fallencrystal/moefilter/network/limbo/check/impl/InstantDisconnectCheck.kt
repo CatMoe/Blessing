@@ -20,11 +20,11 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
 import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
@@ -37,7 +37,13 @@ object InstantDisconnectCheck : LimboChecker, ILimboListener {
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         val address = (handler.address as InetSocketAddress).address
         if (Firewall.isFirewalled(address)) return false
+        /*
         if (MoeLimbo.sentHandshake.getIfPresent(handler) != true) {
+            Firewall.addAddressTemp(address)
+            ConnectionCounter.countBlocked(BlockType.FIREWALL)
+        }
+         */
+        if (MoeChannelHandler.sentHandshake.getIfPresent(handler.channel) != true) {
             Firewall.addAddressTemp(address)
             ConnectionCounter.countBlocked(BlockType.FIREWALL)
         }
