@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.common.state.AttackState
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -79,6 +80,7 @@ object Notifications {
             "%prefix%" to config.getString("prefix"),
             "%duration%" to getDuration(StateManager.duration.getDuration()),
             "%type%" to getType(),
+            "%limbo%" to MoeLimbo.connections.size.toString(),
         )
         internalPlaceholder.forEach { output = output.replace(it.key, it.value) }
         return output

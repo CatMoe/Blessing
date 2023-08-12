@@ -15,7 +15,7 @@ object MoeChannelHandler : IPipeline {
     val EXCEPTION_HANDLER: ChannelHandler = PacketExceptionHandler()
 
     val sentHandshake = Caffeine.newBuilder()
-        .expireAfterWrite(30, TimeUnit.SECONDS)
+        .expireAfterAccess(30, TimeUnit.SECONDS)
         .build<Channel, Boolean>()
 
     private val defaultTimeout = BungeeCord.getInstance().config.timeout.toLong()
