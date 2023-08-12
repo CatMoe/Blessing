@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
@@ -128,7 +129,7 @@ class LimboHandler(
     }
 
     private fun keepAliveScheduler() {
-        Scheduler(MoeFilter.instance).repeatScheduler( 10, TimeUnit.SECONDS) {
+        Scheduler(MoeFilter.instance).repeatScheduler( LocalConfig.getLimbo().getLong("keep-alive.delay"), TimeUnit.SECONDS) {
             if (disconnected.get()) return@repeatScheduler
             keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)

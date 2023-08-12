@@ -195,7 +195,7 @@ class LoadConfig {
                     chat-format {
                         idle=[
                             "",
-                            " <aqua>是否处于攻击状态: <green>否",
+                            " <aqua>是否正在遭到攻击: <green>否",
                             " <aqua>CPU使用率: <white>%process_cpu%% <gray>/ <white>%system_cpu%% <gray>(进程, 系统)",
                             " <aqua>共计连接过服务器的IP数: <white>%total_ips%",
                             " <aqua>已阻止的连接数: <white>%blocked%",
@@ -205,14 +205,14 @@ class LoadConfig {
                         ]
                         attack=[
                             "",
-                            " <aqua>是否处于攻击状态: <red>是",
+                            " <aqua>是否正在遭到攻击: <red>是",
                             " <aqua>防御模式: %type%",
                             " <aqua>CPU使用率: <white>%process_cpu%% <gray>/ <white>%system_cpu%% <gray>(进程, 系统)",
                             "",
                             "<yellow>在攻击发生期间发生了什么?:",
                             " <aqua>此攻击持续了 <white>%duration%  <aqua>每秒连接数最高纪录为 <white>%peak_cps_session% <aqua>!",
                             " <aqua>一共传入了 <white>%total_session% <aqua>个连接, 但已经阻止了 <white>%blocked_session% <aqua>个传入的连接",
-                            " <aqua>从攻击开始到现在一共有 <white>%total_ips_session% 个地址尝试连接到服务器",
+                            " <aqua>从攻击开始到现在一共有 <white>%total_ips_session% <aqua>个地址尝试连接到服务器",
                             ""
                         ]
                     }
@@ -475,7 +475,7 @@ class LoadConfig {
                 version="$version"
         
                 # 内置的反代理. (自动从网站上抓取代理并将其放置在缓存中)
-                internal: {
+                internal {
                     enabled=true
                     # 启用调试 (大量垃圾邮件警告!)
                     debug=false
@@ -595,16 +595,15 @@ class LoadConfig {
                 # 总是检查玩家 如果为false 则无视bungee-queue直接加入服务器
                 always-check=true
                 
+                # KeepAlive设置
+                keep-alive {
+                    # 多少间隔发送一次 单位为秒
+                    delay=10
+                    # 等待回应超时时间(单位为毫秒)
+                    max-response=500
+                }
+                
                 check {
-                    # 此检查用于检测异常的KeepAlive
-                    unexpected-keepalive {
-                        # 启用检查? 启用后将一次发送2个KeepAlive用于检测.
-                        enabled=true
-                        # 两次KeepAlive间隔必须大于多少毫秒?
-                        # 修改此项需要重启服务器
-                        # 如果您不知道调整会带来什么后果 请不要随意调整
-                        least-allow-delay=350
-                    }
                     # 掉落检查
                     falling {
                         # 每tick运动的最大速度(方块)
@@ -629,6 +628,19 @@ class LoadConfig {
                         calculate-type=DISTANCE
                         # 测量的距离 如果达到此值 将通过检查
                         range=100
+                    }
+                    # 变速检查 (依靠监听移动数据包)
+                    timer {
+                        # 违规点数衰减间隔(秒)
+                        decay=4
+                        # 违规点数高于或等于多少会被踢出
+                        kick-vl=5
+                        # 第一次移动与第二次移动的间隔要高于多少(毫秒)才应被认作合法行为
+                        allowed-delay=50
+                        # 如果玩家通过检查的速度比此规定的时间快 则他们将被踢出服务器(秒)
+                        min=4
+                        # 如果玩家通过检查的速度比此规定的时间慢 则他们将会被踢出服务器(秒)
+                        max=10
                     }
                 }
     """.trimIndent()

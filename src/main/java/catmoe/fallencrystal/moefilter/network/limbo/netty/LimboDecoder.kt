@@ -60,6 +60,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
         MoeLimbo.debug(packet.toString())
         ctx.fireChannelRead(packet)
+        MoeLimbo.sentHandshake.put(handler!!, true)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

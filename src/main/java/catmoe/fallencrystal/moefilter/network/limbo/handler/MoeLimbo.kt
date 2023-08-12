@@ -19,9 +19,10 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
-import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCheck
+import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
+import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.impl.UnexpectedKeepAlive
+import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveTimeout
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
@@ -70,7 +71,6 @@ object MoeLimbo {
             MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
         }
         initDimension()
-        if (!conf.getBoolean("check.unexpected-keepalive.enabled")) { LimboListener.unregister(UnexpectedKeepAlive) }
         debug = LocalConfig.getConfig().getBoolean("debug")
     }
 
@@ -91,7 +91,9 @@ object MoeLimbo {
 
     private fun initCheck() {
         LimboListener.register(CommonJoinCheck)
-        LimboListener.register(FallingCheck)
+        LimboListener.register(MoveCheck)
+        LimboListener.register(MoveTimer)
+        LimboListener.register(KeepAliveTimeout)
         // if (conf.getBoolean("unexpected-keepalive.enabled")) { LimboListener.register(UnexpectedKeepAlive) }
         // LimboListener.register(InstantDisconnectCheck)
     }

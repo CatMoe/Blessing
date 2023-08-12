@@ -17,7 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
@@ -29,38 +30,33 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
 import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import com.github.benmanes.caffeine.cache.Caffeine
-import java.net.InetSocketAddress
+import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import java.util.concurrent.TimeUnit
 
-@Checker(LimboCheckType.UNEXPECTED_KEEP_ALIVE)
+@Checker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
 @HandlePacket(PacketKeepAlive::class)
-object UnexpectedKeepAlive : LimboChecker, ILimboListener {
+object KeepAliveTimeout : LimboChecker, ILimboListener {
 
-    private val detectorCache = Caffeine.newBuilder().expireAfterWrite(350, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()
-
-    fun check(handler: LimboHandler) {
-        handler.sendPacket(handler.keepAlive)
-        handler.sendPacket(handler.keepAlive)
-    }
+    private val queue: MutableCollection<LimboHandler> = ArrayList()
+    private val scheduler = Scheduler(MoeFilter.instance)
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
-        if (cancelledRead) return true
-        if (packet !is PacketKeepAlive) return false
-        val h = detectorCache.getIfPresent(handler)
-        if (h == null) { detectorCache.put(handler, true) } else {
-            FastDisconnect.disconnect(handler.channel, DisconnectType.UNEXPECTED_PING, ServerKickType.MOELIMBO); return true
-        }
-        check(handler)
+        if (queue.contains(handler)) queue.remove(handler) else kick(handler)
         return false
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
-        if (ProxyCache.isProxy((handler.address as InetSocketAddress).address)) {
-            FastDisconnect.disconnect(handler.channel, DisconnectType.PROXY, ServerKickType.MOELIMBO)
-            return true
+        val h = handler
+        if (!cancelled) queue.add(h)
+        scheduler.delayScheduler(LocalConfig.getLimbo().getLong("keep-alive.max-response"), TimeUnit.MILLISECONDS) {
+            if (queue.contains(h) && handler.channel.isActive) kick(h) else queue.remove(h)
         }
         return false
     }
+
+    private fun kick(handler: LimboHandler) {
+        FastDisconnect.disconnect(handler.channel, DisconnectType.UNEXPECTED_PING, ServerKickType.MOELIMBO)
+    }
+
 
 }

@@ -30,7 +30,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCheck
+import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.PingManager
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
@@ -53,7 +53,7 @@ class ReloadConfig : EventListener {
             GeoIPManager.reload()
             Firewall.reload()
             if (LocalConfig.getLimbo().getBoolean("enabled")) MoeLimbo.reload()
-            FallingCheck.reload()
+            MoveCheck.reload()
         }
         ProxyCache.reload()
         Notifications.reload()
