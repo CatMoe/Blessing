@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
@@ -85,7 +85,7 @@ class MoeInitialHandler(
         currentState = when (handshake.requestedProtocol) {
             1 -> { ConnectionState.STATUS }
             2 -> {
-                val info = AddressCheck(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port))
+                val info = Address(inetSocketAddress!!, InetSocketAddress(handshake.host, handshake.port))
                 if (DomainCheck.instance.increase(info)) { kick(channel, DisconnectType.INVALID_HOST); return }
                 if (CountryCheck().increase(info)) { kick(channel, DisconnectType.COUNTRY); return }
                 if (ProxyCheck().increase(info)) { kick(channel, DisconnectType.PROXY); return }

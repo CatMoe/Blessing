@@ -15,19 +15,8 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.common.kick
+package catmoe.fallencrystal.moefilter.common.check.info.impl
 
-enum class DisconnectType(@JvmField val messagePath: String) {
-    ALREADY_ONLINE("kick.already-online"),
-    REJOIN("kick.rejoin"),
-    PING("kick.ping"),
-    INVALID_NAME("kick.invalid-name"),
-    INVALID_HOST("kick.invalid-host"),
-    COUNTRY("kick.country"),
-    PROXY("kick.proxy"),
-    UNEXPECTED_PING("kick.unexpected-ping"),
-    DETECTED("kick.detected"),
-    PASSED_CHECK("kick.passed-check"),
-    RECHECK("kick.recheck"),
-    BRAND_NOT_ALLOWED("kick.brand-not-allowed"),
-}
+import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
+
+class Brand(val brand: String) : CheckInfo

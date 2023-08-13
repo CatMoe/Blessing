@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.listener.main
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
@@ -89,7 +89,7 @@ object MainListener {
         when (handshake.requestedProtocol) {
             1 -> { MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get())) }
             2 -> {
-                val info = AddressCheck(connection.inetSocketAddress, connection.virtualHost)
+                val info = Address(connection.inetSocketAddress, connection.virtualHost)
                 if (DomainCheck.instance.increase(info)) { kick(connection, DisconnectType.INVALID_HOST); return }
                 if (CountryCheck().increase(info)) { kick(connection, DisconnectType.COUNTRY); return }
                 if (ProxyCheck().increase(info)) { kick(connection, DisconnectType.PROXY); return }

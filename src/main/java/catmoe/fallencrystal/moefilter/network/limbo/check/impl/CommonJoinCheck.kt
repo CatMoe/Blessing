@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.AlreadyOnlineCheck
@@ -78,7 +78,7 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
             return false
         }
         if (packet is PacketHandshake && packet.nextState == Protocol.LOGIN) {
-            val addressCheck = AddressCheck(inetSocketAddress, handler.host)
+            val addressCheck = Address(inetSocketAddress, handler.host)
             // Domain check
             if (DomainCheck.instance.increase(addressCheck)) { kick(handler, DisconnectType.INVALID_HOST); return true }
             // Country check

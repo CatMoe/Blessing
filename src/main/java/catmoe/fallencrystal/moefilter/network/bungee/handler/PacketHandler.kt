@@ -2,6 +2,8 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
+import catmoe.fallencrystal.moefilter.common.check.brand.BrandCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Brand
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
@@ -92,6 +94,7 @@ class PacketHandler : ChannelDuplexHandler() {
                         brand.release()
                         if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
                         EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
+                        if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
                     }
                 }
                 // if (packet is KeepAlive) { MessageUtil.logInfo("[MoeFilter] [KeepAlive] id: ${packet.randomId} address: ${ctx.channel().remoteAddress()} Client -> Server") }

@@ -57,6 +57,23 @@ class LoadConfig {
                     custom="<light_purple>MoeFilter <aqua><- <green>%backend%"
                 }
                 
+                # 客户端标签检查
+                client-brand {
+                    # 工作模式
+                    # WHITELIST = 仅允许指定客户端加入
+                    # BLACKLIST = 不允许指定客户端加入
+                    mode=BLACKLIST
+                    # 匹配模式
+                    # CONTAINS: 如果brand包含指定在列表中的信息 则匹配
+                    # EQUAL: 如果brand匹配列表中列出的其中一个的信息 则匹配
+                    # IGNORE_CASE: 跟EQUAL无异 但不区分大小写
+                    # (推荐) REGEX: 使用正则表达式进行匹配
+                    equal-mode=CONTAINS
+                    # 列表
+                    # 小提示: 尽可能地使用1个规则避免开销, 如果有多个需要匹配的规则 则推荐使用正则.
+                    list=[""]
+                }
+                
                 # TCP FAST OPEN (TFO) 配置. 该选项仅当antibot.conf中的mode为PIPELINE时有效
                 # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
                 # 0 = DISABLED, 1 = CLIENT, 2 = SERVER, 3 = BOTH, 4 = MANGLED
@@ -358,6 +375,11 @@ class LoadConfig {
                         "",
                         "<red>There is an exception in your session",
                         "<red>Please complete the certification again."
+                        ""
+                    ]
+                    brand-not-allowed=[
+                        ""
+                        "<red>Your client is not allowed on this server.",
                         ""
                     ]
                 }

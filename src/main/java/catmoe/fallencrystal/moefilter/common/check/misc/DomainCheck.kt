@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.common.check.misc
 
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -34,7 +34,7 @@ class DomainCheck : AbstractCheck() {
    
    override fun increase(info: CheckInfo): Boolean {
       if (!enable) return false
-      val address = (info as AddressCheck).address
+      val address = (info as Address).address
       val host = info.virtualHost!!.hostString
       if (host == address.address.toString().replace("/", "")) return false
       if (debug) { MessageUtil.logInfo("[MoeFilter] [AntiBot] [DomainCheck] ${info.address.address} try to connect from $host") }

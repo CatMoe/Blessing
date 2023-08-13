@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.AddressCheck
+import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -34,7 +34,7 @@ class ProxyCheck : AbstractCheck() {
     private val schedule = Scheduler(MoeFilter.instance)
 
     override fun increase(info: CheckInfo): Boolean {
-        val inetAddress = (info as AddressCheck).address.address
+        val inetAddress = (info as Address).address.address
         val result = ProxyCache.getProxy(inetAddress)
         if (result == null) { apiCheck(inetAddress); return false }
         if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress) }
