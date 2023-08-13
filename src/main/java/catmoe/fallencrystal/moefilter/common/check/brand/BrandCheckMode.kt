@@ -19,6 +19,6 @@ package catmoe.fallencrystal.moefilter.common.check.brand
 
 @Suppress("unused")
 enum class BrandCheckMode(val ifMatch: Boolean) {
-    WHITELIST(false),
-    BLACKLIST(true);
+    WHITELIST(true),
+    BLACKLIST(false);
 }
