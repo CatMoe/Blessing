@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.network.InitChannel
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import com.typesafe.config.ConfigFactory
@@ -63,5 +64,6 @@ class MoeFilter : Plugin() {
     companion object {
         lateinit var instance: MoeFilter
             private set
+        var mode: WorkingMode? = null
     }
 }

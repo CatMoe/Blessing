@@ -17,6 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.api.event.events
 
-import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
+import catmoe.fallencrystal.moefilter.api.event.MoeEvent
 
-class PluginUnloadEvent : MoeAsyncEvent
+class PluginUnloadEvent : MoeEvent

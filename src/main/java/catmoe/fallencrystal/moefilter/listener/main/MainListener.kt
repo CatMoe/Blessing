@@ -38,6 +38,7 @@ import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.PendingConnection
+import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.packet.Handshake
 import java.net.InetAddress
@@ -46,6 +47,8 @@ import java.net.SocketAddress
 import java.util.concurrent.CompletableFuture
 
 object MainListener {
+
+    var incomingListener: Listener? = null
 
     private val connectionCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
 
