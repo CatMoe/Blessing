@@ -20,15 +20,18 @@ package catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageActionbarPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
@@ -40,7 +43,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     override fun process(message: String, protocol: List<Int>): MessagePacket {
         val cached = MessagePacketCache.readPacket(this, message) as? MessageActionbarPacket
-        val baseComponent = getBaseComponent(cached, message)
+        val baseComponent = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, baseComponent)
         val legacySerializer = getLegacySerializer(cached, legacyComponent)
@@ -113,7 +116,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         return title
     }
 
-    private fun get110(baseComponent: BaseComponent, need: Boolean): Chat? {
-        return if (need) Chat(getSerializer(null, TextComponent(BaseComponent.toLegacyText(baseComponent))), aOrdinal.toByte(), null) else null
+    private fun get110(component: Component, need: Boolean): Chat? {
+        return if (need) Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(ComponentUtil.toBaseComponents(component)))), aOrdinal.toByte(), null) else null
     }
 }

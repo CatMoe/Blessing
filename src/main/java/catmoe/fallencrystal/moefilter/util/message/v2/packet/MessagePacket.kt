@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import net.md_5.bungee.api.chat.BaseComponent
+import net.kyori.adventure.text.Component
 
 interface MessagePacket {
     fun getType(): MessagesType
@@ -27,9 +27,9 @@ interface MessagePacket {
 
     fun getOriginal(): String
 
-    fun getBaseComponent(): BaseComponent
+    fun getComponent(): Component
 
-    fun getLegacyComponent(): BaseComponent
+    fun getLegacyComponent(): Component
 
     fun getComponentSerializer(): String
 

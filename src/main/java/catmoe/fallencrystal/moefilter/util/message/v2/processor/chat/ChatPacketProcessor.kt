@@ -39,9 +39,9 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
          */
         val cached = MessagePacketCache.readPacket(this, message) as? MessageChatPacket
         // getBaseComponent & getSerializer 方法都在抽象类中实践.
-        val baseComponent = getBaseComponent(cached, message)
+        val component = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
-        val serializer = getSerializer(cached, baseComponent)
+        val serializer = getSerializer(cached, component)
         val legacySerializer = getSerializer(cached, legacyComponent)
         // 1.19+ 应该使用SystemChat而不是Chat 需要区分这一点.
         var need119 = cached?.has119Data ?: false; var needLegacy = cached?.hasLegacyData ?: false; var needLegacy2 = cached?.hasLegacy2Data ?: false
@@ -52,7 +52,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         val p119 = if (cached?.has119Data == true) cached.v119 else get119(serializer, need119)
         val legacy = if (cached?.hasLegacyData == true) cached.legacy else getLegacy(serializer, needLegacy)
         val legacy2 = if (cached?.hasLegacy2Data == true) cached.legacy2 else getLegacy(legacySerializer, needLegacy2)
-        val packet = MessageChatPacket(p119, legacy, legacy2, need119, needLegacy, needLegacy2, baseComponent, serializer, legacyComponent, serializer, message)
+        val packet = MessageChatPacket(p119, legacy, legacy2, need119, needLegacy, needLegacy2, component, serializer, legacyComponent, serializer, message)
         MessagePacketCache.writePacket(this, packet)
         return packet
     }

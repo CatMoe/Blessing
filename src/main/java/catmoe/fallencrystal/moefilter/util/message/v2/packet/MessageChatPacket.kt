@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import net.md_5.bungee.api.chat.BaseComponent
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 
@@ -30,10 +30,12 @@ class MessageChatPacket(
     val has119Data: Boolean,
     val hasLegacyData: Boolean,
     val hasLegacy2Data: Boolean,
-    val bc: BaseComponent,
-    val cs: String,
-    val legacyBc: BaseComponent,
-    val legacyCs: String,
+    @JvmField
+    val component: Component,
+    val gson: String,
+    @JvmField
+    val legacyComponent: Component,
+    val legacyGson: String,
     val originalMessage: String
 ) : MessagePacket {
     override fun getType(): MessagesType { return MessagesType.CHAT }
@@ -44,13 +46,13 @@ class MessageChatPacket(
     }
 
 
-    override fun getBaseComponent(): BaseComponent { return bc }
+    override fun getComponent(): Component { return component }
 
-    override fun getComponentSerializer(): String { return cs }
+    override fun getComponentSerializer(): String { return gson }
 
     override fun getOriginal(): String { return originalMessage }
 
-    override fun getLegacyComponent(): BaseComponent { return legacyBc }
+    override fun getLegacyComponent(): Component { return legacyComponent }
 
-    override fun getLegacySerializer(): String { return legacyCs }
+    override fun getLegacySerializer(): String { return legacyGson }
 }

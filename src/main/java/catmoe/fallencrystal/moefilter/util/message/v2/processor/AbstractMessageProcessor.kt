@@ -17,34 +17,31 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.processor
 
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
-import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.chat.ComponentSerializer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class AbstractMessageProcessor : IMessagePacketProcessor {
 
+    fun serializerToString(component: Component): String { return ComponentUtil.toGson(component) }
 
-    fun colorize(string: String, hex: Boolean): BaseComponent { return MessageUtil.colorize(string, hex) }
-
-    fun serializerToString(baseComponent: BaseComponent): String { return ComponentSerializer.toString(baseComponent) }
-
-    fun getBaseComponent(packet: MessagePacket?, message: String): BaseComponent {
+    fun getComponent(packet: MessagePacket?, message: String): Component {
         //return if (packet?.getBaseComponent() != null) packet.getBaseComponent() else colorize(message)
-        return packet?.getBaseComponent() ?: colorize(message, true)
+        return packet?.getComponent() ?: ComponentUtil.parse(message)
     }
 
-    fun getSerializer(packet: MessagePacket?, baseComponent: BaseComponent): String {
+    fun getSerializer(packet: MessagePacket?, component: Component): String {
         // return if (packet?.getComponentSerializer() != null) packet.getComponentSerializer() else serializerToString(baseComponent)
-        return packet?.getComponentSerializer() ?: serializerToString(baseComponent)
+        return packet?.getComponentSerializer() ?: serializerToString(component)
     }
 
-    fun getLegacyComponent(packet: MessagePacket?, message: String): BaseComponent {
+    fun getLegacyComponent(packet: MessagePacket?, message: String): Component {
         // return if (packet?.getLegacyComponent() != null) packet.getLegacyComponent() else colorize(message, false)
-        return packet?.getLegacyComponent() ?: colorize(message, false)
+        return packet?.getLegacyComponent() ?: LegacyComponentSerializer.legacySection().deserialize(message)
     }
 
-    fun getLegacySerializer(packet: MessagePacket?, baseComponent: BaseComponent): String { return packet?.getLegacySerializer() ?: serializerToString(baseComponent) }
+    fun getLegacySerializer(packet: MessagePacket?, component: Component): String { return packet?.getLegacySerializer() ?: serializerToString(component) }
 
 }
