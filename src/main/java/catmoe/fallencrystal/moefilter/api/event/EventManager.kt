@@ -40,7 +40,7 @@ object EventManager {
         val methods = listener.javaClass.declaredMethods
         val lPlugin = listenerPlugin.getIfPresent(listener) ?: plugin
         if (event is MoeAsyncEvent) { methods.forEach { if (needSend(event, it)) { scheduler.runAsync(lPlugin) {  try { it.invoke(listener, event) } catch (e: Exception) { e.printStackTrace() } } } } }
-        if (event is MoeEvent) { methods.forEach { try { it.invoke(listener, event) } catch (e: Exception) { e.printStackTrace() } } }
+        if (event is MoeEvent) { methods.forEach { try { it.invoke(listener, it) } catch (e: Exception) { e.printStackTrace() } } }
     }
 
     private fun needSend(event: Any, method: Method): Boolean { return method.isAnnotationPresent(FilterEvent::class.java) && method.parameterCount == 1 && event::class.java.isAssignableFrom(method.parameterTypes[0]) }
