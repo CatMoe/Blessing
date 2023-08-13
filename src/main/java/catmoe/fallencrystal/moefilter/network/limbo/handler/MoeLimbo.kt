@@ -45,12 +45,14 @@ object MoeLimbo {
         MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
     }
     var debug = LocalConfig.getConfig().getBoolean("debug")
+    var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
     fun reload() {
         LockdownManager.setLockdown(true)
         calibrateConnections()
         init()
         LockdownManager.setLockdown(false)
+        useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
     }
 
     fun calibrateConnections() {

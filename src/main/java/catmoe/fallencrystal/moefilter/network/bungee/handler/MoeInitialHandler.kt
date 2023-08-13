@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 // Borrowed from :
 // https://github.com/SpigotMC/BungeeCord/blob/master/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@Suppress("MemberVisibilityCanBePrivate")
 class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
     listenerInfo: ListenerInfo,
@@ -69,6 +70,14 @@ class MoeInitialHandler(
 
     private var superHandshake = AtomicBoolean(true)
 
+    @JvmField
+    var handshake: Handshake? = null
+        //get() = field ?: super.getHandshake()
+
+    override fun getHandshake(): Handshake {
+        return handshake ?: super.getHandshake()
+    }
+
     @Throws(Exception::class)
     override fun handle(handshake: Handshake) {
         if (currentState !== ConnectionState.HANDSHAKE) { throw InvalidHandshakeException("") }
@@ -85,6 +94,7 @@ class MoeInitialHandler(
             else -> { throw InvalidHandshakeException("Invalid handshake protocol ${handshake.requestedProtocol}") }
         }
         handshake.host=checkHost(handshake.host)
+        this.handshake=handshake
         pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, packetHandler)
         packetHandler.protocol.set(handshake.protocolVersion)
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
@@ -141,10 +151,19 @@ class MoeInitialHandler(
     @Throws(Exception::class)
     override fun handle(loginRequest: LoginRequest) {
         if (currentState !== ConnectionState.JOINING) { throw InvalidHandshakeException("") }
+        name=loginRequest.data
         super.handle(loginRequest)
+        this.loginRequest=loginRequest
     }
 
-    private var uniqueId: UUID? = null
+    @JvmField
+    var uniqueId: UUID? = null
+    @JvmField
+    var loginRequest: LoginRequest? = null
+    @JvmField
+    var name: String? = null
+
+    override fun getLoginRequest(): LoginRequest? { return loginRequest ?: super.getLoginRequest() }
 
     override fun setUniqueId(uuid: UUID?) {
         this.uniqueId=uuid

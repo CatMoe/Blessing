@@ -13,6 +13,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.VarIntLengthEncoder
@@ -21,6 +22,7 @@ import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.config.ListenerInfo
+import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
@@ -31,6 +33,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     val throttler = bungee.connectionThrottle
     val legacyKicker = KickStringWriter()
     val protocol = 0
+    val hasJPremium = bungee.pluginManager.getPlugin("JPremium") != null
 
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {
@@ -84,7 +87,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
         pipeline.replace(PipelineUtils.BOSS_HANDLER, PipelineUtils.BOSS_HANDLER, InboundHandler())
 
-        // Init default bungeecord pipeline
+        // Init default BungeeCord pipeline
         pipeline.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.LEGACY_DECODER, LegacyDecoder())
         pipeline.addAfter(PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
         pipeline.addAfter(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, MinecraftEncoder(Protocol.HANDSHAKE, true, protocol))
@@ -94,7 +97,9 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
         // MoeFilter's InitialHandler
-        pipeline.get(InboundHandler::class.java).setHandler(MoeInitialHandler(ctx, listener))
+        pipeline.get(InboundHandler::class.java).setHandler(
+            if (MoeLimbo.useOriginalHandler) InitialHandler(bungee, listener) else MoeInitialHandler(ctx, listener)
+        )
 
         if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
 

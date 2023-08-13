@@ -375,6 +375,11 @@ class LoadConfig {
                 # DISABLED: 什么也不做. (作为纯实用工具使用)
                 mode=PIPELINE
                 
+                # 如果您在使用MoeFilter的InitialHandler出现了一些问题 请使用这个
+                # 注意: 此项仅在PIPELINE模式下生效
+                # 建议启用Limbo来提供足够强大的防护 因为开启此项会导致BungeeCord禁用部分检查
+                use-original-handler=false
+                
                 # 选择事件呼叫时机 该选项仅当mode为PIPELINE时有效.
                 # AFTER_INIT: 当连接传入时立马呼叫事件 无论它们是否被阻止 (不推荐)
                 # NON_FIREWALL: 当连接没被防火墙切断时呼叫事件
