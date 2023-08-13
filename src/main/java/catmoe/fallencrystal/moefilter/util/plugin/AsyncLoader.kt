@@ -19,9 +19,10 @@ package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.MoeFilter
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
+import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.EventManager
+import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
-import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
@@ -57,7 +58,7 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
 @Suppress("SpellCheckingInspection")
-class AsyncLoader(val plugin: Plugin) {
+class AsyncLoader(val plugin: Plugin) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
@@ -96,6 +97,7 @@ class AsyncLoader(val plugin: Plugin) {
             return
         }
         scheduler.runAsync {
+            EventManager.registerListener(plugin, this)
             try {
 
                 EventManager // 初始化
@@ -126,12 +128,11 @@ class AsyncLoader(val plugin: Plugin) {
         }
     }
 
+    @FilterEvent
     fun unload() {
-        EventManager.triggerEvent(PluginUnloadEvent())
         CPUMonitor.shutdownSchedule()
         try {
             MessageUtil.logInfo("[MoeFilter] Waiting event calling")
-            Thread.sleep(1000)
         } catch (ex: Exception) {
             MessageUtil.logWarn("[MoeFilter] Exception occurred while thread waiting.")
             ex.printStackTrace()
@@ -141,12 +142,12 @@ class AsyncLoader(val plugin: Plugin) {
 
     private fun loadAntibot() {
         val mode = try { WorkingMode.valueOf(LocalConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }
+        MainListener.incomingListener = if (LoggerManager.getType() == BCLogType.WATERFALL)
+            catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
+        else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
         when (mode) {
             PIPELINE -> { InitChannel().initPipeline() }
             EVENT -> {
-                MainListener.incomingListener = if (LoggerManager.getType() == BCLogType.WATERFALL)
-                    catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
-                else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
                 pluginManager.registerListener(plugin, MainListener.incomingListener)
                 MessageUtil.logWarn("[MoeFilter] EVENT mode is deprecated. Don't expect strong protection!")
             }

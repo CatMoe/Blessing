@@ -58,12 +58,17 @@ object MoeLimbo {
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
         if (this.useOriginalHandler != useOriginalHandler && MoeFilter.mode == WorkingMode.PIPELINE) {
-            val pm = BungeeCord.getInstance().pluginManager
-            when (useOriginalHandler) {
-                true -> { pm.registerListener(MoeFilter.instance, MainListener.incomingListener) }
-                false -> { pm.unregisterListener(MainListener.incomingListener) }
-            }
             this.useOriginalHandler=useOriginalHandler
+            initEvent()
+        }
+    }
+
+    private fun initEvent() {
+        if (MoeFilter.mode != WorkingMode.PIPELINE) return
+        val pm = BungeeCord.getInstance().pluginManager
+        when (useOriginalHandler) {
+            true -> { pm.registerListener(MoeFilter.instance, MainListener.incomingListener) }
+            false -> { pm.unregisterListener(MainListener.incomingListener) }
         }
     }
 
@@ -79,6 +84,7 @@ object MoeLimbo {
             MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
         }
         initDimension()
+        initEvent()
         debug = LocalConfig.getConfig().getBoolean("debug")
     }
 
