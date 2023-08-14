@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/MoeFilter.iml" filepath="$PROJECT_DIR$/.idea/MoeFilter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bungee/MoeFilter-Bungee.iml" filepath="$PROJECT_DIR$/bungee/MoeFilter-Bungee.iml" />
     </modules>
   </component>
 </project>
