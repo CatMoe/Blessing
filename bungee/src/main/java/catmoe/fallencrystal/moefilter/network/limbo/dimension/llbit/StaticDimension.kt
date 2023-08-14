@@ -32,8 +32,8 @@ import kotlin.system.exitProcess
 @Suppress("MemberVisibilityCanBePrivate")
 object StaticDimension {
 
-    val d1 = nbtReader("dim/d1.nbt")
-    val d2 = nbtReader("dim/d2.nbt")
+    val d1 = nbtReader("resource/dim/d1.nbt")
+    val d2 = nbtReader("resource/dim/d2.nbt")
 
     val cacheDimension = Caffeine.newBuilder().build<Version, Tag>()
 

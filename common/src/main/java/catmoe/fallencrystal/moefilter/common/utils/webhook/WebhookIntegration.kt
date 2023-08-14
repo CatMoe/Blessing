@@ -16,11 +16,9 @@
  */
 package catmoe.fallencrystal.moefilter.common.utils.webhook
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.webhook.embed.EmbedObject
 import java.io.IOException
 import java.lang.reflect.Array
-import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -39,8 +37,6 @@ open class WebhookIntegration {
     protected var avatarUrl: String? = null
 
     var proxy: Proxy? = null
-
-    private val proxyConf = LocalConfig.getProxy().getConfig("proxies-config")
 
     @Throws(IOException::class)
     fun execute() {
@@ -106,8 +102,7 @@ open class WebhookIntegration {
             json.put("embeds", embedObjects.toTypedArray())
         }
         val url = URL(webhookUrl)
-        val proxy = if (this.proxy != null) this.proxy else if (proxyFromCfg() != null) proxyFromCfg() else null
-        val connection = (if (proxy != null) url.openConnection(proxy) else url.openConnection() ) as HttpsURLConnection
+        val connection = (if (proxy != null) url.openConnection(proxy) else url.openConnection()) as HttpsURLConnection
         connection.addRequestProperty(
             "Content-Type",
             "application/json"
@@ -124,15 +119,6 @@ open class WebhookIntegration {
         stream.close()
         connection.inputStream.close()
         connection.disconnect()
-    }
-
-    private fun proxyFromCfg(): Proxy? {
-        val proxyType =
-            try { Proxy.Type.valueOf(proxyConf.getAnyRef("mode").toString()) }
-            catch (_: Exception) { Proxy.Type.DIRECT }
-        return if (proxyType != Proxy.Type.DIRECT) {
-            Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port")))
-        } else null
     }
 
     internal inner class JSONObject {

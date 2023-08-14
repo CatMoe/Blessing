@@ -22,19 +22,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <description>❤ by CatMoe</description>
-    
     <groupId>catmoe.fallencrystal.moefilter</groupId>
-    <artifactId>MoeFilter-Bungee</artifactId>
+    <artifactId>MoeFilter-common</artifactId>
     <version>0.1.2-Alpha</version>
+    <packaging>jar</packaging>
+
     <properties>
-        <java.version>1.8</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.0</kotlin.version>
         <project.version>0.1.2-Alpha</project.version>
     </properties>
-    <packaging>jar</packaging>
-
-    <name>MoeFilter-bungee</name>
 
     <build>
         <finalName>MoeFilter</finalName>
@@ -73,7 +72,7 @@
                             <resources>
                                 <resource>
                                     <directory>${basedir}/src/main/resources</directory>
-                                    <filtering>false</filtering>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                             <nonFilteredFileExtensions>
@@ -90,16 +89,10 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>process-sources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <source>src/main/java</source>
-                                <source>../target/generated-sources/annotations</source>
-                            </sourceDirs>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
@@ -132,6 +125,14 @@
                             <goal>testCompile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
                 </executions>
                 <configuration>
                     <source>${java.version}</source>
@@ -142,14 +143,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>exceptionflug</id>
-            <url>https://mvn.exceptionflug.de/repository/exceptionflug-public/</url>
-        </repository>
-        <repository>
-            <id>simplixsoft-public</id>
-            <url>https://repo.simplix.dev/repository/simplixsoft-public/</url>
-        </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
@@ -163,41 +156,53 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>codemc</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>catmoe.fallencrystal.moefilter</groupId>
-            <artifactId>MoeFilter-common</artifactId>
-            <version>0.1.2-Alpha</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.96.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.9.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall</artifactId>
-            <version>1.20-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Waterfall.jar</systemPath>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.4.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>dev.simplix</groupId>
-            <artifactId>protocolize-api</artifactId>
-            <scope>provided</scope>
-            <version>2.3.0</version>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.11.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.luckperms</groupId>
-            <artifactId>api</artifactId>
-            <version>5.4</version>
-            <scope>provided</scope>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>4.1.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-serializer-bungeecord</artifactId>
-            <version>4.3.0</version>
+            <groupId>me.xdrop</groupId>
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.grack</groupId>
+            <artifactId>nanojson</artifactId>
+            <version>1.8</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -223,5 +228,37 @@
             <version>1.18.28</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <scope>compile</scope>
+            <version>4.14.0</version>
+        </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-gson</artifactId>
+            <version>4.14.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>4.14.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-nbt</artifactId>
+            <version>4.14.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
+
 </project>

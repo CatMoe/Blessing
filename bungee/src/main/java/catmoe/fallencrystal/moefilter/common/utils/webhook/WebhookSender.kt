@@ -16,9 +16,12 @@
  */
 package catmoe.fallencrystal.moefilter.common.utils.webhook
 
+import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.webhook.embed.EmbedObject
 import com.typesafe.config.Config
 import java.awt.Color
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -66,8 +69,19 @@ class WebhookSender {
         sendWebhook(format, title, color, embed, url, ping, username)
     }
 
+    private fun proxyFromCfg(): Proxy? {
+        val proxyConf = LocalConfig.getProxy().getConfig("proxies-config")
+        val proxyType =
+            try { Proxy.Type.valueOf(proxyConf.getAnyRef("mode").toString()) }
+            catch (_: Exception) { Proxy.Type.DIRECT }
+        return if (proxyType != Proxy.Type.DIRECT) {
+            Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port")))
+        } else null
+    }
+
     private fun run(url: String, username: String) {
         try {
+            webhook.proxy = if (webhook.proxy != null) webhook.proxy else if (proxyFromCfg() != null) proxyFromCfg() else null
             webhook.webhookUrl = url
             webhook.username = username
             webhook.execute()

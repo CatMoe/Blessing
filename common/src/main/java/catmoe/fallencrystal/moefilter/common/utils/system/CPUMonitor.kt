@@ -47,10 +47,10 @@ object CPUMonitor {
         val osBean = ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean
         val latestCpuUsage = CpuUsage(osBean.processCpuLoad, osBean.systemCpuLoad)
         val zero = 0.000000
-        val procCpuUsage = if (latestCpuUsage.processCPU > zero) latestCpuUsage.processCPU else this.latestCpuUsage.processCPU
-        val sysCpuUsage = if (latestCpuUsage.systemCPU > zero) latestCpuUsage.systemCPU else this.latestCpuUsage.systemCPU
+        val procCpuUsage = if (latestCpuUsage.processCPU > zero) latestCpuUsage.processCPU else CPUMonitor.latestCpuUsage.processCPU
+        val sysCpuUsage = if (latestCpuUsage.systemCPU > zero) latestCpuUsage.systemCPU else CPUMonitor.latestCpuUsage.systemCPU
         if (procCpuUsage > sysCpuUsage) return
-        this.latestCpuUsage = CpuUsage(procCpuUsage, sysCpuUsage)
+        CPUMonitor.latestCpuUsage = CpuUsage(procCpuUsage, sysCpuUsage)
     }
 
     fun getCpuUsage(): CpuUsage { return latestCpuUsage }

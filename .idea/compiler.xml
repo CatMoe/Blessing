@@ -8,11 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="MoeFilter-Bungee" />
+        <module name="MoeFilter-common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="bungee" target="1.8" />
       <module name="Bungee" target="1.8" />
+      <module name="common" target="18" />
       <module name="MoeFilter (2)" target="1.8" />
     </bytecodeTargetLevel>
   </component>

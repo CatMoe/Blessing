@@ -18,6 +18,8 @@
 package catmoe.fallencrystal.moefilter.network.common.varint
 
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.decoder.DecoderResult
+import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntByteDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext

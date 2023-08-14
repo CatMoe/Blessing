@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.common.varint
+package catmoe.fallencrystal.moefilter.network.common.decoder
 
 import io.netty.util.ByteProcessor
 
