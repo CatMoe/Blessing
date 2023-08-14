@@ -42,7 +42,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         val component = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, component)
-        val legacySerializer = getSerializer(cached, legacyComponent)
+        val legacySerializer = getLegacySerializer(cached, legacyComponent)
         // 1.19+ 应该使用SystemChat而不是Chat 需要区分这一点.
         var need119 = cached?.has119Data ?: false; var needLegacy = cached?.hasLegacyData ?: false; var needLegacy2 = cached?.hasLegacy2Data ?: false
         protocol.forEach {

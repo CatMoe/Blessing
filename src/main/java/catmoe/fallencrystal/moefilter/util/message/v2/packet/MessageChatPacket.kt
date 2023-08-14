@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.util.message.v2.packet
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.kyori.adventure.text.Component
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 
@@ -34,7 +35,7 @@ class MessageChatPacket(
     val component: Component,
     val gson: String,
     @JvmField
-    val legacyComponent: Component,
+    val legacyComponent: BaseComponent,
     val legacyGson: String,
     val originalMessage: String
 ) : MessagePacket {
@@ -52,7 +53,7 @@ class MessageChatPacket(
 
     override fun getOriginal(): String { return originalMessage }
 
-    override fun getLegacyComponent(): Component { return legacyComponent }
+    override fun getLegacyComponent(): BaseComponent { return legacyComponent }
 
     override fun getLegacySerializer(): String { return legacyGson }
 }

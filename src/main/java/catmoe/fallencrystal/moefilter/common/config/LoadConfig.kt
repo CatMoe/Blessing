@@ -308,6 +308,10 @@ class LoadConfig {
                     # 当玩家没有权限使用那个子命令时 是否完全隐藏命令 (启用后忽略tabComplete的"no-subcommand-permission"和"no-permission")
                     full-hide-command=false
                 }
+                
+                # 踢出消息设置
+                # 注意: 当您使用渐变消息时 踢出系统并不负责旧版本的颜色格式匹配兼容
+                # 这意味着如果您的服务器有<1.16的玩家 在他们的视角内可能会看着怪怪的 (ex. 很抽象的颜色且随机)
                 kick {
                     placeholders {
                         custom1="这个是属于你的占位符! 在消息中使用[custom1]来使用它."

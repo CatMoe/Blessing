@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.kyori.adventure.text.Component
+import net.md_5.bungee.api.chat.BaseComponent
 
 interface MessagePacket {
     fun getType(): MessagesType
@@ -29,7 +30,7 @@ interface MessagePacket {
 
     fun getComponent(): Component
 
-    fun getLegacyComponent(): Component
+    fun getLegacyComponent(): BaseComponent
 
     fun getComponentSerializer(): String
 

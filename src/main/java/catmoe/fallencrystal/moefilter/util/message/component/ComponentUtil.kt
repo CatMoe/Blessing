@@ -28,6 +28,9 @@ import net.md_5.bungee.chat.ComponentSerializer
 
 @Suppress("unused")
 object ComponentUtil {
+
+    private val legacyBuilder = GsonComponentSerializer.builder().downsampleColors().emitLegacyHoverEvent().build()
+
     fun toBaseComponents(component: Component): BaseComponent { return TextComponent(*ComponentSerializer.parse(toGson(component))) }
 
     fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', legacy)) }
@@ -37,4 +40,11 @@ object ComponentUtil {
     fun toGson(component: Component): String { return GsonComponentSerializer.gson().serialize(component) }
 
     fun parse(str: String): Component { return MiniMessage.miniMessage().deserialize(str) }
+
+    fun parse(str: String, hex: Boolean): Component {
+        return when (hex) {
+            true -> parse(str)
+            false -> legacyBuilder.deserialize(toGson(parse(str)))
+        }
+    }
 }

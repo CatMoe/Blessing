@@ -20,14 +20,12 @@ package catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageActionbarPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
-import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -116,7 +114,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         return title
     }
 
-    private fun get110(component: Component, need: Boolean): Chat? {
-        return if (need) Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(ComponentUtil.toBaseComponents(component)))), aOrdinal.toByte(), null) else null
+    private fun get110(component: BaseComponent, need: Boolean): Chat? {
+        return if (need) Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(component))), aOrdinal.toByte(), null) else null
     }
 }

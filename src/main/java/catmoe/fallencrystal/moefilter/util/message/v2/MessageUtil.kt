@@ -103,7 +103,7 @@ object MessageUtil {
     fun colorize(message: String, hex: Boolean): BaseComponent {
         val c = ComponentUtil.parse(message)
         return when (hex) {
-            true -> { ComponentUtil.toBaseComponents(c) }
+            true -> { ComponentUtil.toBaseComponents(ComponentUtil.parse(message, true)) }
             false -> { BungeeComponentSerializer.legacy().serialize(c)[0] }
         }
     }
