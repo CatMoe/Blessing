@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.common
+package catmoe.fallencrystal.moefilter.network.bungee
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer

@@ -15,17 +15,26 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.util.message.group
+package catmoe.fallencrystal.moefilter.platform
 
-import net.md_5.bungee.api.chat.BaseComponent
+import java.io.File
 
-@Suppress("unused")
-class MessageGroup(
-    val message: BaseComponent,
-    val title: BaseComponent,
-    val subtitle: BaseComponent,
-    val titleFadeIn: Int,
-    val titleStay: Int,
-    val titleFadeOut: Int,
-    val actionbar: BaseComponent
-)
+interface PlatformLoader {
+
+    fun getPluginFolder(): File
+
+    fun getPluginInstance(): PlatformLoader
+
+    fun readyLoad()
+
+    fun whenLoad()
+
+    fun whenUnload()
+
+    fun pluginVersion(): String
+
+    fun getPlatformLogger(): SimpleLogger
+
+    fun getProxyServer(): MoeProxyServer
+
+}

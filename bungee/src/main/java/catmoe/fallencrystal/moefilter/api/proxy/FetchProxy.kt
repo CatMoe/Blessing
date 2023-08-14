@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.api.proxy
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.schedule
 
 class FetchProxy {
-    private val plugin = MoeFilter.instance
+    private val plugin = MoeFilterBungee.instance
 
     private var config = LocalConfig.getProxy()
     private var proxies = config.getStringList("internal.lists")

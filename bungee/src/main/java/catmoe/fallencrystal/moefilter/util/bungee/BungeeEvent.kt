@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.bungee
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
@@ -44,11 +44,11 @@ class BungeeEvent : Listener {
     fun onChat(event: ChatEvent) {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
         if (event.isProxyCommand && event.message.equals("/bungee")) {
-            Scheduler(MoeFilter.instance).runAsync {
+            Scheduler(MoeFilterBungee.instance).runAsync {
                 MessageUtil.sendMessage(listOf(
                         "<gradient:green:yellow>This server is running " +
                                 "<aqua><hover:show_text:'<rainbow>${proxy.name} ${proxy.version}'>${proxy.name}</hover></aqua> & " +
-                                "<gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilter.instance.description.version}</gradient> ❤</gradient>",
+                                "<gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilterBungee.instance.description.version}</gradient> ❤</gradient>",
                         "<gradient:#9BCD9B:#FFE4E1><click:open_url:'https://github.com/CatMoe/MoeFilter/'>CatMoe/MoeFilter</click> @ " +
                                 "<click:open_url:'https://www.miaomoe.net/'>miaomoe.net</click></gradient>"
                     ).joinToString("<reset><newline>"), MessagesType.CHAT, player)

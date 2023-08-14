@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -32,13 +32,14 @@ import kotlin.system.exitProcess
 @Suppress("MemberVisibilityCanBePrivate")
 object StaticDimension {
 
-    val d1 = nbtReader("resource/dim/d1.nbt")
-    val d2 = nbtReader("resource/dim/d2.nbt")
+    val d1 = nbtReader("dim/d1.nbt")
+    val d2 = nbtReader("dim/d2.nbt")
 
     val cacheDimension = Caffeine.newBuilder().build<Version, Tag>()
 
     var dim = MoeLimbo.dimensionType.llbit
 
+    @Suppress("EnumValuesSoftDeprecate")
     fun init() {
         Version.values().forEach { cacheDimension.put(it, dim.dimension.getFullCodec(it)) }
     }
@@ -46,7 +47,7 @@ object StaticDimension {
     fun nbtReader(path: String): CompoundTag {
         return try {
             CompoundTag.read(DataInputStream(BufferedInputStream(GZIPInputStream(
-                MoeFilter.instance.javaClass.classLoader.getResourceAsStream(path)))))[""] as CompoundTag
+                MoeFilterBungee.instance.javaClass.classLoader.getResourceAsStream(path)))))[""] as CompoundTag
         } catch (exception: Exception) {
             MessageUtil.logError("[MoeLimbo] A critical error when reading nbt files. Killing process..")
             exitProcess(404)

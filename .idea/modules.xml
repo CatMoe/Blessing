@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/MoeFilter.iml" filepath="$PROJECT_DIR$/MoeFilter.iml" />
       <module fileurl="file://$PROJECT_DIR$/bungee/MoeFilter-Bungee.iml" filepath="$PROJECT_DIR$/bungee/MoeFilter-Bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/MoeFilter-common.iml" filepath="$PROJECT_DIR$/common/MoeFilter-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/velocity/MoeFilter-velocity.iml" filepath="$PROJECT_DIR$/velocity/MoeFilter-velocity.iml" />
     </modules>
   </component>
 </project>

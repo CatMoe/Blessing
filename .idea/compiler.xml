@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="MoeFilter-Bungee" />
         <module name="MoeFilter-common" />
+        <module name="MoeFilter-velocity" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -16,6 +17,7 @@
       <module name="Bungee" target="1.8" />
       <module name="common" target="18" />
       <module name="MoeFilter (2)" target="1.8" />
+      <module name="velocity" target="18" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
 object KeepAliveTimeout : LimboChecker, ILimboListener {
 
     private val queue: MutableCollection<LimboHandler> = ArrayList()
-    private val scheduler = Scheduler(MoeFilter.instance)
+    private val scheduler = Scheduler(MoeFilterBungee.instance)
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (queue.contains(handler)) queue.remove(handler) else kick(handler)

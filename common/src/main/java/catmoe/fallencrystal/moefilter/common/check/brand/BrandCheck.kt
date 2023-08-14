@@ -37,17 +37,17 @@ object BrandCheck : AbstractCheck() {
         matchMode = try { BrandCheckMode.valueOf("${config.getAnyRef("mode")}") } catch (_: IllegalArgumentException) { BLACKLIST }
         matchType = try { BrandMatchType.valueOf("${config.getAnyRef("equal-mode")}") } catch (_: IllegalArgumentException) { CONTAINS }
         list = config.getStringList("list")
-        if (list.size == 1) a1=list[0]
+        if (list.size == 1) a1 = list[0]
     }
 
     override fun increase(info: CheckInfo): Boolean {
         info as Brand
         if (list.isEmpty()) return true
         val match = when (list.size == 1 && a1.isNotEmpty()) {
-            true -> this.match(info.brand, a1)
+            true -> match(info.brand, a1)
             false -> {
                 var m = false
-                list.forEach { if (this.match(info.brand, it)) { m=true; return@forEach } }
+                list.forEach { if (match(info.brand, it)) { m=true; return@forEach } }
                 m
             }
         }

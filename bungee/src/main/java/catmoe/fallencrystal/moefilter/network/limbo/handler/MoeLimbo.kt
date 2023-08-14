@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
@@ -40,6 +40,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import net.md_5.bungee.BungeeCord
 
+@Suppress("EnumValuesSoftDeprecate")
 object MoeLimbo {
 
     val connections: MutableCollection<LimboHandler> = ArrayList()
@@ -58,17 +59,17 @@ object MoeLimbo {
         init()
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
-        if (this.useOriginalHandler != useOriginalHandler && MoeFilter.mode == WorkingMode.PIPELINE) {
+        if (this.useOriginalHandler != useOriginalHandler && MoeFilterBungee.mode == WorkingMode.PIPELINE) {
             this.useOriginalHandler=useOriginalHandler
             initEvent()
         }
     }
 
     private fun initEvent() {
-        if (MoeFilter.mode != WorkingMode.PIPELINE) return
+        if (MoeFilterBungee.mode != WorkingMode.PIPELINE) return
         val pm = BungeeCord.getInstance().pluginManager
         when (useOriginalHandler) {
-            true -> { pm.registerListener(MoeFilter.instance, MainListener.incomingListener) }
+            true -> { pm.registerListener(MoeFilterBungee.instance, MainListener.incomingListener) }
             false -> { pm.unregisterListener(MainListener.incomingListener) }
         }
     }

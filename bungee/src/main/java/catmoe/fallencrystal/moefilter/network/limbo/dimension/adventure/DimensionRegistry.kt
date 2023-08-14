@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.TagStringIO
@@ -30,13 +30,13 @@ import java.util.stream.Collectors
 @Suppress("SpellCheckingInspection")
 object DimensionRegistry {
 
-    var codec_Legacy = readFromFile("resource/dim/d1.snbt")
-    var codec_1_16 = readFromFile("resource/dim/d0.snbt")
-    var codec_1_18_2 = readFromFile("resource/dim/d2.snbt")
-    var codec_1_19 = readFromFile("resource/dim/d3.snbt")
-    var codec_1_19_1 = readFromFile("resource/dim/d4.snbt")
-    var codec_1_19_4 = readFromFile("resource/dim/d5.snbt")
-    var codec_1_20 = readFromFile("resource/dim/d6.snbt")
+    var codec_Legacy = readFromFile("dim/d1.snbt")
+    var codec_1_16 = readFromFile("dim/d0.snbt")
+    var codec_1_18_2 = readFromFile("dim/d2.snbt")
+    var codec_1_19 = readFromFile("dim/d3.snbt")
+    var codec_1_19_1 = readFromFile("dim/d4.snbt")
+    var codec_1_19_4 = readFromFile("dim/d5.snbt")
+    var codec_1_20 = readFromFile("dim/d6.snbt")
 
 /*
     fun test() {
@@ -51,7 +51,7 @@ object DimensionRegistry {
 
     private fun readFromFile(file: String): CompoundBinaryTag {
         val reader = InputStreamReader((
-                MoeFilter.instance.getResourceAsStream(file) ?: throw NullPointerException("Unknown file path or instance getResourceAsStream is not valid")
+                MoeFilterBungee.instance.getResourceAsStream(file) ?: throw NullPointerException("Unknown file path or instance getResourceAsStream is not valid")
                 ), StandardCharsets.UTF_8)
         val bufReader = BufferedReader(reader)
         val content = bufReader.lines().collect(Collectors.joining("\n"))

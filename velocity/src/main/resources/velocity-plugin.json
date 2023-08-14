@@ -1,0 +1,13 @@
+{
+  "id": "moefilter",
+  "name": "MoeFilter",
+  "version": "0.1.2-Alpha",
+  "description": "❤ by CatMoe",
+  "url": "www.miaomoe.net",
+  "main": "catmoe.fallencrystal.moefilter.MoeFilterVelocity",
+  "authors": [
+    "Fallen Crystal",
+    "Shizoukia"
+  ],
+  "dependencies": []
+}

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
@@ -43,6 +43,7 @@ object StateManager {
 
     val lastMethod: MutableCollection<AttackState> = ArrayList()
 
+    @Suppress("EnumValuesSoftDeprecate")
     fun attackMethodAnalyser() {
         if (!inAttack.get()) return
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
@@ -71,7 +72,7 @@ object StateManager {
             else {
                 if (!attackEndedWaiter.get()) {
                     attackEndedWaiter.set(true)
-                    Scheduler(MoeFilter.instance).repeatScheduler(1, 1, TimeUnit.SECONDS) {
+                    Scheduler(MoeFilterBungee.instance).repeatScheduler(1, 1, TimeUnit.SECONDS) {
                         if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); return@repeatScheduler }
                         if (ConnectionCounter.getConnectionPerSec() != 0) {
                             attackEndedCount.set(conf.getInt("wait"))

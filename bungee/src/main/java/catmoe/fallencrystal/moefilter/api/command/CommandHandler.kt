@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.api.command
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
@@ -62,7 +62,7 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
     }
 
     private fun infoCommand(sender: CommandSender) {
-        val version = MoeFilter.instance.description.version
+        val version = MoeFilterBungee.instance.description.version
         val line = if (sender.hasPermission("moefilter")) "  <yellow>使用 <white>/moefilter help <yellow>查看命令列表" else " <white> github.com/CatMoe/MoeFilter"
         MessageUtil.sendMessage(
             listOf(

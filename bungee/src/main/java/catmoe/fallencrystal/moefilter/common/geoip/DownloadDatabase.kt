@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.geoip
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -50,7 +50,7 @@ class DownloadDatabase(folder: File) {
     private val currentTime = System.currentTimeMillis()
     private val conf = LocalConfig.getProxy().getConfig("country")
     private val parent = File(folder, "/geoip")
-    private val scheduler = Scheduler(MoeFilter.instance)
+    private val scheduler = Scheduler(MoeFilterBungee.instance)
 
     private var proxy: Proxy? = null
 

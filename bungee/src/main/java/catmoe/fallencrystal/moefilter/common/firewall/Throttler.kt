@@ -35,5 +35,5 @@ object Throttler {
 
     fun isThrottled(address: InetAddress): Boolean { return (ipCache.getIfPresent(address) ?: 0) >= throttle }
 
-    fun reload() { throttle =LocalConfig.getConfig().getInt("throttle-limit") }
+    fun reload() { throttle = LocalConfig.getConfig().getInt("throttle-limit") }
 }

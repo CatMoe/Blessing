@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.IProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class ProxyCheck : IProxyChecker {
-    private val schedule = Scheduler(MoeFilter.instance)
+    private val schedule = Scheduler(MoeFilterBungee.instance)
 
     private var config = LocalConfig.getProxy().getConfig("proxycheck-io")
     private var dayLimit = config.getInt("limit")

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.message.notification
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.state.AttackState
@@ -42,7 +42,7 @@ object Notifications {
     It will cause the config to not modify after the class is initialized.
      */
 
-    private val scheduler = Scheduler(MoeFilter.instance)
+    private val scheduler = Scheduler(MoeFilterBungee.instance)
 
     init { initSchedule() }
 

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.counter
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.state.StateManager
@@ -26,7 +26,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "EnumValuesSoftDeprecate")
 object ConnectionCounter {
     var total: Long = 0
     var sessionTotal: Long = 0
@@ -34,7 +34,7 @@ object ConnectionCounter {
     private var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
 
-    init { Scheduler(MoeFilter.instance).repeatScheduler(50, TimeUnit.MILLISECONDS) { schedule() } }
+    init { Scheduler(MoeFilterBungee.instance).repeatScheduler(50, TimeUnit.MILLISECONDS) { schedule() } }
 
     fun schedule() {
         putCPStoCache()

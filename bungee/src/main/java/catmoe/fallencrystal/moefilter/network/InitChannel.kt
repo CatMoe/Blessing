@@ -17,11 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeeInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterInitializer
-import catmoe.fallencrystal.moefilter.network.common.ReflectionUtils
+import catmoe.fallencrystal.moefilter.network.bungee.ReflectionUtils
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -52,7 +52,7 @@ class InitChannel {
         val proxyName = bungee.name
         val listener: MutableCollection<ListenerInfo> = bungee.getConfig().listeners
             ?: if (LocalConfig.getConfig().getBoolean("fastboot")) {
-                MoeFilter.instance.injectPipelineAfterLoad.set(true)
+                MoeFilterBungee.instance.injectPipelineAfterLoad.set(true)
                 return
             } else {
                 try { throw NullPointerException("Listener cannot be null! Please report this issue to CatMoe!") }

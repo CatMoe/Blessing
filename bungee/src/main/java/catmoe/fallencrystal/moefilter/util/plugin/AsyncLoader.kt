@@ -17,7 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.CPlatform
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.event.EventListener
 import catmoe.fallencrystal.moefilter.api.event.EventManager
@@ -30,7 +31,6 @@ import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
-import catmoe.fallencrystal.moefilter.common.config.LoadConfig
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
@@ -58,11 +58,9 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
 @Suppress("SpellCheckingInspection")
-class AsyncLoader(val plugin: Plugin) : EventListener {
+class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
-
-    private val configLoader = LoadConfig()
 
     private val scheduler = Scheduler(plugin)
 
@@ -87,7 +85,7 @@ class AsyncLoader(val plugin: Plugin) : EventListener {
 
     fun load() {
         try {
-            configLoader.loadConfig()
+            cLoader.whenLoad()
             loadAntibot()
         } catch (ce: ConfigException) {
             configIssue.forEach { MessageUtil.logError(it) }
@@ -155,7 +153,7 @@ class AsyncLoader(val plugin: Plugin) : EventListener {
             DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }
         LoggerManager.registerFilter(ExceptionFilter())
-        MoeFilter.mode = mode
+        MoeFilterBungee.mode = mode
     }
 
     private fun loadProxyAPI() {
@@ -167,7 +165,7 @@ class AsyncLoader(val plugin: Plugin) : EventListener {
     private fun loadMaxmindDatabase() {
         scheduler.runAsync {
             GeoIPManager
-            val folder = MoeFilter.instance.dataFolder
+            val folder = MoeFilterBungee.instance.dataFolder
             val maxmindLicense = try { LocalConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
             // if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }

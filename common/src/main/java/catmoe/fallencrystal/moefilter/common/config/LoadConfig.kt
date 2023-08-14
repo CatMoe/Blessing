@@ -17,18 +17,18 @@
 
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.CPlatform
 import catmoe.fallencrystal.moefilter.common.config.util.CreateConfig
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.typesafe.config.Config
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.logging.Level
 
 @Suppress("SpellCheckingInspection")
 class LoadConfig {
-    private val path = MoeFilter.instance.dataFolder.absolutePath
+    private val path = CPlatform.instance.getPluginFolder().absolutePath
 
     val configFile = File(path, "config.conf")
     val messageFile = File(path, "message.conf")
@@ -36,9 +36,9 @@ class LoadConfig {
     val antibotFile = File(path, "antibot.conf")
     val limboFile = File(path, "limbo.conf")
 
-    private val version = MoeFilter.instance.description.version
+    private val version = CPlatform.instance.pluginVersion()
 
-    init { instance=this }
+    init { instance =this }
 
     private val defaultConfig = """
                 version="$version"
@@ -707,7 +707,7 @@ class LoadConfig {
     }
 
     private fun createDefaultConfig() {
-        val pluginFolder = MoeFilter.instance.dataFolder
+        val pluginFolder = CPlatform.instance.getPluginFolder()
         val defaultConfigMap = mapOf(
             configFile to defaultConfig,
             messageFile to defaultMessage,
@@ -736,7 +736,7 @@ class LoadConfig {
             "即使您仍然不修改任何内容. 在之后时也会使用默认的配置文件.",
             "-------------------- MoeFilter --------------------"
         )
-        message.forEach { MessageUtil.logWarn(it) }
+        message.forEach { CPlatform.instance.getPlatformLogger().log(Level.WARNING, it) }
     }
 
     companion object {

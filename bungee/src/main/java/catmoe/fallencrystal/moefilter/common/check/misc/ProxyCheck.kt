@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.check.misc
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
@@ -31,7 +31,7 @@ import java.net.InetAddress
 
 class ProxyCheck : AbstractCheck() {
 
-    private val schedule = Scheduler(MoeFilter.instance)
+    private val schedule = Scheduler(MoeFilterBungee.instance)
 
     override fun increase(info: CheckInfo): Boolean {
         val inetAddress = (info as Address).address.address

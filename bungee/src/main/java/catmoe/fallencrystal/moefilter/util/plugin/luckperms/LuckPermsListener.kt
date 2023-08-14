@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin.luckperms
 
-import catmoe.fallencrystal.moefilter.MoeFilter
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.user.displaycache.Display
 import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
@@ -29,7 +29,7 @@ object LuckPermsListener {
 
     fun registerEvent() {
         val luckperms = LuckPermsProvider.get()
-        val plugin = MoeFilter.instance
+        val plugin = MoeFilterBungee.instance
 
         EventManager.registerListener(plugin, ReCacheDisplayOnJoin())
 

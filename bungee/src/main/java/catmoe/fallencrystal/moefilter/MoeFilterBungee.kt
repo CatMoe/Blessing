@@ -22,24 +22,30 @@ import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
+import catmoe.fallencrystal.moefilter.platform.*
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import com.typesafe.config.ConfigFactory
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
-class MoeFilter : Plugin() {
+@Platform(ProxyPlatform.BUNGEE)
+class MoeFilterBungee : Plugin(), PlatformLoader {
 
     private val initLogger = InitLogger()
     val injectPipelineAfterLoad = AtomicBoolean(false)
     private val fastboot = try { ConfigFactory.parseFile(File(dataFolder, "config.conf")).getBoolean("fastboot") } catch (ex: Exception) { false }
 
+    private val viaLoader = CPlatform(this)
+
     init {
         instance=this
         if (BungeeCord.getInstance().pluginManager.getPlugin("BungeeKotlinLib") == null)
             throw NoClassDefFoundError("BungeeKotlinLib is not installed! Please install it first.")
+        viaLoader.readyLoad()
     }
 
     override fun onEnable() {
@@ -48,12 +54,13 @@ class MoeFilter : Plugin() {
     }
 
     override fun onDisable() {
+        viaLoader.whenUnload()
         initLogger.onUnload()
         EventManager.triggerEvent(PluginUnloadEvent())
     }
 
     private fun load() {
-        val loader = AsyncLoader(this)
+        val loader = AsyncLoader(this, viaLoader)
         initLogger.onLoad()
         loader.load()
     }
@@ -64,8 +71,35 @@ class MoeFilter : Plugin() {
     }
 
     companion object {
-        lateinit var instance: MoeFilter
+        lateinit var instance: MoeFilterBungee
             private set
         var mode: WorkingMode? = null
+    }
+
+    override fun getPluginFolder(): File {
+        return dataFolder
+    }
+
+    override fun getPluginInstance(): PlatformLoader {
+        return instance
+    }
+
+    override fun whenLoad() {  }
+
+    override fun whenUnload() {  }
+
+    override fun pluginVersion(): String {
+        return this.description.version
+    }
+
+    override fun readyLoad() {  }
+
+    override fun getPlatformLogger(): SimpleLogger {
+        return SimpleLogger(BungeeCord.getInstance().logger)
+    }
+
+    override fun getProxyServer(): MoeProxyServer {
+        val proxy = ProxyServer.getInstance()
+        return MoeProxyServer(ProxyPlatform.BUNGEE, proxy)
     }
 }
