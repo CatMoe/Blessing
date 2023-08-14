@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin.protocolize
 
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import dev.simplix.protocolize.api.Protocolize
 import dev.simplix.protocolize.api.inventory.Inventory
 import dev.simplix.protocolize.api.inventory.InventoryClick

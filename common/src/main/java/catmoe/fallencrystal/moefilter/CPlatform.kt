@@ -36,7 +36,9 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
     override fun getPlatformLogger(): SimpleLogger { return loader.getPlatformLogger() }
     override fun getProxyServer(): MoeProxyServer { return loader.getProxyServer() }
 
-    override fun readyLoad() { LoadConfig().loadConfig() }
+    override fun readyLoad() {
+        LoadConfig().loadConfig()
+    }
 
     override fun whenLoad() {}
 

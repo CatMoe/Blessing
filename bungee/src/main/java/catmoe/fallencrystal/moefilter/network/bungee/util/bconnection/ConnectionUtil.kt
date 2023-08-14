@@ -34,7 +34,9 @@ import java.net.SocketAddress
 class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
-    val pipeline: ChannelPipeline? = (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } ) ?: initChannelWrapper()?.handle?.pipeline()
+    val pipeline: ChannelPipeline? =
+        (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } )
+            ?: try { initChannelWrapper()?.handle?.pipeline() } catch (_: NoSuchFieldException) { null }
 
     val version get() = connection.version
     val isConnected get() = connection.isConnected

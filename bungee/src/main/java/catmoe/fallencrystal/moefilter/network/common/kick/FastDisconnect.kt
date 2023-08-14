@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.Connection
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component

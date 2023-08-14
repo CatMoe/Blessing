@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.util.message.component
+package catmoe.fallencrystal.moefilter.common.utils.component
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage

@@ -19,7 +19,7 @@ import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled

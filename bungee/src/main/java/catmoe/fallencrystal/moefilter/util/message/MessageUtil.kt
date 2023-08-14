@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.message
 
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeTitle
 import net.md_5.bungee.api.*

@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.chat.ComponentSerializer
@@ -34,7 +34,7 @@ class PacketDisconnect : LimboS2CPacket() {
 
     fun setReason(baseComponent: BaseComponent) { this.message=ComponentSerializer.toString(baseComponent) }
 
-    fun setReason(component: Component) { this.message=ComponentUtil.toGson(component) }
+    fun setReason(component: Component) { this.message= ComponentUtil.toGson(component) }
 
     override fun encode(packet: ByteMessage, version: Version?) { packet.writeString(message) }
 

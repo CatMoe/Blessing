@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.api.command.impl.test.gui
 
-import catmoe.fallencrystal.moefilter.util.message.component.ComponentUtil
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.plugin.protocolize.ItemBuilder
 import catmoe.fallencrystal.moefilter.util.plugin.protocolize.MenuBuilder
 import dev.simplix.protocolize.data.ItemType

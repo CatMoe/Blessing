@@ -16,9 +16,11 @@
  */
 package catmoe.fallencrystal.moefilter
 
+import catmoe.fallencrystal.moefilter.listener.VelocityBrandListener
 import catmoe.fallencrystal.moefilter.platform.*
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
+import com.velocitypowered.api.event.player.PlayerClientBrandEvent
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
@@ -53,6 +55,7 @@ class MoeFilterVelocity @Inject constructor(
     @Subscribe
     fun proxyLoad(event: ProxyInitializeEvent) {
         cPlatform.whenLoad()
+        proxyServer.eventManager.register(this, PlayerClientBrandEvent::class.java, VelocityBrandListener(this))
     }
 
     private val cPlatform = CPlatform(this)
