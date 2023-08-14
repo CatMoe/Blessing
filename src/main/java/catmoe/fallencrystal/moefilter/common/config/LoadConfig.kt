@@ -272,7 +272,7 @@ class LoadConfig {
                     remove="<green>已将此地址从允许连接的列表中移除"
                     state-message=[
                         "",
-                        " <aqua>Lockdown状态 <white>: [state]",
+                        " <aqua>Lockdown状态 <white>: [state]<white>",
                         "",
                         " lockdown toggle <aqua>-<white> 开启/关闭锁定模式",
                         " lockdown add <Address> <aqua>-<white> 允许指定地址可以在锁定状态下加入",

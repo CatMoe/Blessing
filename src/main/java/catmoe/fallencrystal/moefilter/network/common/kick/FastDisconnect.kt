@@ -18,6 +18,8 @@
 package catmoe.fallencrystal.moefilter.network.common.kick
 
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
@@ -45,12 +47,14 @@ object FastDisconnect {
             MOELIMBO -> p.moelimbo
         }
         channel.writeAndFlush(packet); channel.close()
+        ConnectionCounter.countBlocked(BlockType.JOIN)
     }
 
     fun disconnect(connection: ConnectionUtil, type: DisconnectType) {
         if (connection.isConnected) {
             val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, ComponentUtil.parse("<red>Unknown kick reason: ${type.messagePath}"))).packet.bungeecord
             connection.writePacket(packet); connection.close()
+            ConnectionCounter.countBlocked(BlockType.JOIN)
         }
     }
 

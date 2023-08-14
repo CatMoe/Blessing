@@ -186,7 +186,6 @@ class MoeInitialHandler(
 
     private fun kick(channel: Channel, type: DisconnectType) {
         FastDisconnect.disconnect(channel, type, ServerKickType.BUNGEECORD)
-        ConnectionCounter.countBlocked(BlockType.JOIN)
     }
 
     override fun toString(): String {

@@ -52,11 +52,11 @@ class LockdownCommand : ICommand {
             when (LockdownManager.state.get()) {
                 true -> {
                     LockdownManager.setLockdown(false)
-                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.enable")}", MessagesType.CHAT, sender)
+                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.disable")}", MessagesType.CHAT, sender)
                 }
                 false -> {
                     LockdownManager.setLockdown(true)
-                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.disable")}", MessagesType.CHAT, sender)
+                    MessageUtil.sendMessage("$prefix${conf.getString("toggle.enable")}", MessagesType.CHAT, sender)
                 }
             }
         }
