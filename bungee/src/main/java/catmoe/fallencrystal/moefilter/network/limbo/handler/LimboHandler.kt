@@ -70,11 +70,20 @@ class LimboHandler(
    private fun getFakeProxyHandler(): LimboCompat { return FakeInitialHandler(ctx) }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
+        if (!disconnected.get()) fireDisconnect()
+        super.channelInactive(ctx)
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        if (!disconnected.get()) fireDisconnect()
+        super.handlerRemoved(ctx)
+    }
+
+    private fun fireDisconnect() {
         MoeLimbo.connections.remove(this)
         LimboListener.handleReceived(Disconnect(), this)
         MoeLimbo.debug("Client disconnected")
         disconnected.set(true)
-        super.channelInactive(ctx)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -111,10 +120,12 @@ class LimboHandler(
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
 
-        val brand = PacketPluginMessage()
-        brand.channel="minecraft:brand"
-        brand.message="MoeFilter <- MoeLimbo"
-        writePacket(brand)
+        if (version!!.moreOrEqual(Version.V1_8)) {
+            val brand = PacketPluginMessage()
+            brand.channel=if (version!!.moreOrEqual(Version.V1_13)) "minecraft:brand" else "MC|Brand"
+            brand.message="MoeFilter <- MoeLimbo"
+            writePacket(brand)
+        }
 
         keepAliveScheduler()
         keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()

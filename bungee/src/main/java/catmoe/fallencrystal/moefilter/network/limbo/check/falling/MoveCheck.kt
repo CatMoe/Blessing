@@ -39,6 +39,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import java.net.InetSocketAddress
@@ -113,14 +114,14 @@ object MoveCheck: LimboChecker, ILimboListener {
             for (a in listOf(this.a, m, p, b)) a.invalidate(handler)
             return false
         }
-        if (packet is PacketPluginMessage) {
+        if (packet is PacketPluginMessage && handler.version!!.moreOrEqual(Version.V1_8)) {
             if (packet.channel == "MC|Brand" || packet.channel == "minecraft:brand") q.put(handler, packet.message)
             return false
         }
         m.put(handler, true)
         m.put(handler, true)
         if (packet is PacketJoinGame) return false
-        if (q.getIfPresent(handler) == null) { k(handler); return true }
+        if (q.getIfPresent(handler) == null && handler.version!!.moreOrEqual(Version.V1_8)) { k(handler); return true }
         val a = a.getIfPresent(handler)
         var b: Double? = null
         var c: Double? = null
@@ -155,7 +156,11 @@ object MoveCheck: LimboChecker, ILimboListener {
         for (i in listOf(b, c, d, e?.toDouble(), f?.toDouble())) { if (i(i)) { k(handler); return true } }
 
         // OnGround cannot be true.
-        if (g == true && this.i) { k(handler); return true }
+        if (g == true && this.i) {
+            if (handler.version == Version.V1_7_6) {
+                if (o >= 3) { k(handler); return true }
+            } else { k(handler); return true }
+        }
 
         if (a != null) {
 

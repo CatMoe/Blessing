@@ -10,8 +10,7 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
+import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
@@ -19,7 +18,6 @@ import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
@@ -82,19 +80,23 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (check(channel, inetSocketAddress, username)) { ConnectionCounter.countBlocked(BlockType.JOIN); return }
+                    if (check(channel, inetSocketAddress, username)) return@run
                     // TODO More kick here.
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
                 if (packet is PluginMessage) {
-                    if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {
-                        val player = PipelineUtil.getPlayer(ctx) ?: return
-                        val brand = Unpooled.wrappedBuffer(packet.data)
-                        val clientBrand = DefinedPacket.readString(brand)
-                        brand.release()
-                        if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
-                        EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
-                        if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
+                    try {
+                        if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {
+                            val player = PipelineUtil.getPlayer(ctx) ?: return
+                            val brand = Unpooled.wrappedBuffer(packet.data)
+                            val clientBrand = DefinedPacket.readString(brand)
+                            brand.release()
+                            if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
+                            EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
+                            if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
+                        }
+                    } catch (_: StringIndexOutOfBoundsException) {
+                        MessageUtil.logWarn("Caught StringIndexOutOfBoundsException for PluginMessage! Did this BungeeCord (fork) is fully compatible for 1.7.x clients?")
                     }
                 }
                 // if (packet is KeepAlive) { MessageUtil.logInfo("[MoeFilter] [KeepAlive] id: ${packet.randomId} address: ${ctx.channel().remoteAddress()} Client -> Server") }

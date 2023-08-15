@@ -52,21 +52,25 @@ class LimboCommand : ICommand {
                     MessageUtil.sendMessage("<red>您不能在攻击期间使用此命令 如需强制执行 请在结尾加上 --confirm", MessagesType.CHAT, sender); return
                 }
                 MessageUtil.sendMessage(" <aqua>连接列表: <aqua>[${MoeLimbo.connections.size}]", MessagesType.CHAT, sender)
-                for (it in MoeLimbo.connections) {
-                    try {
-                        val t = listOf(
-                            "<aqua>在线: ${if (it.channel.isActive) "<green>是" else "<red>否"}",
-                            "<aqua>用户名: <yellow>${it.profile.username} <aqua>版本: ${it.version?.name}",
-                            "<aqua>From: <yellow>${it.host?.hostName}:${it.host?.port}",
-                            "<aqua>有效握手: ${if (MoeChannelHandler.sentHandshake.getIfPresent(it.channel) == null) "<red>否" else "<green>是"}",
-                            "<aqua>Brand: ${it.brand}",
-                            "<aqua>Location: <yellow>X: ${it.location?.x?.roundToInt()} Y: ${it.location?.y?.roundToInt()} Z: ${it.location?.z?.roundToInt()}"
-                        ).joinToString("<reset><newline>")
-                        val ad = (it.address as InetSocketAddress).address.hostAddress
-                        val m = " <hover:show_text:\'$t\'><yellow>$ad</hover>  " +
-                                "<yellow>[<red><click:suggest_command:'/mf limbo kick $ad'>Kick</click></red>]"
-                        MessageUtil.sendMessage(m, MessagesType.CHAT, sender)
-                    } catch (_: NullPointerException) {}
+                try {
+                    for (it in MoeLimbo.connections) {
+                        try {
+                            val t = listOf(
+                                "<aqua>在线: ${if (it.channel.isActive) "<green>是" else "<red>否"}",
+                                "<aqua>用户名: <yellow>${it.profile.username} <aqua>版本: ${it.version?.name}",
+                                "<aqua>From: <yellow>${it.host?.hostName}:${it.host?.port}",
+                                "<aqua>有效握手: ${if (MoeChannelHandler.sentHandshake.getIfPresent(it.channel) == null) "<red>否" else "<green>是"}",
+                                "<aqua>Brand: ${it.brand}",
+                                "<aqua>Location: <yellow>X: ${it.location?.x?.roundToInt()} Y: ${it.location?.y?.roundToInt()} Z: ${it.location?.z?.roundToInt()}"
+                            ).joinToString("<reset><newline>")
+                            val ad = (it.address as InetSocketAddress).address.hostAddress
+                            val m = " <hover:show_text:\'$t\'><yellow>$ad</hover>  " +
+                                    "<yellow>[<red><click:suggest_command:'/mf limbo kick $ad'>Kick</click></red>]"
+                            MessageUtil.sendMessage(m, MessagesType.CHAT, sender)
+                        } catch (_: NullPointerException) {}
+                    }
+                } catch (_: ConcurrentModificationException) {
+                    MessageUtil.sendMessage("<red>遇到了并发修改异常..<newline>服务器可能正在遭受攻击 请稍后再试", MessagesType.CHAT, sender)
                 }
             }
             "kick" -> {

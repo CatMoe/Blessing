@@ -30,6 +30,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 
+// 注: 我仍在研究1.7的PluginMessage, 因此对此暂时禁用
 class PacketPluginMessage : LimboPacket {
 
 
