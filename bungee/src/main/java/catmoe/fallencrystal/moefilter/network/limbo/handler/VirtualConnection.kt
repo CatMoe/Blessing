@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 import java.net.SocketAddress
 

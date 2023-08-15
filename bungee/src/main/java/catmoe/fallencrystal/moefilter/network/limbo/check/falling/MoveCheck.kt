@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.LimboCheckPassedEvent
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
@@ -39,7 +39,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import java.net.InetSocketAddress

@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler

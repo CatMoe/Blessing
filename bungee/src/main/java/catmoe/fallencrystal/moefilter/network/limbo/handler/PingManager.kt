@@ -17,11 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
 import java.net.InetAddress

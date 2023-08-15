@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager

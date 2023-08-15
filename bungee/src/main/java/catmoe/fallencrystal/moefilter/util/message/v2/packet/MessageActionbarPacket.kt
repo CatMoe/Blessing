@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent

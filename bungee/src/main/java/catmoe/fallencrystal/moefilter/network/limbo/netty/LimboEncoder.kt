@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder

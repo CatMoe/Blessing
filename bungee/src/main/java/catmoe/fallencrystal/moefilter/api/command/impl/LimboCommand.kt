@@ -80,7 +80,7 @@ class LimboCommand : ICommand {
                 if (s.contains("-a") || s.contains("--all")) {
                     val r: MutableCollection<LimboHandler> = ArrayList()
                     for (it in MoeLimbo.connections) { try { it.channel.close() } catch (_: NullPointerException) {}; r.add(it) }
-                    MoeLimbo.connections.removeAll(r)
+                    MoeLimbo.connections.removeAll(r.toSet())
                     MessageUtil.sendMessage("<green>All connection kicked.", MessagesType.CHAT, sender)
                     return
                 }

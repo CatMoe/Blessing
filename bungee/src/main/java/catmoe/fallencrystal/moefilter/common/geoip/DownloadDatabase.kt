@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.common.geoip
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.maxmind.db.CHMCache

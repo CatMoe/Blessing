@@ -38,6 +38,8 @@ import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
+import catmoe.fallencrystal.translation.utils.config.LoadConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 
 class ReloadConfig : EventListener {
     @FilterEvent

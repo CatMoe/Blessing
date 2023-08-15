@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandPermission
 import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType

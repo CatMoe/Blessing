@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.firewall
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit

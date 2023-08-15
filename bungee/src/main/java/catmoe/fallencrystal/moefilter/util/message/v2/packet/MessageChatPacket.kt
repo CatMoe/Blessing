@@ -17,13 +17,14 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 
+@Suppress("MemberVisibilityCanBePrivate")
 class MessageChatPacket(
     val v119: SystemChat?,
     val legacy: Chat?,

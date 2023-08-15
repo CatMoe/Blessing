@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
 import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import java.net.InetAddress
 
 class LimboCheckPassedEvent(val version: Version, val username: String, val address: InetAddress): MoeAsyncEvent

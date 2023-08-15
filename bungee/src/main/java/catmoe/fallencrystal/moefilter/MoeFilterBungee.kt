@@ -22,9 +22,10 @@ import catmoe.fallencrystal.moefilter.api.event.events.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.InitLogger
 import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
-import catmoe.fallencrystal.moefilter.platform.*
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
+import catmoe.fallencrystal.translation.CPlatform
+import catmoe.fallencrystal.translation.platform.*
 import com.typesafe.config.ConfigFactory
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.ProxyServer

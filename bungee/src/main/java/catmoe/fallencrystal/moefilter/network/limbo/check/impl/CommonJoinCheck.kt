@@ -45,7 +45,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.protocol.ProtocolConstants
 import java.net.InetAddress

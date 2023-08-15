@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.common
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall

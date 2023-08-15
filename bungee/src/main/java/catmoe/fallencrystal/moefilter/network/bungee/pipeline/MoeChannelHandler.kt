@@ -1,6 +1,6 @@
 package catmoe.fallencrystal.moefilter.network.bungee.pipeline
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.handler.ByteBufHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle

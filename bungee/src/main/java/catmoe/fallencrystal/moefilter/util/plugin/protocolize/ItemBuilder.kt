@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin.protocolize
 
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import dev.simplix.protocolize.api.item.ItemStack
 import dev.simplix.protocolize.data.ItemType
 import net.kyori.adventure.text.Component

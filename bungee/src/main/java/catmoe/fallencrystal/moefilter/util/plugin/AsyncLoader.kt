@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin
 
-import catmoe.fallencrystal.moefilter.CPlatform
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.event.EventListener
@@ -31,7 +30,7 @@ import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -39,7 +38,6 @@ import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
-import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
@@ -53,11 +51,13 @@ import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.CPlatform
+import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 
-@Suppress("SpellCheckingInspection")
+@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager

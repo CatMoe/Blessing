@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import se.llbit.nbt.*
 import java.util.*
 

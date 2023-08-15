@@ -84,6 +84,7 @@
     </build>
 
     <modules>
+        <module>translation</module>
         <module>common</module>
         <module>bungee</module>
         <module>velocity</module>

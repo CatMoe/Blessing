@@ -9,8 +9,8 @@ import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException

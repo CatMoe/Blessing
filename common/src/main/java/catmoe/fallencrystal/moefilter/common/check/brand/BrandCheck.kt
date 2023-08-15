@@ -22,7 +22,7 @@ import catmoe.fallencrystal.moefilter.common.check.brand.BrandCheckMode.BLACKLIS
 import catmoe.fallencrystal.moefilter.common.check.brand.BrandMatchType.*
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Brand
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 
 object BrandCheck : AbstractCheck() {
 

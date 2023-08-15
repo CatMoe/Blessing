@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.compat
 
 import catmoe.fallencrystal.moefilter.network.limbo.compat.converter.PingConverter
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.Callback

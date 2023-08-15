@@ -21,10 +21,10 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAliv
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.Companion.max
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.Companion.min
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
+import catmoe.fallencrystal.translation.utils.version.Version.Companion.max
+import catmoe.fallencrystal.translation.utils.version.Version.Companion.min
 
 
 @Suppress("unused")

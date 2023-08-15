@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
 import catmoe.fallencrystal.moefilter.api.command.annotation.ConsoleCanExecute
 import catmoe.fallencrystal.moefilter.api.command.annotation.DebugCommand
 import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType

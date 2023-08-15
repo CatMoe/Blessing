@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.processor
 
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import net.kyori.adventure.text.Component

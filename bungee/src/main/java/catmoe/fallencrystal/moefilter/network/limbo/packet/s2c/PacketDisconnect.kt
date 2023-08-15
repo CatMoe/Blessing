@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.chat.ComponentSerializer

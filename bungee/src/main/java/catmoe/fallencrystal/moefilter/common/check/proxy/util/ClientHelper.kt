@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.check.proxy.util
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response

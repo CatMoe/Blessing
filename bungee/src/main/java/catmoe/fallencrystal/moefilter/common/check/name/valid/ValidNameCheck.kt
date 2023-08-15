@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.name.valid.AutoFirewallMode.*
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.state.StateManager

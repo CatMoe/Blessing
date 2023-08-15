@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.firewall.system
 
-import catmoe.fallencrystal.moefilter.common.utils.system.CommandUtil
+import catmoe.fallencrystal.translation.utils.system.CommandUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import net.md_5.bungee.BungeeCord
 

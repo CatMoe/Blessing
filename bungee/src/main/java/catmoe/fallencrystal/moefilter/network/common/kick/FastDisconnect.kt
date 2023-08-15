@@ -17,14 +17,14 @@
 
 package catmoe.fallencrystal.moefilter.network.common.kick
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
-import catmoe.fallencrystal.moefilter.common.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component

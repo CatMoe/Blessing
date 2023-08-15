@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.compat
 
 import catmoe.fallencrystal.moefilter.network.limbo.compat.converter.PingConverter
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import java.net.InetSocketAddress
 
 interface LimboCompat {

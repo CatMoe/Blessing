@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType

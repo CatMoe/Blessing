@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.common.check.misc
 import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 

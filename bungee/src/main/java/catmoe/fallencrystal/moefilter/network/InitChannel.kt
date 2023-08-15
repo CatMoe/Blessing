@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeeInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.ReflectionUtils

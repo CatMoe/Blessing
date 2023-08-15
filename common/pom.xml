@@ -85,6 +85,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
+                <!--suppress DifferentMavenStdlibVersion -->
                 <version>${kotlin.version}</version>
                 <executions>
                     <execution>
@@ -166,6 +167,13 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>catmoe.fallencrystal.translation</groupId>
+            <artifactId>MoeTranslation</artifactId>
+            <version>0.1.2-Alpha</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
@@ -284,6 +292,12 @@
             <artifactId>bungeecord-api</artifactId>
             <version>1.20-R0.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-protocol</artifactId>
+            <version>1.20-R0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>

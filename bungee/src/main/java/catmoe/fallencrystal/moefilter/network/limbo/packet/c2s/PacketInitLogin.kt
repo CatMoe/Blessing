@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameEx
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class PacketInitLogin : LimboC2SPacket() {

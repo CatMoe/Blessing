@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import se.llbit.nbt.CompoundTag
 import se.llbit.nbt.Tag
@@ -39,7 +39,6 @@ object StaticDimension {
 
     var dim = MoeLimbo.dimensionType.llbit
 
-    @Suppress("EnumValuesSoftDeprecate")
     fun init() {
         Version.values().forEach { cacheDimension.put(it, dim.dimension.getFullCodec(it)) }
     }

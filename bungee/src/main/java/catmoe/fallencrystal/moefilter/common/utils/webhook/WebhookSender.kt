@@ -16,8 +16,9 @@
  */
 package catmoe.fallencrystal.moefilter.common.utils.webhook
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
-import catmoe.fallencrystal.moefilter.common.utils.webhook.embed.EmbedObject
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.webhook.embed.EmbedObject
+import catmoe.fallencrystal.translation.utils.webhook.WebhookIntegration
 import com.typesafe.config.Config
 import java.awt.Color
 import java.net.InetSocketAddress

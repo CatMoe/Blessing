@@ -18,8 +18,8 @@
 package catmoe.fallencrystal.moefilter.util.message.v2.processor.chat
 
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageChatPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType

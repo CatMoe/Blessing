@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
@@ -35,7 +35,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAliv
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext

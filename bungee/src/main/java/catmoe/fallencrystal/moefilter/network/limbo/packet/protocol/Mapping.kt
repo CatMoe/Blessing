@@ -17,6 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 
 class Mapping(val packetId: Int, val from: Version, val to: Version)

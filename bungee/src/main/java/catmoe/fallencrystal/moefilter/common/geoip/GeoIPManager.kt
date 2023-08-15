@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.geoip
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.DISABLED
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.WHITELIST
 import com.github.benmanes.caffeine.cache.Caffeine

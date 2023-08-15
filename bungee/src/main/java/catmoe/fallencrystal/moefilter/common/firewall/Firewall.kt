@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.firewall
 
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.FirewallType.*
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.common.firewall.system.ExecutorHelper

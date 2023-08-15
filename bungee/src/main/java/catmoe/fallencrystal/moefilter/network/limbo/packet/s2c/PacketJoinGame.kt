@@ -32,8 +32,8 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimens
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version.*
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
 
 
 @Suppress("MemberVisibilityCanBePrivate")

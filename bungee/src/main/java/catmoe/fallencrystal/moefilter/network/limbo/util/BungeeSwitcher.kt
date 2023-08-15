@@ -23,8 +23,9 @@ import catmoe.fallencrystal.moefilter.api.event.events.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit

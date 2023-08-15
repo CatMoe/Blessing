@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.api.command
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.md_5.bungee.api.CommandSender

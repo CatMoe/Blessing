@@ -18,11 +18,11 @@
 package catmoe.fallencrystal.moefilter.util.message.notification
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.state.AttackState
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.common.utils.system.CPUMonitor
+import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -92,7 +92,7 @@ object Notifications {
 
     private fun onBroadcast() {
         if (autoNotification.isEmpty() && switchNotification.isEmpty()) return
-        if (autoNotification.isNotEmpty()) { autoNotification.removeAll(switchNotification) }
+        if (autoNotification.isNotEmpty()) { autoNotification.removeAll(switchNotification.toSet()) }
         val message = placeholder(if (StateManager.inAttack.get()) attackMessage else idleMessage)
         if (autoNotification.isNotEmpty()) { sendActionbar(autoNotification, message) }
         if (switchNotification.isNotEmpty()) { sendActionbar(switchNotification, message) }

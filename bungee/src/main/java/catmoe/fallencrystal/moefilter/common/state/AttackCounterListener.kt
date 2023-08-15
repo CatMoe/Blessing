@@ -22,7 +22,7 @@ import catmoe.fallencrystal.moefilter.api.event.FilterEvent
 import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo

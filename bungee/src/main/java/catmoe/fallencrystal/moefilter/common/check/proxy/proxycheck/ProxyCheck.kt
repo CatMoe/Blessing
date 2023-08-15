@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.common.check.proxy.IProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import com.github.benmanes.caffeine.cache.Caffeine

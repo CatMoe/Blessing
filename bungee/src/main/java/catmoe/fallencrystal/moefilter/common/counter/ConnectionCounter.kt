@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.common.counter
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler

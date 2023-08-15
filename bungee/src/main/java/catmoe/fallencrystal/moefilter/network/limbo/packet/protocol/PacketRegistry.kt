@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import java.util.function.Supplier
 
 class PacketRegistry(val version: Version) {

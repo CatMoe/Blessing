@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
-import catmoe.fallencrystal.moefilter.common.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil

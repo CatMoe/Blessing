@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 @Suppress("MemberVisibilityCanBePrivate")

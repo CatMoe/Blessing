@@ -17,7 +17,8 @@
 package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.moefilter.listener.VelocityBrandListener
-import catmoe.fallencrystal.moefilter.platform.*
+import catmoe.fallencrystal.translation.CPlatform
+import catmoe.fallencrystal.translation.platform.*
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.PlayerClientBrandEvent

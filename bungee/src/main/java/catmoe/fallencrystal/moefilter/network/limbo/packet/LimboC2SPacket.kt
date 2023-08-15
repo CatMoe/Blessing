@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet
 
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidPacketOperation
-import catmoe.fallencrystal.moefilter.network.limbo.util.Version
+import catmoe.fallencrystal.translation.utils.version.Version
 
 abstract class LimboC2SPacket : LimboPacket {
     override fun encode(packet: ByteMessage, version: Version?) {
