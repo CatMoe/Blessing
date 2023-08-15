@@ -48,6 +48,41 @@ class LockdownCommand : ICommand {
         }
         val args2 = args[1]
         val prefix = LocalConfig.getMessage().getString("prefix")
+        when (args2) {
+            "toggle" -> {
+                when (LockdownManager.state.get()) {
+                    true -> {
+                        LockdownManager.setLockdown(false)
+                        MessageUtil.sendMessage("$prefix${conf.getString("toggle.disable")}", MessagesType.CHAT, sender)
+                    }
+                    false -> {
+                        LockdownManager.setLockdown(true)
+                        MessageUtil.sendMessage("$prefix${conf.getString("toggle.enable")}", MessagesType.CHAT, sender)
+                    }
+                }
+            }
+            "add" -> {
+                val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
+                if (address == null) { MessageUtil.sendMessage("$prefix${conf.getString("parse-error")}", MessagesType.CHAT, sender); return }
+                if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
+                    MessageUtil.sendMessage("$prefix${conf.getString("already-added")}", MessagesType.CHAT, sender); return
+                } else {
+                    LockdownManager.whitelistCache.put(address, true)
+                    MessageUtil.sendMessage("$prefix${conf.getString("add")}", MessagesType.CHAT, sender)
+                }
+            }
+            "remove" -> {
+                val address: InetAddress? = try { InetAddress.getByName(args[2]) } catch (_: Exception) { null }
+                if (address == null) { MessageUtil.sendMessage("$prefix${conf.getString("parse-error")}", MessagesType.CHAT, sender); return }
+                if (LockdownManager.whitelistCache.getIfPresent(address) != null) {
+                    LockdownManager.whitelistCache.invalidate(address)
+                    MessageUtil.sendMessage("$prefix${conf.getString("remove")}", MessagesType.CHAT, sender); return
+                } else {
+                    MessageUtil.sendMessage("$prefix${conf.getString("not-found")}", MessagesType.CHAT, sender)
+                }
+            }
+        }
+        /*
         if (args2.equals("toggle", ignoreCase = true)) {
             when (LockdownManager.state.get()) {
                 true -> {
@@ -80,6 +115,7 @@ class LockdownCommand : ICommand {
                 MessageUtil.sendMessage("$prefix${conf.getString("not-found")}", MessagesType.CHAT, sender)
             }
         }
+         */
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {

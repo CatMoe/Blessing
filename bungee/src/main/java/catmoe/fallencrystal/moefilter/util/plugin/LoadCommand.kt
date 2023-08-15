@@ -43,5 +43,6 @@ class LoadCommand {
         CommandManager.register(DropFirewallCommand())
         CommandManager.register(StatisticsCommand())
         CommandManager.register(RegexParseCommand())
+        CommandManager.register(LimboCommand())
     }
 }

@@ -277,11 +277,13 @@
             <artifactId>bungeecord-parent</artifactId>
             <version>1.20-R0.1</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
             <version>1.20-R0.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>
