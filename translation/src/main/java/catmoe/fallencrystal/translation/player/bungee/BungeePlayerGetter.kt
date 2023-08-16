@@ -17,13 +17,15 @@
 
 package catmoe.fallencrystal.translation.player.bungee
 
-import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.TranslationLoader
-import catmoe.fallencrystal.translation.player.PlatformPlayerGetter
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
+import catmoe.fallencrystal.translation.player.PlayerGetter
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import java.util.*
 
-class BungeePlayerGetter : PlatformPlayerGetter {
+@Platform(ProxyPlatform.BUNGEE)
+class BungeePlayerGetter : PlayerGetter {
     override fun getPlayer(uuid: UUID): TranslatePlayer? {
         if (TranslationLoader.instance.loader.platform != ProxyPlatform.BUNGEE) throw IllegalArgumentException("Wrong proxy type")
         return try { TranslatePlayer(BungeePlayer(net.md_5.bungee.api.ProxyServer.getInstance().getPlayer(uuid))) } catch (_: NullPointerException) { null }

@@ -15,16 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.translation.player
+package catmoe.fallencrystal.translation.server
 
-import java.util.*
+interface ServerGetter {
 
-interface PlatformPlayerGetter {
+    fun getServer(name: String): TranslateServer?
 
-    fun getPlayer(uuid: UUID): TranslatePlayer?
-
-    fun getPlayer(name: String): TranslatePlayer?
-
-    fun getPlayers(): MutableCollection<TranslatePlayer>
+    fun init()
 
 }

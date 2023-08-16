@@ -17,7 +17,12 @@
 
 package catmoe.fallencrystal.translation.player.velocity
 
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlatformPlayer
+import catmoe.fallencrystal.translation.server.PlatformServer
+import catmoe.fallencrystal.translation.server.TranslateServer
+import catmoe.fallencrystal.translation.server.velocity.VelocityServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.velocitypowered.api.proxy.Player
@@ -27,6 +32,7 @@ import java.net.SocketAddress
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
+@Platform(ProxyPlatform.VELOCITY)
 class VelocityPlayer(val player: Player) : PlatformPlayer {
     override fun getAddress(): SocketAddress {
         return player.remoteAddress
@@ -66,5 +72,9 @@ class VelocityPlayer(val player: Player) : PlatformPlayer {
 
     override fun disconnect(reason: Component) {
         player.disconnect(reason)
+    }
+
+    override fun send(server: PlatformServer) {
+        (if (server is TranslateServer) (server.upstream as VelocityServer) else server as VelocityServer).send(this)
     }
 }

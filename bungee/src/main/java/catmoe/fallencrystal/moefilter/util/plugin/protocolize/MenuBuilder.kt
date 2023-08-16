@@ -25,6 +25,7 @@ import dev.simplix.protocolize.api.inventory.InventoryClose
 import dev.simplix.protocolize.api.item.ItemStack
 import dev.simplix.protocolize.data.inventory.InventoryType
 import net.kyori.adventure.text.Component
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.CopyOnWriteArrayList
@@ -49,7 +50,7 @@ abstract class MenuBuilder {
     open fun build(): Inventory {
         define()
         val inv = Inventory(type)
-        val titleBaseComponent = if (title != null) { ComponentUtil.toBaseComponents(title!!) } else TextComponent()
+        val titleBaseComponent = if (title != null) { ComponentUtil.toBaseComponents(title!!) as? BaseComponent ?: TextComponent() } else TextComponent()
         titleBaseComponent.isItalic=false
         inv.title(titleBaseComponent.toLegacyText())
         if (emptyItems.isNotEmpty()) { inv.items() }

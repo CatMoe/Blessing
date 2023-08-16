@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.translation.player
 
+import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
@@ -44,5 +45,7 @@ interface PlatformPlayer {
     fun disconnect()
 
     fun disconnect(reason: Component)
+
+    fun send(server: PlatformServer)
 
 }

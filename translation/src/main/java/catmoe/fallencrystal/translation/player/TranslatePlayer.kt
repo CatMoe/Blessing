@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.translation.player
 
+import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
@@ -65,5 +66,9 @@ class TranslatePlayer(val upstream: PlatformPlayer): PlatformPlayer {
 
     override fun disconnect(reason: Component) {
         upstream.disconnect(reason)
+    }
+
+    override fun send(server: PlatformServer) {
+        upstream.send(server)
     }
 }

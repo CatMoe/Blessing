@@ -17,12 +17,19 @@
 
 package catmoe.fallencrystal.translation
 
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.server.ServerInstance
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import kotlin.reflect.KClass
+
 class TranslationLoader(val loader: CPlatform) {
 
     init { instance=this }
 
+    @Suppress("DEPRECATION")
     fun load() {
-
+        ServerInstance.init()
     }
 
     fun unload() {
@@ -32,6 +39,20 @@ class TranslationLoader(val loader: CPlatform) {
     companion object {
         lateinit var instance: TranslationLoader
             private set
+
+        fun canAccess(obj: Any?): Boolean {
+            if (obj == null || obj is Field) return true
+            if (obj is Method && obj.isAnnotationPresent(Platform::class.java)) { return obj.getAnnotation(Platform::class.java).platform == instance.loader.platform }
+            if (obj is Class<out Any> && obj.isAnnotationPresent(Platform::class.java)) { return obj.getAnnotation(Platform::class.java).platform == instance.loader.platform }
+            if (obj is KClass<out Any> && obj.java.isAnnotationPresent(Platform::class.java)) { return obj.java.getAnnotation(Platform::class.java).platform == instance.loader.platform }
+            return if (obj::class.java.isAnnotationPresent(Platform::class.java)) obj::class.java.getAnnotation(Platform::class.java).platform == instance.loader.platform else true
+        }
+
+        fun secureAccess(obj: Any?): Any? {
+            return if (obj == null || !obj::class.java.isAnnotationPresent(Platform::class.java) || obj is Method) obj
+            else if (obj::class.java.getAnnotation(Platform::class.java).platform != instance.loader.platform) null else obj
+        }
     }
+
 
 }

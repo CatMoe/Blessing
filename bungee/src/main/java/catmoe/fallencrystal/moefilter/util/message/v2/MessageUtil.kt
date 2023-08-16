@@ -19,7 +19,6 @@ package catmoe.fallencrystal.moefilter.util.message.v2
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType.ACTION_BAR
@@ -28,11 +27,13 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar.Action
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.chat.ChatPacketProcessor
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
@@ -98,12 +99,12 @@ object MessageUtil {
 
     fun logError(message: String) { logger.log(Level.SEVERE, logColorize(message)) }
 
-    fun colorize(message: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) }
+    fun colorize(message: String): BaseComponent { return (ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) as? BaseComponent) ?: return TextComponent("") }
 
     fun colorize(message: String, hex: Boolean): BaseComponent {
         val c = ComponentUtil.parse(message)
         return when (hex) {
-            true -> { ComponentUtil.toBaseComponents(ComponentUtil.parse(message, true)) }
+            true -> { (ComponentUtil.toBaseComponents(ComponentUtil.parse(message, true)) as? BaseComponent) ?: return TextComponent("") }
             false -> { BungeeComponentSerializer.legacy().serialize(c)[0] }
         }
     }

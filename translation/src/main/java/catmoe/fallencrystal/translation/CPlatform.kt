@@ -31,6 +31,8 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
 
     val platform = this.loader::class.java.getAnnotation(Platform::class.java).platform
 
+    val translationLoader = TranslationLoader(this)
+
     override fun getPluginFolder(): File { return loader.getPluginFolder() }
     override fun getPluginInstance(): PlatformLoader { return loader.getPluginInstance() }
     override fun getPlatformLogger(): SimpleLogger { return loader.getPlatformLogger() }
@@ -38,6 +40,7 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
 
     override fun readyLoad() {
         LoadConfig().loadConfig()
+        translationLoader.load()
     }
 
     override fun whenLoad() {}

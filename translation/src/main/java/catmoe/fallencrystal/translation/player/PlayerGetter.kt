@@ -15,7 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.translation.platform
+package catmoe.fallencrystal.translation.player
 
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Platform(val platform: ProxyPlatform)
+import java.util.*
+
+interface PlayerGetter {
+
+    fun getPlayer(uuid: UUID): TranslatePlayer?
+
+    fun getPlayer(name: String): TranslatePlayer?
+
+    fun getPlayers(): MutableCollection<TranslatePlayer>
+
+}

@@ -17,16 +17,16 @@
 
 package catmoe.fallencrystal.translation.player
 
+import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.BUNGEE
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.VELOCITY
-import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayerGetter
 import catmoe.fallencrystal.translation.player.velocity.VelocityPlayerGetter
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object PlayerInstance : PlatformPlayerGetter {
+object PlayerInstance : PlayerGetter {
 
     private val list: MutableCollection<TranslatePlayer> = CopyOnWriteArrayList()
 
@@ -40,9 +40,9 @@ object PlayerInstance : PlatformPlayerGetter {
         if (a != null) return a
         list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getUUID() == uuid) return it }
         val r = when (TranslationLoader.instance.loader.platform) {
-            BUNGEE -> BungeePlayerGetter().getPlayer(uuid)
-            VELOCITY -> VelocityPlayerGetter().getPlayer(uuid)
-        }
+            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter().getPlayer(uuid))
+            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter().getPlayer(uuid))
+        } as? TranslatePlayer
         if (r != null) addToList(r)
         return r
     }
@@ -50,9 +50,9 @@ object PlayerInstance : PlatformPlayerGetter {
     override fun getPlayer(name: String): TranslatePlayer? {
         list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getName() == name) return it }
         val r = when (TranslationLoader.instance.loader.platform) {
-            BUNGEE -> BungeePlayerGetter().getPlayer(name)
-            VELOCITY -> VelocityPlayerGetter().getPlayer(name)
-        }
+            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter().getPlayer(name))
+            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter().getPlayer(name))
+        } as? TranslatePlayer
         if (r != null) addToList(r)
         return r
     }

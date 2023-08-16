@@ -17,23 +17,27 @@
 
 package catmoe.fallencrystal.translation.utils.component
 
+import catmoe.fallencrystal.translation.TranslationLoader
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.chat.TextComponent
-import net.md_5.bungee.chat.ComponentSerializer
 
 @Suppress("unused")
 object ComponentUtil {
 
     private val legacyBuilder = GsonComponentSerializer.builder().downsampleColors().emitLegacyHoverEvent().build()
 
-    fun toBaseComponents(component: Component): BaseComponent { return TextComponent(*ComponentSerializer.parse(toGson(component))) }
+    @Platform(ProxyPlatform.BUNGEE)
+    private fun a(component: Component): net.md_5.bungee.api.chat.BaseComponent { return net.md_5.bungee.api.chat.TextComponent(*net.md_5.bungee.chat.ComponentSerializer.parse(toGson(component))) }
 
-    fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&', legacy)) }
+    fun toBaseComponents(component: Component): Any? {
+        return if (TranslationLoader.canAccess(this::class.java.getDeclaredMethod("a", Component::class.java))) this.a(component) else null
+    }
+
+    fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(legacy) }
 
     fun componentToRaw(component: Component): String { return MiniMessage.builder().strict(true).build().serialize(component) }
 

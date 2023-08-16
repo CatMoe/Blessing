@@ -23,12 +23,12 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
@@ -60,7 +60,8 @@ class BungeeEvent : Listener {
             (event.isCommand && !event.isProxyCommand),
             event.isCancelled,
             event.message
-        )) }
+        ))
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPostLogin(event: PostLoginEvent) { EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) }

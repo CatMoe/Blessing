@@ -17,13 +17,15 @@
 
 package catmoe.fallencrystal.translation.player.velocity
 
-import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.TranslationLoader
-import catmoe.fallencrystal.translation.player.PlatformPlayerGetter
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
+import catmoe.fallencrystal.translation.player.PlayerGetter
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import java.util.*
 
-class VelocityPlayerGetter : PlatformPlayerGetter {
+@Platform(ProxyPlatform.VELOCITY)
+class VelocityPlayerGetter : PlayerGetter {
     override fun getPlayer(uuid: UUID): TranslatePlayer? {
         if (TranslationLoader.instance.loader.platform != ProxyPlatform.VELOCITY) throw IllegalArgumentException("Wrong proxy type")
         val proxyServer = getProxyServer() as com.velocitypowered.api.proxy.ProxyServer

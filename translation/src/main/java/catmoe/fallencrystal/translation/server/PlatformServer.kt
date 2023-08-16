@@ -15,7 +15,20 @@
  *
  */
 
-package catmoe.fallencrystal.translation.platform
+package catmoe.fallencrystal.translation.server
 
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Platform(val platform: ProxyPlatform)
+import catmoe.fallencrystal.translation.player.PlatformPlayer
+import catmoe.fallencrystal.translation.player.TranslatePlayer
+import java.net.InetSocketAddress
+
+interface PlatformServer {
+
+    fun getAddress(): InetSocketAddress
+
+    fun getName(): String
+
+    fun getOnlinePlayers(): Collection<TranslatePlayer>
+
+    fun send(player: PlatformPlayer)
+
+}
