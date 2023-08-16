@@ -40,10 +40,11 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
 
     override fun readyLoad() {
         LoadConfig().loadConfig()
-        translationLoader.load()
     }
 
-    override fun whenLoad() {}
+    override fun whenLoad() {
+        translationLoader.load()
+    }
 
     override fun whenUnload() {
 

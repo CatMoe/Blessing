@@ -49,9 +49,12 @@ class MoeFilterVelocity @Inject constructor(
 ) : PlatformLoader {
     private val pluginFolder: File
 
+    private val cPlatform = CPlatform(this)
+
     init {
         instance=this
         pluginFolder = dataDirectory.toFile()
+        cPlatform.readyLoad()
         logger.warn("MoeFilter Velocity now under development. Many features are currently unavailable.")
     }
 
@@ -61,8 +64,6 @@ class MoeFilterVelocity @Inject constructor(
         CubeLogger.logger=VelocityLogger(this, proxyServer, logger)
         proxyServer.eventManager.register(this, PlayerClientBrandEvent::class.java, VelocityBrandListener(this))
     }
-
-    private val cPlatform = CPlatform(this)
 
     override fun getPluginFolder(): File { return pluginFolder }
 

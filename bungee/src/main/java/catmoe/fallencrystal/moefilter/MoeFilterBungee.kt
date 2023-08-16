@@ -50,6 +50,7 @@ class MoeFilterBungee : Plugin(), PlatformLoader {
     }
 
     override fun onEnable() {
+        viaLoader.whenLoad()
         if(!fastboot) { load() }
         if (injectPipelineAfterLoad.get()) { InitChannel().initPipeline() }
     }

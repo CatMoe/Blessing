@@ -46,7 +46,7 @@ class InitLogger : ICubeLogger {
     catch(ex: NoClassDefFoundError) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
 
     fun onLoad() {
-        ascii.forEach { this.log(Level.INFO, ComponentUtil.parse("[MoeFilter] <green>Detected Waterfall log4j logger. use it for main logger.")) }
+        ascii.forEach { this.log(Level.INFO, ComponentUtil.parse(it)) }
         logger.filter = LoggerManager
         if (useWaterfallLogger) {
             this.log(Level.INFO, ComponentUtil.parse("[MoeFilter] <green>Detected Waterfall log4j logger. use it for main logger."))

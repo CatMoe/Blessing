@@ -181,24 +181,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>2.9.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe</groupId>
-            <artifactId>config</artifactId>
-            <version>1.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.11.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.maxmind.geoip2</groupId>
             <artifactId>geoip2</artifactId>
             <version>4.1.0</version>
@@ -249,7 +231,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
             <version>4.14.0</version>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->
@@ -257,13 +239,13 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson</artifactId>
             <version>4.14.0</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
             <version>4.14.0</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
@@ -297,7 +279,7 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-protocol</artifactId>
             <version>1.20-R0.2-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>

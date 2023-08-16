@@ -59,8 +59,8 @@ class PacketPluginMessage : LimboPacket {
         if (packet.readableBytes() >= 32767) throw IllegalArgumentException("Payload is too large")
         val data = ByteArray(packet.readableBytes())
         packet.readBytes(data)
-        this.data = data
-        /*
+        if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") {
+            /*
             val m = byteArrayOf((data.size - 1).toByte())
             System.arraycopy(data, 1, m, 0, m.size)
 
@@ -71,13 +71,13 @@ class PacketPluginMessage : LimboPacket {
             byteArrayOf(vararg ?) : 创建一个或一段带有?的字节组 (最终它们的对象其实也是ByteArray)
             希望我以后不要再犯这种错误.. ;w; 在区块数据包上我就因为这些搞砸了许多次
              */
-        val b = ByteMessage(Unpooled.wrappedBuffer(data))
-        message = b.readString()
-        b.release()
-        // 错误抛出必须在release()后面 避免内存泄漏
-        if (message.isEmpty() || message.length > 128 || message.contains("jndi")) throw IllegalArgumentException("Invalid brand data because they is empty or too large")
-        MoeLimbo.debug("Brand: $message")
-        if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") { MoeLimbo.debug("Brand: $message") }
+            val b = ByteMessage(Unpooled.wrappedBuffer(data))
+            message = b.readString()
+            b.release()
+            // 错误抛出必须在release()后面 避免内存泄漏
+            if (message.isEmpty() || message.length > 128 || message.contains("jndi")) throw IllegalArgumentException("Invalid brand data because they is empty or too large")
+            MoeLimbo.debug("Brand: $message")
+        }
     }
 
     override fun handle(handler: LimboHandler) {
