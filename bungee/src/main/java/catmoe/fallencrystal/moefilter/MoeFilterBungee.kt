@@ -44,13 +44,10 @@ class MoeFilterBungee : Plugin(), PlatformLoader {
 
     init {
         instance=this
-        if (BungeeCord.getInstance().pluginManager.getPlugin("BungeeKotlinLib") == null)
-            throw NoClassDefFoundError("BungeeKotlinLib is not installed! Please install it first.")
         viaLoader.readyLoad()
     }
 
     override fun onEnable() {
-        viaLoader.whenLoad()
         if(!fastboot) { load() }
         if (injectPipelineAfterLoad.get()) { InitChannel().initPipeline() }
     }

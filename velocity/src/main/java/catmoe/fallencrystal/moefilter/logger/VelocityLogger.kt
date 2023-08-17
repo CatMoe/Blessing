@@ -25,6 +25,7 @@ import net.kyori.adventure.text.Component
 import org.slf4j.Logger
 import java.util.logging.Level
 
+@Suppress("MemberVisibilityCanBePrivate")
 class VelocityLogger(val plugin: MoeFilterVelocity, val proxyServer: ProxyServer, val logger: Logger) : ICubeLogger {
 
     override fun log(level: Level, message: String) {

@@ -3,7 +3,5 @@ version: '0.1.2-Alpha'
 author: CatMoe
 main: catmoe.fallencrystal.moefilter.MoeFilterBungee
 description: 'A antibot & utils for BungeeCord'
-depends:
-  - BungeeKotlinLib
 softDepends:
   - LuckPerms

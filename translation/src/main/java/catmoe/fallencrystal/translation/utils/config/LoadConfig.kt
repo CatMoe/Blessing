@@ -46,9 +46,6 @@ class LoadConfig {
                 # 不要在生产环境中使用这个! 它可能会导致发送大量垃圾邮件降低性能或泄露你的服务器的关键信息.
                 debug=false
                 
-                # 快速启动. 但不支持重载附属BungeeCord插件以及插件本身(例如BungeePluginManagerPlus重载).
-                fastboot=false
-                
                 # f3服务端标识. 在较高版本的客户端上按F3即可看到.
                 # gradient和其它标签e.x <newline> 不可在此处使用
                 # 占位符: %bungee%: BungeeCord名称, %version%: BungeeCord版本, %backend%: 后端服务器名称

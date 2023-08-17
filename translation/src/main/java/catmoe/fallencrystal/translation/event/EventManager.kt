@@ -1,0 +1,97 @@
+/*
+ * Copyright 2023. CatMoe / FallenCrystal
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package catmoe.fallencrystal.translation.event
+
+import catmoe.fallencrystal.translation.TranslationLoader
+import catmoe.fallencrystal.translation.event.annotations.*
+import catmoe.fallencrystal.translation.logger.CubeLogger
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
+import com.github.benmanes.caffeine.cache.Caffeine
+import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.logging.Level
+import kotlin.reflect.KClass
+
+object EventManager {
+
+    private val method = Caffeine.newBuilder().build<KClass<out TranslationEvent>, MutableMap<EventPriority, MutableCollection<Method>>>()
+    private val listener = Caffeine.newBuilder().build<Method, EventListener>()
+    private val kcl = Caffeine.newBuilder().build<KClass<out EventListener>, MutableCollection<Method>>()
+
+    fun callEvent(event: TranslationEvent) {
+        val method: MutableCollection<Method> = CopyOnWriteArrayList()
+        val a = this.method.getIfPresent(event::class) ?: return
+        for (it in EventPriority.values()) { method.addAll((a[it] ?: continue)) }
+        if (method.isEmpty()) return
+        val cancelRead = AtomicBoolean(false)
+        for (it in method) {
+            if (!TranslationLoader.canAccess(it)) continue
+            val m = listener.getIfPresent(it) ?: continue
+            if (cancelRead.get() && !it.isAnnotationPresent(IgnoreCancelled::class.java)) continue
+            if (it.isAnnotationPresent(AsynchronousHandler::class.java)) {
+                if (it.isAnnotationPresent(EndCallWhenCancelled::class.java))
+                    CubeLogger.log(Level.WARNING, ComponentUtil.parse("Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})"))
+                CompletableFuture.runAsync { try { it.invoke(m, event) } catch(e: Exception) { e.printStackTrace() } }; continue
+            }
+            try { it.invoke(event, m) } catch (e: Exception) { e.printStackTrace() }
+            if (event.isCancelled() == true) cancelRead.set(true)
+        }
+    }
+
+    @Synchronized
+    fun register(listener: EventListener) {
+        val a: MutableCollection<Method> = ArrayList()
+        val method = listener.javaClass.declaredMethods
+        for (it in method) {
+            /* it.parameterTypes[0]::class.java.isAssignableFrom(TranslationEvent::class.java) */
+            if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1) a.add(it)
+        }
+        for (it in a) {
+            val h = if (it.isAnnotationPresent(HandlerPriority::class.java)) it.getAnnotation(HandlerPriority::class.java).priority else EventPriority.MEDIUM
+            val c: KClass<out TranslationEvent> = it.getAnnotation(EventHandler::class.java).event
+            val o = (this.method.getIfPresent(c) ?: mutableMapOf()).toMutableMap()
+            val o2 = if (o[h].isNullOrEmpty()) mutableListOf() else o[h]!!
+            o2.add(it); this.listener.put(it, listener)
+            o[h]=o2
+            this.method.put(c, o)
+            val k1 = this.kcl.getIfPresent(listener::class) ?: mutableListOf()
+            k1.add(it)
+            this.kcl.put(listener::class, k1)
+        }
+    }
+
+    @Synchronized
+    fun unregister(listener: EventListener) {
+        val a = this.kcl.getIfPresent(listener::class) ?: return
+        for (it in a) {
+            val e = it.getAnnotation(EventHandler::class.java).event
+            val b = this.method.getIfPresent(e) ?: continue
+            val h = if (it.isAnnotationPresent(HandlerPriority::class.java)) it.getAnnotation(HandlerPriority::class.java).priority else EventPriority.MEDIUM
+            val v = (b[h] ?: continue)
+            v.remove(it)
+            b[h]=v
+            this.method.put(e, b)
+            a.remove(it)
+            this.kcl.put(listener::class, a)
+            if (a.isEmpty()) this.kcl.invalidate(listener::class)
+        }
+    }
+
+}

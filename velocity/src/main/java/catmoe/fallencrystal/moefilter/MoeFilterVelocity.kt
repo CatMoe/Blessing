@@ -60,9 +60,9 @@ class MoeFilterVelocity @Inject constructor(
 
     @Subscribe
     fun proxyLoad(event: ProxyInitializeEvent) {
-        cPlatform.whenLoad()
         CubeLogger.logger=VelocityLogger(this, proxyServer, logger)
         proxyServer.eventManager.register(this, PlayerClientBrandEvent::class.java, VelocityBrandListener(this))
+        cPlatform.whenLoad()
     }
 
     override fun getPluginFolder(): File { return pluginFolder }
