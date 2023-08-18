@@ -15,14 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.event.events.proxy
 
-abstract class TranslationEvent {
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.player.TranslatePlayer
+import java.util.concurrent.atomic.AtomicBoolean
 
-    open fun isCancelled(): Boolean? { return null }
+class PlayerChatEvent(val player: TranslatePlayer, val message: String) : TranslationEvent() {
+    private var c = AtomicBoolean(false)
 
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
+    override fun setCancelled() { c.set(true) }
 
-    open fun ifCancelled() {}
-
+    override fun isCancelled(): Boolean { return c.get() }
 }

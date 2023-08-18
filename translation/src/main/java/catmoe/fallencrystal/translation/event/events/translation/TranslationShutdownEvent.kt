@@ -15,14 +15,8 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.event.events.translation
 
-abstract class TranslationEvent {
+import catmoe.fallencrystal.translation.event.TranslationEvent
 
-    open fun isCancelled(): Boolean? { return null }
-
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
-
-    open fun ifCancelled() {}
-
-}
+class TranslationShutdownEvent : TranslationEvent()

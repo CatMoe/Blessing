@@ -54,7 +54,13 @@ class VelocityPlayer(val player: Player) : PlatformPlayer {
         return player.username
     }
 
-    override fun getUUID(): UUID {
+    override fun sendMessage(component: Component) { player.sendMessage(component) }
+
+    override fun hasPermission(permission: String): Boolean {
+        return player.hasPermission(permission)
+    }
+
+    override fun getUniqueId(): UUID {
         return player.uniqueId
     }
 
@@ -76,5 +82,9 @@ class VelocityPlayer(val player: Player) : PlatformPlayer {
 
     override fun send(server: PlatformServer) {
         (if (server is TranslateServer) (server.upstream as VelocityServer) else server as VelocityServer).send(this)
+    }
+
+    override fun sendActionbar(component: Component) {
+        player.sendActionBar(component)
     }
 }

@@ -17,6 +17,9 @@
 
 package catmoe.fallencrystal.translation
 
+import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.event.events.translation.TranslationLoadEvent
+import catmoe.fallencrystal.translation.event.events.translation.TranslationShutdownEvent
 import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.server.ServerInstance
 import java.lang.reflect.Field
@@ -30,10 +33,11 @@ class TranslationLoader(val loader: CPlatform) {
     @Suppress("DEPRECATION")
     fun load() {
         ServerInstance.init()
+        EventManager.callEvent(TranslationLoadEvent())
     }
 
     fun unload() {
-
+        EventManager.callEvent(TranslationShutdownEvent())
     }
 
     companion object {

@@ -48,8 +48,16 @@ class TranslatePlayer(val upstream: PlatformPlayer): PlatformPlayer {
         return upstream.getName()
     }
 
-    override fun getUUID(): UUID {
-        return upstream.getUUID()
+    override fun sendMessage(component: Component) {
+        upstream.sendMessage(component)
+    }
+
+    override fun hasPermission(permission: String): Boolean {
+        return upstream.hasPermission(permission)
+    }
+
+    override fun getUniqueId(): UUID {
+        return upstream.getUniqueId()
     }
 
     override fun isOnlineMode(): Boolean {
@@ -70,5 +78,9 @@ class TranslatePlayer(val upstream: PlatformPlayer): PlatformPlayer {
 
     override fun send(server: PlatformServer) {
         upstream.send(server)
+    }
+
+    override fun sendActionbar(component: Component) {
+        upstream.sendActionbar(component)
     }
 }

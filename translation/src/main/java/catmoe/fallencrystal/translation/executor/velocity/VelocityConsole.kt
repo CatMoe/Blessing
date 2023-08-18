@@ -15,14 +15,20 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.executor.velocity
 
-abstract class TranslationEvent {
+import catmoe.fallencrystal.translation.executor.CommandExecutor
+import com.velocitypowered.api.proxy.ConsoleCommandSource
+import net.kyori.adventure.text.Component
 
-    open fun isCancelled(): Boolean? { return null }
+class VelocityConsole(private val orig: ConsoleCommandSource) : CommandExecutor {
 
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
+    override fun getName(): String { return "CONSOLE" }
 
-    open fun ifCancelled() {}
+    override fun sendMessage(component: Component) { orig.sendMessage(component) }
+
+    override fun hasPermission(permission: String): Boolean {
+        return true // Console has any permission.
+    }
 
 }

@@ -17,10 +17,6 @@
 
 package catmoe.fallencrystal.translation.event.annotations
 
-enum class EventPriority(val p: Int) {
-    HIGHEST(4),
-    HIGH(3),
-    MEDIUM(2),
-    LOW(1),
-    LOWEST(0)
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class EventPriority(val priority: HandlerPriority)

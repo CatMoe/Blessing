@@ -15,14 +15,16 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.executor
 
-abstract class TranslationEvent {
+import net.kyori.adventure.text.Component
 
-    open fun isCancelled(): Boolean? { return null }
+interface CommandExecutor {
 
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
+    fun getName(): String
 
-    open fun ifCancelled() {}
+    fun sendMessage(component: Component)
+
+    fun hasPermission(permission: String): Boolean
 
 }

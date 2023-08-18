@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.translation.player
 
+import catmoe.fallencrystal.translation.executor.CommandExecutor
 import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
@@ -24,7 +25,7 @@ import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.util.*
 
-interface PlatformPlayer {
+interface PlatformPlayer : CommandExecutor {
 
     fun getAddress(): SocketAddress
 
@@ -34,9 +35,7 @@ interface PlatformPlayer {
 
     fun getVersion(): Version
 
-    fun getName(): String
-
-    fun getUUID(): UUID
+    fun getUniqueId(): UUID
 
     fun isOnlineMode(): Boolean
 
@@ -47,5 +46,7 @@ interface PlatformPlayer {
     fun disconnect(reason: Component)
 
     fun send(server: PlatformServer)
+
+    fun sendActionbar(component: Component)
 
 }

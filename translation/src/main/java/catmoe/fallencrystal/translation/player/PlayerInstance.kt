@@ -18,6 +18,13 @@
 package catmoe.fallencrystal.translation.player
 
 import catmoe.fallencrystal.translation.TranslationLoader
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.annotations.EndCallWhenCancelled
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.annotations.EventPriority
+import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.BUNGEE
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.VELOCITY
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayerGetter
@@ -26,19 +33,19 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-object PlayerInstance : PlayerGetter {
+object PlayerInstance : PlayerGetter, EventListener {
 
     private val list: MutableCollection<TranslatePlayer> = CopyOnWriteArrayList()
 
-    private val cacheUUID = Caffeine.newBuilder().build<UUID, TranslatePlayer>()
-    private val cacheName = Caffeine.newBuilder().build<String, TranslatePlayer>()
+    val cacheUUID = Caffeine.newBuilder().build<UUID, TranslatePlayer>()
+    val cacheName = Caffeine.newBuilder().build<String, TranslatePlayer>()
 
     override fun getPlayers(): MutableCollection<TranslatePlayer> { return list }
 
     override fun getPlayer(uuid: UUID): TranslatePlayer? {
         val a = cacheUUID.getIfPresent(uuid)
         if (a != null) return a
-        list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getUUID() == uuid) return it }
+        list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getUniqueId() == uuid) return it }
         val r = when (TranslationLoader.instance.loader.platform) {
             BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter().getPlayer(uuid))
             VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter().getPlayer(uuid))
@@ -57,9 +64,28 @@ object PlayerInstance : PlayerGetter {
         return r
     }
 
+    @EventHandler(PlayerJoinEvent::class)
+    @EventPriority(HandlerPriority.HIGHEST)
+    @EndCallWhenCancelled
+    fun whenJoin(event: PlayerJoinEvent) {
+        cacheUUID.put(event.player.getUniqueId(), event.player)
+        cacheName.put(event.player.getName(), event.player)
+    }
+
+    @EventHandler(PlayerLeaveEvent::class)
+    @EventPriority(HandlerPriority.LOWEST)
+    fun whenLeave(event: PlayerLeaveEvent) {
+        cacheUUID.invalidate(event.player.getUniqueId())
+        cacheName.invalidate(event.player.getName())
+    }
+
+    fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name) }
+
+    fun getOrNull(uuid: UUID): TranslatePlayer? { return cacheName.getIfPresent(uuid) }
+
     private fun addToList(player: TranslatePlayer) {
         list.add(player)
-        cacheUUID.put(player.getUUID(), player)
+        cacheUUID.put(player.getUniqueId(), player)
         cacheName.put(player.getName(), player)
     }
 

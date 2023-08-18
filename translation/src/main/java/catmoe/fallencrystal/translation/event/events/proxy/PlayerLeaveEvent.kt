@@ -15,18 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.listener
+package catmoe.fallencrystal.translation.event.events.proxy
 
-import catmoe.fallencrystal.moefilter.MoeFilterVelocity
-import com.velocitypowered.api.event.AwaitingEventExecutor
-import com.velocitypowered.api.event.EventTask
-import com.velocitypowered.api.event.player.PlayerClientBrandEvent
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.player.TranslatePlayer
 
-class VelocityBrandListener(private val plugin: MoeFilterVelocity) : AwaitingEventExecutor<PlayerClientBrandEvent> {
-    override fun executeAsync(event: PlayerClientBrandEvent): EventTask {
-        return EventTask.withContinuation { continuation ->
-            // todo
-            continuation.resume()
-        }
-    }
-}
+class PlayerLeaveEvent(val player: TranslatePlayer) : TranslationEvent()

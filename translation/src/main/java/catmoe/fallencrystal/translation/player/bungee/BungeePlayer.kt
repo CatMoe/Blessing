@@ -61,7 +61,21 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
 
     override fun getName(): String { return player.name }
 
-    override fun getUUID(): UUID {
+    // TODO: Migrate MessageUtil to translation
+
+    override fun sendMessage(component: Component) {
+        TODO("Not yet implemented")
+    }
+
+    override fun sendActionbar(component: Component) {
+        TODO("Not yet implemented")
+    }
+
+    override fun hasPermission(permission: String): Boolean {
+        return player.hasPermission(permission)
+    }
+
+    override fun getUniqueId(): UUID {
         return player.uniqueId
     }
 

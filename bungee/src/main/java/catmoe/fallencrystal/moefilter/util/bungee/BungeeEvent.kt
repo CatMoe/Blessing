@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.moefilter.util.bungee
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
@@ -28,6 +27,12 @@ import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
+import catmoe.fallencrystal.translation.player.PlayerInstance
+import catmoe.fallencrystal.translation.player.TranslatePlayer
+import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.event.*
@@ -54,7 +59,7 @@ class BungeeEvent : Listener {
                     ).joinToString("<reset><newline>"), MessagesType.CHAT, player)
             }; event.isCancelled = true; return
         }
-        EventManager.triggerEvent(AsyncChatEvent(
+        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncChatEvent(
             player,
             event.isProxyCommand,
             (event.isCommand && !event.isProxyCommand),
@@ -64,23 +69,41 @@ class BungeeEvent : Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onPostLogin(event: PostLoginEvent) { EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) }
+    fun onPostLogin(event: PostLoginEvent) {
+        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) // old event...
+        val player = TranslatePlayer(BungeePlayer(event.player))
+        PlayerInstance.cacheUUID.put(player.getUniqueId(), player)
+        PlayerInstance.cacheName.put(player.getName(), player)
+        EventManager.callEvent(PlayerJoinEvent(player))
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerConnect(event: ServerConnectEvent){ EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.target, false, event.isCancelled)) }
+    fun onServerConnect(event: ServerConnectEvent){
+        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.target, false, event.isCancelled)) // old event...
+    }
 
     /*
     isCancelled is not available on this event
     so isCancelled is always false.
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerConnected(event: ServerConnectedEvent) { EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.server.info, event.server.isConnected, false)) }
+    fun onServerConnected(event: ServerConnectedEvent) {
+        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.server.info, event.server.isConnected, false)) // old event...
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerSwitch(event: ServerSwitchEvent) { EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) }
+    fun onServerSwitch(event: ServerSwitchEvent) {
+        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) // old event...
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onDisconnect(event: PlayerDisconnectEvent) { PipelineUtil.invalidateChannel(event.player) }
+    fun onDisconnect(event: PlayerDisconnectEvent) {
+        PipelineUtil.invalidateChannel(event.player)
+        val player = PlayerInstance.getOrNull(event.player.name) ?: return
+        EventManager.callEvent(PlayerLeaveEvent(player))
+        PlayerInstance.cacheUUID.invalidate(player.getUniqueId())
+        PlayerInstance.cacheName.invalidate(player.getName())
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPing(event: ProxyPingEvent) {

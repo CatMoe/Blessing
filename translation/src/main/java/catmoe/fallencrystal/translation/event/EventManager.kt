@@ -31,14 +31,15 @@ import kotlin.reflect.KClass
 
 object EventManager {
 
-    private val method = Caffeine.newBuilder().build<KClass<out TranslationEvent>, MutableMap<EventPriority, MutableCollection<Method>>>()
+    private val method = Caffeine.newBuilder().build<KClass<out TranslationEvent>, MutableMap<HandlerPriority, MutableCollection<Method>>>()
     private val listener = Caffeine.newBuilder().build<Method, EventListener>()
     private val kcl = Caffeine.newBuilder().build<KClass<out EventListener>, MutableCollection<Method>>()
 
+    @Suppress("DEPRECATION")
     fun callEvent(event: TranslationEvent) {
         val method: MutableCollection<Method> = CopyOnWriteArrayList()
         val a = this.method.getIfPresent(event::class) ?: return
-        for (it in EventPriority.values()) { method.addAll((a[it] ?: continue)) }
+        for (it in HandlerPriority.values()) { method.addAll((a[it] ?: continue)) }
         if (method.isEmpty()) return
         val cancelRead = AtomicBoolean(false)
         for (it in method) {
@@ -48,11 +49,22 @@ object EventManager {
             if (it.isAnnotationPresent(AsynchronousHandler::class.java)) {
                 if (it.isAnnotationPresent(EndCallWhenCancelled::class.java))
                     CubeLogger.log(Level.WARNING, ComponentUtil.parse("Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})"))
-                CompletableFuture.runAsync { try { it.invoke(m, event) } catch(e: Exception) { e.printStackTrace() } }; continue
+                CompletableFuture.runAsync { try { it.invoke(m, event) } catch (e: Exception) {
+                    if (it.isAnnotationPresent(SilentException::class.java)) {
+                        val ignore = it.getAnnotation(SilentException::class.java).exception
+                        if (!ignore.contains(e::class)) e.printStackTrace()
+                    } else e.printStackTrace()
+                } }; continue
             }
-            try { it.invoke(event, m) } catch (e: Exception) { e.printStackTrace() }
+            try { it.invoke(event, m) } catch (e: Exception) {
+                if (it.isAnnotationPresent(SilentException::class.java)) {
+                    val ignore = it.getAnnotation(SilentException::class.java).exception
+                    if (!ignore.contains(e::class)) e.printStackTrace()
+                } else e.printStackTrace()
+            }
             if (event.isCancelled() == true) cancelRead.set(true)
         }
+        if (cancelRead.get()) event.ifCancelled()
     }
 
     @Synchronized
@@ -64,7 +76,7 @@ object EventManager {
             if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1) a.add(it)
         }
         for (it in a) {
-            val h = if (it.isAnnotationPresent(HandlerPriority::class.java)) it.getAnnotation(HandlerPriority::class.java).priority else EventPriority.MEDIUM
+            val h = if (it.isAnnotationPresent(EventPriority::class.java)) it.getAnnotation(EventPriority::class.java).priority else HandlerPriority.MEDIUM
             val c: KClass<out TranslationEvent> = it.getAnnotation(EventHandler::class.java).event
             val o = (this.method.getIfPresent(c) ?: mutableMapOf()).toMutableMap()
             val o2 = if (o[h].isNullOrEmpty()) mutableListOf() else o[h]!!
@@ -83,7 +95,7 @@ object EventManager {
         for (it in a) {
             val e = it.getAnnotation(EventHandler::class.java).event
             val b = this.method.getIfPresent(e) ?: continue
-            val h = if (it.isAnnotationPresent(HandlerPriority::class.java)) it.getAnnotation(HandlerPriority::class.java).priority else EventPriority.MEDIUM
+            val h = if (it.isAnnotationPresent(EventPriority::class.java)) it.getAnnotation(EventPriority::class.java).priority else HandlerPriority.MEDIUM
             val v = (b[h] ?: continue)
             v.remove(it)
             b[h]=v

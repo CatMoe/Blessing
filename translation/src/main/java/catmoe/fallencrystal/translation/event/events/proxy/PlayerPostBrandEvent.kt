@@ -15,14 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.event.events.proxy
 
-abstract class TranslationEvent {
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.player.TranslatePlayer
 
-    open fun isCancelled(): Boolean? { return null }
-
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
-
-    open fun ifCancelled() {}
-
-}
+class PlayerPostBrandEvent(val player: TranslatePlayer, val brand: String) : TranslationEvent()

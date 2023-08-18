@@ -15,14 +15,11 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event
+package catmoe.fallencrystal.translation.event.annotations
 
-abstract class TranslationEvent {
+import kotlin.reflect.KClass
 
-    open fun isCancelled(): Boolean? { return null }
-
-    open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
-
-    open fun ifCancelled() {}
-
-}
+@Deprecated("Recommend use try-catch block itself.")
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class SilentException(vararg val exception: KClass<out Exception>) // 忽略异常
