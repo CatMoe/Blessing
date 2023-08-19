@@ -19,9 +19,9 @@ package catmoe.fallencrystal.moefilter.common.check.misc
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
+import catmoe.fallencrystal.moefilter.check.AbstractCheck
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall

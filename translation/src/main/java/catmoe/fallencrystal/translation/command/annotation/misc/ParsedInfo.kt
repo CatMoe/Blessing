@@ -15,6 +15,6 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.brand
+package catmoe.fallencrystal.translation.command.annotation.misc
 
-enum class BrandMatchType { CONTAINS, EQUAL, IGNORE_CASE, REGEX }
+class ParsedInfo(val command: String, val description: String, val permission: String, val usage: List<String>, val allowConsole: Boolean)

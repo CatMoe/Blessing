@@ -19,12 +19,6 @@ package catmoe.fallencrystal.translation.player
 
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.event.EventListener
-import catmoe.fallencrystal.translation.event.annotations.EndCallWhenCancelled
-import catmoe.fallencrystal.translation.event.annotations.EventHandler
-import catmoe.fallencrystal.translation.event.annotations.EventPriority
-import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.BUNGEE
 import catmoe.fallencrystal.translation.platform.ProxyPlatform.VELOCITY
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayerGetter
@@ -62,21 +56,6 @@ object PlayerInstance : PlayerGetter, EventListener {
         } as? TranslatePlayer
         if (r != null) addToList(r)
         return r
-    }
-
-    @EventHandler(PlayerJoinEvent::class)
-    @EventPriority(HandlerPriority.HIGHEST)
-    @EndCallWhenCancelled
-    fun whenJoin(event: PlayerJoinEvent) {
-        cacheUUID.put(event.player.getUniqueId(), event.player)
-        cacheName.put(event.player.getName(), event.player)
-    }
-
-    @EventHandler(PlayerLeaveEvent::class)
-    @EventPriority(HandlerPriority.LOWEST)
-    fun whenLeave(event: PlayerLeaveEvent) {
-        cacheUUID.invalidate(event.player.getUniqueId())
-        cacheName.invalidate(event.player.getName())
     }
 
     fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name) }

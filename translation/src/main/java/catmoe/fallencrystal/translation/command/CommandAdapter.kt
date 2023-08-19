@@ -15,10 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.brand
+package catmoe.fallencrystal.translation.command
 
-@Suppress("unused")
-enum class BrandCheckMode(val ifMatch: Boolean) {
-    WHITELIST(true),
-    BLACKLIST(false);
+interface CommandAdapter {
+
+    fun register()
+
+    fun unregister()
+
 }

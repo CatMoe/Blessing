@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.translation.utils.config.util
+package catmoe.fallencrystal.translation.utils.config
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory

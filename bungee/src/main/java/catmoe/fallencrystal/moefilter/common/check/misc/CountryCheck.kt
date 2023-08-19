@@ -17,9 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.common.check.misc
 
-import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
+import catmoe.fallencrystal.moefilter.check.AbstractCheck
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 
 class CountryCheck : AbstractCheck() {

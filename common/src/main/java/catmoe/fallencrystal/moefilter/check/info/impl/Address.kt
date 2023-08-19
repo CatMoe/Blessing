@@ -15,9 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.info.impl
+package catmoe.fallencrystal.moefilter.check.info.impl
 
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import java.net.InetAddress
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import java.net.InetSocketAddress
 
-class Joining(val username: String, val address: InetAddress, val protocol: Int) : CheckInfo
+class Address(val address: InetSocketAddress, val virtualHost: InetSocketAddress?) : CheckInfo

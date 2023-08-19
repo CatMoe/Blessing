@@ -15,6 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.command.annotation.misc
+package catmoe.fallencrystal.moefilter.check.brand
 
-class ParsedInfo(val command: String, val description: String, val permission: String, val usage: List<String>, val allowConsole: Boolean)
+@Suppress("unused")
+enum class BrandCheckMode(val ifMatch: Boolean) {
+    WHITELIST(true),
+    BLACKLIST(false);
+}

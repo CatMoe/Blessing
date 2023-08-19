@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.listener.main
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.check.info.impl.Address
+import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck

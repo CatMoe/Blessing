@@ -18,10 +18,10 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.*
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.translation.command.annotation.*
 import net.md_5.bungee.api.CommandSender
 
 @Command("reload")

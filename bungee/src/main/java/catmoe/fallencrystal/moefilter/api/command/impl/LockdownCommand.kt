@@ -18,10 +18,10 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
-import catmoe.fallencrystal.moefilter.api.command.annotation.ConsoleCanExecute
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.CommandDescription
+import catmoe.fallencrystal.translation.command.annotation.CommandUsage
+import catmoe.fallencrystal.translation.command.annotation.ConsoleCanExecute
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil

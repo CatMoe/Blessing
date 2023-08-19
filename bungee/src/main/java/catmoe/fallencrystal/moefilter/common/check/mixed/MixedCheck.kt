@@ -17,9 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.common.check.mixed
 
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedType.*
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall

@@ -18,11 +18,11 @@
 package catmoe.fallencrystal.moefilter.api.command.impl.test
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.*
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
+import catmoe.fallencrystal.translation.command.annotation.*
 import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.CommandSender
 

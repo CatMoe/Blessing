@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.counter.type
 
-import catmoe.fallencrystal.moefilter.common.state.AttackState
+import catmoe.fallencrystal.moefilter.state.AttackState
 
 enum class BlockType(@JvmField val state: AttackState) {
     FIREWALL(AttackState.FIREWALL),

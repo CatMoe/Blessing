@@ -15,9 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.info.impl
+package catmoe.fallencrystal.moefilter.check
 
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import java.net.InetSocketAddress
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 
-class Address(val address: InetSocketAddress, val virtualHost: InetSocketAddress?) : CheckInfo
+abstract class AbstractCheck {
+    open fun increase(info: CheckInfo): Boolean { return true }
+}

@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.common
 
-import catmoe.fallencrystal.moefilter.common.check.brand.BrandCheck
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Brand
+import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
+import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType

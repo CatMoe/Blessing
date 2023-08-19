@@ -15,8 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.command.annotation
+package catmoe.fallencrystal.moefilter.state
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class ConsoleCanExecute
+enum class AttackState(@JvmField val raw: String) {
+    FIREWALL("Firewall"),
+    JOIN("Join"),
+    PING("Ping"),
+    NOT_HANDLED("Not-Handled"),
+    LOCKDOWN("Lockdown"),
+}

@@ -15,8 +15,8 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.command.annotation
+package catmoe.fallencrystal.translation.command.annotation
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class CommandPermission(val permission: String)
+annotation class ConsoleCanExecute

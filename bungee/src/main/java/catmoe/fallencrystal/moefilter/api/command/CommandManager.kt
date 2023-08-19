@@ -17,10 +17,10 @@
 
 package catmoe.fallencrystal.moefilter.api.command
 
-import catmoe.fallencrystal.moefilter.api.command.annotation.*
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom.MESSAGE_PATH
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom.STRING
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.ParsedInfo
+import catmoe.fallencrystal.translation.command.annotation.*
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom.MESSAGE_PATH
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom.STRING
+import catmoe.fallencrystal.translation.command.annotation.misc.ParsedInfo
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.CommandSender

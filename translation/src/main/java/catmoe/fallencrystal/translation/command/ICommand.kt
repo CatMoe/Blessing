@@ -15,6 +15,14 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.info
+package catmoe.fallencrystal.translation.command
 
-interface CheckInfo
+import catmoe.fallencrystal.translation.executor.CommandExecutor
+
+interface ICommand {
+
+    fun execute(sender: CommandExecutor, input: Array<out String>)
+
+    fun tabComplete(sender: CommandExecutor, input: Array<out String>): MutableList<String>
+
+}

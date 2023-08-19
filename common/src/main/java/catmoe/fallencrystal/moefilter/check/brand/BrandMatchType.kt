@@ -15,21 +15,6 @@
  *
  */
 
-package catmoe.fallencrystal.translation.executor.velocity
+package catmoe.fallencrystal.moefilter.check.brand
 
-import catmoe.fallencrystal.translation.executor.CommandExecutor
-import com.velocitypowered.api.command.CommandSource
-import net.kyori.adventure.text.Component
-
-@Suppress("MemberVisibilityCanBePrivate")
-class VelocityConsole(val orig: CommandSource) : CommandExecutor {
-
-    override fun getName(): String { return "CONSOLE" }
-
-    override fun sendMessage(component: Component) { orig.sendMessage(component) }
-
-    override fun hasPermission(permission: String): Boolean {
-        return true // Console has any permission.
-    }
-
-}
+enum class BrandMatchType { CONTAINS, EQUAL, IGNORE_CASE, REGEX }

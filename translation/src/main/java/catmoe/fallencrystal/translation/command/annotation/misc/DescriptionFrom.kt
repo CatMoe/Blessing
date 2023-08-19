@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.command.annotation.misc
+package catmoe.fallencrystal.translation.command.annotation.misc
 
 enum class DescriptionFrom {
     STRING,

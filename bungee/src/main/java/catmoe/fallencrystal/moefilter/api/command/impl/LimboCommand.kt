@@ -18,11 +18,11 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.Command
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandPermission
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.Command
+import catmoe.fallencrystal.translation.command.annotation.CommandDescription
+import catmoe.fallencrystal.translation.command.annotation.CommandPermission
+import catmoe.fallencrystal.translation.command.annotation.CommandUsage
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler

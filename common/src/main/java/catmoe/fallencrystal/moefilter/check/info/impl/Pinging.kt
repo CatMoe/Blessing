@@ -15,8 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.info.impl
+package catmoe.fallencrystal.moefilter.check.info.impl
 
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import java.net.InetAddress
 
-class Brand(val brand: String) : CheckInfo
+class Pinging(val address: InetAddress, val protocol: Int) : CheckInfo

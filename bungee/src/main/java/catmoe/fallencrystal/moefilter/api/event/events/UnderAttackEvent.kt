@@ -17,6 +17,6 @@
 package catmoe.fallencrystal.moefilter.api.event.events
 
 import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
-import catmoe.fallencrystal.moefilter.common.state.AttackState
+import catmoe.fallencrystal.moefilter.state.AttackState
 
 class UnderAttackEvent(val state: Collection<AttackState>) : MoeAsyncEvent

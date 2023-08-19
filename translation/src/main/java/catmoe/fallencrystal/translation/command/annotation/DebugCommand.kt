@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.command.annotation
+package catmoe.fallencrystal.translation.command.annotation
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)

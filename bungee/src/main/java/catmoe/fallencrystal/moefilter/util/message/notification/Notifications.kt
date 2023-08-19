@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.util.message.notification
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.common.state.AttackState
+import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil

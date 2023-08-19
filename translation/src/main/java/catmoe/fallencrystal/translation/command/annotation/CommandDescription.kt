@@ -15,12 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.state
+package catmoe.fallencrystal.translation.command.annotation
 
-enum class AttackState(@JvmField val raw: String) {
-    FIREWALL("Firewall"),
-    JOIN("Join"),
-    PING("Ping"),
-    NOT_HANDLED("Not-Handled"),
-    LOCKDOWN("Lockdown"),
-}
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class CommandDescription(val type: DescriptionFrom, val description: String)

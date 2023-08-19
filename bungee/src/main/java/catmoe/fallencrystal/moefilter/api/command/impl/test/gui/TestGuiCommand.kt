@@ -18,10 +18,10 @@
 package catmoe.fallencrystal.moefilter.api.command.impl.test.gui
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandDescription
-import catmoe.fallencrystal.moefilter.api.command.annotation.CommandUsage
-import catmoe.fallencrystal.moefilter.api.command.annotation.DebugCommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.CommandDescription
+import catmoe.fallencrystal.translation.command.annotation.CommandUsage
+import catmoe.fallencrystal.translation.command.annotation.DebugCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer

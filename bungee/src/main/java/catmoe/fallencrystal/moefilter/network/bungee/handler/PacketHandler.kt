@@ -1,16 +1,13 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
-import catmoe.fallencrystal.moefilter.common.check.brand.BrandCheck
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Brand
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
+import catmoe.fallencrystal.moefilter.check.info.impl.Brand
+import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
@@ -19,6 +16,10 @@ import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerPostBrandEvent
+import catmoe.fallencrystal.translation.player.PlayerInstance
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
@@ -92,8 +93,9 @@ class PacketHandler : ChannelDuplexHandler() {
                             val clientBrand = DefinedPacket.readString(brand)
                             brand.release()
                             if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
-                            EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
                             if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
+                            catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
+                            catmoe.fallencrystal.translation.event.EventManager.callEvent(PlayerPostBrandEvent(PlayerInstance.getPlayer(player.uniqueId) ?: return@run, clientBrand))
                         }
                     } catch (_: StringIndexOutOfBoundsException) {
                         MessageUtil.logWarn("Caught StringIndexOutOfBoundsException for PluginMessage! Did this BungeeCord (fork) is fully compatible for 1.7.x clients?")

@@ -17,9 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Address
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Joining
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Pinging
+import catmoe.fallencrystal.moefilter.check.info.impl.Address
+import catmoe.fallencrystal.moefilter.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.misc.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck

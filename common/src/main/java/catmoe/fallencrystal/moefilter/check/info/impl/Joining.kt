@@ -15,21 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.translation.executor.velocity
+package catmoe.fallencrystal.moefilter.check.info.impl
 
-import catmoe.fallencrystal.translation.executor.CommandExecutor
-import com.velocitypowered.api.command.CommandSource
-import net.kyori.adventure.text.Component
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import java.net.InetAddress
 
-@Suppress("MemberVisibilityCanBePrivate")
-class VelocityConsole(val orig: CommandSource) : CommandExecutor {
-
-    override fun getName(): String { return "CONSOLE" }
-
-    override fun sendMessage(component: Component) { orig.sendMessage(component) }
-
-    override fun hasPermission(permission: String): Boolean {
-        return true // Console has any permission.
-    }
-
-}
+class Joining(val username: String, val address: InetAddress, val protocol: Int) : CheckInfo

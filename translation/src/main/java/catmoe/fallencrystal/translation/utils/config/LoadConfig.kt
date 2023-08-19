@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.translation.utils.config
 
 import catmoe.fallencrystal.translation.CPlatform
-import catmoe.fallencrystal.translation.utils.config.util.CreateConfig
 import com.typesafe.config.Config
 import java.io.File
 import java.nio.file.Files

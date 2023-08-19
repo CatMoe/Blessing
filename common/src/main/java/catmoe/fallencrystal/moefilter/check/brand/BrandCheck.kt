@@ -15,13 +15,13 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.check.brand
+package catmoe.fallencrystal.moefilter.check.brand
 
-import catmoe.fallencrystal.moefilter.common.check.AbstractCheck
-import catmoe.fallencrystal.moefilter.common.check.brand.BrandCheckMode.BLACKLIST
-import catmoe.fallencrystal.moefilter.common.check.brand.BrandMatchType.*
-import catmoe.fallencrystal.moefilter.common.check.info.CheckInfo
-import catmoe.fallencrystal.moefilter.common.check.info.impl.Brand
+import catmoe.fallencrystal.moefilter.check.AbstractCheck
+import catmoe.fallencrystal.moefilter.check.brand.BrandCheckMode.BLACKLIST
+import catmoe.fallencrystal.moefilter.check.brand.BrandMatchType.*
+import catmoe.fallencrystal.moefilter.check.info.CheckInfo
+import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 
 object BrandCheck : AbstractCheck() {

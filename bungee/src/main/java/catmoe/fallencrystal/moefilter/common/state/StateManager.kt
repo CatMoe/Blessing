@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
+import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent

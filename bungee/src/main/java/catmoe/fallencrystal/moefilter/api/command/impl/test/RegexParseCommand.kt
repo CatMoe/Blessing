@@ -18,10 +18,10 @@
 package catmoe.fallencrystal.moefilter.api.command.impl.test
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.command.annotation.*
-import catmoe.fallencrystal.moefilter.api.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.annotation.*
 import net.md_5.bungee.api.CommandSender
 import java.util.regex.PatternSyntaxException
 
