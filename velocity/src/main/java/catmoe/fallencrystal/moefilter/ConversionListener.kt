@@ -18,9 +18,9 @@
 package catmoe.fallencrystal.moefilter
 
 import catmoe.fallencrystal.translation.event.EventManager
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerPostBrandEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerJoinEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerLeaveEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerPostBrandEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import catmoe.fallencrystal.translation.player.velocity.VelocityPlayer
@@ -66,7 +66,8 @@ class ConversionListener(private val plugin: MoeFilterVelocity) {
             if (has) { isProxyCommand=true; break }
         }
         val player = PlayerInstance.getOrNull(event.player.uniqueId) ?: return
-        val e = catmoe.fallencrystal.translation.event.events.proxy.PlayerChatEvent(player, event.message, isProxyCommand)
+        val e =
+            catmoe.fallencrystal.translation.event.events.player.PlayerChatEvent(player, event.message, isProxyCommand)
         if (!event.result.isAllowed) e.setCancelled()
         EventManager.callEvent(e)
         if (e.isCancelled()) { event.result=PlayerChatEvent.ChatResult.denied() }

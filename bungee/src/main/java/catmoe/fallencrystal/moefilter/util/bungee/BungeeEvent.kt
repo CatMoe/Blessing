@@ -28,9 +28,9 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventManager
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerChatEvent
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerChatEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerJoinEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerLeaveEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer

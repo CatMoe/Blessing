@@ -15,9 +15,22 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event.events.proxy
+package catmoe.fallencrystal.translation.event.events.player
 
 import catmoe.fallencrystal.translation.event.TranslationEvent
 import catmoe.fallencrystal.translation.player.TranslatePlayer
+import java.util.concurrent.atomic.AtomicBoolean
 
-class PlayerLeaveEvent(val player: TranslatePlayer) : TranslationEvent()
+class PlayerChatEvent(
+    val player: TranslatePlayer,
+    val message: String,
+    val isProxyCommand: Boolean /* Testing, see https://github.com/CatMoe/MoeFilter/issues/48 */
+) : TranslationEvent() {
+    private var c = AtomicBoolean(false)
+
+    fun isCommand(): Boolean { return message.isNotEmpty() && message.startsWith("/") }
+
+    override fun setCancelled() { c.set(true) }
+
+    override fun isCancelled(): Boolean { return c.get() }
+}

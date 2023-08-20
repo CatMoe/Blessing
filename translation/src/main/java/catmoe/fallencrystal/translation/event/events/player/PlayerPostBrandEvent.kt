@@ -15,7 +15,7 @@
  *
  */
 
-package catmoe.fallencrystal.translation.event.events.proxy
+package catmoe.fallencrystal.translation.event.events.player
 
 import catmoe.fallencrystal.translation.event.TranslationEvent
 import catmoe.fallencrystal.translation.player.TranslatePlayer

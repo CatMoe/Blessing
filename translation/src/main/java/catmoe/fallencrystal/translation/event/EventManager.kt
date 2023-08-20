@@ -47,8 +47,10 @@ object EventManager {
             if (cancelRead.get() && !it.isAnnotationPresent(IgnoreCancelled::class.java)) continue
             if (it.isAnnotationPresent(AsynchronousHandler::class.java)) {
                 if (it.isAnnotationPresent(EndCallWhenCancelled::class.java))
+                    // I swear i will create a better logger xd.
                     CubeLogger.log(Level.WARNING, "Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})")
                 CompletableFuture.runAsync { try { it.invoke(m, event) } catch (e: Exception) {
+                    /* IDK why i will create this.. */
                     if (it.isAnnotationPresent(SilentException::class.java)) {
                         val ignore = it.getAnnotation(SilentException::class.java).exception
                         if (!ignore.contains(e::class)) e.printStackTrace()
@@ -58,7 +60,7 @@ object EventManager {
             try { it.invoke(m, event) } catch (e: Exception) {
                 if (it.isAnnotationPresent(SilentException::class.java)) {
                     val ignore = it.getAnnotation(SilentException::class.java).exception
-                    if (!ignore.contains(e::class)) e.printStackTrace()
+                    if (!ignore.contains(e::class)) e.printStackTrace() // If they have Exception::class, They will ignore all exception(s)?
                 } else e.printStackTrace()
             }
             if (event.isCancelled() == true) cancelRead.set(true)

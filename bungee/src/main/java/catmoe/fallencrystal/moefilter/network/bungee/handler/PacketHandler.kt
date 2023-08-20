@@ -16,9 +16,8 @@ import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.translation.event.events.proxy.PlayerPostBrandEvent
+import catmoe.fallencrystal.translation.event.events.player.PlayerPostBrandEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
@@ -61,8 +60,8 @@ class PacketHandler : ChannelDuplexHandler() {
                 val target = LocalConfig.getConfig().getString("f3-brand.custom")
                     .replace("%bungee%", proxy.name)
                     .replace("%version%", proxy.version)
-                    .replace("%backend%", ComponentUtil.componentToRaw(ComponentUtil.legacyToComponent(backend)))
-                DefinedPacket.writeString((MessageUtil.colorize(target)).toLegacyText(), brand)
+                    .replace("%backend%", MessageUtil.colorize(backend, false).toLegacyText())
+                DefinedPacket.writeString((MessageUtil.colorize(target, false)).toLegacyText(), brand)
                 msg.data = DefinedPacket.toArray(brand)
                 brand.release()
             }
