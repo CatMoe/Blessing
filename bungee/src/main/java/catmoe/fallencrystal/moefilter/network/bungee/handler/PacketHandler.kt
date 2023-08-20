@@ -81,8 +81,8 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is LoginRequest) {
                     val username = packet.data
                     if (username.isEmpty()) { throw InvalidUsernameException(channel.remoteAddress().toString() + "try to login but they username is empty.") }
-                    if (check(channel, inetSocketAddress, username)) return@run
-                    // TODO More kick here.
+                    check(channel, inetSocketAddress, username)
+                    if (cancelled.get()) return@run
                     PipelineUtil.putChannelHandler(ctx, username)
                 }
                 if (packet is PluginMessage) {
@@ -107,16 +107,15 @@ class PacketHandler : ChannelDuplexHandler() {
         super.channelRead(ctx, msg)
     }
 
-    private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String): Boolean {
+    private fun check(channel: Channel, inetSocketAddress: InetSocketAddress, name: String) {
         val inetAddress = inetSocketAddress.address
         val protocol = this.protocol.get()
         val joining = Joining(name, inetAddress, protocol)
-        if (ValidNameCheck.instance.increase(joining)) { kick(channel, INVALID_NAME); return true }
+        if (ValidNameCheck.instance.increase(joining)) { kick(channel, INVALID_NAME); return }
         val mixinKick = MixedCheck.increase(joining)
-        if (mixinKick != null) { kick(channel, mixinKick); return true }
-        if (SimilarityCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return true }
-        if (AlreadyOnlineCheck().increase(Joining(name, inetAddress, protocol))) { kick(channel, ALREADY_ONLINE); return true }
-        return false
+        if (mixinKick != null) { kick(channel, mixinKick); return }
+        if (SimilarityCheck.instance.increase(Joining(name, inetAddress, protocol))) { kick(channel, INVALID_NAME); return }
+        if (AlreadyOnlineCheck().increase(Joining(name, inetAddress, protocol))) { kick(channel, ALREADY_ONLINE); return }
     }
 
     private fun kick(channel: Channel, type: DisconnectType) {

@@ -28,6 +28,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.event.events.proxy.PlayerChatEvent
 import catmoe.fallencrystal.translation.event.events.proxy.PlayerJoinEvent
 import catmoe.fallencrystal.translation.event.events.proxy.PlayerLeaveEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
@@ -66,6 +67,11 @@ class BungeeEvent : Listener {
             event.isCancelled,
             event.message
         ))
+        val p = PlayerInstance.getOrNull(player.uniqueId) ?: return
+        val e = PlayerChatEvent(p, event.message, event.isProxyCommand)
+        if (event.isCancelled) e.setCancelled()
+        EventManager.callEvent(e)
+        if (!event.isCancelled && e.isCancelled()) event.isCancelled=true
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

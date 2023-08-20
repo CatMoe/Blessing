@@ -31,7 +31,7 @@ import com.velocitypowered.api.event.connection.PostLoginEvent
 import com.velocitypowered.api.event.player.PlayerChatEvent
 import com.velocitypowered.api.event.player.PlayerClientBrandEvent
 
-class ConversionListener(val plugin: MoeFilterVelocity) {
+class ConversionListener(private val plugin: MoeFilterVelocity) {
 
     @Subscribe
     fun onPostLogin(event: PostLoginEvent) {
@@ -57,8 +57,16 @@ class ConversionListener(val plugin: MoeFilterVelocity) {
 
     @Subscribe(order = PostOrder.LAST)
     fun chatEvent(event: PlayerChatEvent) {
+        val command = Regex("/([^/\\s]+)(?=\\s|$)").findAll(event.message)
+        var isProxyCommand = false
+        val cm = plugin.proxyServer.commandManager
+        for (it in command) {
+            val c = it.value.replace("/", "")
+            val has = cm.hasCommand(c)
+            if (has) { isProxyCommand=true; break }
+        }
         val player = PlayerInstance.getOrNull(event.player.uniqueId) ?: return
-        val e = catmoe.fallencrystal.translation.event.events.proxy.PlayerChatEvent(player, event.message)
+        val e = catmoe.fallencrystal.translation.event.events.proxy.PlayerChatEvent(player, event.message, isProxyCommand)
         if (!event.result.isAllowed) e.setCancelled()
         EventManager.callEvent(e)
         if (e.isCancelled()) { event.result=PlayerChatEvent.ChatResult.denied() }

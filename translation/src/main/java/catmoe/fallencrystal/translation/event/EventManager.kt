@@ -20,7 +20,6 @@ package catmoe.fallencrystal.translation.event
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.event.annotations.*
 import catmoe.fallencrystal.translation.logger.CubeLogger
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
@@ -48,7 +47,7 @@ object EventManager {
             if (cancelRead.get() && !it.isAnnotationPresent(IgnoreCancelled::class.java)) continue
             if (it.isAnnotationPresent(AsynchronousHandler::class.java)) {
                 if (it.isAnnotationPresent(EndCallWhenCancelled::class.java))
-                    CubeLogger.log(Level.WARNING, ComponentUtil.parse("Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})"))
+                    CubeLogger.log(Level.WARNING, "Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})")
                 CompletableFuture.runAsync { try { it.invoke(m, event) } catch (e: Exception) {
                     if (it.isAnnotationPresent(SilentException::class.java)) {
                         val ignore = it.getAnnotation(SilentException::class.java).exception
@@ -56,7 +55,7 @@ object EventManager {
                     } else e.printStackTrace()
                 } }; continue
             }
-            try { it.invoke(event, m) } catch (e: Exception) {
+            try { it.invoke(m, event) } catch (e: Exception) {
                 if (it.isAnnotationPresent(SilentException::class.java)) {
                     val ignore = it.getAnnotation(SilentException::class.java).exception
                     if (!ignore.contains(e::class)) e.printStackTrace()
@@ -67,7 +66,6 @@ object EventManager {
         if (cancelRead.get()) event.ifCancelled()
     }
 
-    @Synchronized
     fun register(listener: EventListener) {
         val a: MutableCollection<Method> = ArrayList()
         val method = listener.javaClass.declaredMethods
@@ -89,13 +87,15 @@ object EventManager {
         }
     }
 
-    @Synchronized
+
     fun unregister(listener: EventListener) {
         val a = this.kcl.getIfPresent(listener::class) ?: return
         for (it in a) {
             val e = it.getAnnotation(EventHandler::class.java).event
             val b = this.method.getIfPresent(e) ?: continue
             val h = if (it.isAnnotationPresent(EventPriority::class.java)) it.getAnnotation(EventPriority::class.java).priority else HandlerPriority.MEDIUM
+            if (it.parameterCount != 1) continue
+            if (!it.parameterTypes[0].isAssignableFrom(e.java)) continue
             val v = (b[h] ?: continue)
             v.remove(it)
             b[h]=v
