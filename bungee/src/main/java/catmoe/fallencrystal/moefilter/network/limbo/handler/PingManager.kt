@@ -17,10 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
@@ -87,9 +88,8 @@ object PingManager {
     private fun sendMotd(map: MutableMap<Version, MotdInfo>, handler: LimboHandler, noIcon: Boolean) {
         val p = map[dv ?: handler.version!!]!!
         // handler.writePacket(if (noIcon) packet.bmNoIcon else packet.bm)
-        val packet = PacketPingResponse()
-        packet.bm = if (noIcon) p.bmNoIcon else p.bm
-        handler.sendPacket(packet)
+        val pa = ExplicitPacket(0x00, (if (noIcon) p.bmNoIcon else p.bm), "Cached ping packet")
+        handler.sendPacket(pa)
         if (instantCloseAfterPing) handler.channel.close()
     }
 

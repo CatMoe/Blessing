@@ -17,21 +17,27 @@
 
 package catmoe.fallencrystal.moefilter.network.common.kick
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
 import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
+import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.protocol.packet.Kick
 
 object FastDisconnect {
     private val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
+    private val cachedByteArray = Caffeine.newBuilder().build<DisconnectReason, ByteArray>()
 
     private fun getPlaceholders(): Map<String, String> {
         val placeholderConfig = LocalConfig.getMessage().getConfig("kick.placeholders")
@@ -58,6 +64,22 @@ object FastDisconnect {
         }
     }
 
+    fun disconnect(handler: LimboHandler, type: DisconnectType) {
+        if (!handler.disconnected.get()) {
+            val cs = reasonCache.getIfPresent(type) ?: return
+            when (handler.state) {
+                Protocol.PLAY -> {
+                    val packet = PacketDisconnect()
+                    packet.setReason(cs.raw)
+                    handler.sendPacket(packet)
+                }
+                else -> handler.sendPacket(cs.packet.moelimbo)
+            }
+            handler.channel.close()
+        }
+    }
+
+    @Suppress("EnumValuesSoftDeprecate")
     fun initMessages() {
         val placeholder = getPlaceholders()
         for (type in DisconnectType.values()) {
@@ -71,8 +93,17 @@ object FastDisconnect {
 
     private fun getCacheReason(type: DisconnectType, component: Component): DisconnectReason {
         val cs = ComponentUtil.toGson(component)
-        val ml = PacketDisconnect()
-        ml.setReason(cs)
-        return DisconnectReason(type, component, KickPacket(Kick(cs), ml))
+        /*
+        Limbo Packets:
+         */
+        val kick = PacketDisconnect()
+        kick.setReason(cs)
+        val ba = ByteMessage(Unpooled.buffer())
+        kick.encode(ba, null)
+        val array = ba.toByteArray()
+        ba.release()
+        // End
+
+        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet")))
     }
 }

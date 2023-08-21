@@ -21,14 +21,15 @@ import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import okhttp3.OkHttpClient
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.schedule
 
@@ -41,6 +42,7 @@ class FetchProxy {
     private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
     private var count = 0
     private val scheduler = Scheduler(plugin)
+    private var isAlreadyStopped = AtomicBoolean(false)
 
     private val scheduleTaskId = AtomicInteger(0)
 
@@ -82,6 +84,7 @@ class FetchProxy {
     }
 
     fun reload() {
+        if (isAlreadyStopped.get()) return
         val config = LocalConfig.getProxy()
         val proxies = config.getStringList("internal.lists")
         val enabled = config.getBoolean("internal.enabled")

@@ -19,10 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
 import catmoe.fallencrystal.moefilter.api.event.EventManager
 import catmoe.fallencrystal.moefilter.api.event.events.LimboCheckPassedEvent
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
@@ -39,6 +37,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
@@ -204,7 +203,7 @@ object MoveCheck: LimboChecker, ILimboListener {
     }
 
     private fun k(a: LimboHandler) {
-        FastDisconnect.disconnect(a.channel, DisconnectType.DETECTED, ServerKickType.MOELIMBO)
+        FastDisconnect.disconnect(a, DisconnectType.DETECTED)
         if (MoeLimbo.debug) { try { throw Throwable() } catch (b: Throwable) { b.printStackTrace() } }
     }
 
@@ -212,7 +211,7 @@ object MoveCheck: LimboChecker, ILimboListener {
         val c = LocalConfig.getLimbo().getConfig("check.timer")
         val t = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - MoveTimer.firstTime.getIfPresent(a)!!)
         if (t < c.getInt("min") || t > c.getInt("max")) { k(a); return false }
-        FastDisconnect.disconnect(a.channel, DisconnectType.PASSED_CHECK, ServerKickType.MOELIMBO)
+        FastDisconnect.disconnect(a, DisconnectType.PASSED_CHECK)
         EventManager.triggerEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))
         return true
     }

@@ -34,10 +34,8 @@ class PacketPingResponse : LimboS2CPacket() {
     private val template = "{ \"version\": { \"name\": \"[brand]\", \"protocol\": [protocol] }, " +
             "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
             "\"description\": [description] }"
-    var bm: ByteArray? = null
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        if (bm != null) { packet.writeBytes(bm!!); return }
         val protocol = if (this.protocol == Version.UNDEFINED) version!! else this.protocol
         val output = if (output != null && output != "") output else {
             this.template

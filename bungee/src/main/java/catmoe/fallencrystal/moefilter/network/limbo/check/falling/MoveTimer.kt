@@ -17,10 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
@@ -33,6 +31,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosit
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import java.util.concurrent.TimeUnit
@@ -91,7 +90,7 @@ object MoveTimer : LimboChecker, ILimboListener {
         if (c != 0.toLong() && c < allowDelay) {
             val vl = vlCache.getIfPresent(handler) ?: 0
             if (vl >= this.kickVL) {
-                FastDisconnect.disconnect(handler.channel, DisconnectType.UNEXPECTED_PING, ServerKickType.MOELIMBO)
+                FastDisconnect.disconnect(handler, DisconnectType.UNEXPECTED_PING)
                 return true
             }
             vlCache.put(handler, vl)

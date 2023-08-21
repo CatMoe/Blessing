@@ -29,7 +29,6 @@ import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityChe
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
@@ -126,7 +125,7 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
 
     private fun kick(handler: LimboHandler, type: DisconnectType) {
         cancelled.put(handler, true)
-        FastDisconnect.disconnect(handler.channel, type, ServerKickType.MOELIMBO)
+        FastDisconnect.disconnect(handler, type)
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {

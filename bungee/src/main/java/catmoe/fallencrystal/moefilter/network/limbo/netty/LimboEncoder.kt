@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
+import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
@@ -40,16 +41,23 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         MoeLimbo.debug("Encoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
-    override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket?, out: ByteBuf?) {
-        if (out == null || packet == null) return
+    override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket, out: ByteBuf) {
         val msg = ByteMessage(out)
-        val packetId = if (packet is PacketSnapshot) registry!!.getPacketId(packet.wrappedPacket::class.java) else registry!!.getPacketId(packet::class.java)
-        if (packetId != -1) msg.writeVarInt(packetId)
+        val packetId = when (packet) {
+            is PacketSnapshot -> registry!!.getPacketId(packet.wrappedPacket::class.java)
+            is ExplicitPacket -> packet.id
+            else -> registry!!.getPacketId(packet::class.java)
+        }
+            /*
+            if (packet is PacketSnapshot) registry!!.getPacketId(packet.wrappedPacket::class.java)
+            else if (packet is ExplicitPacket) packet.id
+            else registry!!.getPacketId(packet::class.java)
+             */
+        if (packetId != -1) msg.writeVarInt(packetId) else return
         val packetClazz =
             try {
                 if (packet is PacketSnapshot) registry!!.getPacket(registry!!.getPacketId(packet.wrappedPacket.javaClass)) else packet
-            } catch (npe: NullPointerException) { null }
-        if (packetId == -1 || packetClazz == null) return
+            } catch (npe: NullPointerException) { null } ?: return
         try {
             if (LimboListener.handleSend(packetClazz, handler)) return
             packet.encode(msg, version)

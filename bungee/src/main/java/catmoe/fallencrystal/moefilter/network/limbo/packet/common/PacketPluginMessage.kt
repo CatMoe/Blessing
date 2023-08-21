@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
@@ -83,11 +82,7 @@ class PacketPluginMessage : LimboPacket {
     override fun handle(handler: LimboHandler) {
         if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") handler.brand=this.message
         if (BrandCheck.increase(Brand(this.message))) {
-            FastDisconnect.disconnect(
-                handler.channel,
-                DisconnectType.BRAND_NOT_ALLOWED,
-                ServerKickType.MOELIMBO
-            )
+            FastDisconnect.disconnect(handler, DisconnectType.BRAND_NOT_ALLOWED)
         }
     }
 

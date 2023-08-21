@@ -15,12 +15,17 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.common.kick
+package catmoe.fallencrystal.moefilter.network.limbo.packet
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
-import net.md_5.bungee.protocol.packet.Kick
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.translation.utils.version.Version
 
-class KickPacket(
-    val bungeecord: Kick,
-    val moelimbo: ExplicitPacket
-)
+@Suppress("MemberVisibilityCanBePrivate")
+class ExplicitPacket(val id: Int, val byteArray: ByteArray, val description: String): LimboS2CPacket() {
+    override fun encode(packet: ByteMessage, version: Version?) { packet.writeBytes(byteArray) }
+
+    override fun toString(): String {
+        return "ExplicitPacket(id=$id, description=$description)"
+    }
+
+}
