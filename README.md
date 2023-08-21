@@ -10,6 +10,16 @@
 
 ---
 
+### ⚠️ Development of the project has been suspended:
+
+The features expected in v1 are basically finished.  
+I don't have enough energy to maintain it.  
+(Mainly due to the impact of mental illness on my life)
+
+0.1.2-Alpha can be found on the release page. At last. Thank you all.
+
+---
+
 ### ⚠️ Dependency warning:
 
 You need [BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib).  

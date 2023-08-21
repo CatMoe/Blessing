@@ -4,6 +4,15 @@
 
 --- 
 
+### ⚠️ 此项目已暂停开发:
+
+基本上有关对于v1版本的功能已经完善完毕  
+我没有足够的精力再去维护那些了(由于心理疾病)
+
+0.1.2-Alpha可以在Release发布页面找到. 最后, 感谢你们所有人.
+
+---
+
 ### ⚠️ 依赖项警告:  
 
 需要在您的服务器上安装[BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib).  
