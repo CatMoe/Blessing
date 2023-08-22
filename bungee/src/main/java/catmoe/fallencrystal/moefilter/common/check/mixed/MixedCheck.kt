@@ -21,13 +21,13 @@ import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedType.*
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import com.typesafe.config.ConfigException
@@ -77,21 +77,19 @@ object MixedCheck {
                 return if (BungeeSwitcher.verify(info)) null else DisconnectType.RECHECK
             }
             return when (type) {
-                RECONNECT -> {
-                    if (cacheJoin(info)) null else DisconnectType.REJOIN
-                }
+                RECONNECT -> { cacheJoin(info) }
                 JOIN_AFTER_PING -> { if (cachePing(address, false)) null else DisconnectType.PING }
                 RECONNECT_AFTER_PING -> {
                     if (!cachePing(address, false)) { DisconnectType.PING }
-                    else if (!cacheJoin(info)) { DisconnectType.REJOIN }
-                    else null
+                    else cacheJoin(info)
                 }
                 PING_AFTER_RECONNECT -> {
-                    if (cacheJoin(info)) { if (cachePing(address, false)) null else DisconnectType.PING }
+                    if (cacheJoin(info) == null) { if (cachePing(address, false)) null else DisconnectType.PING }
                     else { pingCache.invalidate(address); DisconnectType.REJOIN }
                 }
                 STABLE -> {
-                    if (!cacheJoin(info)) DisconnectType.REJOIN else if (!cachePing(address, false)) DisconnectType.PING else null
+                    val r= cacheJoin(info)
+                    r ?: if (!cachePing(address, false)) DisconnectType.PING else null
                 }
                 DISABLED -> { null }
             }
@@ -105,21 +103,20 @@ object MixedCheck {
         return null
     }
 
-    private fun cacheJoin(info: CheckInfo): Boolean {
+    private fun cacheJoin(info: CheckInfo): DisconnectType? {
         val joining = info as Joining
         val address = joining.address
         val protocol = info.protocol
         val result = if (joinCache.getIfPresent(address) != null) true else { joinCache.put(address, info); false }
-        if (result) {
+        return if (result) {
             if ((protocolCache.getIfPresent(address) ?: protocol) != protocol || joinCache.getIfPresent(address)!!.username != info.username) {
                 joinCache.put(address, info) // Rewrite info but add suspicion point.
                 pingCache.invalidate(address)
                 protocolCache.invalidate(address)
                 suspicionAdd(address, null)
-                return false
-            }
-        }
-        return result
+                DisconnectType.RECHECK
+            } else null
+        } else DisconnectType.REJOIN
     }
 
     private fun cachePing(address: InetAddress, write: Boolean): Boolean {
