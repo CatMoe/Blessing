@@ -17,12 +17,12 @@
 
 package catmoe.fallencrystal.moefilter.common.firewall
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.FirewallType.*
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.common.firewall.system.ExecutorHelper
 import catmoe.fallencrystal.moefilter.common.firewall.system.FirewallLoader
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
@@ -86,7 +86,7 @@ object Firewall {
 
     fun reload() {
         this.config = LocalConfig.getAntibot().getConfig("firewall")
-        // debug = LocalConfig.getConfig().getBoolean("debug")
+        debug = LocalConfig.getConfig().getBoolean("debug")
         mode = FirewallType.valueOf(config.getAnyRef("mode").toString())
         executor.debug.set(debug)
     }

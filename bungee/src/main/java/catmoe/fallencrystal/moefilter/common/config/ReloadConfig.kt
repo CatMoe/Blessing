@@ -54,10 +54,10 @@ class ReloadConfig : EventListener {
             warnMessage(event)
             MixedCheck.reload()
             GeoIPManager.reload()
-            Firewall.reload()
             if (LocalConfig.getLimbo().getBoolean("enabled")) MoeLimbo.reload()
             MoveCheck.reload()
         }
+        Firewall.reload()
         ProxyCache.reload()
         Notifications.reload()
         FastDisconnect.initMessages()
