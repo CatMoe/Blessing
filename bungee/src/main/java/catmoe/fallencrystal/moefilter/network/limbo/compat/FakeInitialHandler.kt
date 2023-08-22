@@ -79,7 +79,9 @@ class FakeInitialHandler(
     override fun setUniqueId(p0: UUID?) { throw UnsupportedOperationException() }
     override fun isOnlineMode(): Boolean { return false }
     override fun setOnlineMode(p0: Boolean) { throw UnsupportedOperationException() }
-    override fun isLegacy(): Boolean { return true } // Still always true -- Prevent protocolize inject pipeline.
+
+    var fakeLegacy = true
+    override fun isLegacy(): Boolean { return fakeLegacy } // Still always true -- Prevent protocolize inject pipeline.
 
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {
@@ -91,8 +93,7 @@ class FakeInitialHandler(
             val callback = Callback<ProxyPingEvent> {
                 result, throwable ->
                 if (throwable != null) channel.close()
-                val gson = BungeeCord.getInstance().gson
-                val json = gson.toJson(result.response)
+                val json = BungeeCord.getInstance().gson.toJson(result.response)
                 pingResult=json
             }
             BungeeCord.getInstance().pluginManager.callEvent(ProxyPingEvent(this, r, callback))
@@ -101,12 +102,14 @@ class FakeInitialHandler(
             ServerPing(
                 ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).number),
                 ServerPing.Players(
-                    (listenerInfo.maxPlayers), MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount,
-                    null), listenerInfo.motd, BungeeCord.getInstance().config.faviconObject
+                    (listenerInfo.maxPlayers), MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount, null),
+                listenerInfo.motd,
+                BungeeCord.getInstance().config.faviconObject
             ), null
         )
         return PingConverter(pingResult)
     }
+
 
     companion object {
         lateinit var listenerInfo: ListenerInfo

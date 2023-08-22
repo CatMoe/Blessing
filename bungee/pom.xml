@@ -195,16 +195,25 @@
             <version>5.4</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-bungeecord</artifactId>
             <version>4.3.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <scope>compile</scope>
             <version>4.14.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.14.0</version>
+            <scope>compile</scope>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>

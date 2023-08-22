@@ -76,6 +76,7 @@ object FastDisconnect {
                 else -> handler.sendPacket(cs.packet.moelimbo)
             }
             handler.channel.close()
+            ConnectionCounter.countBlocked(BlockType.JOIN)
         }
     }
 

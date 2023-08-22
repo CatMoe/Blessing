@@ -23,6 +23,8 @@ import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEven
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
 import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
+import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
@@ -35,11 +37,13 @@ import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import java.net.InetSocketAddress
 
 @Suppress("SpellCheckingInspection")
 class BungeeEvent : Listener {
@@ -127,5 +131,14 @@ class BungeeEvent : Listener {
         val brand = conf.getString("brand")
         if (brand.isNotEmpty()) event.response.version.name=MessageUtil.colorize(brand).toLegacyText()
         if (conf.getBoolean("protocol-always-unsupported")) event.response.version.protocol=0
+        if (event.connection.isLegacy
+            && event.connection.version >= Version.V1_7_6.number
+            && BungeeSwitcher.connectToBungee((event.connection.socketAddress as InetSocketAddress).address)
+            && event.connection is FakeInitialHandler) {
+            try {
+                val fake = event.connection as FakeInitialHandler
+                fake.fakeLegacy=false
+            } catch (_: NoSuchFieldException) {}
+        }
     }
 }
