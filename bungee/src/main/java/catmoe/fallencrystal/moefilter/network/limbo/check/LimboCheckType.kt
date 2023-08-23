@@ -23,4 +23,5 @@ enum class LimboCheckType {
     FALLING_CHECK,
     FALLING_TIMER,
     INSTANT_DISCONNECT,
+    VALID,
 }

@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
@@ -32,11 +31,11 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
-import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
@@ -121,10 +120,13 @@ class LimboHandler(
         writePacket(PLAYER_INFO)
 
         if (version!!.moreOrEqual(Version.V1_8)) {
+            /*
             val brand = PacketPluginMessage()
             brand.channel=if (version!!.moreOrEqual(Version.V1_13)) "minecraft:brand" else "MC|Brand"
             brand.message="MoeFilter <- MoeLimbo"
             writePacket(brand)
+             */
+            writePacket(if (version!!.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
         }
 
         keepAliveScheduler()

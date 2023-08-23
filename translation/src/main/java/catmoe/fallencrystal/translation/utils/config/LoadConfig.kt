@@ -632,7 +632,7 @@ class LoadConfig {
                     # 多少间隔发送一次 单位为秒
                     delay=10
                     # 等待回应超时时间(单位为毫秒)
-                    max-response=500
+                    max-response=1000
                 }
                 
                 check {
@@ -652,7 +652,7 @@ class LoadConfig {
                         # 如果玩家尝试移动两次但Y轴却没有改变 则踢出Limbo
                         same-y-position=true
                         # 超时时间 单位为秒
-                        timeout=10
+                        timeout=5
                         
                         # 持续掉落检查测量模式:
                         # DISTANCE: 根据掉落的距离测量
@@ -672,7 +672,7 @@ class LoadConfig {
                         # 如果玩家通过检查的速度比此规定的时间快 则他们将被踢出服务器(秒)
                         min=3
                         # 如果玩家通过检查的速度比此规定的时间慢 则他们将会被踢出服务器(秒)
-                        max=10
+                        max=14
                     }
                 }
     """.trimIndent()

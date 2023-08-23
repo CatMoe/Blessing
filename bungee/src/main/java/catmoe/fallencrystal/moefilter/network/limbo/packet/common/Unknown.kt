@@ -15,25 +15,14 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
+package catmoe.fallencrystal.moefilter.network.limbo.packet.common
 
-enum class EnumPacket {
-    LOGIN_SUCCESS,
-    JOIN_GAME,
-    SPAWN_POSITION,
-    PLAYER_ABILITIES,
-    PLAYER_INFO,
-    POS_AND_LOOK,
-    UPDATE_TIME,
-    PLUGIN_MESSAGE,
-    PLUGIN_MESSAGE_LEGACY,
-    CHUNK_0_0,
-    CHUNK_0_1,
-    CHUNK_0_2,
-    CHUNK_1_0,
-    CHUNK_1_1,
-    CHUNK_1_2,
-    CHUNK_2_0,
-    CHUNK_2_1,
-    CHUNK_2_2,
+import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.channel.Channel
+
+class Unknown(val id: Int) : LimboPacket {
+    override fun encode(packet: ByteMessage, version: Version?) {}
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {}
 }

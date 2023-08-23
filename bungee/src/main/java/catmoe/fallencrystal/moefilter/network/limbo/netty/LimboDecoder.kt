@@ -19,10 +19,10 @@ package catmoe.fallencrystal.moefilter.network.limbo.netty
 
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Unknown
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.ByteBuf
@@ -43,16 +43,24 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {
         if (!ctx.channel().isActive) return
-        if (mappings == null) throw NullPointerException("Mappings cannot be null!")
         val byteMessage = ByteMessage(byteBuf)
         val id = byteMessage.readVarInt()
-        if (id == 0x00) { MoeChannelHandler.sentHandshake.put(handler!!.channel, true) }
+        // Unreached code? May just state == null?
+        /*
+        if (id == 0x00 && (handler?.state ?: Protocol.HANDSHAKING) == Protocol.HANDSHAKING) { MoeChannelHandler.sentHandshake.put(handler!!.channel, true) }
         else if (MoeChannelHandler.sentHandshake.getIfPresent(handler!!.channel) != true) throw InvalidPacketException("No valid handshake packet received")
-        val packet = mappings!!.getPacket(id)
+         */
+        val packet = mappings?.getPacket(id)
         if (packet == null) {
+            LimboListener.handleReceived(Unknown(id), handler)
+            if (mappings == null) {
+                MoeLimbo.debug("Failed to decode incoming packet ${"0x%02X".format(id)}: Mappings is empty")
+                throw NullPointerException("Mappings cannot be null!")
+            }
             MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
             return
         }
+        // Unreached code?
         val version = if (this.version == null || this.version == Version.UNDEFINED) Version.V1_7_6 else this.version
         // Try-catch 语句已被删除 因为对于某些异常解码的抛出可以直接顺着exception Caught方法直接切断连接并列入黑名单
         // 进行数据包调试时首选打开debug模式

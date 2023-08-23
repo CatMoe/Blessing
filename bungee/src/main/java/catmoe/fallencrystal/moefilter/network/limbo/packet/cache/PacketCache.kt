@@ -18,9 +18,12 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.md_5.bungee.api.ProxyServer
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
@@ -28,6 +31,12 @@ import java.util.concurrent.ThreadLocalRandom
 object PacketCache {
 
     val packetCache = Caffeine.newBuilder().build<EnumPacket, PacketSnapshot>()
+    private val loc = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
+    private val proxy = ProxyServer.getInstance()
+    private val brand = LocalConfig.getConfig().getString("f3-brand.custom")
+        .replace("%bungee%", proxy.name)
+        .replace("%version%", proxy.version)
+        .replace("%backend%", "MoeLimbo")
 
     fun initPacket() {
         val username = "MoeLimbo"
@@ -45,11 +54,11 @@ object PacketCache {
         val teleportId = ThreadLocalRandom.current().nextInt()
 
         val pal = PacketServerPositionLook()
-        pal.sendLoc = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
+        pal.sendLoc = loc
         pal.teleport=teleportId
 
         val spawnLocation = PacketSpawnPosition()
-        spawnLocation.location = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
+        spawnLocation.location = loc
 
         val info = PacketPlayerInfo()
         info.username=username
@@ -64,6 +73,14 @@ object PacketCache {
         packetCache.put(PLAYER_INFO, PacketSnapshot.of(info))
 
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
+
+        val pm = PacketPluginMessage()
+        pm.message=this.brand
+        pm.channel="minecraft:brand"
+        packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(pm))
+        pm.channel="MC|Brand"
+        packetCache.put(PLUGIN_MESSAGE_LEGACY, PacketSnapshot.of(pm))
+
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
             val chunk = PacketEmptyChunk()

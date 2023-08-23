@@ -126,14 +126,13 @@ class BungeeEvent : Listener {
                 MessageUtil.logWarn("[MoeFilter] [Ping] Unknown fml server type: $rawType, Fallback to VANILLA")
                 PingServerType.VANILLA
             }).name
-        // If modList is null, The client will disconnect when reading data.
         if (modInfo.type != PingServerType.FML.name) modInfo.modList = mutableListOf()
         val brand = conf.getString("brand")
         if (brand.isNotEmpty()) event.response.version.name=MessageUtil.colorize(brand).toLegacyText()
         if (conf.getBoolean("protocol-always-unsupported")) event.response.version.protocol=0
         if (event.connection.isLegacy
             && event.connection.version >= Version.V1_7_6.number
-            && BungeeSwitcher.connectToBungee((event.connection.socketAddress as InetSocketAddress).address)
+            && !BungeeSwitcher.connectToBungee((event.connection.socketAddress as InetSocketAddress).address)
             && event.connection is FakeInitialHandler) {
             try {
                 val fake = event.connection as FakeInitialHandler

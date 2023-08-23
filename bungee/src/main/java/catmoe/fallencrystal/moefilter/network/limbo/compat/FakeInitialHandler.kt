@@ -86,12 +86,15 @@ class FakeInitialHandler(
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {
         MoeLimbo.debug("Try to call ProxyPingEvent for bungee")
+        fakeLegacy=false
         var pingResult = ""
         val pingBack = Callback<ServerPing> {
             r, t ->
             if (t!= null) { channel.close(); return@Callback }
+            fakeLegacy=true
             val callback = Callback<ProxyPingEvent> {
                 result, throwable ->
+                fakeLegacy=false
                 if (throwable != null) channel.close()
                 val json = BungeeCord.getInstance().gson.toJson(result.response)
                 pingResult=json

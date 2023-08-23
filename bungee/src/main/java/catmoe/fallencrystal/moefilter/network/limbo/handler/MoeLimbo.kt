@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -27,6 +26,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveTimeout
+import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketValidCheck
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
@@ -38,6 +38,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.BungeeCord
 
 @Suppress("EnumValuesSoftDeprecate")
@@ -110,6 +111,7 @@ object MoeLimbo {
         LimboListener.register(MoveCheck)
         LimboListener.register(MoveTimer)
         LimboListener.register(KeepAliveTimeout)
+        LimboListener.register(PacketValidCheck)
         // if (conf.getBoolean("unexpected-keepalive.enabled")) { LimboListener.register(UnexpectedKeepAlive) }
         // LimboListener.register(InstantDisconnectCheck)
     }

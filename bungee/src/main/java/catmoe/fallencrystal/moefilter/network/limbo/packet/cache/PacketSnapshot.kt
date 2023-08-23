@@ -17,12 +17,13 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.Unpooled
 import java.util.*
 
-class PacketSnapshot(val wrappedPacket: LimboS2CPacket) : LimboS2CPacket() {
+class PacketSnapshot(val wrappedPacket: LimboPacket) : LimboS2CPacket() {
     private val versionMessages: MutableMap<Version, ByteArray> = EnumMap(Version::class.java)
     private val mappings: MutableMap<Version, Version> = EnumMap(Version::class.java)
     fun encode() {
@@ -51,7 +52,7 @@ class PacketSnapshot(val wrappedPacket: LimboS2CPacket) : LimboS2CPacket() {
     }
 
     companion object {
-        fun of(packet: LimboS2CPacket): PacketSnapshot {
+        fun of(packet: LimboPacket): PacketSnapshot {
             val snapshot = PacketSnapshot(packet)
             snapshot.encode()
             return snapshot
