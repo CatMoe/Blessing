@@ -4,15 +4,6 @@
 
 ---
 
-### ⚠️ Dependency warning:
-
-You need [BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib).  
-If without it, MoeFilter won't work.
-
-MoeFilter now uses Kotlin 1.9.0. You can [click here](https://github.com/LensMemory/BungeeKotlinLib/releases/download/1.9.0/BungeeKotlinLib-1.9.0.jar) to download
-
----
-
 ## ✨ Features:
 ### Antibot:
 - Players connected via geyser will be bypassed

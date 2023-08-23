@@ -4,15 +4,6 @@
 
 ---
 
-### ⚠️ 依赖项警告:  
-
-需要在您的服务器上安装[BungeeKotlinLib](https://github.com/LensMemory/BungeeKotlinLib).  
-如果没有它, MoeFilter将不会在您的服务器上按预期(或触发各种各样的异常) 
-  
-MoeFilter现在使用Kotlin的1.9.0版本 您可以[点这里](https://github.com/LensMemory/BungeeKotlinLib/releases/download/1.9.0/BungeeKotlinLib-1.9.0.jar)来下载此依赖项
-
----
-
 ## ✨ 功能/特点:
 ### 对于反机器人:  
   - 通过Geyser连接的玩家将跳过检查直接加入服务器 `仅限Geyser-BungeeCord和Floodgate!`
