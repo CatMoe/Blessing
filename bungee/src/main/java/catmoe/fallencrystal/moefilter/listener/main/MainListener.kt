@@ -49,18 +49,20 @@ object MainListener {
 
     var incomingListener: Listener? = null
 
+    // 在握手之前只能建立一个连接
     private val connectionCache = Caffeine.newBuilder().build<InetAddress, Boolean>()
 
     private val bungee = BungeeCord.getInstance()
 
     private var isProxyProtocol = false
 
-    init { bungee.config.listeners.forEach { if (it.isProxyProtocol) { isProxyProtocol=true } } }
+    init { isProxyProtocol=bungee.config.listeners.iterator().next().isProxyProtocol }
 
     fun initConnection(address: SocketAddress): Boolean {
+        if (isProxyProtocol) return false
         val inetAddress = (address as InetSocketAddress).address
         // Don't firewall them.
-        if (connectionCache.getIfPresent(inetAddress) == true) { return false } else { connectionCache.put(inetAddress, true) }
+        if (connectionCache.getIfPresent(inetAddress) == true) { return true } else { connectionCache.put(inetAddress, true) }
         if (!isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
         return Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
     }
@@ -73,6 +75,7 @@ object MainListener {
         if (Firewall.isFirewalled(inetAddress)) { connection.close(); return }
         if (Throttler.isThrottled(inetAddress)) { connection.close() }
         val packetHandler = PacketHandler()
+        packetHandler.inetSocketAddress=connection.inetSocketAddress
         packetHandler.protocol.set(handshake.protocolVersion)
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
 

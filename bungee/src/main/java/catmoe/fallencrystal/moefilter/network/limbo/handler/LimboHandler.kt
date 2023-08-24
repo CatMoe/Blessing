@@ -133,8 +133,7 @@ class LimboHandler(
         keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
         sendPacket(keepAlive)
 
-        // Empty chunk still is beta.
-
+        // 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
         (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
 
 

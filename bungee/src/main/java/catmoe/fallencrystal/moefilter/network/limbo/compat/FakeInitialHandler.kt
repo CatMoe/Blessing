@@ -41,12 +41,6 @@ class FakeInitialHandler(
     val ctx: ChannelHandlerContext
 ) : PacketHandler(), PendingConnection, LimboCompat {
 
-    init {
-        if (listener == null) {
-            BungeeCord.getInstance().config.listeners.forEach { if (it != null) { listenerInfo=it; return@forEach } }
-        }
-    }
-
     val ch = ChannelWrapper(ctx)
     private val channel = ctx.channel()
     private val pipeline = channel.pipeline()
@@ -81,7 +75,7 @@ class FakeInitialHandler(
     override fun setOnlineMode(p0: Boolean) { throw UnsupportedOperationException() }
 
     var fakeLegacy = true
-    override fun isLegacy(): Boolean { return fakeLegacy } // Still always true -- Prevent protocolize inject pipeline.
+    override fun isLegacy(): Boolean { return /* fakeLegacy */ true } // Still always true -- Prevent protocolize inject pipeline.
 
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {
@@ -115,8 +109,7 @@ class FakeInitialHandler(
 
 
     companion object {
-        lateinit var listenerInfo: ListenerInfo
-            private set
+        val listenerInfo: ListenerInfo = BungeeCord.getInstance().config.listeners.iterator().next()
     }
 
 

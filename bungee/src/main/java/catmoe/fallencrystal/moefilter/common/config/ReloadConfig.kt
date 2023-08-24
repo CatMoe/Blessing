@@ -30,6 +30,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
@@ -65,6 +66,7 @@ class ReloadConfig : EventListener {
         Throttler.reload()
         PingManager.reload()
         BrandCheck.init()
+        HAProxyManager.load()
         // Init checks
         try { SimilarityCheck.instance.reload() } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() }
         try { DomainCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { DomainCheck().init() }

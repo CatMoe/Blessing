@@ -110,6 +110,19 @@ class LoadConfig {
                 # EVENT模式此throttle关闭连接的效率比BungeeCord自带的低
                 throttle-limit=3
                 
+                # HAProxy配置, 使用前请打开代理配置文件中的proxy_protocol
+                # 实验性功能: 仅用于调试 除非另有说明 否则请使用EVENT模式(对于反机器人而言)
+                ha-proxy {
+                    # 启用支持
+                    enable=false
+                    # 如果通过以下包含的IP连接 则使用HAProxy
+                    #
+                    # 请注意: 目前技术上暂不可能区分使用和不使用HAProxy的客户端
+                    # 一旦启用 就无法正确接受来自非HAProxy的连接.
+                    # CIDR将在后续添加支持
+                    list=["127.0.0.1"]
+                }
+                
                 # 提醒
                 notifications {
                     # discord webhook.

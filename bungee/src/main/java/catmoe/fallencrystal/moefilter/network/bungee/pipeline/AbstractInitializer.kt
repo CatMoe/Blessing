@@ -11,6 +11,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserIniti
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
@@ -44,10 +45,11 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     @Throws(Exception::class)
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
-        val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
-        val inetAddress = (remoteAddress as InetSocketAddress).address
         val pipeline = channel.pipeline()
         val listener = channel.attr(PipelineUtils.LISTENER).get()
+        if (listener.isProxyProtocol) HAProxyManager.handle(ctx)
+        val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
+        val inetAddress = (remoteAddress as InetSocketAddress).address
         val eventCaller = EventCaller(ctx, listener)
 
         ConnectionCounter.increase(inetAddress)

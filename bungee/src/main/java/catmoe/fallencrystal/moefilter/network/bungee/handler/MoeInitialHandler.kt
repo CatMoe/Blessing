@@ -18,7 +18,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPing
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBoundsException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType
+import catmoe.fallencrystal.moefilter.network.common.ServerType
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
@@ -53,6 +53,7 @@ class MoeInitialHandler(
         super.connected(wrapper)
         this.pipeline = wrapper.handle.pipeline()
         this.inetSocketAddress = socketAddress as InetSocketAddress
+        this.packetHandler.inetSocketAddress= this.inetSocketAddress!!
         this.inetAddress = this.inetSocketAddress!!.address
     }
 
@@ -185,7 +186,7 @@ class MoeInitialHandler(
     }
 
     private fun kick(channel: Channel, type: DisconnectType) {
-        FastDisconnect.disconnect(channel, type, ServerKickType.BUNGEECORD)
+        FastDisconnect.disconnect(channel, type, ServerType.BUNGEE_CORD)
     }
 
     override fun toString(): String {

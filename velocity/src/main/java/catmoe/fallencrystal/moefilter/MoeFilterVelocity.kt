@@ -35,7 +35,7 @@ import java.nio.file.Path
 @Plugin(
     id = "moefilter",
     name = "MoeFilter",
-    version = "0.1.2-Alpha",
+    version = "0.1.2",
     description = "❤ by CatMoe",
     authors = ["Fallen Crystal", "Shizoukia"],
     url = "www.miaomoe.net"
@@ -70,7 +70,7 @@ class MoeFilterVelocity @Inject constructor(
 
     override fun whenLoad() {}
     override fun whenUnload() {}
-    override fun pluginVersion(): String { return "0.1.2-Alpha" }
+    override fun pluginVersion(): String { return "0.1.2" }
 
     override fun getPlatformLogger(): SimpleLogger { return SimpleLogger(logger) }
 

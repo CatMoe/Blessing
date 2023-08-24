@@ -20,8 +20,9 @@ package catmoe.fallencrystal.moefilter.network.common.kick
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.BUNGEECORD
-import catmoe.fallencrystal.moefilter.network.common.kick.ServerKickType.MOELIMBO
+import catmoe.fallencrystal.moefilter.network.common.ServerType
+import catmoe.fallencrystal.moefilter.network.common.ServerType.BUNGEE_CORD
+import catmoe.fallencrystal.moefilter.network.common.ServerType.MOE_LIMBO
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
@@ -46,11 +47,11 @@ object FastDisconnect {
         return resultMap
     }
 
-    fun disconnect(channel: Channel, type: DisconnectType, platform: ServerKickType) {
+    fun disconnect(channel: Channel, type: DisconnectType, platform: ServerType) {
         val p = (reasonCache.getIfPresent(type) ?: getCacheReason(type, ComponentUtil.parse("<red>Unknown kick reason: ${type.messagePath}"))).packet
         val packet: Any = when (platform) {
-            BUNGEECORD -> p.bungeecord
-            MOELIMBO -> p.moelimbo
+            BUNGEE_CORD -> p.bungeecord
+            MOE_LIMBO -> p.moelimbo
         }
         channel.writeAndFlush(packet); channel.close()
         ConnectionCounter.countBlocked(BlockType.JOIN)

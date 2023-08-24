@@ -15,9 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.common.kick
+package catmoe.fallencrystal.moefilter.network.common
 
-enum class ServerKickType {
-    BUNGEECORD,
-    MOELIMBO,
+enum class ServerType {
+    BUNGEE_CORD,
+    MOE_LIMBO,
 }
