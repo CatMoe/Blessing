@@ -72,7 +72,7 @@ class FetchProxy {
                                 ProxyCache.addProxy(ProxyResult(InetAddress.getByName(proxy), ProxyResultType.INTERNAL))
                                 if (debug) { MessageUtil.logInfo("[MoeFilter] [ProxyFetch] $proxy has added to list. (from $it)") }
                                 count++
-                            } } catch (ex: UnknownHostException) { MessageUtil.logWarn("[MoeFilter] [ProxyFetch] $proxy is not a valid address. (from $it)"); }
+                            } } catch (ex: UnknownHostException) { if (debug) MessageUtil.logWarn("[MoeFilter] [ProxyFetch] $proxy is not a valid address. (from $it)") }
                         }
                     }
                     response.close()
