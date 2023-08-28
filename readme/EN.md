@@ -93,8 +93,11 @@ This project contains code borrowed from the following website/repository.
 - [Velocity](https://github.com/PaperMC/Velocity) `References such as decoders`
 - [Sonar](https://github.com/jonesdevelopment/sonar) `Code that reflects SERVER_CHILD aspects of robbery`
 - [EpicGuard](https://github.com/awumii/EpicGuard) `GeoIP initialization and checking`
+- [MaxMind](https://maxmind.com/) `GeoIP database.`
 - [NanoLimbo](https://github.com/Nan1t/NanoLimbo) `Basic limbo server`
 - [BotFilter](https://github.com/Leymooo/BungeeCord) `Dimension, Chunk packets`
 - [wiki.vg](https://wiki.vg/Protocol) `1.7.6-Latest Minecraft version protocol`
+- [NullCordX](https://builtbybit.com/resources/nullcordx-lightweight-antibot.22322/) `proxy list providers.`
+- [FlameCord](https://builtbybit.com/resources/flamecord-the-ultimate-antibot.13492/) `proxy list providers.`
 
 Thanks for all the above items. to help us structure these things better.

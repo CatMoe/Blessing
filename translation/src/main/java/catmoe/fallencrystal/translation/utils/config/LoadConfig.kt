@@ -69,11 +69,6 @@ class LoadConfig {
                     # 小提示: 尽可能地使用1个规则避免开销, 如果有多个需要匹配的规则 则推荐使用正则.
                     list=[""]
                 }
-                
-                # TCP FAST OPEN (TFO) 配置. 该选项仅当antibot.conf中的mode为PIPELINE时有效
-                # 仅当服务器为Linux并且启用了Epoll时此选项才有效! 如果您不知道这是什么 建议默认为0
-                # 0 = DISABLED, 1 = CLIENT, 2 = SERVER, 3 = BOTH, 4 = MANGLED
-                tfo-mode=0
 
                 domain-check {
                     enabled=false

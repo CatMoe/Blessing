@@ -94,6 +94,8 @@
  - [NanoLimbo](https://github.com/Nan1t/NanoLimbo) `基础的Limbo服务器`
  - [BotFilter](https://github.com/Leymooo/BungeeCord) `群戏, 群戏数据包等`
  - [wiki.vg](https://wiki.vg/Protocol) `1.7.6至最新的Minecraft版本的协议支持.`
+ - [NullCordX](https://builtbybit.com/resources/nullcordx-lightweight-antibot.22322/) `代理列表提供者`
+ - [FlameCord](https://builtbybit.com/resources/flamecord-the-ultimate-antibot.13492/) `代理列表提供者`
 
 ---
 
