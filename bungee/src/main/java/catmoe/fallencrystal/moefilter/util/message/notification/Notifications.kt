@@ -18,16 +18,16 @@
 package catmoe.fallencrystal.moefilter.util.message.notification
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
-import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.scheduler.ScheduledTask
@@ -35,7 +35,7 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
-@Suppress("SameParameterValue")
+@Suppress("SameParameterValue", "EnumValuesSoftDeprecate")
 object Notifications {
     /*
     Don't put val ObjectConfig.getMessage() here.
@@ -98,7 +98,7 @@ object Notifications {
         if (switchNotification.isNotEmpty()) { sendActionbar(switchNotification, message) }
     }
     fun autoNotificationPlayer() { ProxyServer.getInstance().players.forEach {
-        if (it.hasPermission("moefilter.notifications.auto")) { autoNotification.add(it) } }
+        if (it.hasPermission("moefilter.notification.auto.actionbar") || it.hasPermission("moefilter.notification.auto")) { autoNotification.add(it) } }
     }
 
     fun reload() {

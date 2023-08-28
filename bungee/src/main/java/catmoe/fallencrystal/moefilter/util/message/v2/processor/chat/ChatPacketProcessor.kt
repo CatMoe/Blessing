@@ -18,14 +18,14 @@
 package catmoe.fallencrystal.moefilter.util.message.v2.processor.chat
 
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.translation.utils.version.Version
-import catmoe.fallencrystal.translation.utils.version.Version.*
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageChatPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
@@ -49,9 +49,9 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
             val v = Version.of(it)
             if (v.moreOrEqual(V1_19)) need119=true else if (v.moreOrEqual(V1_16)) needLegacy=true else needLegacy2 = true
         }
-        val p119 = if (cached?.has119Data == true) cached.v119 else get119(serializer, need119)
-        val legacy = if (cached?.hasLegacyData == true) cached.legacy else getLegacy(serializer, needLegacy)
-        val legacy2 = if (cached?.hasLegacy2Data == true) cached.legacy2 else getLegacy(legacySerializer, needLegacy2)
+        val p119 = cached?.v119 ?: get119(serializer, need119)
+        val legacy = cached?.legacy ?: getLegacy(serializer, needLegacy)
+        val legacy2 = cached?.legacy2 ?: getLegacy(legacySerializer, needLegacy2)
         val packet = MessageChatPacket(p119, legacy, legacy2, need119, needLegacy, needLegacy2, component, serializer, legacyComponent, serializer, message)
         MessagePacketCache.writePacket(this, packet)
         return packet

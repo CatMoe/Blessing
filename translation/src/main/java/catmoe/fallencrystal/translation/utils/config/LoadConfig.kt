@@ -161,42 +161,6 @@ class LoadConfig {
                                 }
                             }
                         }
-                        attack-start {
-                            enabled=false
-                            url=""
-                            username="MoeFilter Webhook"
-                            ping=""
-                            title="MoeFilter"
-                            format=[
-                                "> :warning: The server is under attack!"
-                            ]
-                            embed {
-                                enabled=true
-                                color {
-                                    r=255
-                                    g=255
-                                    b=0
-                                }
-                            }
-                        }
-                        attack-stopped {
-                            enabled=false
-                            url=""
-                            username="MoeFilter Webhook"
-                            ping=""
-                            title="MoeFilter"
-                            format=[
-                                "> :warning: This server is under attack!"
-                            ]
-                            embed {
-                                enabled=true
-                                color {
-                                    r=255
-                                    g=255
-                                    b=0
-                                }
-                            }
-                        }
                     }
                 }
             """.trimIndent()
@@ -210,8 +174,8 @@ class LoadConfig {
                 statistics {
                     # 可用占位符描述已被移除 如果您想知道各个占位符有什么用 请看chat-format中使用的占位符..
                     actionbar-format {
-                        idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
-                        attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total_session%  <aqua>Total IPs <white>%total_ips%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
+                            idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
+                            attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
                     }
                     chat-format {
                         idle=[
@@ -508,6 +472,68 @@ class LoadConfig {
                     mode=INTERNAL
                     # 临时封禁有效时间 单位为秒. 需重启服务器生效
                     temp-expire-time=30
+                }
+                
+                # 提醒
+                notifications {
+                    # 关于webhook的注意事项, 配置以及使用办法可以在config.conf的notifications.webhook.test中找到
+                    webhook {
+                        attack-start {
+                            enabled=false
+                            url=""
+                            username="MoeFilter Webhook"
+                            ping=""
+                            title="MoeFilter"
+                            format=[
+                                "> :warning: The server is under attack!"
+                            ]
+                            embed {
+                                enabled=true
+                                color {
+                                    r=255
+                                    g=255
+                                    b=0
+                                }
+                            }
+                        }
+                        attack-stopped {
+                            enabled=false
+                            url=""
+                            username="MoeFilter Webhook"
+                            ping=""
+                            title="MoeFilter"
+                            format=[
+                                "> The attack seems is stopped."
+                            ]
+                            embed {
+                                enabled=true
+                                color {
+                                    r=255
+                                    g=255
+                                    b=0
+                                }
+                            }
+                        }
+                    }
+                    # 标题设置
+                    title {
+                        attack-start {
+                            enabled=true
+                            title="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient>"
+                            sub-title="<yellow>A bot attack is incoming.."
+                            fade-in=0
+                            stay=60
+                            fade-out=10
+                        }
+                        attack-stopped {
+                            enabled=false
+                            title=""
+                            sub-title=""
+                            fade-in=0
+                            stay=0
+                            fade-out=0
+                        }
+                    }
                 }
     """.trimIndent()
 

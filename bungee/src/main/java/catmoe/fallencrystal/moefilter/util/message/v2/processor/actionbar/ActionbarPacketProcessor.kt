@@ -18,14 +18,14 @@
 package catmoe.fallencrystal.moefilter.util.message.v2.processor.actionbar
 
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.translation.utils.version.Version
-import catmoe.fallencrystal.translation.utils.version.Version.*
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessageActionbarPacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
+import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.version.Version.*
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -61,10 +61,10 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
             else need110 = true
         }
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
-        val p117 = if (cached?.v117 != null) cached.v117 else get117(serializer, need117)
-        val p116 = cached?.v116 ?: get116(legacySerializer, need116)
-        val p111 = if (cached?.v111 != null) cached.v111 else get111(legacySerializer, need111)
-        val p110 = if (cached?.v110 != null) cached.v110 else get110(legacyComponent, need110)
+        val p117 = cached?.v117 ?: get117(serializer, need117)
+        val p116 = cached?.v116 ?: get116(serializer, need116)
+        val p111 = cached?.v111 ?: get111(legacySerializer, need111)
+        val p110 = cached?.v110 ?: get110(legacyComponent, need110)
         val packet = MessageActionbarPacket(
             p119, p117, p116, p111, p110,
             need119, need117, need116, need111, need110,

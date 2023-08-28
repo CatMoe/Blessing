@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
-import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.protocol.packet.Chat
@@ -44,7 +44,8 @@ class MessageChatPacket(
 
     override fun supportChecker(version: Int): Boolean {
         if (has119Data && version >= Version.V1_19.number) return true
-        return hasLegacyData && version > Version.V1_7_6.number
+        if (hasLegacyData && version >= Version.V1_16.number) return true
+        return hasLegacy2Data && version > Version.V1_7_6.number
     }
 
 

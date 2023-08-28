@@ -17,9 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2.packet
 
+import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
-import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.protocol.packet.Chat
@@ -56,6 +56,7 @@ class MessageActionbarPacket(
         val v = Version.of(version)
         if (has119Data && v.moreOrEqual(V1_19)) return true
         if (has117Data && v.moreOrEqual(V1_17)) return true
+        if (has116Data && v.moreOrEqual(V1_16)) return true
         if (has111Data && v.more(V1_10)) return true
         return (has110Data && v.moreOrEqual(V1_7_6))
     }
