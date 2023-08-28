@@ -29,9 +29,6 @@ class MessageChatPacket(
     val v119: SystemChat?,
     val legacy: Chat?,
     val legacy2: Chat?,
-    val has119Data: Boolean,
-    val hasLegacyData: Boolean,
-    val hasLegacy2Data: Boolean,
     @JvmField
     val component: Component,
     val gson: String,
@@ -43,9 +40,12 @@ class MessageChatPacket(
     override fun getType(): MessagesType { return MessagesType.CHAT }
 
     override fun supportChecker(version: Int): Boolean {
-        if (has119Data && version >= Version.V1_19.number) return true
-        if (hasLegacyData && version >= Version.V1_16.number) return true
-        return hasLegacy2Data && version > Version.V1_7_6.number
+        val v = Version.of(version)
+        if (v119 != null && v.moreOrEqual(Version.V1_19)) return true
+        if (legacy != null && v.fromTo(Version.V1_16, Version.V1_18_2)) return true
+        //return hasLegacy2Data && version > Version.V1_7_6.number
+        if (legacy2 != null && v.fromTo(Version.V1_7_6, Version.V1_15_2)) return true
+        return false
     }
 
 

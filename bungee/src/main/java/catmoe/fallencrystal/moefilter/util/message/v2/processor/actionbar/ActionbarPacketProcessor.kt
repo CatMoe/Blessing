@@ -45,11 +45,11 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, baseComponent)
         val legacySerializer = getLegacySerializer(cached, legacyComponent)
-        var need119 = cached?.has119Data ?: false
-        var need117 = cached?.has117Data ?: false
-        var need116 = cached?.has116Data ?: false
-        var need111 = cached?.has111Data ?: false
-        var need110 = cached?.has110Data ?: false
+        var need119 = cached?.v119 != null
+        var need117 = cached?.v117 != null
+        var need116 = cached?.v116 != null
+        var need111 = cached?.v111 != null
+        var need110 = cached?.v110 != null
         protocol.forEach {
             /*
             if (it >= ProtocolConstants.MINECRAFT_1_19) need119=true else if (it > ProtocolConstants.MINECRAFT_1_17) need117=true
@@ -67,7 +67,6 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         val p110 = cached?.v110 ?: get110(legacyComponent, need110)
         val packet = MessageActionbarPacket(
             p119, p117, p116, p111, p110,
-            need119, need117, need116, need111, need110,
             baseComponent, serializer, legacyComponent, legacySerializer, message
         )
         MessagePacketCache.writePacket(this, packet)

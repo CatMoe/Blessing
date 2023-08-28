@@ -33,11 +33,6 @@ class MessageActionbarPacket(
     val v116: Title?,
     val v111: Title?,
     val v110: Chat?,
-    val has119Data: Boolean,
-    val has117Data: Boolean,
-    val has116Data: Boolean,
-    val has111Data: Boolean,
-    val has110Data: Boolean,
     @JvmField
     val component: Component,
     val gson: String,
@@ -54,11 +49,13 @@ class MessageActionbarPacket(
         //if (has111Data && version > ProtocolConstants.MINECRAFT_1_10) return true
         //return has110Data && version > ProtocolConstants.MINECRAFT_1_8
         val v = Version.of(version)
-        if (has119Data && v.moreOrEqual(V1_19)) return true
-        if (has117Data && v.moreOrEqual(V1_17)) return true
-        if (has116Data && v.moreOrEqual(V1_16)) return true
-        if (has111Data && v.more(V1_10)) return true
-        return (has110Data && v.moreOrEqual(V1_7_6))
+        if (v119 != null && v.moreOrEqual(V1_19)) return true
+        if (v117 != null && v.fromTo(V1_17, V1_18_2)) return true
+        if (v116 != null && v.fromTo(V1_16, V1_16_4)) return true
+        if (v111 != null && v.fromTo(V1_10, V1_15_2)) return true
+        if (v110 != null && v.fromTo(V1_7_6, V1_9_4)) return true
+        //return (has110Data && v.moreOrEqual(V1_7_6))
+        return false
     }
 
     override fun getComponent(): Component { return component }
