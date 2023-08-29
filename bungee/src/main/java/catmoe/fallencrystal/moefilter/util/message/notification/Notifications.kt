@@ -72,15 +72,16 @@ object Notifications {
         val internalPlaceholder = mapOf(
             "%process_cpu%" to "${cpu.processCPU}",
             "%system_cpu%" to "${cpu.systemCPU}",
-            "%cps%" to "${ConnectionCounter.getConnectionPerSec()}",
+            //"%cps%" to "${ConnectionCounter.getConnectionPerSec()}",
+            "%cps%" to getReplacedCPS(ConnectionCounter.getConnectionPerSec()),
             "%total%" to "${ConnectionCounter.total}",
             "%total_session%" to "${ConnectionCounter.sessionTotal}",
             "%total_ips%" to "${ConnectionCounter.totalIps}",
             "%total_ips_session%" to "${ConnectionCounter.sessionTotalIps}",
             "%blocked%" to "${ConnectionCounter.totalBlocked()}",
             "%blocked_session%" to "${ConnectionCounter.totalSessionBlocked()}",
-            "%peak_cps%" to "${ConnectionCounter.peakCps}",
-            "%peak_cps_session%" to "${ConnectionCounter.sessionPeakCps}",
+            "%peak_cps%" to getReplacedCPS(ConnectionCounter.peakCps),
+            "%peak_cps_session%" to getReplacedCPS(ConnectionCounter.sessionPeakCps),
             "%prefix%" to config.getString("prefix"),
             "%duration%" to getDuration(StateManager.duration.getDuration()),
             "%type%" to getType(),
@@ -109,10 +110,39 @@ object Notifications {
         // reset schedule task
         if (schedule != null) { scheduler.cancelTask(schedule!!); initSchedule() }
         initType()
+        initCustomCPS()
     }
 
+    /* Colorize CPS */
+
+    private val customCPS: MutableMap<Int, String> = LinkedHashMap()
+
+    private fun initCustomCPS() {
+        customCPS.clear()
+        val config = LocalConfig.getMessage().getConfig("statistics.replaced-cps")
+        var n: MutableCollection<Int> = mutableListOf()
+        for (i in config.root().keys) {
+            try { n.add(i.toInt()) } catch (_: NumberFormatException)
+            { MessageUtil.logWarn("[MoeFilter] [Notifications] (In colorize cps configuration) $i is not a valid number.") }
+        }
+        // 小妙招+1? tbh, 只要将-it改成it 就是从小到大了
+        n=n.sortedWith(compareBy { -it }).toMutableList()
+        for (i in n) { customCPS[i]=config.getString("$i") }
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getReplacedCPS(cps: Int): String {
+        if (customCPS.isEmpty()) return "$cps"
+        for (it in customCPS) {
+            if (cps >= it.key) return it.value.replace("[value]", "$cps")
+        }
+        return "$cps"
+    }
+
+    /* Duration */
+
     private fun getDuration(sec: Long): String {
-        // Hours, Minutes, Seconds or Minutes, Seconds
+        // Hours:Minutes:Seconds or Minutes:Seconds
         return if (sec >= 3600) String.format("%02d:%02d:%02d", sec / 3600, sec % 3600 / 60, sec % 60)
         else String.format("%02d:%02d", sec % 3600 / 60, sec % 60)
     }

@@ -211,6 +211,26 @@ class LoadConfig {
                         null="<white>Unknown</white>"
                         join-to-line="<white>, </white>"
                     }
+                    # cps = connection per second (每秒连接数)
+                    # 如果您想让cps始终为白色, 将其预设删除或注释掉即可
+                    replaced-cps {
+                        # 格式:
+                        # 连接数="你想要的cps占位符", [value]为值
+                        # 例如当cps等于(或大于)100时 且设置了 100="<green>[value]</green>" 
+                        # 就会显示绿色的100 (请以实际情况为准), 同时建议闭合颜色, 以防干扰到使用此占位符的消息.
+                        
+                        # 很明显 这些占位符所挑选的颜色十分简陋: 我想我不会专门找合适的hex渐变颜色 :P
+                        0="<white>[value]</white>"
+                        100="<green>[value]</green>"
+                        1000="<gradient:green:yellow>[value]</gradient>"
+                        2800="<yellow>[value]</yellow>"
+                        3800="<gradient:yellow:gold>[value]</gradient>"
+                        4500="<gold>[value]</gold>"
+                        6000="<gradient:gold:red>[value]</gradient>"
+                        8000="<red>[value]</red>"
+                        10000="<gradient:red:dark_red>[value]</gradient>"
+                        12000="<dark_red>[value]</dark_red>"
+                    }
                     # 更新频率 (tick为单位)
                     actionbar-update-delay=1
                     command {
@@ -372,7 +392,9 @@ class LoadConfig {
                 # 如果您在使用MoeFilter的InitialHandler出现了一些问题 请使用这个
                 # 注意: 此项仅在PIPELINE模式下生效
                 # 建议启用Limbo来提供足够强大的防护 因为开启此项会导致BungeeCord禁用部分检查
-                use-original-handler=false
+                #
+                # 补充: nah, 考虑到Limbo默认是开启状态, 有越来越多的插件使用反射来做许多东西.. 我想我不会考虑损坏插件兼容性.
+                use-original-handler=true
                 
                 # 选择事件呼叫时机 该选项仅当mode为PIPELINE时有效.
                 # AFTER_INIT: 当连接传入时立马呼叫事件 无论它们是否被阻止 (不推荐)

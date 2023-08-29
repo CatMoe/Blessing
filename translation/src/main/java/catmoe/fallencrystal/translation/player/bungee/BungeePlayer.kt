@@ -27,6 +27,9 @@ import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.Unpooled
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
+import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
@@ -63,12 +66,21 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
 
     // TODO: Migrate MessageUtil to translation
 
+    private fun hex(): Boolean { return player.pendingConnection.version >= Version.V1_16.number }
+
+    private fun getBaseComponent(component: Component): BaseComponent {
+        return when (hex()) {
+            true -> BungeeComponentSerializer.get().serialize(component)[0]
+            false -> BungeeComponentSerializer.legacy().serialize(component)[0]
+        }
+    }
+
     override fun sendMessage(component: Component) {
-        TODO("Not yet implemented")
+        player.sendMessage(ChatMessageType.CHAT, getBaseComponent(component))
     }
 
     override fun sendActionbar(component: Component) {
-        TODO("Not yet implemented")
+        player.sendMessage(ChatMessageType.ACTION_BAR, getBaseComponent(component))
     }
 
     override fun hasPermission(permission: String): Boolean {

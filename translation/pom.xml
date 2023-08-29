@@ -246,6 +246,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- BungeeCord -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-bungeecord</artifactId>
+            <version>4.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
