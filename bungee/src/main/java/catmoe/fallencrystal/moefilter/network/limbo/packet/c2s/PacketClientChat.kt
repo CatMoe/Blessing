@@ -42,6 +42,7 @@ class PacketClientChat : LimboC2SPacket() {
         if (version!!.less(Version.V1_19)) {
             message=packet.readString(if (version.moreOrEqual(Version.V1_11)) 100 else 256)
         } else {
+            /* I hate chat report, tbh. */
             message=packet.readString(256)
             timestamp=packet.readLong()
             salt=packet.readLong()
@@ -64,6 +65,10 @@ class PacketClientChat : LimboC2SPacket() {
                 this.seenMessages=sm
             }
         }
+    }
+
+    override fun toString(): String {
+        return "PacketClientChat(message=$message)"
     }
 }
 @Suppress("MemberVisibilityCanBePrivate")
