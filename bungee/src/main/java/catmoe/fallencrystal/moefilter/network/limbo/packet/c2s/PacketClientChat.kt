@@ -40,15 +40,17 @@ class PacketClientChat : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.less(Version.V1_19)) {
-            message=packet.readString(if (version.moreOrEqual(Version.V1_11)) 100 else 256)
+            message=packet.readString()
         } else {
             /* I hate chat report, tbh. */
-            message=packet.readString(256)
+            message=packet.readString()
             timestamp=packet.readLong()
             salt=packet.readLong()
-            if (version.moreOrEqual(Version.V1_19_3) && packet.readBoolean()) {
-                signature=ByteArray(256)
-                packet.readBytes(signature!!)
+            if (version.moreOrEqual(Version.V1_19_3)) {
+                if (packet.readBoolean()) {
+                    signature=ByteArray(256)
+                    packet.readBytes(signature!!)
+                }
             } else {
                 signature=packet.readBytesArray()
             }
@@ -66,6 +68,33 @@ class PacketClientChat : LimboC2SPacket() {
             }
         }
     }
+
+    /*
+    fun test() {
+        message = readString(buf, 256)
+        timestamp = buf.readLong()
+        salt = buf.readLong()
+
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3) {
+            if (buf.readBoolean()) {
+                signature = ByteArray(256)
+                buf.readBytes(signature)
+            }
+        } else {
+            signature = readArray(buf)
+        }
+        if (protocolVersion < ProtocolConstants.MINECRAFT_1_19_3) {
+            signedPreview = buf.readBoolean()
+        }
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3) {
+            seenMessages = SeenMessages()
+            seenMessages.read(buf, direction, protocolVersion)
+        } else if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_1) {
+            chain = ChatChain()
+            chain.read(buf, direction, protocolVersion)
+        }
+    }
+     */
 
     override fun toString(): String {
         return "PacketClientChat(message=$message)"
