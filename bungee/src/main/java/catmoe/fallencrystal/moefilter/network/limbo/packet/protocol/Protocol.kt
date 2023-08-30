@@ -310,6 +310,18 @@ enum class Protocol(var stateId: Int) {
                 map(0x5A, V1_19_3, V1_19_3),
                 map(0x5E, V1_19_4, V1_20)
             )
+            clientBound.register(
+                { PacketClientChat() },
+                map(0x01, V1_7_6, V1_7_6),
+                map(0x02, V1_8, V1_8),
+                map(0x0F, V1_9, V1_12_2),
+                map(0x0E, V1_13, V1_14_4),
+                map(0x0F, V1_15, V1_15_2),
+                map(0x0E, V1_16, V1_16_4),
+                map(0x0F, V1_17, V1_18_2),
+                map(0x04, V1_19, V1_19),
+                map(0x05, V1_19_1, V1_20)
+            )
         }
     };
 

@@ -39,7 +39,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 
-@Suppress("unused", "IdentifierGrammar", "SpellCheckingInspection", "DEPRECATION")
+@Suppress("unused", "IdentifierGrammar", "SpellCheckingInspection", "DEPRECATION", "MemberVisibilityCanBePrivate")
 class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     fun toByteArray(): ByteArray {
         val bytes = ByteArray(buf.readableBytes())
@@ -187,7 +187,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         writeFixedBitSet(
             bits,
             enums.size,
-            buf
         )
     }
 
@@ -978,13 +977,18 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         return buf.release(decrement)
     }
 
+    fun writeFixedBitSet(bits: BitSet, size: Int) {
+        if (bits.length() > size) throw BitSetTooLargeException("BitSet too large (expected $size got ${bits.size()})")
+        this.buf.writeBytes(Arrays.copyOf(bits.toByteArray(), size + 8 shr 3))
+    }
+
+    fun readFixedBitSet(i: Int): BitSet {
+        val bits = ByteArray(i + 8 shr 3)
+        buf.readBytes(bits)
+        return BitSet.valueOf(bits)
+    }
+
     companion object {
-        private fun writeFixedBitSet(bits: BitSet, size: Int, buf: ByteBuf) {
-            if (bits.length() > size) {
-                throw BitSetTooLargeException("BitSet too large (expected $size got ${bits.size()})")
-            }
-            buf.writeBytes(Arrays.copyOf(bits.toByteArray(), size + 8 shr 3))
-        }
 
         fun create(): ByteMessage { return ByteMessage(
             Unpooled.buffer()
