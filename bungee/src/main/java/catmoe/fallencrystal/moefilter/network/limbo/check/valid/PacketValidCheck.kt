@@ -33,6 +33,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Unknown
+import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 
 @Checker(LimboCheckType.VALID)
@@ -52,6 +53,8 @@ object PacketValidCheck : LimboChecker, ILimboListener {
     private val allowUnknown = Caffeine.newBuilder().build<LimboHandler, Boolean>()
     private val next = Caffeine.newBuilder().build<LimboHandler, NextPacket>()
 
+    private val w = listOf(0x17)
+
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (packet is Disconnect) {
             allowUnknown.invalidate(handler)
@@ -60,7 +63,8 @@ object PacketValidCheck : LimboChecker, ILimboListener {
         if (!handler.channel.isActive) return true
         if (packet is Unknown && allowUnknown.getIfPresent(handler) == null) {
             handler.channel.close()
-            throw InvalidPacketException("This state is not allowed unknown packet.")
+            if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
+            throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
         }
         if (packet is PacketHandshake) {
             when (packet.nextState.stateId) {

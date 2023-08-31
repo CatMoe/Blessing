@@ -20,12 +20,14 @@ package catmoe.fallencrystal.moefilter.api.command
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.TabExecutor
+import java.util.concurrent.CompletableFuture
 
 class CommandHandler(name: String?, permission: String?, vararg aliases: String?) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
 
@@ -45,8 +47,18 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
                 if (fullHideCommand) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
                 else { MessageUtil.sendMessage("$prefix${config.getString("command.no-permission").replace("[permission]", permission)}", MessagesType.CHAT, sender) }; return
             }
-            else { command.execute(sender, args) }
+            else { execute(command, sender, args) }
         } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
+    }
+
+    @Suppress("DEPRECATION")
+    fun execute(command: ICommand, executor: CommandSender, args: Array<out String>) {
+        val clazz = command::class.java
+        if (clazz.isAnnotationPresent(catmoe.fallencrystal.translation.command.annotation.AsyncExecute::class.java) || (clazz.isAnnotationPresent(MoeCommand::class.java) && clazz.getAnnotation(MoeCommand::class.java).asyncExecute)) {
+            CompletableFuture.runAsync { command.execute(executor, args) }
+            return
+        }
+        command.execute(executor, args)
     }
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {

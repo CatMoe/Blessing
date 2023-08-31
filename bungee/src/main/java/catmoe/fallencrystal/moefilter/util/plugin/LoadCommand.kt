@@ -23,26 +23,40 @@ import catmoe.fallencrystal.moefilter.api.command.impl.test.RegexParseCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestWebhookCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.gui.TestGuiCommand
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import kotlin.reflect.full.createInstance
 
 class LoadCommand {
+
+    companion object {
+        val commands = mutableListOf(
+            HelpCommand::class,
+            ToggleStatisticsCommand::class,
+            ReloadCommand::class,
+            TestKickCommand::class,
+            TestGuiCommand::class,
+            TestWebhookCommand::class,
+            LockdownCommand::class,
+            DropFirewallCommand::class,
+            StatisticsCommand::class,
+            RegexParseCommand::class,
+            LimboCommand::class
+        )
+    }
 
     fun load(){ loadCommand() }
 
     fun reload() { CommandManager.dropAll(); loadCommand() }
 
     private fun loadCommand() {
-        CommandManager.register(HelpCommand())
-        CommandManager.register(ToggleStatisticsCommand())
-        CommandManager.register(ReloadCommand())
-
-        // All debug command managers by @DebugCommand annotation
-        CommandManager.register(TestKickCommand())
-        CommandManager.register(TestGuiCommand())
-        CommandManager.register(TestWebhookCommand())
-        CommandManager.register(LockdownCommand())
-        CommandManager.register(DropFirewallCommand())
-        CommandManager.register(StatisticsCommand())
-        CommandManager.register(RegexParseCommand())
-        CommandManager.register(LimboCommand())
+        for (c in commands) {
+            try {
+                val obj = c.createInstance()
+                CommandManager.register(obj)
+            } catch (e: Exception) {
+                MessageUtil.logWarn("[MoeFilter] A exception occurred when registering command. Please report this issue to developer. stack trace:")
+                e.printStackTrace(); continue
+            }
+        }
     }
 }

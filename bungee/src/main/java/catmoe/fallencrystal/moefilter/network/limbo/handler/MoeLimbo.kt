@@ -57,7 +57,7 @@ object MoeLimbo {
     fun reload() {
         LockdownManager.setLockdown(true)
         calibrateConnections()
-        init()
+        initLimbo()
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
         if (this.useOriginalHandler != useOriginalHandler && MoeFilterBungee.mode == WorkingMode.PIPELINE) {

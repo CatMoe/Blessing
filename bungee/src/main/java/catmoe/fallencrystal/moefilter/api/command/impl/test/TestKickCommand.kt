@@ -18,19 +18,29 @@
 package catmoe.fallencrystal.moefilter.api.command.impl.test
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.translation.command.annotation.*
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 import net.md_5.bungee.UserConnection
 import net.md_5.bungee.api.CommandSender
 
+/*
 @DebugCommand
 @Command("testkick")
 @CommandPermission("moefilter.testkick")
 @CommandUsage(["/moefilter testkick"])
 @CommandDescription(DescriptionFrom.STRING, "testkick")
+ */
+@MoeCommand(
+    name = "testkick",
+    permission = "moefilter.testkick",
+    usage = ["/moefilter testkick"],
+    descType = DescriptionType.STRING,
+    descValue = "testkick",
+    debug = true
+)
 class TestKickCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         val connection = ConnectionUtil((sender as UserConnection).pendingConnection)

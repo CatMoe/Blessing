@@ -38,11 +38,32 @@ class PacketEmptyChunk : LimboS2CPacket() {
         if (version.less(Version.V1_17)) {
             if (version.lessOrEqual(Version.V1_8)) packet.writeShort(1) else packet.writeVarInt(0)
             if (version == Version.V1_7_6) {
+                // some1 can help me...? I don't know how 2 send a readable chunk data for a 9yrs ago minecraft client.
                 packet.writeShort(1)
-                val l = byteArrayOf(63) /* ByteArray(256) */
+                val l = byteArrayOf(63) /* byteArrayOf(63) / ByteArray(256) */
                 packet.writeInt(l.size)
                 packet.writeBytes(l)
                 return
+                /*
+                packet.writeShort(0)
+                val uncompressed = byteArrayOf(256.toByte())
+                val compressed = Unpooled.buffer()
+                val deflate = Deflater(9)
+                try {
+                    deflate.setInput(uncompressed)
+                    deflate.finish()
+                    val buffer = ByteArray(1024)
+                    while (deflate.finished()) {
+                        val count: Int = deflate.deflate(buffer)
+                        compressed.writeBytes(buffer, 0, count)
+                    }
+                    packet.writeInt(compressed.readableBytes())
+                    packet.writeBytes(compressed)
+                } finally {
+                    deflate.end()
+                    compressed.release()
+                }
+                 */
             }
         } else if (version.less(Version.V1_18)) {
             val bitSet = BitSet()

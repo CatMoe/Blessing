@@ -18,29 +18,35 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.Command
-import catmoe.fallencrystal.translation.command.annotation.CommandDescription
-import catmoe.fallencrystal.translation.command.annotation.CommandPermission
-import catmoe.fallencrystal.translation.command.annotation.CommandUsage
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 import net.md_5.bungee.api.CommandSender
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
+/*
 @Command("limbo")
 @CommandPermission("moefilter.limbo")
 @CommandDescription(DescriptionFrom.STRING, "Lookup MoeLimbo status")
 @CommandUsage([
     "/moefilter limbo list", "/moefilter limbo kick <Address>", "/moefilter limbo kick -a"
 ])
+ */
+@MoeCommand(
+    name = "limbo",
+    permission = "moefilter.limbo",
+    descType = DescriptionType.STRING,
+    descValue = "Lookup MoeLimbo status",
+    usage = ["/moefilter limbo list", "/moefilter limbo kick <Address>", "/moefilter limbo kick -a"]
+)
 class LimboCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         if (args.size < 2) { MessageUtil.sendMessage("<red>请键入子命令", MessagesType.CHAT, sender); return }

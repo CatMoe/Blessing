@@ -18,17 +18,16 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.CommandDescription
-import catmoe.fallencrystal.translation.command.annotation.CommandUsage
-import catmoe.fallencrystal.translation.command.annotation.ConsoleCanExecute
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 import java.net.InetAddress
 
+/*
 @CommandDescription(DescriptionFrom.MESSAGE_PATH, "lockdown.description")
 @CommandUsage([
     "/moefilter lockdown toggle",
@@ -36,6 +35,19 @@ import java.net.InetAddress
     "/moefilter lockdown remove \"<Address>\""
 ])
 @ConsoleCanExecute
+ */
+@MoeCommand(
+    name = "lockdown",
+    permission = "moefilter.lockdown",
+    usage = [
+        "/moefilter lockdown toggle",
+        "/moefilter lockdown add \"<Address>\"",
+        "/moefilter lockdown remove \"<Address>\""
+    ],
+    descType = DescriptionType.MESSAGE_CONFIG,
+    descValue = "lockdown.description",
+    allowConsole = true
+)
 class LockdownCommand : ICommand {
 
     override fun execute(sender: CommandSender, args: Array<out String>) {

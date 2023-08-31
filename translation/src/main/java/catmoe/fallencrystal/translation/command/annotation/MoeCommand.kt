@@ -14,10 +14,20 @@
  * limitations under the License.
  *
  */
-
 package catmoe.fallencrystal.translation.command.annotation
 
-@Deprecated("Use MoeCommand annotation")
-@Retention(AnnotationRetention.RUNTIME)
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+
 @Target(AnnotationTarget.CLASS)
-annotation class DebugCommand
+@Retention(AnnotationRetention.RUNTIME)
+annotation class MoeCommand(
+    val name: String,
+    val permission: String,
+    val allowConsole: Boolean = false,
+    val debug: Boolean = false,
+    val usage: Array<String> = [],
+    /* Description */
+    val descType: DescriptionType,
+    val descValue: String,
+    val asyncExecute: Boolean = true,
+)

@@ -18,22 +18,29 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.Command
-import catmoe.fallencrystal.translation.command.annotation.CommandDescription
-import catmoe.fallencrystal.translation.command.annotation.CommandUsage
-import catmoe.fallencrystal.translation.command.annotation.ConsoleCanExecute
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 
+/*
 @ConsoleCanExecute
 @CommandDescription(DescriptionFrom.MESSAGE_PATH, "statistics.command.chat-description")
 @Command("status")
 @CommandUsage(["/moefilter status"])
+ */
+@MoeCommand(
+    name = "status",
+    permission = "moefilter.notification",
+    usage = ["/moefilter status"],
+    descType = DescriptionType.MESSAGE_CONFIG,
+    descValue = "statistics.command.chat-description",
+    allowConsole = true
+)
 class StatisticsCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         if (args.size < 2 || args.size > 3) {

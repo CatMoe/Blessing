@@ -17,4 +17,5 @@
 
 package catmoe.fallencrystal.translation.command.annotation
 
+@Deprecated("Use MoeCommand annotation")
 annotation class CommandAliases(val aliases: Array<String>)

@@ -15,9 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.translation.command.annotation
-
-@Deprecated("Use MoeCommand annotation")
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class DebugCommand
+package catmoe.fallencrystal.translation.command.annotation.misc
+enum class DescriptionType {
+    STRING,
+    CONFIG,
+    MESSAGE_CONFIG,
+    ANTIBOT_CONFIG,
+    LIMBO_CONFIG,
+    PROXY_CONFIG,
+}

@@ -19,18 +19,28 @@ package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import catmoe.fallencrystal.translation.command.annotation.*
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 
+/*
 @Command("help")
 @CommandDescription(DescriptionFrom.MESSAGE_PATH, "command.description.help")
 @CommandPermission("moefilter.help")
 @CommandUsage(["/moefilter help", "/moefilter help <command>"])
 @ConsoleCanExecute
+ */
+@MoeCommand(
+    name = "help",
+    permission = "moefilter.help",
+    descType = DescriptionType.MESSAGE_CONFIG,
+    descValue = "command.description.help",
+    usage = ["/moefilter help", "/moefilter help <command>"],
+    allowConsole = true
+)
 class HelpCommand : ICommand {
 
     private val config = LocalConfig.getMessage()

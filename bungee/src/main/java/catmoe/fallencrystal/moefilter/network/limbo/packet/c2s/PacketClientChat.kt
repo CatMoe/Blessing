@@ -68,34 +68,6 @@ class PacketClientChat : LimboC2SPacket() {
             }
         }
     }
-
-    /*
-    fun test() {
-        message = readString(buf, 256)
-        timestamp = buf.readLong()
-        salt = buf.readLong()
-
-        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3) {
-            if (buf.readBoolean()) {
-                signature = ByteArray(256)
-                buf.readBytes(signature)
-            }
-        } else {
-            signature = readArray(buf)
-        }
-        if (protocolVersion < ProtocolConstants.MINECRAFT_1_19_3) {
-            signedPreview = buf.readBoolean()
-        }
-        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3) {
-            seenMessages = SeenMessages()
-            seenMessages.read(buf, direction, protocolVersion)
-        } else if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_1) {
-            chain = ChatChain()
-            chain.read(buf, direction, protocolVersion)
-        }
-    }
-     */
-
     override fun toString(): String {
         return "PacketClientChat(message=$message)"
     }

@@ -18,18 +18,29 @@
 package catmoe.fallencrystal.moefilter.api.command.impl.test
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import catmoe.fallencrystal.translation.command.annotation.*
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 import net.md_5.bungee.api.CommandSender
 import java.util.regex.PatternSyntaxException
 
+/*
 @Command("regex")
 @CommandPermission("moefilter.regex")
 @CommandDescription(DescriptionFrom.STRING, "Test regex through command.")
 @DebugCommand
 @ConsoleCanExecute
+ */
+@MoeCommand(
+    name = "regex",
+    permission = "moefilter.regex",
+    descType = DescriptionType.STRING,
+    descValue = "Test regex through command",
+    usage = ["/moefilter regex <Regex> <Input>"],
+    debug = true,
+    allowConsole = true
+)
 class RegexParseCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         try {

@@ -18,19 +18,29 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import catmoe.fallencrystal.translation.command.annotation.*
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 
+/*
 @Command("drop")
 @CommandDescription(DescriptionFrom.MESSAGE_PATH, "drop-command.description")
 @CommandPermission("moefilter.drop")
 @CommandUsage(["/moefilter drop"])
 @ConsoleCanExecute
+ */
+@MoeCommand(
+    name = "drop",
+    permission = "moefilter.drop",
+    descType = DescriptionType.MESSAGE_CONFIG,
+    descValue = "drop-command.description",
+    usage = ["/moefilter drop"],
+    allowConsole = true,
+)
 class DropFirewallCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         Firewall.cache.invalidateAll()

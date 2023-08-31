@@ -19,6 +19,7 @@ package catmoe.fallencrystal.translation.command.annotation
 
 import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
 
+@Deprecated("Use MoeCommand annotation")
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 annotation class CommandDescription(val type: DescriptionFrom, val description: String)

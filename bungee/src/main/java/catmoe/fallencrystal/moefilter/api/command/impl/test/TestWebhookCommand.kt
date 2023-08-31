@@ -19,21 +19,30 @@ package catmoe.fallencrystal.moefilter.api.command.impl.test
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.CommandDescription
-import catmoe.fallencrystal.translation.command.annotation.ConsoleCanExecute
-import catmoe.fallencrystal.translation.command.annotation.DebugCommand
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
 import java.awt.Color
 
+/*
 @DebugCommand
 @CommandDescription(DescriptionFrom.STRING, "Send a test webhook")
 @ConsoleCanExecute
+ */
+@MoeCommand(
+    name = "testwebhook",
+    permission = "moefilter.testwebhook",
+    descType = DescriptionType.STRING,
+    descValue = "Send a test webhook",
+    usage = ["/moefilter testwebhook"],
+    debug = true,
+    allowConsole = true,
+)
 class TestWebhookCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
         Scheduler(MoeFilterBungee.instance).runAsync {
