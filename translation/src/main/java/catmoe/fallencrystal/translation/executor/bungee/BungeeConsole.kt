@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.translation.executor.bungee
 
-import catmoe.fallencrystal.translation.executor.CommandExecutor
+import catmoe.fallencrystal.translation.executor.CommandConsole
 import catmoe.fallencrystal.translation.logger.CubeLogger
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.CommandSender
@@ -25,7 +25,7 @@ import net.md_5.bungee.api.ProxyServer
 import java.util.logging.Level
 
 @Suppress("CanBeParameter")
-class BungeeConsole(private val console: CommandSender) : CommandExecutor {
+class BungeeConsole(private val console: CommandSender) : CommandConsole() {
 
     init {
         if (console != ProxyServer.getInstance().console) throw IllegalArgumentException("Target isn't BungeeCord console.")

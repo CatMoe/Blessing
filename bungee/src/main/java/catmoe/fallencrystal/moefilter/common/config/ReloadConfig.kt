@@ -17,9 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.api.event.EventListener
-import catmoe.fallencrystal.moefilter.api.event.FilterEvent
-import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
@@ -29,6 +26,7 @@ import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
+import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
@@ -36,14 +34,16 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.PingManager
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LoadConfig
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 
 class ReloadConfig : EventListener {
-    @FilterEvent
+
+    @EventHandler(PluginReloadEvent::class)
     fun reloadConfig(event: PluginReloadEvent) {
         // Executor is null == Starting plugin.
         // Load can hot load module without "if" syntax.
@@ -74,9 +74,8 @@ class ReloadConfig : EventListener {
     }
 
     private fun warnMessage(event: PluginReloadEvent) {
-        val sender = event.executor ?: return
         val messageConfig = LocalConfig.getMessage()
         val message = "${messageConfig.getString("prefix")}${messageConfig.getString("reload-warn")}"
-        MessageUtil.sendMessage(message, MessagesType.CHAT, sender)
+        (event.executor ?: return).sendMessage(ComponentUtil.parse(message))
     }
 }

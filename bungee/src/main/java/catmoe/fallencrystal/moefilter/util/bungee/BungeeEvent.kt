@@ -18,10 +18,6 @@
 package catmoe.fallencrystal.moefilter.util.bungee
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncChatEvent
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerConnectEvent
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncServerSwitchEvent
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
@@ -39,7 +35,10 @@ import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.event.*
+import net.md_5.bungee.api.event.ChatEvent
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
+import net.md_5.bungee.api.event.PostLoginEvent
+import net.md_5.bungee.api.event.ProxyPingEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
@@ -64,13 +63,6 @@ class BungeeEvent : Listener {
                     ).joinToString("<reset><newline>"), MessagesType.CHAT, player)
             }; event.isCancelled = true; return
         }
-        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncChatEvent(
-            player,
-            event.isProxyCommand,
-            (event.isCommand && !event.isProxyCommand),
-            event.isCancelled,
-            event.message
-        ))
         val p = PlayerInstance.getOrNull(player.uniqueId) ?: return
         val e = PlayerChatEvent(p, event.message, event.isProxyCommand)
         if (event.isCancelled) e.setCancelled()
@@ -80,13 +72,13 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPostLogin(event: PostLoginEvent) {
-        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncPostLoginEvent(event.player)) // old event...
         val player = TranslatePlayer(BungeePlayer(event.player))
         PlayerInstance.cacheUUID.put(player.getUniqueId(), player)
         PlayerInstance.cacheName.put(player.getName(), player)
         EventManager.callEvent(PlayerJoinEvent(player))
     }
 
+    /*
     @EventHandler(priority = EventPriority.LOWEST)
     fun onServerConnect(event: ServerConnectEvent){
         catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.target, false, event.isCancelled)) // old event...
@@ -105,6 +97,7 @@ class BungeeEvent : Listener {
     fun onServerSwitch(event: ServerSwitchEvent) {
         catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) // old event...
     }
+     */
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {

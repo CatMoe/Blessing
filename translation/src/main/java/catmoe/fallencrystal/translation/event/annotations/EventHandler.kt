@@ -22,4 +22,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class EventHandler(val event: KClass<out TranslationEvent>) // 注解用处: 标识Method被用来handle事件.
+annotation class EventHandler(val event: KClass<out TranslationEvent>, val priority: HandlerPriority = HandlerPriority.MEDIUM) // 注解用处: 标识Method被用来handle事件.

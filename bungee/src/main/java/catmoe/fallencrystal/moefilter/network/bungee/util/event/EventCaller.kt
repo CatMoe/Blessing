@@ -17,8 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.util.event
 
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.channel.ChannelInitEvent
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
@@ -36,7 +34,6 @@ class EventCaller(val ctx: ChannelHandlerContext, val listener: ListenerInfo) {
     fun call(type: EventCallMode) { if (type == this.type) { callEvent() } }
 
     private fun callEvent() {
-        EventManager.triggerEvent(ChannelInitEvent(ctx, listener))
         if (isWaterfall) {
             // import then will throw `NoClassDefFoundError` when they don't run waterfall (or forks)
             io.github.waterfallmc.waterfall.event.ConnectionInitEvent(channel.remoteAddress(), listener) {

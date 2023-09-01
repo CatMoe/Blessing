@@ -18,8 +18,7 @@
 package catmoe.fallencrystal.moefilter.api.command
 
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.translation.command.annotation.*
-import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionFrom
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType.*
 import catmoe.fallencrystal.translation.command.annotation.misc.ParsedInfo
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
@@ -38,10 +37,8 @@ object CommandManager {
 
     private val console = ProxyServer.getInstance().console
 
-    @Suppress("DEPRECATION")
     fun register(c: ICommand) {
-        val legacy = !c::class.java.isAnnotationPresent(MoeCommand::class.java)
-        if (legacy) { registerLegacy(c); return }
+        if (!c::class.java.isAnnotationPresent(MoeCommand::class.java)) return
         val info = c::class.java.getAnnotation(MoeCommand::class.java)
         if (commands.contains(info.name)) return
         if (info.debug && !LocalConfig.getConfig().getBoolean("debug")) return
@@ -64,42 +61,10 @@ object CommandManager {
         commands.add(info.name)
     }
 
-    @Deprecated("Deprecated, Use MoeCommand annotation.")
-    @Suppress("DEPRECATION")
-    private fun registerLegacy(c: ICommand) {
-        val iClass = c::class.java
-        if (iClass.isAnnotationPresent(DebugCommand::class.java) && !(try { LocalConfig.getConfig().getBoolean("debug") } catch (_: Exception) { false })) return
-        val annotationCommand = (try { iClass.getAnnotation(Command::class.java).command } catch (_:Exception) { iClass.simpleName.lowercase().replace("command", "") })
-        val annotationPermission = (try { val permission= iClass.getAnnotation(CommandPermission::class.java).permission; permission.ifEmpty { "moefilter.$annotationCommand" } } catch (_: Exception) { "moefilter.$annotationCommand" })
-        val annotationAllowConsole = iClass.isAnnotationPresent(ConsoleCanExecute::class.java)
-        val annotationDescription = (try { getAnnotationDescription(c) } catch (_: Exception) { "This command don't have description." })
-        val annotationUsage = (try { iClass.getAnnotation(CommandUsage::class.java).usage.toList() } catch (_: Exception) { listOf() })
-        if (commands.contains(annotationCommand)) { return }
-        val parsed = ParsedInfo(annotationCommand, annotationDescription, annotationPermission, annotationUsage, annotationAllowConsole)
-        parseCommand.put(c, parsed)
-        command.put(annotationCommand, c)
-        commands.add(annotationCommand)
-    }
-
-
-    @Suppress("DEPRECATION")
-    private fun getAnnotationDescription(c: ICommand): String {
-        val annotationDescription = c::class.java.getAnnotation(CommandDescription::class.java) ?: return ""
-        val description = annotationDescription.description
-        return when (annotationDescription.type) {
-            DescriptionFrom.STRING -> { description }
-            DescriptionFrom.MESSAGE_PATH -> { try { LocalConfig.getMessage().getString(description) } catch (_: Exception) { "" } }
-        }
-    }
-
-    @Suppress("DEPRECATION")
     fun unregister(c: ICommand) {
         val iClass = c::class.java
-        val isLegacy = iClass.isAnnotationPresent(Command::class.java) && !iClass.isAnnotationPresent(MoeCommand::class.java)
-        if (!iClass.isAnnotationPresent(Command::class.java) && !iClass.isAnnotationPresent(MoeCommand::class.java)) return
-        val targetCommand = if (isLegacy)
-            c::class.java.getAnnotation(Command::class.java).command
-        else c::class.java.getAnnotation(MoeCommand::class.java).name
+        if (!iClass.isAnnotationPresent(MoeCommand::class.java)) return
+        val targetCommand = c::class.java.getAnnotation(MoeCommand::class.java).name
         val originalCommand = command.getIfPresent(targetCommand)
         if (targetCommand.isNotEmpty() && originalCommand != null) {
             parseCommand.invalidate(originalCommand)

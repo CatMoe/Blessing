@@ -17,14 +17,15 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.util
 
-import catmoe.fallencrystal.moefilter.api.event.EventListener
-import catmoe.fallencrystal.moefilter.api.event.FilterEvent
-import catmoe.fallencrystal.moefilter.api.event.events.LimboCheckPassedEvent
-import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.moefilter.event.LimboCheckPassedEvent
+import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
@@ -42,7 +43,7 @@ object BungeeSwitcher : EventListener {
     private var alwaysCheck = conf.getBoolean("always-check")
     private var connectDuringAttack = conf.getBoolean("only-connect-during-attack")
 
-    @FilterEvent
+    @EventHandler(PluginReloadEvent::class, priority = HandlerPriority.HIGH)
     fun reload(event: PluginReloadEvent) {
         if (event.executor == null || !limbo) return
         val conf = LocalConfig.getLimbo()
@@ -57,7 +58,7 @@ object BungeeSwitcher : EventListener {
         connectDuringAttack = BungeeSwitcher.conf.getBoolean("only-connect-during-attack")
     }
 
-    @FilterEvent
+    @EventHandler(LimboCheckPassedEvent::class, priority = HandlerPriority.HIGHEST)
     fun passed(event: LimboCheckPassedEvent) {
         val info = VerifyInfo(event.username, event.version)
         bungeeQueue.put(event.address, info)
@@ -69,10 +70,13 @@ object BungeeSwitcher : EventListener {
         return if (limbo) bungeeQueue.getIfPresent(address) != null
         else if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else true
          */
-        return (!limbo)
-                || (StateManager.inAttack.get() && connectDuringAttack)
-                || (bungeeQueue.getIfPresent(address) != null)
+        if (!limbo) return true
+        var connect = false
+        if (connectDuringAttack) connect=!StateManager.inAttack.get()
+        val isAllowed = (bungeeQueue.getIfPresent(address) != null)
                 || (if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else false)
+        if (isAllowed && !connect) { connect=true }
+        return connect
     }
 
     fun verify(info: CheckInfo): Boolean {

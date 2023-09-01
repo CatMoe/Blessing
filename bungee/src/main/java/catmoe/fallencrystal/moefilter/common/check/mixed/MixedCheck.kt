@@ -73,7 +73,7 @@ object MixedCheck {
         if (info is Joining) {
             val address = info.address
             // if (MoeLimbo.bungeeQueue.getIfPresent(address) != null) return null
-            if (BungeeSwitcher.connectToBungee(address) && BungeeSwitcher.limbo) {
+            if (BungeeSwitcher.connectToBungee(address)) {
                 return if (BungeeSwitcher.verify(info)) null else {
                     joinCache.put(address, info) // Rewrite info but add suspicion point.
                     pingCache.invalidate(address)

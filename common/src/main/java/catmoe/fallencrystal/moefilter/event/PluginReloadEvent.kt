@@ -15,9 +15,9 @@
  *
  */
 
-package catmoe.fallencrystal.translation.command.annotation
+package catmoe.fallencrystal.moefilter.event
 
-@Deprecated("Use MoeCommand annotation")
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class DebugCommand
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.executor.CommandExecutor
+
+class PluginReloadEvent(val executor: CommandExecutor?) : TranslationEvent()

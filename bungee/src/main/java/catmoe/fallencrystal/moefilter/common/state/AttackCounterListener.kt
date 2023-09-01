@@ -18,17 +18,22 @@
 package catmoe.fallencrystal.moefilter.common.state
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.api.event.EventListener
-import catmoe.fallencrystal.moefilter.api.event.FilterEvent
-import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent
-import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
+import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
+import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.annotations.AsynchronousHandler
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
+import catmoe.fallencrystal.translation.event.events.player.PlayerJoinEvent
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
+import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.typesafe.config.Config
@@ -38,8 +43,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 class AttackCounterListener : EventListener {
     private var inAttack = false
     private val scheduler = Scheduler(MoeFilterBungee.instance)
-    @FilterEvent
+
+    @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.HIGHEST)
+    @AsynchronousHandler
     @Suppress("UNUSED_PARAMETER")
+    @Platform(ProxyPlatform.BUNGEE)
     fun startSessionCount(event: UnderAttackEvent) {
         if (!inAttack) {
             inAttack=true; ConnectionCounter.setInAttack(true)
@@ -52,8 +60,10 @@ class AttackCounterListener : EventListener {
         }
     }
 
-    @FilterEvent
     @Suppress("UNUSED_PARAMETER")
+    @EventHandler(AttackStoppedEvent::class, priority = HandlerPriority.HIGHEST)
+    @AsynchronousHandler
+    @Platform(ProxyPlatform.BUNGEE)
     fun stopSessionCount(event: AttackStoppedEvent) {
         if (inAttack) {
             inAttack=false; ConnectionCounter.setInAttack(false)
@@ -68,10 +78,11 @@ class AttackCounterListener : EventListener {
         }
     }
 
-    @FilterEvent
-    fun onPlayerJoin(event: AsyncPostLoginEvent) {
+    @EventHandler(PlayerJoinEvent::class, priority = HandlerPriority.LOWEST)
+    @Platform(ProxyPlatform.BUNGEE)
+    fun onPlayerJoin(event: PlayerJoinEvent) {
         if (StateManager.inAttack.get() && event.player.hasPermission("moefilter.notifications.auto"))
-            Notifications.autoNotification.add(event.player)
+            Notifications.autoNotification.add((event.player.upstream as BungeePlayer).player)
     }
 
     private fun sendTitle(inAttack: Boolean /* true = start; false = stopped */) {

@@ -20,10 +20,7 @@ package catmoe.fallencrystal.translation.command.bungee
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.command.CommandAdapter
 import catmoe.fallencrystal.translation.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.AsyncExecute
-import catmoe.fallencrystal.translation.command.annotation.Command
-import catmoe.fallencrystal.translation.command.annotation.CommandAliases
-import catmoe.fallencrystal.translation.command.annotation.CommandPermission
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.executor.bungee.BungeeConsole
 import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
@@ -44,6 +41,8 @@ class BungeeCommandAdapter(val command: ICommand) : CommandAdapter {
 
     override fun register() {
         val clazz = command::class.java
+        val info = (if (clazz.isAnnotationPresent(MoeCommand::class.java)) clazz.getAnnotation(MoeCommand::class.java) else null) ?: return
+        /*
         val command = if (clazz.isAnnotationPresent(Command::class.java))
             clazz.getAnnotation(Command::class.java).command
         else clazz.simpleName.replace("command", "")
@@ -52,7 +51,10 @@ class BungeeCommandAdapter(val command: ICommand) : CommandAdapter {
         val permission = if (clazz.isAnnotationPresent(CommandPermission::class.java))
             clazz.getAnnotation(CommandPermission::class.java).permission else ""
         if (!aliases.contains(command)) aliases.add(command)
-        handler=Handler(command, permission, *(aliases).toTypedArray(), adapter = this)
+         */
+        val aliases = info.aliases.toMutableList()
+        if (!aliases.contains(info.name)) aliases.add(info.name)
+        handler=Handler(info.name, info.permission, *(aliases).toTypedArray(), adapter = this)
         proxy.pluginManager.registerCommand(plugin, handler)
     }
 
@@ -75,7 +77,9 @@ class Handler(name: String, permission: String, vararg aliases: String, val adap
         }
     }
 
-    private fun executeAsync(runnable: Runnable) { if (target::class.java.isAnnotationPresent(AsyncExecute::class.java)) CompletableFuture.runAsync { runnable.run() } else runnable.run() }
+    private fun executeAsync(runnable: Runnable) {
+        if (target::class.java.isAnnotationPresent(MoeCommand::class.java) && target::class.java.getAnnotation(MoeCommand::class.java).asyncExecute)
+        CompletableFuture.runAsync { runnable.run() } else runnable.run() }
 
     override fun onTabComplete(sender: CommandSender, input: Array<out String>): List<String> {
         return if (sender !is ProxiedPlayer) {

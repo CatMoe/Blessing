@@ -20,10 +20,7 @@ package catmoe.fallencrystal.translation.command.velocity
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.command.CommandAdapter
 import catmoe.fallencrystal.translation.command.ICommand
-import catmoe.fallencrystal.translation.command.annotation.AsyncExecute
-import catmoe.fallencrystal.translation.command.annotation.Command
-import catmoe.fallencrystal.translation.command.annotation.CommandAliases
-import catmoe.fallencrystal.translation.command.annotation.CommandPermission
+import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.executor.velocity.VelocityConsole
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import com.velocitypowered.api.command.CommandMeta
@@ -44,16 +41,16 @@ class VelocityCommandAdapter(val command: ICommand) : CommandAdapter {
 
     override fun register() {
         val clazz = command::class.java
-        val command = if (clazz.isAnnotationPresent(Command::class.java))
-            clazz.getAnnotation(Command::class.java).command
-        else clazz.simpleName.replace("command", "")
+        val info = (if (clazz.isAnnotationPresent(MoeCommand::class.java)) clazz.getAnnotation(MoeCommand::class.java) else null) ?: return
+        /*
         val aliases = if (clazz.isAnnotationPresent(CommandAliases::class.java))
             clazz.getAnnotation(CommandAliases::class.java).aliases.toMutableList() else mutableListOf(command)
-        permission = if (clazz.isAnnotationPresent(CommandPermission::class.java))
-            clazz.getAnnotation(CommandPermission::class.java).permission else ""
-        if (!aliases.contains(command)) aliases.add(command)
+         */
+        val aliases = info.aliases.toMutableList()
+        this.permission=info.permission
+        if (!aliases.contains(info.name)) aliases.add(info.name)
         handler=Handler(this)
-        meta=manager.metaBuilder(command)
+        meta=manager.metaBuilder(info.name)
             .aliases(*(aliases).toTypedArray())
             .plugin(plugin)
             .build()
@@ -65,7 +62,7 @@ class VelocityCommandAdapter(val command: ICommand) : CommandAdapter {
 class Handler(private val adapter: VelocityCommandAdapter) : SimpleCommand {
 
     private val target = adapter.command
-    private val async = target::class.java.isAnnotationPresent(AsyncExecute::class.java)
+    private val async = target::class.java.getAnnotation(MoeCommand::class.java).asyncExecute
 
     override fun execute(inv: Invocation) {
         if (inv.source() == adapter.proxy.consoleCommandSource) {

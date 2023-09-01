@@ -22,6 +22,7 @@ import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 @Retention(AnnotationRetention.RUNTIME)
 annotation class MoeCommand(
     val name: String,
+    val aliases: Array<String> = [],
     val permission: String,
     val allowConsole: Boolean = false,
     val debug: Boolean = false,

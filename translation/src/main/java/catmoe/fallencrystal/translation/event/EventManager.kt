@@ -69,15 +69,16 @@ object EventManager {
     }
 
     fun register(listener: EventListener) {
-        val a: MutableCollection<Method> = ArrayList()
+        val a: MutableCollection<Method> = CopyOnWriteArrayList()
         val method = listener.javaClass.declaredMethods
         for (it in method) {
             /* it.parameterTypes[0]::class.java.isAssignableFrom(TranslationEvent::class.java) */
             if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1) a.add(it)
         }
         for (it in a) {
-            val h = if (it.isAnnotationPresent(EventPriority::class.java)) it.getAnnotation(EventPriority::class.java).priority else HandlerPriority.MEDIUM
-            val c: KClass<out TranslationEvent> = it.getAnnotation(EventHandler::class.java).event
+            val annotation = it.getAnnotation(EventHandler::class.java)
+            val h = annotation.priority
+            val c: KClass<out TranslationEvent> = annotation.event
             val o = (this.method.getIfPresent(c) ?: mutableMapOf()).toMutableMap()
             val o2 = if (o[h].isNullOrEmpty()) mutableListOf() else o[h]!!
             o2.add(it); this.listener.put(it, listener)
@@ -92,20 +93,23 @@ object EventManager {
 
     fun unregister(listener: EventListener) {
         val a = this.kcl.getIfPresent(listener::class) ?: return
+        val z: MutableCollection<Method> = ArrayList()
         for (it in a) {
-            val e = it.getAnnotation(EventHandler::class.java).event
+            val annotation = it.getAnnotation(EventHandler::class.java)
+            val e = annotation.event
             val b = this.method.getIfPresent(e) ?: continue
-            val h = if (it.isAnnotationPresent(EventPriority::class.java)) it.getAnnotation(EventPriority::class.java).priority else HandlerPriority.MEDIUM
+            val h = annotation.priority
             if (it.parameterCount != 1) continue
             if (!it.parameterTypes[0].isAssignableFrom(e.java)) continue
             val v = (b[h] ?: continue)
             v.remove(it)
             b[h]=v
             this.method.put(e, b)
-            a.remove(it)
-            this.kcl.put(listener::class, a)
-            if (a.isEmpty()) this.kcl.invalidate(listener::class)
+            z.add(it)
         }
+        a.removeAll(z)
+        this.kcl.put(listener::class, a)
+        if (a.isEmpty()) this.kcl.invalidate(listener::class)
     }
 
 }

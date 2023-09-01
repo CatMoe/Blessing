@@ -15,7 +15,6 @@
  *
  */
 
-package catmoe.fallencrystal.translation.command.annotation
+package catmoe.fallencrystal.translation.executor
 
-@Deprecated("Use MoeCommand annotation")
-annotation class CommandAliases(val aliases: Array<String>)
+abstract class CommandConsole : CommandExecutor

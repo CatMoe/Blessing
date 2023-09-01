@@ -17,12 +17,12 @@
 
 package catmoe.fallencrystal.translation.executor.velocity
 
-import catmoe.fallencrystal.translation.executor.CommandExecutor
+import catmoe.fallencrystal.translation.executor.CommandConsole
 import com.velocitypowered.api.command.CommandSource
 import net.kyori.adventure.text.Component
 
 @Suppress("MemberVisibilityCanBePrivate")
-class VelocityConsole(val orig: CommandSource) : CommandExecutor {
+class VelocityConsole(val orig: CommandSource) : CommandConsole() {
 
     override fun getName(): String { return "CONSOLE" }
 

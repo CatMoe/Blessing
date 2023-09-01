@@ -51,10 +51,9 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
     }
 
-    @Suppress("DEPRECATION")
     fun execute(command: ICommand, executor: CommandSender, args: Array<out String>) {
         val clazz = command::class.java
-        if (clazz.isAnnotationPresent(catmoe.fallencrystal.translation.command.annotation.AsyncExecute::class.java) || (clazz.isAnnotationPresent(MoeCommand::class.java) && clazz.getAnnotation(MoeCommand::class.java).asyncExecute)) {
+        if (clazz.isAnnotationPresent(MoeCommand::class.java) && clazz.getAnnotation(MoeCommand::class.java).asyncExecute) {
             CompletableFuture.runAsync { command.execute(executor, args) }
             return
         }

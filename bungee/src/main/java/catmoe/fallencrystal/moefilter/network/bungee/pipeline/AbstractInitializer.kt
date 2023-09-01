@@ -37,9 +37,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
 
     @Throws(Exception::class)
     override fun initChannel(channel: Channel) {
-        val parent = channel.parent()
-        val isGeyser = parent != null && parent.javaClass.canonicalName.startsWith("org.geysermc.geyser")
-        if (isGeyser) { GeyserInitializer().handle(channel, protocol) }
+        if (GeyserInitializer.isGeyser(channel)) { GeyserInitializer().handle(channel, protocol) }
     }
 
     @Throws(Exception::class)

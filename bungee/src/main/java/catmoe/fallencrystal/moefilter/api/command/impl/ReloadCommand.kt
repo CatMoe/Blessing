@@ -18,11 +18,14 @@
 package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.executor.bungee.BungeeConsole
+import catmoe.fallencrystal.translation.player.PlayerInstance
 import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.connection.ProxiedPlayer
 
 /*
 @Command("reload")
@@ -41,7 +44,10 @@ import net.md_5.bungee.api.CommandSender
 )
 class ReloadCommand : ICommand {
 
-    override fun execute(sender: CommandSender, args: Array<out String>) { EventManager.triggerEvent(PluginReloadEvent(sender)) }
+    override fun execute(sender: CommandSender, args: Array<out String>) {
+        val executor = if (sender is ProxiedPlayer) PlayerInstance.getPlayer(sender.uniqueId) else BungeeConsole(sender)
+        EventManager.callEvent(PluginReloadEvent(executor))
+    }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
 }

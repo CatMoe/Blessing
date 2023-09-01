@@ -26,11 +26,11 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
-import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistObject
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
@@ -64,7 +64,7 @@ object MainListener {
         // Don't firewall them.
         if (connectionCache.getIfPresent(inetAddress) == true) { return true } else { connectionCache.put(inetAddress, true) }
         if (!isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
-        return Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress) && !WhitelistObject.isWhitelist(inetAddress)
+        return Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress)
     }
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
@@ -100,8 +100,6 @@ object MainListener {
             else -> { connection.close(); addFirewall(connection, false) }
         }
 
-        if (WhitelistObject.isWhitelist(inetAddress)) return
-
         /*
         Prevent too many connections from being established from a single IP
         Disconnect those connections that were not disconnected during the InitConnect phase.
@@ -115,7 +113,7 @@ object MainListener {
 
         if (connection.isConnected) {
             val pipeline = connection.pipeline ?: return
-            if (pipeline.channel().parent() != null && pipeline.channel().parent().javaClass.canonicalName.startsWith("org.geysermc.geyser")) return
+            if (GeyserInitializer.isGeyser(pipeline.channel())) return
             pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
             pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
             pipeline.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)

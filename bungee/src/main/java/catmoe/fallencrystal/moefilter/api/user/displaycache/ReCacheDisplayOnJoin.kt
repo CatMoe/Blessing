@@ -17,11 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.api.user.displaycache
 
-import catmoe.fallencrystal.moefilter.api.event.EventListener
-import catmoe.fallencrystal.moefilter.api.event.FilterEvent
-import catmoe.fallencrystal.moefilter.api.event.events.bungee.AsyncPostLoginEvent
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.events.player.PlayerJoinEvent
 
 class ReCacheDisplayOnJoin : EventListener {
-    @FilterEvent
-    fun onUpdateDisplayOnJoin(event: AsyncPostLoginEvent) { DisplayCache.getDisplay(event.player.uniqueId) }
+    @EventHandler(PlayerJoinEvent::class)
+    fun onUpdateDisplayOnJoin(event: PlayerJoinEvent) { DisplayCache.getDisplay(event.player.getUniqueId()) }
 }

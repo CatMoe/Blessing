@@ -15,11 +15,8 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.api.event.events
+package catmoe.fallencrystal.moefilter.event
 
-import catmoe.fallencrystal.moefilter.api.event.MoeAsyncEvent
-import net.md_5.bungee.api.ChatMessageType
-import net.md_5.bungee.api.CommandSender
+import catmoe.fallencrystal.translation.event.TranslationEvent
 
-@Suppress("unused")
-class TestMessageEvent(val sender: CommandSender, val type: ChatMessageType, val message: String) : MoeAsyncEvent
+class AttackStoppedEvent : TranslationEvent()

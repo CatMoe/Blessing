@@ -17,16 +17,16 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
-import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.events.AttackStoppedEvent
-import catmoe.fallencrystal.moefilter.api.event.events.UnderAttackEvent
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
+import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
+import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
+import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -91,21 +91,19 @@ object StateManager {
     fun setAttackMethod(method: Collection<AttackState>) {
         if (!inAttack.get()) return
         attackMethods.clear(); attackMethods.addAll(method)
-        EventManager.triggerEvent(UnderAttackEvent(attackMethods))
+        EventManager.callEvent(UnderAttackEvent(attackMethods))
     }
 
     fun fireAttackEvent() {
-        if (LockdownManager.state.get()) {
-            EventManager.triggerEvent(UnderAttackEvent(listOf(AttackState.LOCKDOWN)))
-        } else if (attackMethods.isEmpty()) {
-            EventManager.triggerEvent(UnderAttackEvent(listOf(AttackState.NOT_HANDLED)))
-        } else {
-            EventManager.triggerEvent(UnderAttackEvent(attackMethods))
-        }
+        EventManager.callEvent(UnderAttackEvent(
+            if (LockdownManager.state.get()) listOf(AttackState.LOCKDOWN)
+            else if (attackMethods.isEmpty()) listOf(AttackState.NOT_HANDLED)
+            else attackMethods
+        ))
         inAttack.set(true)
         if (inAttack.get()) { duration.start() }
     }
 
-    fun fireNotInAttackEvent() { EventManager.triggerEvent(AttackStoppedEvent()); attackMethods.clear(); inAttack.set(false); duration.stop() }
+    fun fireNotInAttackEvent() { EventManager.callEvent(AttackStoppedEvent()); attackMethods.clear(); inAttack.set(false); duration.stop() }
 
 }

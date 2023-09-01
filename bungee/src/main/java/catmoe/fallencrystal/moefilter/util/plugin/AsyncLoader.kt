@@ -19,10 +19,6 @@ package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
-import catmoe.fallencrystal.moefilter.api.event.EventListener
-import catmoe.fallencrystal.moefilter.api.event.EventManager
-import catmoe.fallencrystal.moefilter.api.event.FilterEvent
-import catmoe.fallencrystal.moefilter.api.event.events.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
@@ -30,7 +26,6 @@ import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -38,7 +33,8 @@ import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
-import catmoe.fallencrystal.moefilter.common.whitelist.WhitelistListener
+import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.InitChannel
@@ -52,6 +48,11 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.CPlatform
+import catmoe.fallencrystal.translation.event.EventListener
+import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
@@ -95,10 +96,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             return
         }
         scheduler.runAsync {
-            EventManager.registerListener(plugin, this)
+            EventManager.register(this)
             try {
-
-                EventManager // 初始化
 
                 // check they init method to get more information
                 DisplayCache
@@ -115,7 +114,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 loadProxyAPI()
                 if (LocalConfig.getLimbo().getBoolean("enabled")) {
                     MoeLimbo.initLimbo()
-                    EventManager.registerListener(plugin, BungeeSwitcher)
+                    // EventManager.registerListener(plugin, BungeeSwitcher)
+                    EventManager.register(BungeeSwitcher)
                 }
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
@@ -126,8 +126,9 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         }
     }
 
-    @FilterEvent
-    fun unload() {
+    @Suppress("UNUSED_PARAMETER")
+    @EventHandler(PluginUnloadEvent::class, priority = HandlerPriority.LOWEST)
+    fun unload(event: PluginUnloadEvent) {
         CPUMonitor.shutdownSchedule()
         try {
             MessageUtil.logInfo("[MoeFilter] Waiting event calling")
@@ -136,6 +137,14 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             ex.printStackTrace()
         }
         Firewall.shutdown()
+        for (listener in listOf(
+            this,
+            BungeeSwitcher,
+            ReloadConfig(),
+            AttackCounterListener(),
+        )) {
+            EventManager.unregister(listener)
+        }
         MessageUtil.logInfo("[MoeFilter] MoeFilter are unloaded.")
     }
 
@@ -174,10 +183,14 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     }
 
     private fun registerListener() {
+        /*
         EventManager.registerListener(plugin, ReloadConfig())
-        EventManager.registerListener(plugin, WhitelistListener())
         EventManager.registerListener(plugin, AttackCounterListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
+         */
+        EventManager.register(ReloadConfig())
+        EventManager.register(AttackCounterListener())
+        EventManager.callEvent(PluginReloadEvent(null))
         registerLuckPermsListener()
 
         /*

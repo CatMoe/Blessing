@@ -1,6 +1,5 @@
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.api.event.events.channel.ClientBrandPostEvent
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
@@ -10,12 +9,13 @@ import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityChe
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.events.player.PlayerPostBrandEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
@@ -96,8 +96,7 @@ class PacketHandler : ChannelDuplexHandler() {
                             brand.release()
                             if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
                             if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
-                            catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(ClientBrandPostEvent(channel, player, clientBrand))
-                            catmoe.fallencrystal.translation.event.EventManager.callEvent(PlayerPostBrandEvent(PlayerInstance.getPlayer(player.uniqueId) ?: return@run, clientBrand))
+                            EventManager.callEvent(PlayerPostBrandEvent(PlayerInstance.getPlayer(player.uniqueId) ?: return@run, clientBrand))
                         }
                     } catch (_: StringIndexOutOfBoundsException) {
                         MessageUtil.logWarn("Caught StringIndexOutOfBoundsException for PluginMessage! Did this BungeeCord (fork) is fully compatible for 1.7.x clients?")

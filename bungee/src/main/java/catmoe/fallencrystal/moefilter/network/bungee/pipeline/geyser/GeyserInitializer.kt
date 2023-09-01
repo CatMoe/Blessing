@@ -25,4 +25,8 @@ class GeyserInitializer {
 
         if (listener.isProxyProtocol) { channel.pipeline().addFirst(HAProxyMessageDecoder()) }
     }
+
+    companion object {
+        fun isGeyser(channel: Channel): Boolean { return channel.parent() != null && channel.parent().javaClass.canonicalName.startsWith("org.geysermc.geyser") }
+    }
 }

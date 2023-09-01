@@ -15,9 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.translation.command.annotation.misc
+package catmoe.fallencrystal.moefilter.event
 
-enum class DescriptionFrom {
-    STRING,
-    MESSAGE_PATH
-}
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.utils.version.Version
+import java.net.InetAddress
+
+class LimboCheckPassedEvent(val version: Version, val username: String, val address: InetAddress): TranslationEvent()
