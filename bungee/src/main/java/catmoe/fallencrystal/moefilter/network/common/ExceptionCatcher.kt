@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.common
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -28,8 +27,10 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketExce
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.typesafe.config.ConfigException
 import io.netty.channel.Channel
+import io.netty.handler.timeout.ReadTimeoutException
 import java.io.IOException
 import java.net.InetSocketAddress
 
@@ -46,8 +47,14 @@ object ExceptionCatcher {
             ConnectionCounter.countBlocked(BlockType.FIREWALL)
             return
         }
+        if (cause is ReadTimeoutException) {
+            if (Throttler.isThrottled(address)) Firewall.addAddress(address)
+            ConnectionCounter.countBlocked(BlockType.TIMEOUT)
+            return
+        }
         if (cause is DebugException) { cause.printStackTrace(); return }
         if (cause is InvalidStatusPingException || cause is InvalidHandshakeException) { Firewall.addAddress(address); return }
+        // I don't know why people always do stupid things on configs.
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }
         if (cause is InvalidPacketException) Firewall.addAddress(address)
         Firewall.addAddressTemp(address)

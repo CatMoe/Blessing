@@ -26,19 +26,19 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventManager
-import catmoe.fallencrystal.translation.event.events.player.PlayerChatEvent
-import catmoe.fallencrystal.translation.event.events.player.PlayerJoinEvent
-import catmoe.fallencrystal.translation.event.events.player.PlayerLeaveEvent
+import catmoe.fallencrystal.translation.event.events.player.*
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.TranslatePlayer
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
+import catmoe.fallencrystal.translation.server.ServerInstance
+import catmoe.fallencrystal.translation.server.TranslateServer
+import catmoe.fallencrystal.translation.server.bungee.BungeeServer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.event.ChatEvent
-import net.md_5.bungee.api.event.PlayerDisconnectEvent
-import net.md_5.bungee.api.event.PostLoginEvent
-import net.md_5.bungee.api.event.ProxyPingEvent
+import net.md_5.bungee.api.config.ServerInfo
+import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
@@ -76,6 +76,31 @@ class BungeeEvent : Listener {
         PlayerInstance.cacheUUID.put(player.getUniqueId(), player)
         PlayerInstance.cacheName.put(player.getName(), player)
         EventManager.callEvent(PlayerJoinEvent(player))
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onServerConnect(event: ServerConnectEvent) {
+        val e = PlayerConnectServerEvent(false, getTranslateServer(event.target), getTranslatePlayer(event.player))
+        e.isCancelled=event.isCancelled
+        EventManager.callEvent(e)
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onServerConnect(event: ServerConnectedEvent) {
+        EventManager.callEvent(PlayerConnectServerEvent(true, getTranslateServer(event.server.info), getTranslatePlayer(event.player)))
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onServerSwitch(event: ServerSwitchEvent) {
+        EventManager.callEvent(PlayerSwitchServerEvent(getTranslatePlayer(event.player), getTranslateServer(event.from), getTranslateServer(event.player.server.info)))
+    }
+
+    private fun getTranslateServer(s: ServerInfo): TranslateServer {
+        return ServerInstance.getServer(s.name) ?: TranslateServer(BungeeServer(s))
+    }
+
+    private fun getTranslatePlayer(p: ProxiedPlayer): TranslatePlayer {
+        return PlayerInstance.getPlayer(p.uniqueId) ?: TranslatePlayer(BungeePlayer(p))
     }
 
     /*

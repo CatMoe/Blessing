@@ -40,10 +40,10 @@ class PacketClientChat : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.less(Version.V1_19)) {
-            message=packet.readString()
+            message=packet.readString(length = 32767)
         } else {
             /* I hate chat report, tbh. */
-            message=packet.readString()
+            message=packet.readString(length = 32767)
             timestamp=packet.readLong()
             salt=packet.readLong()
             if (version.moreOrEqual(Version.V1_19_3)) {

@@ -15,13 +15,10 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.counter.type
+package catmoe.fallencrystal.translation.event.events.player
 
-import catmoe.fallencrystal.moefilter.state.AttackState
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.translation.player.TranslatePlayer
+import catmoe.fallencrystal.translation.server.TranslateServer
 
-enum class BlockType(@JvmField val state: AttackState) {
-    FIREWALL(AttackState.FIREWALL),
-    TIMEOUT(AttackState.NOT_HANDLED),
-    JOIN(AttackState.JOIN),
-    PING(AttackState.PING),
-}
+class PlayerSwitchServerEvent(val player: TranslatePlayer, val from: TranslateServer, val to: TranslateServer) : TranslationEvent()
