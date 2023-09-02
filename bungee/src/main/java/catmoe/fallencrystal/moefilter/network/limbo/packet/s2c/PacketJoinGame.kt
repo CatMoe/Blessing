@@ -80,7 +80,7 @@ class PacketJoinGame : LimboS2CPacket() {
             else packet.writeTag(dim.getAttributes(version))
             packet.writeString(worldName)
         }
-        if (version.fromTo(V1_7_6, V1_9)) { packet.writeByte(dim.dimensionId) }
+        if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(dim.dimensionId)
         else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(dim.dimensionId)
         if (version.moreOrEqual(V1_15)) packet.writeLong(hashedSeed)
         if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty

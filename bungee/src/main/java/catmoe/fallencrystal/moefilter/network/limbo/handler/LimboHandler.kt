@@ -115,6 +115,9 @@ class LimboHandler(
         // Weeee—— don't want player is flying, So don't send the packet insteadof apply flags.
         // writePacket(PLAYER_ABILITIES)
 
+        // 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
+        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+
         writePacket(POS_AND_LOOK)
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
@@ -132,9 +135,6 @@ class LimboHandler(
         keepAliveScheduler()
         keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
         sendPacket(keepAlive)
-
-        // 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
-        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
 
 
         // sendCaptcha()

@@ -31,17 +31,24 @@ class PacketServerPositionLook: LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         // 关于1.7的y的1.62Float轴偏移的话 还是请Mojang自己出来发言吧(x
+        /*
         listOf(
             sendLoc.x,
             sendLoc.y + (if (version!!.less(Version.V1_8)) 1.62f else 0f),
             sendLoc.z
         ).forEach { packet.writeDouble(it) }
-        listOf(sendLoc.yaw, sendLoc.pitch).forEach { packet.writeFloat(it) }
+         */
+        packet.writeDouble(sendLoc.x)
+        packet.writeDouble(sendLoc.y + (if (version!!.less(Version.V1_8)) 1.62f else 0f))
+        packet.writeDouble(sendLoc.z)
+        //listOf(sendLoc.yaw, sendLoc.pitch).forEach { packet.writeFloat(it) }
+        packet.writeFloat(sendLoc.yaw)
+        packet.writeFloat(sendLoc.pitch)
         // OnGround
-        if (version.moreOrEqual(Version.V1_8)) packet.writeByte(0x08) else packet.writeBoolean(true)
+        if (version.moreOrEqual(Version.V1_8)) packet.writeByte(0x08) else packet.writeBoolean(sendLoc.onGround)
         // 1.9+ 的 ConfirmTeleport实际上是在此处处理的 而不是另一个数据包 :|
         if (version.moreOrEqual(Version.V1_9)) packet.writeVarInt(teleport ?: 7890)
-        // 是否起程在实体身上
+        // 是否骑乘在实体身上
         if (version.fromTo(Version.V1_17, Version.V1_19_3)) packet.writeBoolean(false)
     }
 

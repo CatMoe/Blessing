@@ -21,7 +21,9 @@ import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.ByteBufOutputStream
+import io.netty.buffer.Unpooled
 import java.util.*
+import java.util.zip.Deflater
 
 
 class PacketEmptyChunk : LimboS2CPacket() {
@@ -34,16 +36,33 @@ class PacketEmptyChunk : LimboS2CPacket() {
         // Chunk pos
         packet.writeInt(x)
         packet.writeInt(z)
-        if (version!!.less(Version.V1_17) || version.fromTo(Version.V1_16, Version.V1_16_1) || version == Version.V1_7_6) packet.writeBoolean(true)
+        if (version!!.less(Version.V1_17) /*  || version.fromTo(Version.V1_16, Version.V1_16_1) || version == Version.V1_7_6 */) packet.writeBoolean(true)
         if (version.less(Version.V1_17)) {
             if (version.lessOrEqual(Version.V1_8)) packet.writeShort(1) else packet.writeVarInt(0)
             if (version == Version.V1_7_6) {
                 // some1 can help me...? I don't know how 2 send a readable chunk data for a 9yrs ago minecraft client.
+
                 packet.writeShort(1)
-                val l = byteArrayOf(63) /* byteArrayOf(63) / ByteArray(256) */
-                packet.writeInt(l.size)
-                packet.writeBytes(l)
+                val byArray = /* byteArrayOf(63) */ ByteArray(256)
+                val deflate = Deflater(9)
+                deflate.setInput(byArray)
+                deflate.finish()
+                val compressed = Unpooled.buffer()
+                val b = ByteArray(1024)
+                while (!deflate.finished()) compressed.writeBytes(b, 0, deflate.deflate(b))
+                packet.writeInt(compressed.readableBytes())
+                packet.writeBytes(compressed)
+                deflate.end()
+                compressed.release()
                 return
+
+                /*
+                packet.writeShort(1)
+                val byArray = byteArrayOf(63)
+                packet.writeInt(byArray.size)
+                packet.writeBytes(byArray)
+                return
+                 */
                 /*
                 packet.writeShort(0)
                 val uncompressed = byteArrayOf(256.toByte())
@@ -74,22 +93,6 @@ class PacketEmptyChunk : LimboS2CPacket() {
         }
         if (version.moreOrEqual(Version.V1_14)) {
             // Height maps << Start
-            /*
-            val output = ByteBufOutputStream(packet)
-            output.writeByte(10) //CompoundTag
-            output.writeUTF("") // CompoundName
-            output.writeByte(10) //CompoundTag
-            output.writeUTF("root") //root compound
-            output.writeByte(12) //long array
-            output.writeUTF( "MOTION_BLOCKING" )
-            //val arrayTag = arrayOf((if (version.less(Version.V1_18)) 36 else 37).toLong())
-            val arrayTag = LongArray(if (version.less(Version.V1_18)) 36 else 37)
-            //val longArrayTag = LongArray(if (version < ProtocolConstants.MINECRAFT_1_18) 36 else 37)
-            output.writeInt(arrayTag.size)
-            arrayTag.forEach { element -> packet.writeLong(element) }
-            packet.writeByte(0)
-            packet.writeByte(0)
-             */
             ByteBufOutputStream(packet).use { output ->
                 output.writeByte(10) //CompoundTag
                 output.writeUTF("") // CompoundName

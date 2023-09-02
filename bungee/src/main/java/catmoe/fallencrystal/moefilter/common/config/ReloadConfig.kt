@@ -37,6 +37,8 @@ import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LoadConfig
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
@@ -44,6 +46,7 @@ import catmoe.fallencrystal.translation.utils.config.LocalConfig
 class ReloadConfig : EventListener {
 
     @EventHandler(PluginReloadEvent::class)
+    @Platform(ProxyPlatform.BUNGEE)
     fun reloadConfig(event: PluginReloadEvent) {
         // Executor is null == Starting plugin.
         // Load can hot load module without "if" syntax.

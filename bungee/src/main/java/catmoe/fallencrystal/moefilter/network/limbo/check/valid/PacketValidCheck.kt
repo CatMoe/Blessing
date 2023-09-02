@@ -62,8 +62,8 @@ object PacketValidCheck : LimboChecker, ILimboListener {
         }
         if (!handler.channel.isActive) return true
         if (packet is Unknown && allowUnknown.getIfPresent(handler) == null) {
-            handler.channel.close()
             if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
+            handler.channel.close()
             throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
         }
         if (packet is PacketHandshake) {

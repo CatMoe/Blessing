@@ -30,7 +30,9 @@ class PacketPlayerAbilities : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         packet.writeByte(flags ?: 0x02)
-        listOf(flyingSpeed, fieldOfView).forEach { packet.writeFloat(it) }
+        //listOf(flyingSpeed, fieldOfView).forEach { packet.writeFloat(it) }
+        packet.writeFloat(flyingSpeed)
+        packet.writeFloat(fieldOfView)
     }
 
     override fun toString(): String {

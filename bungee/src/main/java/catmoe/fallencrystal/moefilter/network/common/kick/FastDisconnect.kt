@@ -106,6 +106,6 @@ object FastDisconnect {
         ba.release()
         // End
 
-        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet")))
+        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet (type=${type.name})")))
     }
 }
