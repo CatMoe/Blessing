@@ -54,7 +54,7 @@ object ExceptionCatcher {
         }
         if (cause is DebugException) { cause.printStackTrace(); return }
         if (cause is InvalidStatusPingException || cause is InvalidHandshakeException) { Firewall.addAddress(address); return }
-        // I don't know why people always do stupid things on configs.
+        // I don't know why people always do foolish things on configs.
         if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }
         if (cause is InvalidPacketException) Firewall.addAddress(address)
         Firewall.addAddressTemp(address)

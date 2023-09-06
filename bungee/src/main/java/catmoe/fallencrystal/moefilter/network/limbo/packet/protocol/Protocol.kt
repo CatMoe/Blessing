@@ -20,7 +20,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.TabComplete
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
@@ -323,7 +322,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x04, V1_19, V1_19),
                 map(0x05, V1_19_1, V1_20)
             )
-            serverBound.register(
+            /*
+                        serverBound.register(
                 { TabComplete() },
                 map(0x14, V1_7_6, V1_8),
                 map(0x01, V1_9, V1_11_1),
@@ -349,6 +349,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x0D, V1_19_3, V1_19_3),
                 map(0xF, V1_19_4, V1_20)
             )
+             */
         }
     };
 

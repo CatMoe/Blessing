@@ -18,9 +18,9 @@
 package catmoe.fallencrystal.moefilter.common.geoip
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.maxmind.db.CHMCache
 import com.maxmind.geoip2.DatabaseReader
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
@@ -107,7 +107,7 @@ class DownloadDatabase(folder: File) {
         }
     }
 
-    private fun update() {
+    fun update() {
         scheduler.runAsync {
             try { downloadDatabase(countryDatabase, countryArchive, getUrl(countryDatabase)); countryAvailable.set(true) } catch (ex: Exception) { throwError(countryDatabase, countryArchive, ex); countryAvailable.set(false) }
         }

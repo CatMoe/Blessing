@@ -191,7 +191,7 @@ object MoveCheck: LimboChecker, ILimboListener {
         p.put(handler, o+1)
         return when (k) {
             DISTANCE -> { if ((450 - c) >= this.o) { this.d(handler) } else false }
-            COUNT ->  { if (o == this.o) { this.d(handler) } else false }
+            COUNT ->  { if (o >= this.o) { this.d(handler) } else false }
         }
     }
 

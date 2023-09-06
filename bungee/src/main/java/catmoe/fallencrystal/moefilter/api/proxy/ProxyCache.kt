@@ -22,7 +22,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 
 object ProxyCache {
-    private val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
+    val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
     private val whitelistedAddress = listOf("127.0.0.1")
 
     private val fetchProxy = FetchProxy()

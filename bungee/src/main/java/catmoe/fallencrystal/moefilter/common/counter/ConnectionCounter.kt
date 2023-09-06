@@ -18,10 +18,10 @@
 package catmoe.fallencrystal.moefilter.common.counter
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
@@ -96,26 +96,5 @@ object ConnectionCounter {
     fun totalSessionBlocked(): Long {
         var c: Long = 0; BlockType.values().forEach { c += sessionBlocked.getIfPresent(it) ?: 0 }; return c
     }
-    /*
-    val blocked: MutableMap<BlockType, Long> = mutableMapOf()
-    val sessionBlocked: MutableMap<BlockType, Long> = mutableMapOf()
-
-    fun countBlocked(type: BlockType) {
-        blocked[type] = ((blocked[type] ?: 0) +1)
-        if (inAttack) { sessionBlocked[type] = ((sessionBlocked[type] ?: 0)+1) }
-    }
-
-    fun totalBlocked(): Long {
-        var count: Long = 0
-        BlockType.values().forEach { count += blocked[it] ?: 0 }
-        return count
-    }
-
-    fun totalSessionBlocked(): Long {
-        var count: Long = 0
-        BlockType.values().forEach { count += sessionBlocked[it] ?: 0 }
-        return count
-    }
-     */
 
 }

@@ -63,6 +63,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
 
+    var geoIPLoader: DownloadDatabase? = null
+
     private val scheduler = Scheduler(plugin)
 
     private val configIssue = listOf(
@@ -178,7 +180,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             val maxmindLicense = try { LocalConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
             // if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }
-            DownloadDatabase(folder)
+            this.geoIPLoader=DownloadDatabase(folder)
         }
     }
 

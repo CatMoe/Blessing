@@ -115,20 +115,11 @@ class LimboHandler(
         // Weeee—— don't want player is flying, So don't send the packet insteadof apply flags.
         // writePacket(PLAYER_ABILITIES)
 
-        // 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
-        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
-
         writePacket(POS_AND_LOOK)
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
 
         if (version!!.moreOrEqual(Version.V1_8)) {
-            /*
-            val brand = PacketPluginMessage()
-            brand.channel=if (version!!.moreOrEqual(Version.V1_13)) "minecraft:brand" else "MC|Brand"
-            brand.message="MoeFilter <- MoeLimbo"
-            writePacket(brand)
-             */
             writePacket(if (version!!.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
         }
 
@@ -136,8 +127,13 @@ class LimboHandler(
         keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
         sendPacket(keepAlive)
 
-
-        // sendCaptcha()
+        /*
+        *1: 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
+        *2: 未解之谜: 为什么在部分情况下, 区块数据包如果比KeepAlive先发送 当服务器再发送KeepAlive时,
+        *   客户端**不一定**会回应KeepAlive. 但客户端除了不回应心跳包之外,
+        *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
+         */
+        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
     }
 
     private fun keepAliveScheduler() {

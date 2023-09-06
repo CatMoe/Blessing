@@ -92,7 +92,8 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onServerSwitch(event: ServerSwitchEvent) {
-        EventManager.callEvent(PlayerSwitchServerEvent(getTranslatePlayer(event.player), getTranslateServer(event.from), getTranslateServer(event.player.server.info)))
+        val from = event.from ?: return
+        EventManager.callEvent(PlayerSwitchServerEvent(getTranslatePlayer(event.player), getTranslateServer(from), getTranslateServer(event.player.server.info)))
     }
 
     private fun getTranslateServer(s: ServerInfo): TranslateServer {

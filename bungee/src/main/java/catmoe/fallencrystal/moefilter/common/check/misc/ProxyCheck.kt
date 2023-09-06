@@ -22,12 +22,10 @@ import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Address
-import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
-import java.net.InetAddress
 
 class ProxyCheck : AbstractCheck() {
 
@@ -35,12 +33,11 @@ class ProxyCheck : AbstractCheck() {
 
     override fun increase(info: CheckInfo): Boolean {
         val inetAddress = (info as Address).address.address
-        val result = ProxyCache.getProxy(inetAddress)
-        if (result == null) { apiCheck(inetAddress); return false }
+        val result = ProxyCache.getProxy(inetAddress) ?: /* apiCheck(inetAddress);  */return false
         if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress) }
         else if (Throttler.isThrottled(inetAddress)) { Firewall.addAddress(inetAddress) }
         return true
     }
 
-    private fun apiCheck(address: InetAddress) { schedule.runAsync { ProxyChecker.check(address) } }
+    //private fun apiCheck(address: InetAddress) { schedule.runAsync { ProxyChecker.check(address) } }
 }

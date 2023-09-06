@@ -18,9 +18,9 @@
 package catmoe.fallencrystal.moefilter.common.firewall.system
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.translation.utils.system.CommandUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.system.CommandUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.scheduler.ScheduledTask
@@ -30,21 +30,21 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class ExecutorHelper(private val command: String) {
     private val queue: Queue<String> = ArrayDeque()
 
-    val maxSize = AtomicInteger(10000000)
+    val maxSize = AtomicInteger(1000)
     val debug = AtomicBoolean(false)
-    private val idle = AtomicBoolean(true)
-    private val watchdog = AtomicBoolean(false)
-    private val thread = Runtime.getRuntime().availableProcessors() * 2
-    private val count = AtomicInteger(0)
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
-    private val schedules: MutableCollection<ScheduledTask> = CopyOnWriteArrayList()
-    private val threads = AtomicInteger(0)
-    private val activeThread = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MILLISECONDS).build<ScheduledTask, Boolean>()
-    private val intThread = Caffeine.newBuilder().build<Int, ScheduledTask>()
+    val idle = AtomicBoolean(true)
+    val watchdog = AtomicBoolean(false)
+    val thread = Runtime.getRuntime().availableProcessors() * 2
+    val count = AtomicInteger(0)
+    val scheduler = Scheduler(MoeFilterBungee.instance)
+    val schedules: MutableCollection<ScheduledTask> = CopyOnWriteArrayList()
+    val threads = AtomicInteger(0)
+    val activeThread = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MILLISECONDS).build<ScheduledTask, Boolean>()
+    val intThread = Caffeine.newBuilder().build<Int, ScheduledTask>()
 
     private fun init(process: Int) {
         val taskCount = (if (process >= thread) thread else process) - count.get()
@@ -72,13 +72,14 @@ class ExecutorHelper(private val command: String) {
         count.set(count.get() + 1)
         val threads = this.threads.get() + 1
         this.threads.set(threads)
+        if (!watchdog.get()) this.watchDog()
         val schedule = scheduler.repeatScheduler(10, TimeUnit.MILLISECONDS) {
             val task = intThread.getIfPresent(threads)
             if (task != null) {
                 activeThread.put(task, true); schedules.add(task)
                 if (queue.isEmpty()) { count.set(count.get() - 1); activeThread.invalidate(task); return@repeatScheduler }
                 val command = this.command.replace("{chain}", queue.poll())
-                // Can use reflect to edit this.
+                // Can use reflection to edit this.
                 val unit = execute(command)
             }
         }
