@@ -21,7 +21,6 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
-import catmoe.fallencrystal.moefilter.network.common.exception.DebugException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
@@ -41,22 +40,25 @@ object ExceptionCatcher {
         channel.close()
         if (debug) { cause.printStackTrace() }
         val address = (channel.remoteAddress() as InetSocketAddress).address
-        if (cause is IOException) return
-        if (cause is InvalidVarIntException) {
-            if (Throttler.isThrottled(address)) Firewall.addAddress(address)
-            ConnectionCounter.countBlocked(BlockType.FIREWALL)
-            return
+        when (cause) {
+            is IOException -> return
+            is InvalidVarIntException -> {
+                Firewall.addAddress(address)
+                ConnectionCounter.countBlocked(BlockType.FIREWALL)
+                return
+            }
+            is ReadTimeoutException -> {
+                if (Throttler.isThrottled(address)) Firewall.addAddress(address)
+                ConnectionCounter.countBlocked(BlockType.TIMEOUT); return
+            }
+            is InvalidStatusPingException -> { Firewall.addAddress(address); return }
+            is InvalidHandshakeException -> { Firewall.addAddress(address); return }
+            is InvalidPacketException -> Firewall.addAddress(address)
+            is ConfigException -> {
+                MessageUtil.logError("<red>A connection forced closed because your config has critical issue")
+                cause.printStackTrace(); return
+            }
         }
-        if (cause is ReadTimeoutException) {
-            if (Throttler.isThrottled(address)) Firewall.addAddress(address)
-            ConnectionCounter.countBlocked(BlockType.TIMEOUT)
-            return
-        }
-        if (cause is DebugException) { cause.printStackTrace(); return }
-        if (cause is InvalidStatusPingException || cause is InvalidHandshakeException) { Firewall.addAddress(address); return }
-        // I don't know why people always do foolish things on configs.
-        if (cause is ConfigException) { MessageUtil.logError("<red>A connection forced closed because your config has critical issue"); cause.printStackTrace(); return }
-        if (cause is InvalidPacketException) Firewall.addAddress(address)
         Firewall.addAddressTemp(address)
         ConnectionCounter.countBlocked(BlockType.FIREWALL)
     }
