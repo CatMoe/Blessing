@@ -69,7 +69,7 @@ object ChatCheck : LimboChecker, EventListener {
     @EventHandler(PlayerChatEvent::class)
     @IgnoreCancelled
     fun chat(event: PlayerChatEvent) {
-        if (connected.getIfPresent(event.player) != true) {
+        if (connected.getIfPresent(event.player) != true && enable) {
             when (val upstream = event.player.upstream) {
                 is BungeePlayer -> { FastDisconnect.disconnect(upstream.channel(), DisconnectType.CANNOT_CHAT, ServerType.BUNGEE_CORD) }
                 is VelocityPlayer -> {
@@ -81,6 +81,7 @@ object ChatCheck : LimboChecker, EventListener {
     }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
+        if (!enable) return false
         FastDisconnect.disconnect(handler, DisconnectType.CANNOT_CHAT)
         return true
     }
