@@ -39,6 +39,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 import java.util.concurrent.ThreadLocalRandom
@@ -59,6 +60,7 @@ class LimboHandler(
     var host: InetSocketAddress? = null
     var profile: VirtualConnection = VirtualConnection()
     val fakeHandler: LimboCompat? = getFakeProxyHandler()
+    private val scheduler = Scheduler(MoeFilterBungee.instance)
 
     val disconnected = AtomicBoolean(false)
     var brand = ""
@@ -137,8 +139,9 @@ class LimboHandler(
     }
 
     private fun keepAliveScheduler() {
-        Scheduler(MoeFilterBungee.instance).repeatScheduler( LocalConfig.getLimbo().getLong("keep-alive.delay"), TimeUnit.SECONDS) {
-            if (disconnected.get()) return@repeatScheduler
+        var task: ScheduledTask? = null
+        task = scheduler.repeatScheduler( LocalConfig.getLimbo().getLong("keep-alive.delay"), TimeUnit.SECONDS) {
+            if (disconnected.get()) scheduler.cancelTask(task!!)
             keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)
         }

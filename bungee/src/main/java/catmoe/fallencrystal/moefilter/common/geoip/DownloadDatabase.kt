@@ -23,6 +23,7 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.maxmind.db.CHMCache
 import com.maxmind.geoip2.DatabaseReader
+import net.md_5.bungee.api.scheduler.ScheduledTask
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.utils.IOUtils
@@ -78,14 +79,16 @@ class DownloadDatabase(folder: File) {
     init {
         try {
             update()
-            scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
+            var task: ScheduledTask? = null
+            task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
                 if (countryAvailable.get() && cityAvailable.get()) {
                     GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
                     GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
                     GeoIPManager.available.set(true)
                     scheduler.repeatScheduler(1, 1, TimeUnit.DAYS) { update() }
+                    scheduler.cancelTask(task!!)
                 }
-                else if (hasError.get()) { if (debug) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); return@repeatScheduler } }
+                else if (hasError.get()) { if (debug) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); scheduler.cancelTask(task!!) } }
                 else if (debug) { MessageUtil.logInfo("[MoeFilter] [GeoIP] Waiting download task complete..") }
             }
         } catch (ex: IOException) {

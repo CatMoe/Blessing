@@ -73,11 +73,12 @@ class ExecutorHelper(private val command: String) {
         val threads = this.threads.get() + 1
         this.threads.set(threads)
         if (!watchdog.get()) this.watchDog()
-        val schedule = scheduler.repeatScheduler(10, TimeUnit.MILLISECONDS) {
+        var schedule: ScheduledTask? = null
+        schedule = scheduler.repeatScheduler(10, TimeUnit.MILLISECONDS) {
             val task = intThread.getIfPresent(threads)
             if (task != null) {
                 activeThread.put(task, true); schedules.add(task)
-                if (queue.isEmpty()) { count.set(count.get() - 1); activeThread.invalidate(task); return@repeatScheduler }
+                if (queue.isEmpty()) { count.set(count.get() - 1); activeThread.invalidate(task); scheduler.cancelTask(schedule!!) }
                 val command = this.command.replace("{chain}", queue.poll())
                 // Can use reflection to edit this.
                 val unit = execute(command)

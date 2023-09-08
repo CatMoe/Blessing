@@ -27,6 +27,7 @@ import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -43,6 +44,8 @@ object StateManager {
     private val attackEndedCount = AtomicInteger(0)
 
     val lastMethod: MutableCollection<AttackState> = ArrayList()
+
+    private val scheduler = Scheduler(MoeFilterBungee.instance)
 
     @Suppress("EnumValuesSoftDeprecate")
     fun attackMethodAnalyser() {
@@ -73,14 +76,15 @@ object StateManager {
             else {
                 if (!attackEndedWaiter.get()) {
                     attackEndedWaiter.set(true)
-                    Scheduler(MoeFilterBungee.instance).repeatScheduler(1, 1, TimeUnit.SECONDS) {
-                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); return@repeatScheduler }
+                    var task: ScheduledTask? = null
+                    task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
+                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); scheduler.cancelTask(task!!) }
                         if (ConnectionCounter.getConnectionPerSec() != 0) {
                             attackEndedCount.set(conf.getInt("wait"))
-                            attackEndedWaiter.set(false); return@repeatScheduler
+                            attackEndedWaiter.set(false); scheduler.cancelTask(task!!)
                         }
                         val c = attackEndedCount.get()
-                        if (c == 0) { fireNotInAttackEvent(); attackEndedWaiter.set(false); return@repeatScheduler }
+                        if (c == 0) { fireNotInAttackEvent(); attackEndedWaiter.set(false); scheduler.cancelTask(task!!) }
                         attackEndedCount.set(c - 1)
                     }
                 }

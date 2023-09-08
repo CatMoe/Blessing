@@ -25,9 +25,11 @@ import java.util.concurrent.TimeUnit
 @Suppress("unused")
 class Scheduler(private val plugin: Plugin) {
     private val scheduler = ProxyServer.getInstance().scheduler
+
     fun runAsync(run: Runnable): ScheduledTask { return scheduler.runAsync(plugin, run) }
 
     fun delayScheduler(delay: Long, timeUnit: TimeUnit, run: Runnable): ScheduledTask { return scheduler.schedule(plugin, run, delay, timeUnit) }
+
     fun repeatScheduler(delay: Long, timeUnit: TimeUnit, run: Runnable): ScheduledTask { return scheduler.schedule(plugin, run, 0, delay, timeUnit) }
 
     fun repeatScheduler(firstDelay: Long, delay: Long, timeUnit: TimeUnit, run: Runnable): ScheduledTask { return scheduler.schedule(plugin, run, firstDelay, delay, timeUnit) }
