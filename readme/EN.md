@@ -67,6 +67,7 @@ Checks that have been implemented:
 | JH AntiBot      | 🛑      |
 | Protocoolize    | ✅       |
 | JPremium        | ☑️      |
+| ViaVersion      | 🛑      |
 
 > ✅: Full supported. Can use all MoeFilter's features with it
 

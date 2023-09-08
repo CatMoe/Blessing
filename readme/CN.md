@@ -65,6 +65,7 @@
 | JH AntiBot      | 🛑 |
 | Protocolize     | ✅  |
 | JPremium        | ☑️ |
+| ViaVersion      | 🛑 |
 
 > ✅: 完全支持. MoeFilter可以与其一起使用而不会出现任何问题 (预期行为)
 
