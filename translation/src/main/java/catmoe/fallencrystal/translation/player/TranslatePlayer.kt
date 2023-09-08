@@ -19,6 +19,7 @@ package catmoe.fallencrystal.translation.player
 
 import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
 import java.net.SocketAddress
@@ -82,5 +83,9 @@ class TranslatePlayer(val upstream: PlatformPlayer): PlatformPlayer {
 
     override fun sendActionbar(component: Component) {
         upstream.sendActionbar(component)
+    }
+
+    override fun channel(): Channel {
+        return upstream.channel()
     }
 }

@@ -20,6 +20,7 @@ package catmoe.fallencrystal.translation.player
 import catmoe.fallencrystal.translation.executor.CommandExecutor
 import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
 import java.net.SocketAddress
@@ -48,5 +49,7 @@ interface PlatformPlayer : CommandExecutor {
     fun send(server: PlatformServer)
 
     fun sendActionbar(component: Component)
+
+    fun channel(): Channel
 
 }

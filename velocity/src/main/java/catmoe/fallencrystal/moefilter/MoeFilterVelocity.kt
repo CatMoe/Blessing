@@ -57,6 +57,7 @@ class MoeFilterVelocity @Inject constructor(
     }
 
     @Subscribe
+    @Suppress("UNUSED_PARAMETER")
     fun proxyLoad(event: ProxyInitializeEvent) {
         CubeLogger.logger=VelocityLogger(this, proxyServer, logger)
         cPlatform.whenLoad()

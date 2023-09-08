@@ -345,7 +345,7 @@ class LoadConfig {
                         "<red>This server is not allowed proxy/vpn.",
                         ""
                     ]
-                    # Only limbo
+                    # 仅限Limbo
                     unexpected-ping=[
                         "",
                         "<red>Your ping looks a little strange. Please try again later.",
@@ -372,6 +372,12 @@ class LoadConfig {
                     brand-not-allowed=[
                         ""
                         "<red>Your client is not allowed on this server.",
+                        ""
+                    ]
+                    # 仅限Limbo
+                    cannot-chat=[
+                        "",
+                        "<red>You can't speak until you passed the bot detection.",
                         ""
                     ]
                 }
@@ -433,7 +439,8 @@ class LoadConfig {
                     # PING_AFTER_RECONNECT: 重新连接后Ping
                     # STABLE: 独立模块互相工作
                     # DISABLED: 禁用
-                    join-ping-mixin-mode=RECONNECT
+                    default=DISABLED
+                    in-attack=PING_AFTER_RECONNECT
                     
                     # join+ping的检查的缓存过期时间 (秒)
                     # 如果您或您的玩家遇到连续要求的问题
@@ -700,6 +707,16 @@ class LoadConfig {
                     max-response=1000
                 }
                 
+                # 是否禁用聊天, 如果开启 当玩家尝试聊天时 它们会被踢出服务器
+                # 此选项将检测以下行为:
+                # 当玩家连接到BungeeCord时, 还未加入到任意后端服务器就开始尝试发送聊天消息
+                # 在Limbo里尝试发送聊天内容
+                #
+                # 此检查可能会误伤到一些玩家, 如果您在考虑这个 
+                # ——别担心 一般而言可以放心禁用 其它机器人检查同样强大
+                # 大部分愚蠢的SpamBot通常不会拥有强大的绕过.
+                disable-chat=true
+                
                 check {
                     # 掉落检查
                     falling {
@@ -785,7 +802,7 @@ class LoadConfig {
     }
 
     private fun broadcastUpdate(newFile: Path) {
-        val message: List<String> = listOf(
+       listOf(
             "-------------------- MoeFilter --------------------",
             "您的配置文件或语言文件版本不同于您当前使用的MoeFilter版本.",
             "或者您的配置文件为空.",
@@ -796,8 +813,7 @@ class LoadConfig {
             "插件可能将不按照您的预期工作. 建议编辑配置文件后重新启动代理",
             "即使您仍然不修改任何内容. 在之后时也会使用默认的配置文件.",
             "-------------------- MoeFilter --------------------"
-        )
-        message.forEach { CPlatform.instance.getPlatformLogger().log(Level.WARNING, it) }
+        ).forEach { CPlatform.instance.getPlatformLogger().log(Level.WARNING, it) }
     }
 
     companion object {

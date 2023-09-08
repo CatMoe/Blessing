@@ -16,4 +16,9 @@
  */
 
 package catmoe.fallencrystal.moefilter.network.limbo.check
-interface LimboChecker
+
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
+
+interface LimboChecker : ILimboListener {
+    fun reload()
+}

@@ -13,6 +13,7 @@
       <configuration>
         <autoDetectTypes>
           <platformType>WATERFALL</platformType>
+          <platformType>VELOCITY</platformType>
           <platformType>ADVENTURE</platformType>
         </autoDetectTypes>
       </configuration>

@@ -24,7 +24,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
@@ -48,12 +47,14 @@ import com.github.benmanes.caffeine.cache.Caffeine
     PacketInitLogin::class,
     PacketKeepAlive::class,
 )
-object PacketValidCheck : LimboChecker, ILimboListener {
+object PacketValidCheck : LimboChecker {
 
     private val allowUnknown = Caffeine.newBuilder().build<LimboHandler, Boolean>()
     private val next = Caffeine.newBuilder().build<LimboHandler, NextPacket>()
 
     private val w = listOf(0x17)
+
+    override fun reload() {}
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (packet is Disconnect) {
@@ -103,4 +104,8 @@ object PacketValidCheck : LimboChecker, ILimboListener {
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
         return false
     }
+
+    override fun register() {}
+
+    override fun unregister() {}
 }

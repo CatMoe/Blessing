@@ -26,7 +26,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import java.net.InetSocketAddress
@@ -34,7 +33,10 @@ import java.net.InetSocketAddress
 @Suppress("unused")
 @Checker(LimboCheckType.INSTANT_DISCONNECT)
 @HandlePacket(Disconnect::class)
-object InstantDisconnectCheck : LimboChecker, ILimboListener {
+object InstantDisconnectCheck : LimboChecker {
+
+    override fun reload() {}
+
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         val address = (handler.address as InetSocketAddress).address
         if (Firewall.isFirewalled(address)) return false
@@ -52,4 +54,8 @@ object InstantDisconnectCheck : LimboChecker, ILimboListener {
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return false }
+
+    override fun register() {}
+
+    override fun unregister() {}
 }

@@ -21,8 +21,7 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.ServerType
-import catmoe.fallencrystal.moefilter.network.common.ServerType.BUNGEE_CORD
-import catmoe.fallencrystal.moefilter.network.common.ServerType.MOE_LIMBO
+import catmoe.fallencrystal.moefilter.network.common.ServerType.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
@@ -37,7 +36,7 @@ import net.kyori.adventure.text.Component
 import net.md_5.bungee.protocol.packet.Kick
 
 object FastDisconnect {
-    private val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
+    val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
     private val cachedByteArray = Caffeine.newBuilder().build<DisconnectReason, ByteArray>()
 
     private fun getPlaceholders(): Map<String, String> {
@@ -52,6 +51,7 @@ object FastDisconnect {
         val packet: Any = when (platform) {
             BUNGEE_CORD -> p.bungeecord
             MOE_LIMBO -> p.moelimbo
+            VELOCITY -> throw UnsupportedOperationException("Velocity support soon.")
         }
         channel.writeAndFlush(packet); channel.close()
         ConnectionCounter.countBlocked(BlockType.JOIN)
@@ -86,7 +86,11 @@ object FastDisconnect {
         val placeholder = getPlaceholders()
         for (type in DisconnectType.values()) {
             // <newline> is MiniMessage's syntax. use it instead of \n
-            val message = ComponentUtil.parse(replacePlaceholder(LocalConfig.getMessage().getStringList(type.messagePath).joinToString("<reset><newline>"), placeholder), true)
+            val message = ComponentUtil.parse(replacePlaceholder(
+                LocalConfig.getMessage().getStringList("kick.${type.messagePath}")
+                    .joinToString("<reset><newline>"), placeholder),
+                true
+            )
             reasonCache.put(type, getCacheReason(type, message))
         }
     }
@@ -106,6 +110,6 @@ object FastDisconnect {
         ba.release()
         // End
 
-        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet (type=${type.name})")))
+        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet (type=${type.name})")), component)
     }
 }

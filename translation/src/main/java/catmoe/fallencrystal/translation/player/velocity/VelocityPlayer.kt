@@ -26,6 +26,8 @@ import catmoe.fallencrystal.translation.server.velocity.VelocityServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.velocitypowered.api.proxy.Player
+import com.velocitypowered.proxy.connection.client.ConnectedPlayer
+import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
 import java.net.SocketAddress
@@ -86,5 +88,10 @@ class VelocityPlayer(val player: Player) : PlatformPlayer {
 
     override fun sendActionbar(component: Component) {
         player.sendActionBar(component)
+    }
+
+    override fun channel(): Channel {
+        // D: For this I imported the entire velocity
+        return (player as ConnectedPlayer).connection.channel
     }
 }

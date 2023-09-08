@@ -28,7 +28,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCalcula
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
@@ -53,7 +52,7 @@ import kotlin.math.abs
     PacketClientPositionLook::class,
     Disconnect::class
 )
-object MoveCheck: LimboChecker, ILimboListener {
+object MoveCheck: LimboChecker {
 
     private val a = Caffeine.newBuilder().build<LimboHandler, LimboLocation>()
     private val b = Caffeine.newBuilder().build<LimboHandler, LimboLocation>()
@@ -82,7 +81,7 @@ object MoveCheck: LimboChecker, ILimboListener {
     private val p = Caffeine.newBuilder().build<LimboHandler, Int>()
     private val q = Caffeine.newBuilder().build<LimboHandler, String>()
 
-    fun reload() {
+    override fun reload() {
         c = LocalConfig.getLimbo().getConfig("check.falling")
         d = c.getDouble("max-x")
         e = c.getDouble("max-y")
@@ -104,7 +103,6 @@ object MoveCheck: LimboChecker, ILimboListener {
                 }
                 .build()
         }
-        MoveTimer.reload()
     }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
@@ -245,4 +243,8 @@ object MoveCheck: LimboChecker, ILimboListener {
             70..103 to 0.01,
         ).forEach { it.key.forEach { h -> simulation.put(h, it.value) } }
     }
+
+    override fun register() {}
+
+    override fun unregister() {}
 }

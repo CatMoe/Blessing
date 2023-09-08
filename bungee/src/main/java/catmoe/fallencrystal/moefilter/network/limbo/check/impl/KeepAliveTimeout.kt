@@ -25,7 +25,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -34,10 +33,16 @@ import java.util.concurrent.TimeUnit
 
 @Checker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
 @HandlePacket(PacketKeepAlive::class)
-object KeepAliveTimeout : LimboChecker, ILimboListener {
+object KeepAliveTimeout : LimboChecker {
 
     private val queue: MutableCollection<LimboHandler> = ArrayList()
     private val scheduler = Scheduler(MoeFilterBungee.instance)
+
+    private var timeout = LocalConfig.getLimbo().getLong("keep-alive.max-response")
+
+    override fun reload() {
+        timeout = LocalConfig.getLimbo().getLong("keep-alive.max-response")
+    }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (queue.contains(handler)) queue.remove(handler) else kick(handler)
@@ -46,7 +51,7 @@ object KeepAliveTimeout : LimboChecker, ILimboListener {
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
         if (!cancelled) queue.add(handler)
-        scheduler.delayScheduler(LocalConfig.getLimbo().getLong("keep-alive.max-response"), TimeUnit.MILLISECONDS) {
+        scheduler.delayScheduler(timeout, TimeUnit.MILLISECONDS) {
             if (queue.contains(handler) && handler.channel.isActive) kick(handler) else queue.remove(handler)
         }
         return false
@@ -56,5 +61,8 @@ object KeepAliveTimeout : LimboChecker, ILimboListener {
         FastDisconnect.disconnect(handler, DisconnectType.UNEXPECTED_PING)
     }
 
+    override fun register() {}
+
+    override fun unregister() {}
 
 }

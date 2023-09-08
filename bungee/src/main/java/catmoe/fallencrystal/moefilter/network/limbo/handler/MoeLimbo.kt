@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
+import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveTimeout
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketValidCheck
@@ -112,8 +113,7 @@ object MoeLimbo {
         LimboListener.register(MoveTimer)
         LimboListener.register(KeepAliveTimeout)
         LimboListener.register(PacketValidCheck)
-        // if (conf.getBoolean("unexpected-keepalive.enabled")) { LimboListener.register(UnexpectedKeepAlive) }
-        // LimboListener.register(InstantDisconnectCheck)
+        LimboListener.register(ChatCheck)
     }
 
     fun initLimbo() {

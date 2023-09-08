@@ -24,7 +24,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientLook
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
@@ -44,7 +43,7 @@ import java.util.concurrent.TimeUnit
     PacketClientPosition::class,
     PacketClientPositionLook::class,
 )
-object MoveTimer : LimboChecker, ILimboListener {
+object MoveTimer : LimboChecker {
 
     private var conf = LocalConfig.getLimbo().getConfig("check.timer")
     private var decay = conf.getLong("decay")
@@ -64,7 +63,7 @@ object MoveTimer : LimboChecker, ILimboListener {
         vlCache.put(handler, vl!!-1)
     }
 
-    fun reload() {
+    override fun reload() {
         val conf = LocalConfig.getLimbo().getConfig("check.timer")
         val decay = MoveTimer.conf.getLong("decay")
         if (this.decay != decay) {
@@ -103,4 +102,8 @@ object MoveTimer : LimboChecker, ILimboListener {
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
         return false
     }
+
+    override fun register() {}
+
+    override fun unregister() {}
 }

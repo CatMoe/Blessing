@@ -17,9 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.listener
 
+import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import com.github.benmanes.caffeine.cache.Caffeine
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
@@ -27,6 +29,7 @@ object LimboListener {
 
     val listener = Caffeine.newBuilder()
         .build<Class<out LimboPacket>, MutableCollection<ILimboListener>>()
+    private val listeners: MutableCollection<ILimboListener> = CopyOnWriteArrayList()
 
     fun register(clazz: ILimboListener) {
         val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
@@ -39,7 +42,11 @@ object LimboListener {
                 listener.put(it.java, o)
             }
         }
+        listeners.add(clazz)
+        clazz.register()
     }
+
+    fun reload() { for (c in listeners) { if (c is LimboChecker) c.reload() else continue } }
 
     fun unregister(clazz: ILimboListener) {
         val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
@@ -50,6 +57,8 @@ object LimboListener {
             o.remove(t ?: return)
             listener.put(it.java, o)
         }
+        listeners.remove(clazz)
+        clazz.unregister()
     }
 
     fun handleReceived(packet: LimboPacket, handler: LimboHandler?): Boolean {
@@ -59,7 +68,7 @@ object LimboListener {
         return isCancelled.get()
     }
 
-    // return true = cancel send
+    // return true = cancel sending
     fun handleSend(packet: LimboPacket, handler: LimboHandler?): Boolean {
         val cancelled = AtomicBoolean(false)
         val listeners = this.listener.getIfPresent(packet::class.java) ?: return false

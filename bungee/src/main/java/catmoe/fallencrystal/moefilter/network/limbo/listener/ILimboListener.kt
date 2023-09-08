@@ -25,4 +25,8 @@ interface ILimboListener {
 
     // Cancel
     fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean
+
+    fun register()
+
+    fun unregister()
 }

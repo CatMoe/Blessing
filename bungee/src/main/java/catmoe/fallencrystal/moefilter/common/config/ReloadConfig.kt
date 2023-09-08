@@ -30,9 +30,9 @@ import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.PingManager
+import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.translation.event.EventListener
@@ -59,7 +59,6 @@ class ReloadConfig : EventListener {
             MixedCheck.reload()
             GeoIPManager.reload()
             if (LocalConfig.getLimbo().getBoolean("enabled")) MoeLimbo.reload()
-            MoveCheck.reload()
         }
         Firewall.reload()
         ProxyCache.reload()
@@ -70,6 +69,7 @@ class ReloadConfig : EventListener {
         PingManager.reload()
         BrandCheck.init()
         HAProxyManager.load()
+        LimboListener.reload()
         // Init checks
         try { SimilarityCheck.instance.reload() } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() }
         try { DomainCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { DomainCheck().init() }

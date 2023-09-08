@@ -17,5 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.common.kick
 
+import net.kyori.adventure.text.Component
+
 @Suppress("unused")
-class DisconnectReason(val type: DisconnectType, val raw: String, val packet: KickPacket)
+class DisconnectReason(val type: DisconnectType, val raw: String, val packet: KickPacket, val component: Component)

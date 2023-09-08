@@ -19,5 +19,6 @@ package catmoe.fallencrystal.moefilter.network.common
 
 enum class ServerType {
     BUNGEE_CORD,
+    VELOCITY,
     MOE_LIMBO,
 }

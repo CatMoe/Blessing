@@ -51,6 +51,7 @@ object MixedCheck {
 
     private var suspicionCount = Caffeine.newBuilder()
         .expireAfterWrite(suspicionDecay, TimeUnit.SECONDS)
+        // 性能损耗 D: 虽然不确定是否该使用额外的时间戳的方式来处理suspicion 但或许比用一堆异步+TimerTask要好得多...
         .removalListener { address: InetAddress?, suspicion: Int?, cause: RemovalCause? -> suspicionEvictionListener(address, suspicion, cause) }
         .build<InetAddress, Int>()
 
@@ -62,7 +63,11 @@ object MixedCheck {
         suspicionAdd(address, suspicion - 1)
     }
 
-    private var type: MixedType = loadType()
+    // 我认为不需要考虑性能问题 对于 线程数量>=2的vps来讲 原子操作通常快得多 不需要此类内置布尔值
+    private val type: MixedType get() = if (StateManager.inAttack.get()) attackType else defaultType
+
+    private var defaultType = loadType("default")
+    private var attackType = loadType("in-attack")
 
     private fun suspicionAdd(address: InetAddress, suspicion: Int?) {
         val s = suspicion ?: (suspicionCount.getIfPresent(address)?.plus(1)) ?: 1
@@ -82,28 +87,29 @@ object MixedCheck {
                     DisconnectType.RECHECK
                 }
             }
+            val version = info.protocol
             return when (type) {
                 RECONNECT -> { cacheJoin(info) }
-                JOIN_AFTER_PING -> { if (cachePing(address, false)) null else DisconnectType.PING }
+                JOIN_AFTER_PING -> { if (cachePing(address, false, version)) null else DisconnectType.PING }
                 RECONNECT_AFTER_PING -> {
-                    if (!cachePing(address, false)) { DisconnectType.PING }
+                    if (!cachePing(address, false, version)) { DisconnectType.PING }
                     else cacheJoin(info)
                 }
                 PING_AFTER_RECONNECT -> {
-                    if (cacheJoin(info) == null) { if (cachePing(address, false)) null else DisconnectType.PING }
+                    if (cacheJoin(info) == null) { if (cachePing(address, false, version)) null else DisconnectType.PING }
                     else { pingCache.invalidate(address); DisconnectType.REJOIN }
                 }
                 STABLE -> {
                     val r= cacheJoin(info)
-                    r ?: if (!cachePing(address, false)) DisconnectType.PING else null
+                    r ?: if (!cachePing(address, false, version)) DisconnectType.PING else null
                 }
                 DISABLED -> { null }
             }
         }
         if (info is Pinging) {
             val address = info.address
-            if (Throttler.isThrottled(address)) { Firewall.addAddressTemp(address) }
-            else { cachePing(address, true); protocolCache.put(address, info.protocol) }
+            if (Throttler.isThrottled(address)) Firewall.addAddressTemp(address)
+            else cachePing(address, true, info.protocol)
             return null
         }
         return null
@@ -125,21 +131,28 @@ object MixedCheck {
         } else DisconnectType.REJOIN
     }
 
-    private fun cachePing(address: InetAddress, write: Boolean): Boolean {
-        return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, true) }; false }
+    private fun cachePing(address: InetAddress, write: Boolean, version: Int): Boolean {
+        //return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, true); if (protocol != null) protocolCache.put(address, protocol) }; false }
+        return if (pingCache.getIfPresent(address) != null && protocolCache.getIfPresent(version) == version) true else {
+            if (write) {
+                pingCache.put(address, true)
+                protocolCache.put(address, version)
+            }
+            false
+        }
     }
 
-    private fun loadType(): MixedType {
-        return try { MixedType.valueOf(conf.getAnyRef("join-ping-mixin-mode").toString()) }
+    private fun loadType(path: String): MixedType {
+        return try { MixedType.valueOf(conf.getAnyRef(path).toString()) }
         catch (ex: ConfigException) { MessageUtil.logError("[MoeFilter] [MixedCheck] Failed to get type. That is empty or config file is outdated?"); DISABLED }
-        catch (ex: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"${conf.getAnyRef("join-ping-mixin-mode")}\", Disabling.."); DISABLED }
+        catch (ex: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"${conf.getAnyRef(path)}\", Disabling.."); DISABLED }
     }
 
     fun reload() {
         conf = LocalConfig.getAntibot().getConfig("mixed-check")
-        val type = loadType()
-        if (type == DISABLED && this.type == DISABLED) return
-        this.type = type
+        //if (type == DISABLED && this.type == DISABLED) return
+        defaultType = loadType("default")
+        attackType = loadType("in-attack")
         cache = Caffeine.newBuilder().expireAfterWrite(conf.getLong("max-cache-time"), TimeUnit.SECONDS)
         blacklistSuspicion = conf.getInt("blacklist.suspicion")
         conf.getBoolean("blacklist.only-in-attack")

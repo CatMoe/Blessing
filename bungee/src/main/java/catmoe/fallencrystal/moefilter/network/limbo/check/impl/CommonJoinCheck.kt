@@ -34,7 +34,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
-import catmoe.fallencrystal.moefilter.network.limbo.listener.ILimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
@@ -60,11 +59,13 @@ import java.util.concurrent.TimeUnit
     PacketEmptyChunk::class,
     Disconnect::class
 )
-object CommonJoinCheck : LimboChecker, ILimboListener {
+object CommonJoinCheck : LimboChecker {
 
     private val onlineAddress = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val onlineUser = Caffeine.newBuilder().build<String, Boolean>()
     private val cancelled = Caffeine.newBuilder().expireAfterWrite(250, TimeUnit.MILLISECONDS).build<LimboHandler, Boolean>()
+
+    override fun reload() {}
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (cancelledRead) return true
@@ -132,4 +133,8 @@ object CommonJoinCheck : LimboChecker, ILimboListener {
         return if (packet is PacketDisconnect) false
         else this.cancelled.getIfPresent(handler) != null
     }
+
+    override fun register() {}
+
+    override fun unregister() {}
 }
