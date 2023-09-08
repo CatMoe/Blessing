@@ -60,7 +60,7 @@ object PlayerInstance : PlayerGetter, EventListener {
 
     fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name) }
 
-    fun getOrNull(uuid: UUID): TranslatePlayer? { return cacheName.getIfPresent(uuid) }
+    fun getOrNull(uuid: UUID): TranslatePlayer? { return cacheUUID.getIfPresent(uuid) }
 
     private fun addToList(player: TranslatePlayer) {
         list.add(player)

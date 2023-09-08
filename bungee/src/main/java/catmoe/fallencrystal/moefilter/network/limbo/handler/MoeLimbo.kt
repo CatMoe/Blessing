@@ -55,9 +55,19 @@ object MoeLimbo {
     var debug = LocalConfig.getConfig().getBoolean("debug")
     var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
+    val checker = listOf(
+        CommonJoinCheck,
+        MoveCheck,
+        MoveTimer,
+        KeepAliveTimeout,
+        PacketValidCheck,
+        ChatCheck,
+    )
+
     fun reload() {
         LockdownManager.setLockdown(true)
         calibrateConnections()
+        checker.forEach { it.unregister() }
         initLimbo()
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
@@ -107,19 +117,10 @@ object MoeLimbo {
         if (debug) MessageUtil.logInfo("[MoeLimbo] $log")
     }
 
-    private fun initCheck() {
-        LimboListener.register(CommonJoinCheck)
-        LimboListener.register(MoveCheck)
-        LimboListener.register(MoveTimer)
-        LimboListener.register(KeepAliveTimeout)
-        LimboListener.register(PacketValidCheck)
-        LimboListener.register(ChatCheck)
-    }
-
     fun initLimbo() {
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         init()
-        initCheck()
+        for (c in checker) LimboListener.register(c)
         PacketCache.initPacket()
         /*
         val cg = CaptchaGeneration()
