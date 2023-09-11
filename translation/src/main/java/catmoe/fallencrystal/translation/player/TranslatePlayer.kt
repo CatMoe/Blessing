@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.translation.player
 
 import catmoe.fallencrystal.translation.server.PlatformServer
+import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
@@ -87,5 +88,9 @@ class TranslatePlayer(val upstream: PlatformPlayer): PlatformPlayer {
 
     override fun channel(): Channel {
         return upstream.channel()
+    }
+
+    override fun getServer(): TranslateServer {
+        return upstream.getServer()
     }
 }

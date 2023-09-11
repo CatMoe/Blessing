@@ -21,6 +21,7 @@ import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlatformPlayer
 import catmoe.fallencrystal.translation.server.PlatformServer
+import catmoe.fallencrystal.translation.server.ServerInstance
 import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.bungee.BungeeServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
@@ -119,5 +120,10 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
 
     override fun send(server: PlatformServer) {
         (if (server is TranslateServer) (server.upstream as BungeeServer) else server as BungeeServer).send(this)
+    }
+
+    override fun getServer(): TranslateServer {
+        val info = player.server.info
+        return ServerInstance.getServer(info.name) ?: TranslateServer(BungeeServer(info))
     }
 }

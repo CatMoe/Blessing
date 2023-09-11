@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -40,10 +41,12 @@ class PacketClientChat : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.less(Version.V1_19)) {
-            message=packet.readString(length = 32767)
+            message=packet.readString()
+            if (message.length > 256) throw InvalidPacketException("Message length cannot longer than 256")
         } else {
-            /* I hate chat report, tbh. */
-            message=packet.readString(length = 32767)
+            /* I hate a chat report, tbh. */
+            message=packet.readString()
+            if (message.length > 256) throw InvalidPacketException("Message length cannot longer than 256")
             timestamp=packet.readLong()
             salt=packet.readLong()
             if (version.moreOrEqual(Version.V1_19_3)) {

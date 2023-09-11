@@ -21,6 +21,7 @@ import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlatformPlayer
 import catmoe.fallencrystal.translation.server.PlatformServer
+import catmoe.fallencrystal.translation.server.ServerInstance
 import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.velocity.VelocityServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
@@ -93,5 +94,10 @@ class VelocityPlayer(val player: Player) : PlatformPlayer {
     override fun channel(): Channel {
         // D: For this I imported the entire velocity
         return (player as ConnectedPlayer).connection.channel
+    }
+
+    override fun getServer(): TranslateServer {
+        val info = player.currentServer.get().server
+        return ServerInstance.getServer(info.serverInfo.name) ?: TranslateServer(VelocityServer(info))
     }
 }

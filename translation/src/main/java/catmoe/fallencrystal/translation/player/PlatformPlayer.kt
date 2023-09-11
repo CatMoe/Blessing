@@ -19,6 +19,7 @@ package catmoe.fallencrystal.translation.player
 
 import catmoe.fallencrystal.translation.executor.CommandExecutor
 import catmoe.fallencrystal.translation.server.PlatformServer
+import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
@@ -51,5 +52,7 @@ interface PlatformPlayer : CommandExecutor {
     fun sendActionbar(component: Component)
 
     fun channel(): Channel
+
+    fun getServer(): TranslateServer
 
 }
