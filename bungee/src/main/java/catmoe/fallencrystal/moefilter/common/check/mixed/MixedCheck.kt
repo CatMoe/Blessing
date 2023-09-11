@@ -44,7 +44,7 @@ object MixedCheck {
     private var blacklistSuspicion = conf.getInt("blacklist.suspicion")
     private var suspicionOnlyInAttack = conf.getBoolean("blacklist.only-in-attack")
 
-    private val protocolCache = Caffeine.newBuilder().build<InetAddress, Int>()
+    private var protocolCache = cache.build<InetAddress, Int>()
 
     private var joinCache = cache.build<InetAddress, Joining>()
     private var pingCache = cache.build<InetAddress, Boolean>()
@@ -133,7 +133,9 @@ object MixedCheck {
 
     private fun cachePing(address: InetAddress, write: Boolean, version: Int): Boolean {
         //return if (pingCache.getIfPresent(address) != null) true else { if (write) { pingCache.put(address, true); if (protocol != null) protocolCache.put(address, protocol) }; false }
-        return if (pingCache.getIfPresent(address) != null && protocolCache.getIfPresent(version) == version) true else {
+        return if (pingCache.getIfPresent(address) != null && protocolCache.getIfPresent(version) != version) {
+            true
+        } else {
             if (write) {
                 pingCache.put(address, true)
                 protocolCache.put(address, version)
@@ -159,8 +161,10 @@ object MixedCheck {
         val maxCacheTime = conf.getLong("max-cache-time")
         val suspicionDecay = conf.getLong("blacklist.decay")
         if (this.maxCacheTime != maxCacheTime) {
+            for (i in listOf(joinCache, pingCache, protocolCache)) i.invalidateAll() // Prevent to memory leak?
             joinCache = cache.build()
             pingCache = cache.build()
+            protocolCache = cache.build()
             this.maxCacheTime = maxCacheTime
             MessageUtil.logWarn("[MoeFilter] [MixedCheck] Original mode is not disabled. If someone try to pass checking. They need to do it again.")
         }

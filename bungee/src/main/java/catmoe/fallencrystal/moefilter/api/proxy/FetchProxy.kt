@@ -92,7 +92,7 @@ class FetchProxy {
             if (!enabled) {
                 MessageUtil.logWarn("[MoeFilter] [ProxyFetch] ProxyFetch are disabled. All firewalled proxies from ProxyFetch will clear when restarted server.")
                 MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Schedule are stopped.")
-                scheduler.cancelTask(scheduleTaskId.get()); return
+                scheduler.cancelTask(scheduleTaskId.get()); scheduleTaskId.set(0); return
             }
             if (this.proxies != proxies || this.config.getInt("internal.schedule.update-delay") != config.getInt("internal.schedule.update-delay")) {
                 MessageUtil.logInfo("[MoeFilter] [ProxyFetch] Scheduler update delay are edited or proxies source are edited. Force run update task now..")
