@@ -25,12 +25,12 @@
     
     <groupId>catmoe.fallencrystal.moefilter</groupId>
     <artifactId>MoeFilter-Bungee</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3-Final</version>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.10</kotlin.version>
-        <project.version>0.1.2</project.version>
+        <project.version>0.1.3-Final</project.version>
     </properties>
     <packaging>jar</packaging>
 
@@ -173,7 +173,7 @@
         <dependency>
             <groupId>catmoe.fallencrystal.moefilter</groupId>
             <artifactId>MoeFilter-common</artifactId>
-            <version>0.1.2</version>
+            <version>0.1.3-Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
