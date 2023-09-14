@@ -67,6 +67,10 @@
 | JPremium        | ☑️ |
 | ViaVersion      | 🛑 |
 
+有用的链接:
+- [如何让MoeFilter兼容JPremium](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714907598)
+- [不要在代理上安装ViaVersion / ProtocolSupport](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714924303)
+
 > ✅: 完全支持. MoeFilter可以与其一起使用而不会出现任何问题 (预期行为)
 
 > ☑️: 支持. 但可能会出现非预期行为的兼容性错误

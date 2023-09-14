@@ -69,6 +69,10 @@ Checks that have been implemented:
 | JPremium        | ☑️      |
 | ViaVersion      | 🛑      |
 
+Useful links:
+- [How to make JPremium compatible with MoeFilter](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714907598)
+- [Do not install ViaVersion / ProtocolSupport and its extension dependencies on the proxy](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714924303)
+
 > ✅: Full supported. Can use all MoeFilter's features with it
 
 > ☑️: Is supported. But some features may not work as expected
