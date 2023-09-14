@@ -272,7 +272,10 @@ class LoadConfig {
                 # 清空防火墙/黑名单地址命令
                 drop-command {
                     description="丢弃已被列入防火墙/黑名单的地址"
-                    dropped="<green>所有防火墙/黑名单中的地址已被清空 他们可以再次连接到服务器."
+                    dropped-all="<green>所有防火墙/黑名单中的地址已被清空 他们可以再次连接到服务器."
+                    dropped="<green>此地址已成功从防火墙中移除."
+                    invalid-address="<red>无效的地址, 请检查您输入的地址是否有误, 然后再试."
+                    not-found="<red>此地址未被列入防火墙"
                 }
                 
                 

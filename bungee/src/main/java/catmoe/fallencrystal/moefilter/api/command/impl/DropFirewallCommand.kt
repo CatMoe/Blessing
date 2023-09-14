@@ -25,6 +25,8 @@ import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
+import java.net.InetAddress
+import java.net.UnknownHostException
 
 /*
 @Command("drop")
@@ -38,15 +40,35 @@ import net.md_5.bungee.api.CommandSender
     permission = "moefilter.drop",
     descType = DescriptionType.MESSAGE_CONFIG,
     descValue = "drop-command.description",
-    usage = ["/moefilter drop"],
+    usage = ["/moefilter drop", "/moefilter drop <Address>"],
     allowConsole = true,
 )
 class DropFirewallCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
-        Firewall.cache.invalidateAll()
-        Firewall.tempCache.invalidateAll()
+        if (args.size < 2) {
+            Firewall.cache.invalidateAll()
+            Firewall.tempCache.invalidateAll()
+            sendMessage(sender, "dropped-all")
+        } else {
+            val raw = MessageUtil.argsBuilder(1, args).toString()
+            try {
+                val address = InetAddress.getByName(raw)
+                if (Firewall.isFirewalled(address)) {
+                    Firewall.cache.invalidate(address)
+                    Firewall.tempCache.invalidate(address)
+                    sendMessage(sender, "dropped")
+                } else {
+                    sendMessage(sender, "not-found")
+                }
+            } catch (_: UnknownHostException) {
+                sendMessage(sender, "invalid-address")
+            }
+        }
+    }
+
+    private fun sendMessage(sender: CommandSender, key: String) {
         val conf = LocalConfig.getMessage()
-        MessageUtil.sendMessage("${conf.getString("prefix")}${conf.getString("drop-command.dropped")}", MessagesType.CHAT, sender)
+        MessageUtil.sendMessage("${conf.getString("prefix")}${conf.getString("drop-command.$key")}", MessagesType.CHAT, sender)
     }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
