@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
+import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
@@ -49,6 +50,7 @@ import net.md_5.bungee.protocol.ProtocolConstants
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
 
 @Checker(LimboCheckType.TRANSLATE_JOIN_CHECK)
 @HandlePacket(
@@ -71,6 +73,18 @@ object CommonJoinCheck : LimboChecker {
          */
     }
 
+    private val reason = Caffeine.newBuilder().build<KClass<out AbstractCheck>, DisconnectType>()
+    private val addressChecks: MutableCollection<AbstractCheck> = ArrayList()
+
+    init {
+        mapOf(
+            DomainCheck::class to DisconnectType.INVALID_HOST,
+            CountryCheck::class to DisconnectType.COUNTRY,
+            ProxyCheck::class to DisconnectType.PROXY,
+        ).forEach { reason.put(it.key, it.value) }
+        for (it in listOf(DomainCheck.instance, CountryCheck(), ProxyCheck())) addressChecks.add(it)
+    }
+
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (cancelledRead) return true
         val inetSocketAddress = handler.address as InetSocketAddress
@@ -80,20 +94,16 @@ object CommonJoinCheck : LimboChecker {
             is PacketHandshake -> {
                 if (packet.nextState == Protocol.LOGIN) {
                     val addressCheck = Address(inetSocketAddress, InetSocketAddress(packet.host, packet.port))
-                    // Domain check
-                    if (DomainCheck.instance.increase(addressCheck)) { kick(handler, DisconnectType.INVALID_HOST); return true }
-                    // Country check
-                    if (CountryCheck().increase(addressCheck)) { kick(handler, DisconnectType.COUNTRY); return true }
-                    // Proxy check
-                    if (ProxyCheck().increase(addressCheck)) { kick(handler, DisconnectType.PROXY); return true }
+                    for (i in addressChecks) {
+                        if (i.increase(addressCheck)) { kick(handler, reason.getIfPresent(i::class)!!) }
+                    }
                     // Limbo online check (address)
                     if (onlineAddress.getIfPresent(inetAddress) != null) { kick(handler, DisconnectType.ALREADY_ONLINE); return true }
                 }
             }
             is PacketInitLogin -> {
-                val protocol = handler.version!!.number
                 val username = packet.username
-                val joining = Joining(username, inetAddress, protocol)
+                val joining = Joining(username, inetAddress, handler.version!!.number)
                 // Invalid name check
                 if (ValidNameCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
                 // Ping & Join mixin check

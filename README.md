@@ -74,6 +74,7 @@
 | Protocolize     | ✅       |
 | JPremium        | ☑️      |
 | ViaVersion      | 🛑      |
+| Triton          | ☑️      |
 
 Useful links:
   - [How to make JPremium compatible with MoeFilter](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714907598)
