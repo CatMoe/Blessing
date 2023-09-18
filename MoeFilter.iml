@@ -10,4 +10,7 @@
       </configuration>
     </facet>
   </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="3d08247b-272d-4563-af08-31419fffc82d" />
+  </component>
 </module>

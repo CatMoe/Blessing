@@ -37,14 +37,14 @@ class VelocityLogger(val plugin: MoeFilterVelocity, val proxyServer: ProxyServer
     }
 
     private val levelMap = mapOf(
-        Level.INFO to "<white>[INFO]",
-        Level.WARNING to "<yellow>[WARN]",
-        Level.SEVERE to "<red>[ERROR]"
+        Level.INFO to "<white>",
+        Level.WARNING to "<yellow>",
+        Level.SEVERE to "<red>"
     )
 
     override fun log(level: Level, component: Component) {
         val orig = ComponentUtil.componentToRaw(component)
-        val lev = levelMap[level] ?: "<white>[INFO]"
+        val lev = levelMap[level] ?: "<white>"
         proxyServer.consoleCommandSource.sendMessage(ComponentUtil.parse("$lev $orig"))
     }
 

@@ -54,46 +54,56 @@ object PacketValidCheck : LimboChecker {
 
     private val w = listOf(0x17)
 
-    override fun reload() {}
+    override fun reload() {
+        /*
+        This module does not need that.
+        */
+    }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
-        if (packet is Disconnect) {
-            allowUnknown.invalidate(handler)
-            next.invalidate(handler)
-        }
-        if (!handler.channel.isActive) return true
-        if (packet is Unknown && allowUnknown.getIfPresent(handler) == null) {
-            if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
-            handler.channel.close()
-            throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
-        }
-        if (packet is PacketHandshake) {
-            when (packet.nextState.stateId) {
-                1 -> next.put(handler, NextPacket.STATUS_REQUEST)
-                2 -> next.put(handler, NextPacket.INIT_LOGIN)
-                else -> throw InvalidHandshakeException("Must be 1 (Ping) or 2 (Join)")
+        when (packet) {
+            is Disconnect -> {
+                allowUnknown.invalidate(handler)
+                next.invalidate(handler)
+            }
+            is Unknown -> {
+                if (allowUnknown.getIfPresent(handler) == null) {
+                    if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
+                    handler.channel.close()
+                    throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
+                }
+            }
+
+            // Handshake
+            is PacketHandshake -> {
+                when (packet.nextState.stateId) {
+                    1 -> next.put(handler, NextPacket.STATUS_REQUEST)
+                    2 -> next.put(handler, NextPacket.INIT_LOGIN)
+                    else -> throw InvalidHandshakeException("Must be 1 (Ping) or 2 (Join)")
+                }
+            }
+
+            // Ping
+            is PacketStatusRequest -> {
+                verify(packet, NextPacket.STATUS_REQUEST)
+                next.put(handler, NextPacket.STATUS_PING)
+            }
+            is PacketStatusPing -> {
+                verify(packet, NextPacket.STATUS_PING)
+                next.invalidate(handler)
+            }
+
+            // Join
+            is PacketInitLogin -> {
+                verify(packet, NextPacket.INIT_LOGIN)
+                next.put(handler, NextPacket.KEEP_ALIVE)
+            }
+            is PacketKeepAlive -> {
+                verify(packet, NextPacket.KEEP_ALIVE)
+                allowUnknown.put(handler, true)
             }
         }
-        /*
-        Ping
-         */
-        if (packet is PacketStatusRequest) {
-            verify(packet, NextPacket.STATUS_REQUEST)
-            next.put(handler, NextPacket.STATUS_PING)
-        }
-        if (packet is PacketStatusPing) { verify(packet, NextPacket.STATUS_PING) }
-
-        /*
-        Join
-         */
-        if (packet is PacketInitLogin) {
-            verify(packet, NextPacket.INIT_LOGIN)
-            next.put(handler, NextPacket.KEEP_ALIVE)
-        }
-        if (packet is PacketKeepAlive) {
-            verify(packet, NextPacket.KEEP_ALIVE)
-            allowUnknown.put(handler, true)
-        }
+        //if (!handler.channel.isActive) return true
         return false
     }
 
@@ -105,7 +115,15 @@ object PacketValidCheck : LimboChecker {
         return false
     }
 
-    override fun register() {}
+    override fun register() {
+        /*
+        This module does not need that.
+         */
+    }
 
-    override fun unregister() {}
+    override fun unregister() {
+        /*
+        This module does not need that.
+         */
+    }
 }
