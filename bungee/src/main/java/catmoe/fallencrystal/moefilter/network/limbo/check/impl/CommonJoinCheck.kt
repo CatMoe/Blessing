@@ -29,6 +29,7 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
+import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
@@ -78,51 +79,22 @@ object CommonJoinCheck : LimboChecker {
 
     init {
         mapOf(
-            DomainCheck::class to DisconnectType.INVALID_HOST,
-            CountryCheck::class to DisconnectType.COUNTRY,
-            ProxyCheck::class to DisconnectType.PROXY,
+            DomainCheck::class to INVALID_HOST,
+            CountryCheck::class to COUNTRY,
+            ProxyCheck::class to PROXY,
+            ValidNameCheck::class to INVALID_NAME,
+            SimilarityCheck::class to INVALID_NAME,
         ).forEach { reason.put(it.key, it.value) }
-        for (it in listOf(DomainCheck.instance, CountryCheck(), ProxyCheck())) addressChecks.add(it)
+        addressChecks.addAll(listOf(DomainCheck.instance, CountryCheck(), ProxyCheck()))
     }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (cancelledRead) return true
-        val inetSocketAddress = handler.address as InetSocketAddress
-        val inetAddress = inetSocketAddress.address
+        val inetAddress = (handler.address as InetSocketAddress).address
         when (packet) {
             is PacketStatusRequest -> MixedCheck.increase(Pinging(inetAddress, handler.version!!.number))
-            is PacketHandshake -> {
-                if (packet.nextState == Protocol.LOGIN) {
-                    val addressCheck = Address(inetSocketAddress, InetSocketAddress(packet.host, packet.port))
-                    for (i in addressChecks) {
-                        if (i.increase(addressCheck)) { kick(handler, reason.getIfPresent(i::class)!!) }
-                    }
-                    // Limbo online check (address)
-                    if (onlineAddress.getIfPresent(inetAddress) != null) { kick(handler, DisconnectType.ALREADY_ONLINE); return true }
-                }
-            }
-            is PacketInitLogin -> {
-                val username = packet.username
-                val joining = Joining(username, inetAddress, handler.version!!.number)
-                // Invalid name check
-                if (ValidNameCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
-                // Ping & Join mixin check
-                val mixinKick = MixedCheck.increase(joining)
-                if (mixinKick != null) { kick(handler, mixinKick); return true }
-                // Limbo & Bungee online check (username)
-                if (onlineUser.getIfPresent(username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
-                    kick(handler, DisconnectType.ALREADY_ONLINE); return true
-                }
-                // Similarity name check
-                if (SimilarityCheck.instance.increase(joining)) { kick(handler, DisconnectType.INVALID_NAME); return true }
-
-                val version = handler.version!!
-                if (!version.isSupported || !ProtocolConstants.SUPPORTED_VERSION_IDS.contains(version.number)) {
-                    val kick = PacketDisconnect()
-                    kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
-                    handler.channel.write(kick); handler.channel.close(); return true
-                }
-            }
+            is PacketHandshake -> return checkProtocol(packet, handler)
+            is PacketInitLogin -> return checkJoin(Joining(packet.username, inetAddress, handler.version!!.number), handler)
             is PacketJoinGame -> {
                 onlineAddress.put(inetAddress, true)
                 onlineUser.put(handler.profile.username!!.lowercase(), true)
@@ -140,9 +112,44 @@ object CommonJoinCheck : LimboChecker {
         FastDisconnect.disconnect(handler, type)
     }
 
+    private fun kick(handler: LimboHandler, check: AbstractCheck) {
+        kick(handler, reason.getIfPresent(check::class) ?: return)
+    }
+
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
         return if (packet is PacketDisconnect) false
         else this.cancelled.getIfPresent(handler) != null
+    }
+
+    private fun checkJoin(joining: Joining, handler: LimboHandler): Boolean {
+        val a = ValidNameCheck.instance
+        if (a.increase(joining)) { kick(handler, a); return true }
+        val mixinKick = MixedCheck.increase(joining)
+        if (mixinKick != null) { kick(handler, mixinKick); return true }
+        val b = SimilarityCheck.instance
+        if (b.increase(joining)) { kick(handler, b); return true }
+        //for (i in joinCheck) { if (i.increase(joining)) { kick(handler, reason.getIfPresent(i::class)!!); return true } }
+        if (onlineUser.getIfPresent(joining.username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
+            kick(handler, ALREADY_ONLINE); return true
+        }
+        if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(joining.protocol)) {
+            val kick = PacketDisconnect()
+            kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
+            handler.channel.write(kick); handler.channel.close(); return true
+        }
+        return false
+    }
+
+    private fun checkProtocol(packet: PacketHandshake, handler: LimboHandler): Boolean {
+        if (packet.nextState == Protocol.LOGIN) {
+            val addressCheck = Address(handler.address as InetSocketAddress, InetSocketAddress(packet.host, packet.port))
+            for (i in addressChecks) {
+                if (i.increase(addressCheck)) { kick(handler, reason.getIfPresent(i::class)!!); return true }
+            }
+            // Limbo online check (address)
+            if (onlineAddress.getIfPresent(addressCheck.address.address) != null) { kick(handler, ALREADY_ONLINE); return true }
+        }
+        return false
     }
 
     override fun register() {

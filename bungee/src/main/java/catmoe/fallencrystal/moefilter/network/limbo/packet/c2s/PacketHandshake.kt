@@ -44,7 +44,7 @@ class PacketHandshake : LimboC2SPacket() {
         if (port <= 0 || port > 65535) throw InvalidHandshakeException("Port must be higher than 0 and lower than 65535 (Non-vanilla?)")
         val state = packet.readVarInt()
         if (state != 1 && state != 2) throw InvalidHandshakeException("Handshake state cannot lower than 1 or high than 2! (Non-vanilla?)")
-        nextState = Protocol.STATE_BY_ID[state]!!
+        nextState = Protocol.STATE_BY_ID[state] ?: throw InvalidHandshakeException("Cannot found this state!")
     }
 
     override fun handle(handler: LimboHandler) {

@@ -45,7 +45,8 @@ class VarIntFrameDecoder : ByteToMessageDecoder() {
             DecoderResult.SUCCESS -> {
                 val readVarInt = reader.readVarInt
                 val bytesRead = reader.bytesRead
-                if (readVarInt < 0) { byteBuf.clear() } else if (readVarInt == 0) { byteBuf.readerIndex(end + 1)
+                if (readVarInt < 0) { byteBuf.clear() } else if (readVarInt == 0) {
+                    byteBuf.readerIndex(end + 1)
                 } else {
                     val minimumRead = bytesRead + readVarInt
                     if (byteBuf.isReadable(minimumRead)) {
@@ -54,7 +55,7 @@ class VarIntFrameDecoder : ByteToMessageDecoder() {
                     }
                 }
             }
-            else -> { byteBuf.clear(); throw InvalidVarIntException("Invalid varint to decode. Not or wrong minecraft client?") }
+            else -> { byteBuf.clear(); throw InvalidVarIntException("Invalid VarInt to decode. Not or wrong minecraft client?") }
         }
     }
 

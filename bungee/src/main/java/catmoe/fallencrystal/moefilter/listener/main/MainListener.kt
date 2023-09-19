@@ -34,7 +34,6 @@ import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
-import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
@@ -46,7 +45,6 @@ import net.md_5.bungee.protocol.packet.Handshake
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketAddress
-import java.util.concurrent.CompletableFuture
 
 object MainListener {
 
@@ -80,41 +78,21 @@ object MainListener {
         val result = Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress)
         if (result) { connection.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
         val packetHandler = PacketHandler()
+        val method = handshake.requestedProtocol
         packetHandler.inetSocketAddress=connection.inetSocketAddress
         packetHandler.protocol.set(handshake.protocolVersion)
         // Use PendingConnection.version insteadof Handshake.protocolVersion.
 
-        // Firewall who connected after an instant disconnected.
-
-        CompletableFuture.runAsync {
-            if (!connection.isConnected && !packetHandler.cancelled.get() && packetHandler.isAvailable.get()) { addFirewall(
-                connection,
-                true
-            ) }
-        }
-
-        when (handshake.requestedProtocol) {
-            1 -> { MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get())) }
-            2 -> {
-                val info = Address(connection.inetSocketAddress, connection.virtualHost)
-                if (DomainCheck.instance.increase(info)) { kick(connection, INVALID_HOST); return }
-                if (CountryCheck().increase(info)) { kick(connection, COUNTRY); return }
-                if (ProxyCheck().increase(info)) { kick(connection, PROXY); return }
-            }
-            // That is impossible
-            else -> { connection.close(); addFirewall(connection, false) }
-        }
-
-        /*
-        Prevent too many connections from being established from a single IP
-        Disconnect those connections that were not disconnected during the InitConnect phase.
-
-        This protection is also effective in preventing some BungeeCord forks they're disabling
-        ClientConnectEvent or InitConnectionEvent (Waterfall fork?)
-         */
         // 1 = Ping  2 = Join  else = illegal connection.
-        val method = handshake.requestedProtocol
-        if (method > 2 || method < 1) { connection.close(); Firewall.addAddress(inetAddress); return }
+        when (method) {
+            1 -> MixedCheck.increase(Pinging(inetAddress, packetHandler.protocol.get()))
+            2 -> { if (checkHandshake(Address(connection.inetSocketAddress, connection.virtualHost), connection)) return }
+            // That is impossible
+            else -> {
+                connection.close()
+                Firewall.addAddress(inetAddress)
+            }
+        }
 
         if (connection.isConnected) {
             val pipeline = connection.pipeline ?: return
@@ -129,9 +107,10 @@ object MainListener {
         FastDisconnect.disconnect(connection, type)
     }
 
-    private fun addFirewall(connection: ConnectionUtil, temp: Boolean) {
-        val address = connection.inetAddress
-        if (temp) Firewall.addAddressTemp(address) else Firewall.addAddress(address)
-        connection.close()
+    private fun checkHandshake(info: Address, connection: ConnectionUtil): Boolean {
+        if (DomainCheck.instance.increase(info)) { kick(connection, DisconnectType.INVALID_HOST); return true }
+        if (CountryCheck().increase(info)) { kick(connection, DisconnectType.COUNTRY); return true }
+        if (ProxyCheck().increase(info)) { kick(connection, DisconnectType.PROXY); return true }
+        return false
     }
 }
