@@ -58,14 +58,23 @@ object PlayerInstance : PlayerGetter, EventListener {
         return r
     }
 
-    fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name) }
+    fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name.lowercase()) }
 
     fun getOrNull(uuid: UUID): TranslatePlayer? { return cacheUUID.getIfPresent(uuid) }
 
-    private fun addToList(player: TranslatePlayer) {
+    fun addToList(player: TranslatePlayer) {
         list.add(player)
         cacheUUID.put(player.getUniqueId(), player)
-        cacheName.put(player.getName(), player)
+        cacheName.put(player.getName().lowercase(), player)
+    }
+
+    fun removeFromList(player: TranslatePlayer) {
+        var p = if (list.contains(player)) player else null
+        list.forEach { if (it.getUniqueId() == player.getUniqueId()) { p=it; return@forEach } }
+        val pl = p ?: return
+        list.remove(p)
+        cacheName.invalidate(pl.getName())
+        cacheUUID.invalidate(pl.getUniqueId())
     }
 
 }

@@ -46,16 +46,23 @@ import net.md_5.bungee.BungeeCord
 object MoeLimbo {
 
     val connections: MutableCollection<LimboHandler> = ArrayList()
-    val dimensionType = CommonDimensionType.OVERWORLD
-    private val rawDimType = LocalConfig.getLimbo().getAnyRef("dim-loader").toString()
+    //val dimensionType = CommonDimensionType.OVERWORLD
+    private val rawDimLoaderType = LocalConfig.getLimbo().getAnyRef("dim-loader").toString()
+    private val dimension = LocalConfig.getLimbo().getAnyRef("dimension").toString()
+    val dimensionType = try {
+        CommonDimensionType.valueOf(dimension)
+    } catch (_: IllegalArgumentException) {
+        MessageUtil.logWarn("[MoeLimbo] Unknown dimension $dimension, Fallback to OVERWORLD.")
+        CommonDimensionType.OVERWORLD
+    }
     private var conf = LocalConfig.getLimbo()
-    var dimLoaderMode = try { DimensionInterface.valueOf(rawDimType) } catch (_: IllegalArgumentException) {
-        MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
+    var dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
+        MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
     }
     var debug = LocalConfig.getConfig().getBoolean("debug")
     var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
-    val checker = listOf(
+    private val checker = listOf(
         CommonJoinCheck,
         MoveCheck,
         MoveTimer,
@@ -94,8 +101,8 @@ object MoeLimbo {
 
     private fun init() {
         conf = LocalConfig.getLimbo()
-        dimLoaderMode = try { DimensionInterface.valueOf(rawDimType) } catch (_: IllegalArgumentException) {
-            MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimType, Fallback to LLBIT"); LLBIT
+        dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
+            MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
         }
         initDimension()
         initEvent()

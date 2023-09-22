@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
 import net.kyori.adventure.nbt.CompoundBinaryTag
 
-class Dimension(val id: Int, val name: String, val data: CompoundBinaryTag) {
+class Dimension(val dimensionId: Int, val name: String, val data: CompoundBinaryTag) {
     override fun toString(): String {
-        return "id=$id, name=$name, data=$data"
+        return "id=$dimensionId, name=$name, data=$data"
     }
 }

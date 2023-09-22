@@ -125,8 +125,8 @@ class PacketJoinGame : LimboS2CPacket() {
         }
 
         // Dimension
-        if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(defaultDimension1_16.id)
-        else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(defaultDimension1_16.id)
+        if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(defaultDimension1_16.dimensionId)
+        else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(defaultDimension1_16.dimensionId)
         else if (version.fromTo(V1_16, V1_16_1)) {
             packet.writeCompoundTag(codec_Legacy)
             packet.writeString(defaultDimension1_16.name)

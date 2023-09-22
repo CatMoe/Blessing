@@ -52,7 +52,7 @@ class BungeeEvent : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onChat(event: ChatEvent) {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
-        if (event.isProxyCommand && event.message.equals("/bungee")) {
+        if (event.isProxyCommand && event.message.equals("/bungee", ignoreCase = true)) {
             Scheduler(MoeFilterBungee.instance).runAsync {
                 MessageUtil.sendMessage(listOf(
                         "<gradient:green:yellow>This server is running " +
@@ -73,8 +73,7 @@ class BungeeEvent : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPostLogin(event: PostLoginEvent) {
         val player = TranslatePlayer(BungeePlayer(event.player))
-        PlayerInstance.cacheUUID.put(player.getUniqueId(), player)
-        PlayerInstance.cacheName.put(player.getName(), player)
+        PlayerInstance.addToList(player)
         EventManager.callEvent(PlayerJoinEvent(player))
     }
 
@@ -130,8 +129,7 @@ class BungeeEvent : Listener {
         PipelineUtil.invalidateChannel(event.player)
         val player = PlayerInstance.getOrNull(event.player.name) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
-        PlayerInstance.cacheUUID.invalidate(player.getUniqueId())
-        PlayerInstance.cacheName.invalidate(player.getName())
+        PlayerInstance.removeFromList(player)
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -156,7 +154,7 @@ class BungeeEvent : Listener {
             try {
                 val fake = event.connection as FakeInitialHandler
                 fake.fakeLegacy=false
-            } catch (_: NoSuchFieldException) {}
+            } catch (_: NoSuchFieldException) { }
         }
     }
 }
