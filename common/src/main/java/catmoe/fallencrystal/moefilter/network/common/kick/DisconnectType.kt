@@ -31,4 +31,5 @@ enum class DisconnectType(@JvmField val messagePath: String) {
     RECHECK("recheck"),
     BRAND_NOT_ALLOWED("brand-not-allowed"),
     CANNOT_CHAT("cannot-chat"),
+    UNSUPPORTED_VERSION("unsupported-version"),
 }

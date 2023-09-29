@@ -68,7 +68,12 @@ object PacketValidCheck : LimboChecker {
             }
             is Unknown -> {
                 if (allowUnknown.getIfPresent(handler) == null) {
-                    if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
+                    //if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
+                    when (handler.version) {
+                        Version.V1_7_6 -> { if (w.contains(packet.id)) return false }
+                        Version.V1_20_2 -> { if (w.contains(packet.id)) return false }
+                        else -> {}
+                    }
                     handler.channel.close()
                     throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
                 }

@@ -23,7 +23,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.Dimensio
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_18_2
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_19
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_19_1
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_19_4
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_20
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_Legacy
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_16
@@ -70,19 +69,22 @@ class PacketJoinGame : LimboS2CPacket() {
         // Hardcore
         if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
         // Game mode
-        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 else gameMode) else packet.writeByte(gameMode)
+        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 /* 1.7 Not supported spectator */ else gameMode)
+        else if (version.less(V1_20_2)) packet.writeByte(gameMode)
         if (version.moreOrEqual(V1_16)) {
-            packet.writeByte(previousGameMode)
+            if (version.less(V1_20_2)) packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
-            packet.writeTag(tag)
-            if (version.moreOrEqual(V1_19) || version.fromTo(V1_16, V1_16_1))
+            if (version.less(V1_20_2)) {
+                packet.writeTag(tag)
+                if ((version.fromTo(V1_19, V1_20) || version.fromTo(V1_16, V1_16_1)))
+                    packet.writeString(worldName)
+                else packet.writeTag(dim.getAttributes(version))
                 packet.writeString(worldName)
-            else packet.writeTag(dim.getAttributes(version))
-            packet.writeString(worldName)
+            }
         }
         if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(dim.dimensionId)
         else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(dim.dimensionId)
-        if (version.moreOrEqual(V1_15)) packet.writeLong(hashedSeed)
+        if (version.moreOrEqual(V1_15) && version.less(V1_20_2)) packet.writeLong(hashedSeed)
         if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty
         if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
         if (version.fromTo(V1_7_6, V1_15_2)) packet.writeString("flat")
@@ -90,6 +92,15 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
         if (version.moreOrEqual(V1_15)) packet.writeBoolean(enableRespawnScreen)
+
+        if (version.moreOrEqual(V1_20_2)) { // 1.20.2: doLimitedCrafting
+            packet.writeBoolean(true) // doLimitedCrafting
+            packet.writeString(worldName) // World type
+            packet.writeString(worldName)
+            packet.writeLong(hashedSeed)
+            packet.writeByte(gameMode)
+            packet.writeByte(previousGameMode)
+        }
         if (version.moreOrEqual(V1_16)) {
             packet.writeBoolean(isDebug)
             packet.writeBoolean(isFlat)
@@ -108,11 +119,10 @@ class PacketJoinGame : LimboS2CPacket() {
 
         // Game mode
         if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 else gameMode)
-        else packet.writeByte(gameMode)
+        else if (version.less(V1_20_2)) packet.writeByte(gameMode)
 
         // Previous game mode & world names
-        if (version.moreOrEqual(V1_16)) {
-            packet.writeByte(previousGameMode)
+        if (version.moreOrEqual(V1_16) && version.less(V1_20_2)) packet.writeByte(previousGameMode)
 
             /*
             Write world(s) names
@@ -121,10 +131,10 @@ class PacketJoinGame : LimboS2CPacket() {
             writeVarInt(array.size)
             array.forEach { writeString(it) }
              */
-            packet.writeStringsArray(worldNames)
-        }
+        if (version.moreOrEqual(V1_16)) packet.writeStringsArray(worldNames)
 
         // Dimension
+        /*
         if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(defaultDimension1_16.dimensionId)
         else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(defaultDimension1_16.dimensionId)
         else if (version.fromTo(V1_16, V1_16_1)) {
@@ -140,15 +150,36 @@ class PacketJoinGame : LimboS2CPacket() {
         else if (version.fromTo(V1_19_1, V1_19_3)) packet.writeCompoundTag(codec_1_19_1)
         else if (version == V1_19_4) packet.writeCompoundTag(codec_1_19_4)
         else packet.writeCompoundTag(codec_1_20)
+         */
+        when {
+            version.fromTo(V1_7_6, V1_9) -> packet.writeByte(defaultDimension1_16.dimensionId)
+            version.fromTo(V1_9_1, V1_15_2) -> packet.writeInt(defaultDimension1_16.dimensionId)
+            version.fromTo(V1_16, V1_16_1) -> {
+                packet.writeCompoundTag(codec_Legacy)
+                packet.writeString(defaultDimension1_16.name)
+            }
+            version.fromTo(V1_16_2, V1_18) -> {
+                packet.writeCompoundTag(codec_1_16)
+                packet.writeCompoundTag(defaultDimension1_16.data)
+            }
+            version == V1_18_2 -> {
+                packet.writeCompoundTag(codec_1_18_2)
+                packet.writeCompoundTag(defaultDimension1_18_2.data)
+            }
+            version == V1_19 -> packet.writeCompoundTag(codec_1_19)
+            version.fromTo(V1_19_1, V1_19_3) -> packet.writeCompoundTag(codec_1_19_1)
+            version == V1_19_4 ->  packet.writeCompoundTag(codec_1_20)
+            else -> {}
+        }
 
         // World name
-        if (version.moreOrEqual(V1_16)) {
-            if (version.moreOrEqual(V1_19)) packet.writeString(worldName) // World type
+        if (version.moreOrEqual(V1_16) && version.less(V1_20_2)) {
+            if (version.moreOrEqual(V1_19) || version.fromTo(V1_16, V1_16_1)) packet.writeString(worldName) // World type
             packet.writeString(worldName)
         }
 
         // Hashed seed
-        if (version.moreOrEqual(V1_15)) packet.writeLong(hashedSeed)
+        if (version.moreOrEqual(V1_15) && version.less(V1_20_2)) packet.writeLong(hashedSeed)
 
         // Legacy difficulty & maxPlayers
         if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty
@@ -161,9 +192,20 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)
         if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance) // Simulation Distance
 
-        // reducedDebugInfo && enableRespawnScreen && isDebug && isFlat
+        // reducedDebugInfo && enableRespawnScreen
         if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
         if (version.moreOrEqual(V1_15)) packet.writeBoolean(enableRespawnScreen)
+
+        if (version.moreOrEqual(V1_20_2)) { // 1.20.2: doLimitedCrafting
+            packet.writeBoolean(true) // doLimitedCrafting
+            packet.writeString(worldName) // World type
+            packet.writeString(worldName)
+            packet.writeLong(hashedSeed)
+            packet.writeByte(gameMode)
+            packet.writeByte(previousGameMode)
+        }
+
+        // isDebug && isFlat
         if (version.moreOrEqual(V1_16)) {
             packet.writeBoolean(isDebug)
             packet.writeBoolean(isFlat)
@@ -172,160 +214,6 @@ class PacketJoinGame : LimboS2CPacket() {
             packet.writeBoolean(false) // lastDeathPos
             if (version.moreOrEqual(V1_20)) packet.writeVarInt(0) // Pearl cooldown
         }
-
-        // Legacy
-        /*
-        packet.writeInt(entityId)
-
-        if (version!!.fromTo(Version.V1_7_2, Version.V1_7_6)) {
-            packet.writeByte(if (gameMode == 3) 1 else gameMode)
-            packet.writeByte(DimensionRegistry.defaultDimension1_16.id)
-            packet.writeByte(0) // Difficulty
-            packet.writeByte(maxPlayers)
-            packet.writeString("flat") // Level type
-        }
-
-        if (version.fromTo(Version.V1_8, Version.V1_9)) {
-            packet.writeByte(gameMode)
-            packet.writeByte(DimensionRegistry.defaultDimension1_16.id)
-            packet.writeByte(0) // Difficulty
-            packet.writeByte(maxPlayers)
-            packet.writeString("flat") // Level type
-            packet.writeBoolean(reducedDebugInfo)
-        }
-
-        if (version.fromTo(Version.V1_9_1, Version.V1_13_2)) {
-            packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
-            packet.writeByte(0) // Difficulty
-            packet.writeByte(maxPlayers)
-            packet.writeString("flat") // Level type
-            packet.writeBoolean(reducedDebugInfo)
-        }
-
-        if (version.fromTo(Version.V1_14, Version.V1_14_4)) {
-            packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
-            packet.writeByte(maxPlayers)
-            packet.writeString("flat") // Level type
-            packet.writeVarInt(viewDistance)
-            packet.writeBoolean(reducedDebugInfo)
-        }
-
-        if (version.fromTo(Version.V1_15, Version.V1_15_2)) {
-            packet.writeByte(gameMode)
-            packet.writeInt(DimensionRegistry.defaultDimension1_16.id)
-            packet.writeLong(hashedSeed)
-            packet.writeByte(maxPlayers)
-            packet.writeString("flat") // Level type
-            packet.writeVarInt(viewDistance)
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-        }
-
-        if (version.fromTo(Version.V1_16, Version.V1_16_1)) {
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-            packet.writeStringsArray(worldNames)
-            packet.writeCompoundTag(DimensionRegistry.codec_Legacy)
-            packet.writeString(DimensionRegistry.defaultDimension1_16.name)
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeByte(maxPlayers)
-            packet.writeVarInt(viewDistance)
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-        }
-
-        if (version.fromTo(Version.V1_16_2, Version.V1_17_1)) {
-            packet.writeBoolean(isHardcore)
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-            packet.writeStringsArray(worldNames)
-            packet.writeCompoundTag(DimensionRegistry.codec_1_16)
-            packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16.data)
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeVarInt(maxPlayers)
-            packet.writeVarInt(viewDistance)
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-        }
-
-        if (version.fromTo(Version.V1_18, Version.V1_18_2)) {
-            packet.writeBoolean(isHardcore)
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-            packet.writeStringsArray(worldNames)
-            if (version.moreOrEqual(Version.V1_18_2)) {
-                packet.writeCompoundTag(DimensionRegistry.codec_1_18_2)
-                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_18_2.data)
-            } else {
-                packet.writeCompoundTag(DimensionRegistry.codec_1_16)
-                packet.writeCompoundTag(DimensionRegistry.defaultDimension1_16.data)
-            }
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeVarInt(maxPlayers)
-            packet.writeVarInt(viewDistance)
-            packet.writeVarInt(viewDistance) // Simulation Distance
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-        }
-
-        if (version.fromTo(Version.V1_19, Version.V1_19_4)) {
-            packet.writeBoolean(isHardcore)
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-            packet.writeStringsArray(worldNames)
-            if (version.moreOrEqual(Version.V1_19_1)) {
-                if (version.moreOrEqual(Version.V1_19_4)) {
-                    packet.writeCompoundTag(DimensionRegistry.codec_1_19_4)
-                } else {
-                    packet.writeCompoundTag(DimensionRegistry.codec_1_19_1)
-                }
-            } else {
-                packet.writeCompoundTag(DimensionRegistry.codec_1_19)
-            }
-            packet.writeString(worldName) // World type
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeVarInt(maxPlayers)
-            packet.writeVarInt(viewDistance)
-            packet.writeVarInt(viewDistance) // Simulation Distance
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-            packet.writeBoolean(false)
-        }
-
-        if (version.moreOrEqual(Version.V1_20)) {
-            packet.writeBoolean(isHardcore)
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-            packet.writeStringsArray(worldNames)
-            packet.writeCompoundTag(DimensionRegistry.codec_1_20)
-            packet.writeString(worldName) // World type
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeVarInt(maxPlayers)
-            packet.writeVarInt(viewDistance)
-            packet.writeVarInt(viewDistance) // Simulation Distance
-            packet.writeBoolean(reducedDebugInfo)
-            packet.writeBoolean(enableRespawnScreen)
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-            packet.writeBoolean(false)
-            packet.writeVarInt(0)
-        }
-         */
     }
 
     override fun toString(): String {

@@ -55,7 +55,8 @@ enum class Version(val number: Int) {
     V1_19_1(760),
     V1_19_3(761),
     V1_19_4(762),
-    V1_20(763);
+    V1_20(763),
+    V1_20_2(764);
 
     var prev: Version? = null
         private set
@@ -71,7 +72,7 @@ enum class Version(val number: Int) {
     fun fromTo(min: Version, max: Version): Boolean { return number >= min.number && number <= max.number }
 
     val isSupported: Boolean
-        get() = this != UNDEFINED
+        get() = (this != UNDEFINED) && (this != V1_20_2)
 
     override fun toString(): String {
         return "enum=$name, protocol=$number"
@@ -79,7 +80,7 @@ enum class Version(val number: Int) {
 
     companion object {
         private var VERSION_MAP: MutableMap<Int, Version>? = null
-        var max = V1_20
+        var max = V1_20_2
 
         init {
             val values = values()

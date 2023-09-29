@@ -45,7 +45,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketEmptyChunk
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.protocol.ProtocolConstants
 import java.net.InetAddress
@@ -132,10 +131,8 @@ object CommonJoinCheck : LimboChecker {
         if (onlineUser.getIfPresent(joining.username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
             kick(handler, ALREADY_ONLINE); return true
         }
-        if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(joining.protocol)) {
-            val kick = PacketDisconnect()
-            kick.setReason(ComponentUtil.parse("<red>Unsupported version"))
-            handler.channel.write(kick); handler.channel.close(); return true
+        if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(joining.protocol) || handler.version?.isSupported != true) {
+            kick(handler, UNSUPPORTED_VERSION); return true
         }
         return false
     }

@@ -54,13 +54,15 @@ class BungeeEvent : Listener {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
         if (event.isProxyCommand && event.message.equals("/bungee", ignoreCase = true)) {
             Scheduler(MoeFilterBungee.instance).runAsync {
-                MessageUtil.sendMessage(listOf(
+                MessageUtil.sendMessage(
+                    listOf(
                         "<gradient:green:yellow>This server is running " +
                                 "<aqua><hover:show_text:'<rainbow>${proxy.name} ${proxy.version}'>${proxy.name}</hover></aqua> & " +
                                 "<gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilterBungee.instance.description.version}</gradient> ❤</gradient>",
                         "<gradient:#9BCD9B:#FFE4E1><click:open_url:'https://github.com/CatMoe/MoeFilter/'>CatMoe/MoeFilter</click> @ " +
                                 "<click:open_url:'https://www.miaomoe.net/'>miaomoe.net</click></gradient>"
-                    ).joinToString("<reset><newline>"), MessagesType.CHAT, player)
+                    ).joinToString("<reset><newline>")
+                    , MessagesType.CHAT, player)
             }; event.isCancelled = true; return
         }
         val p = PlayerInstance.getOrNull(player.uniqueId) ?: return
@@ -146,7 +148,11 @@ class BungeeEvent : Listener {
         if (modInfo.type != PingServerType.FML.name) modInfo.modList = mutableListOf()
         val brand = conf.getString("brand")
         if (brand.isNotEmpty()) event.response.version.name=MessageUtil.colorize(brand).toLegacyText()
-        if (conf.getBoolean("protocol-always-unsupported")) event.response.version.protocol=0
+        var protocol = event.response.version.protocol
+        val version = Version.of(protocol)
+        if (!version.isSupported) protocol=0
+        if (conf.getBoolean("protocol-always-unsupported")) protocol=0
+        event.response.version.protocol=protocol
         if (event.connection.isLegacy
             && event.connection.version >= Version.V1_7_6.number
             && !BungeeSwitcher.connectToBungee((event.connection.socketAddress as InetSocketAddress).address)
