@@ -25,9 +25,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketStatusRequest
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
@@ -46,6 +44,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
     /* Join */
     PacketInitLogin::class,
     PacketKeepAlive::class,
+    LoginAcknowledged::class
 )
 object PacketValidCheck : LimboChecker {
 
@@ -101,7 +100,16 @@ object PacketValidCheck : LimboChecker {
             // Join
             is PacketInitLogin -> {
                 verify(packet, NextPacket.INIT_LOGIN)
-                next.put(handler, NextPacket.KEEP_ALIVE)
+                next.put(handler, if (handler.version!!.moreOrEqual(Version.V1_20_2)) NextPacket.LOGIN_ACK else NextPacket.KEEP_ALIVE)
+            }
+            is LoginAcknowledged -> {
+                verify(packet, NextPacket.LOGIN_ACK)
+                next.put(handler, NextPacket.CONFIGURATION)
+                // Next?
+            }
+            is FinishConfiguration -> {
+                verify(packet, NextPacket.CONFIGURATION)
+                allowUnknown.put(handler, true)
             }
             is PacketKeepAlive -> {
                 verify(packet, NextPacket.KEEP_ALIVE)

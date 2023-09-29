@@ -169,6 +169,7 @@ class PacketJoinGame : LimboS2CPacket() {
             version == V1_19 -> packet.writeCompoundTag(codec_1_19)
             version.fromTo(V1_19_1, V1_19_3) -> packet.writeCompoundTag(codec_1_19_1)
             version == V1_19_4 ->  packet.writeCompoundTag(codec_1_20)
+            version == V1_20 -> packet.writeCompoundTag(codec_1_20)
             else -> {}
         }
 

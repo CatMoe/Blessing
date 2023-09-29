@@ -18,6 +18,8 @@
 package catmoe.fallencrystal.moefilter.network.limbo.check.valid
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.FinishConfiguration
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.LoginAcknowledged
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketStatusRequest
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
@@ -26,6 +28,8 @@ import kotlin.reflect.KClass
 
 enum class NextPacket(val packet: KClass<out LimboPacket>) {
     INIT_LOGIN(PacketInitLogin::class),
+    LOGIN_ACK(LoginAcknowledged::class),
+    CONFIGURATION(FinishConfiguration::class),
     KEEP_ALIVE(PacketKeepAlive::class),
     STATUS_REQUEST(PacketStatusRequest::class),
     STATUS_PING(PacketStatusPing::class),

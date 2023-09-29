@@ -92,15 +92,6 @@ class LimboHandler(
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) { if (msg is LimboPacket) msg.handle(this) }
 
-    fun fireLoginSuccess() {
-        sendPacket(getCachedPacket(LOGIN_SUCCESS))
-        state = Protocol.PLAY
-        MoeLimbo.connections.add(this)
-        updateVersion(version!!, state!!)
-        if (fakeHandler is FakeInitialHandler) fakeHandler.username=profile.username
-        sendPlayPackets()
-    }
-
     fun updateVersion(version: Version, state: Protocol) {
         this.version=version
         encoder.switchVersion(version, state)
@@ -111,7 +102,7 @@ class LimboHandler(
     val keepAlive = PacketKeepAlive()
 
     @Suppress("SpellCheckingInspection")
-    private fun sendPlayPackets() {
+    fun sendPlayPackets() {
         //writePacket(JOIN_GAME)
         writePacket(JOIN_GAME)
         // Weeee—— don't want player is flying, So don't send the packet insteadof apply flags.
@@ -147,7 +138,7 @@ class LimboHandler(
         }
     }
 
-    private fun getCachedPacket(enumPacket: EnumPacket): PacketSnapshot? {
+    fun getCachedPacket(enumPacket: EnumPacket): PacketSnapshot? {
         return PacketCache.packetCache.getIfPresent(enumPacket)
     }
 

@@ -64,7 +64,7 @@ class Dimension(
         root.add("minecraft:dimension_type", d)
         root.add("minecraft:worldgen/biome", createBiomeRegistry())
         if (version == Version.V1_19_4) root.add("minecraft:damage_type", StaticDimension.d1)
-        if (version == Version.V1_20) root.add("minecraft:damage_type", StaticDimension.d2)
+        if (version.moreOrEqual(Version.V1_20)) root.add("minecraft:damage_type", StaticDimension.d2)
         if (version.moreOrEqual(Version.V1_19)) root.add("minecraft:chat_type", createChatRegistry(version))
         return NamedTag("", root)
     }

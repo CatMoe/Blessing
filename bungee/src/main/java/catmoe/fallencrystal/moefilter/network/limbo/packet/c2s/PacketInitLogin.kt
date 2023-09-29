@@ -18,9 +18,13 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
+import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
@@ -31,6 +35,8 @@ class PacketInitLogin : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         username = packet.readString(packet.readVarInt())
         if (username == "") throw InvalidUsernameException("Username is empty!")
+        //if (version!!.less(Version.V1_20_2) && !packet.readBoolean()) return
+        //packet.readUuid()
     }
 
     override fun handle(handler: LimboHandler) {
@@ -39,7 +45,14 @@ class PacketInitLogin : LimboC2SPacket() {
         profile.address=handler.channel.remoteAddress()
         profile.channel=handler.channel
         profile.version=handler.version
-        handler.fireLoginSuccess()
+        handler.sendPacket(handler.getCachedPacket(EnumPacket.LOGIN_SUCCESS))
+        MoeLimbo.connections.add(handler)
+        if (handler.fakeHandler is FakeInitialHandler) handler.fakeHandler.username=profile.username
+        if (handler.version!!.less(Version.V1_20_2)) {
+            handler.state = Protocol.PLAY
+            handler.updateVersion(handler.version!!, handler.state!!)
+            handler.sendPlayPackets()
+        }
     }
 
     override fun toString(): String { return "PacketInitLogin(username=$username)" }
