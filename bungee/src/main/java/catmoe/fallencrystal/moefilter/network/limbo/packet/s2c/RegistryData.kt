@@ -32,10 +32,9 @@ class RegistryData  : LimboS2CPacket() {
             DimensionInterface.ADVENTURE ->
                 //packet.writeCompoundTag(DimensionRegistry.codec_1_20)
                 packet.writeHeadlessCompoundTag(DimensionRegistry.codec_1_20)
-            DimensionInterface.LLBIT -> {
-                packet.writeTag2(StaticDimension.cacheDimension.getIfPresent(version)!!)
-                packet.writeTag(StaticDimension.dim.dimension.getAttributes(version))
-            }
+            DimensionInterface.LLBIT ->
+                packet.writeHeadlessCompoundTag(StaticDimension.cacheDimension.getIfPresent(version)!!)
+                //packet.writeCompoundTag(StaticDimension.dim.dimension.getAttributes(version))
         }
     }
 }

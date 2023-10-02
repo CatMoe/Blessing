@@ -75,10 +75,10 @@ class PacketJoinGame : LimboS2CPacket() {
             if (version.less(V1_20_2)) packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
             if (version.less(V1_20_2)) {
-                packet.writeTag(tag)
+                packet.writeCompoundTag(tag)
                 if ((version.fromTo(V1_19, V1_20) || version.fromTo(V1_16, V1_16_1)))
                     packet.writeString(worldName)
-                else packet.writeTag(dim.getAttributes(version))
+                else packet.writeCompoundTag(dim.getAttributes(version))
                 packet.writeString(worldName)
             }
         }

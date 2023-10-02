@@ -187,23 +187,23 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun writeTag(tag: Tag) {
+    fun writeCompoundTag(tag: Tag) {
         //tag.write(DataOutputStream(ByteBufOutputStream(this)))
         try {
             tag.write(DataOutputStream(ByteBufOutputStream(this)))
         } catch (e: IOException) {
-            throw EncoderException("Cannot write NBT CompoundTag")
+            throw EncoderException("Cannot write NBTTag")
         }
     }
 
-    fun writeTag2(tag: Tag) {
+    fun writeHeadlessCompoundTag(tag: Tag?) {
         try {
-            ByteBufOutputStream(buf).use { stream ->
-                stream.writeByte(10)
-                writeTag(tag)
-            }
-        } catch (e: IOException) {
-            throw EncoderException("Cannot write NBT CompoundTag")
+            if (tag == null) { writeByte(0); return }
+            val out = ByteBufOutputStream(this)
+            out.writeByte(10)
+            tag.write(DataOutputStream(out))
+        } catch (ex: IOException) {
+            throw EncoderException("Cannot write NBTTag")
         }
     }
 
