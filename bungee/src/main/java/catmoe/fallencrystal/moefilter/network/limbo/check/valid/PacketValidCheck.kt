@@ -25,11 +25,11 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Unknown
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketLoginAcknowledged
+import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketStatusRequest
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.*
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 
@@ -44,7 +44,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
     /* Join */
     PacketInitLogin::class,
     PacketKeepAlive::class,
-    LoginAcknowledged::class
+    PacketLoginAcknowledged::class
 )
 object PacketValidCheck : LimboChecker {
 
@@ -102,12 +102,12 @@ object PacketValidCheck : LimboChecker {
                 verify(packet, NextPacket.INIT_LOGIN)
                 next.put(handler, if (handler.version!!.moreOrEqual(Version.V1_20_2)) NextPacket.LOGIN_ACK else NextPacket.KEEP_ALIVE)
             }
-            is LoginAcknowledged -> {
+            is PacketLoginAcknowledged -> {
                 verify(packet, NextPacket.LOGIN_ACK)
                 next.put(handler, NextPacket.CONFIGURATION)
                 // Next?
             }
-            is FinishConfiguration -> {
+            is PacketFinishConfiguration -> {
                 verify(packet, NextPacket.CONFIGURATION)
                 allowUnknown.put(handler, true)
             }

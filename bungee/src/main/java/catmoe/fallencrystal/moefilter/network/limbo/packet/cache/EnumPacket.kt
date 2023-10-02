@@ -27,6 +27,7 @@ enum class EnumPacket {
     UPDATE_TIME,
     PLUGIN_MESSAGE,
     PLUGIN_MESSAGE_LEGACY,
+    REGISTRY_DATA,
     CHUNK_0_0,
     CHUNK_0_1,
     CHUNK_0_2,

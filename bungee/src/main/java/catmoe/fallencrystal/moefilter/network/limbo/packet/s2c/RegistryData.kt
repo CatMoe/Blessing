@@ -29,9 +29,11 @@ class RegistryData  : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         if (version != Version.V1_20_2) return
         when (MoeLimbo.dimLoaderMode) {
-            DimensionInterface.ADVENTURE -> packet.writeCompoundTag(DimensionRegistry.codec_1_20)
+            DimensionInterface.ADVENTURE ->
+                //packet.writeCompoundTag(DimensionRegistry.codec_1_20)
+                packet.writeHeadlessCompoundTag(DimensionRegistry.codec_1_20)
             DimensionInterface.LLBIT -> {
-                packet.writeTag(StaticDimension.cacheDimension.getIfPresent(version)!!)
+                packet.writeTag2(StaticDimension.cacheDimension.getIfPresent(version)!!)
                 packet.writeTag(StaticDimension.dim.dimension.getAttributes(version))
             }
         }

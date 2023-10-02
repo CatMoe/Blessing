@@ -81,6 +81,8 @@ object PacketCache {
         pm.channel="MC|Brand"
         packetCache.put(PLUGIN_MESSAGE_LEGACY, PacketSnapshot.of(pm))
 
+        packetCache.put(REGISTRY_DATA, PacketSnapshot.of(RegistryData()))
+
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
             val chunk = PacketEmptyChunk()

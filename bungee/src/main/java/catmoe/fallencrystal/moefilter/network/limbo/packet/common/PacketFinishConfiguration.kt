@@ -24,19 +24,18 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
-class PacketPingPong : LimboPacket {
-
-    var id: Long = 1000
-
+class PacketFinishConfiguration : LimboPacket {
     override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeLong(id)
+        // This packet does not have any field.
     }
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        id = packet.readLong()
+        // This packet does not have any field.
     }
 
     override fun handle(handler: LimboHandler) {
-        if (handler.state == Protocol.CONFIGURATION) handler.writePacket(this)
+        handler.state = Protocol.PLAY
+        handler.updateVersion(handler.version!!, Protocol.PLAY)
+        handler.sendPlayPackets()
     }
 }

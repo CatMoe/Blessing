@@ -19,23 +19,23 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.RegistryData
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
-class FinishConfiguration : LimboPacket {
-    override fun encode(packet: ByteMessage, version: Version?) {
-        // This packet does not have any field.
-    }
-
+class PacketLoginAcknowledged : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         // This packet does not have any field.
     }
 
     override fun handle(handler: LimboHandler) {
-        handler.state = Protocol.PLAY
+        handler.state = Protocol.CONFIGURATION
         handler.updateVersion(handler.version!!, handler.state!!)
-        handler.sendPlayPackets()
+        handler.writePacket(RegistryData())
+        //handler.writePacket(PacketPingPong())
+        handler.sendPacket(PacketFinishConfiguration())
     }
 }

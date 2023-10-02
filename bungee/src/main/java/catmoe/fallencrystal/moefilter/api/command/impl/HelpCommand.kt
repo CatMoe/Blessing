@@ -91,25 +91,27 @@ class HelpCommand : ICommand {
                 val u = parsedInfo.usage
                 l.addAll(listOf(
                     "<hover:show_text:'",
-                    "<aqua>所需权限: ${parsedInfo.permission}",
+                    "<aqua>所需权限: ${parsedInfo.permission}<reset><newline>",
                     if (u.isNotEmpty()) "<aqua>此命令一共有 <white>${u.size} <aqua>个用法: " else "<aqua>此命令没有已知的用法.",
+                    "<reset><newline>"
                 ))
-                if (u.isNotEmpty()) parsedInfo.usage.forEach { l.add("  <white>$it") }
+                if (u.isNotEmpty()) parsedInfo.usage.forEach { l.add("  <white>$it<reset><newline>") }
                 l.addAll(listOf(
                     if (parsedInfo.allowConsole) "<green>此命令允许控制台执行" else "<red>此命令仅允许在线玩家执行",
                     "'><click:run_command:/moefilter help ${parsedInfo.command}>",
                     "${parsedInfo.description}</hover>"
                 ))
-                joinLine(l)
+                l.joinToString("")
             } else parsedInfo.description
             // ${parsedInfo.description}
-            MessageUtil.sendMessage("  <white>/moefilter ${parsedInfo.command} <aqua>- <reset>$description", MessagesType.CHAT, sender)
+            val command = if (sender !is ProxiedPlayer) parsedInfo.command else ""
+            MessageUtil.sendMessage("  <white>/moefilter $command <aqua>- <reset>$description", MessagesType.CHAT, sender)
         }
         MessageUtil.sendMessage(line, MessagesType.CHAT, sender)
         return
     }
 
-    private fun joinLine(string: List<String>): String { return string.joinToString("<reset><newline>") }
+    //private fun joinLine(string: List<String>): String { return string.joinToString("<reset><newline>") }
 
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = HashMap()

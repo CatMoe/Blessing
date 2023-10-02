@@ -29,7 +29,6 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import com.google.common.base.Preconditions
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
-import java.util.*
 
 // 注: 我仍在研究1.7的PluginMessage, 因此对此暂时禁用
 class PacketPluginMessage : LimboPacket {
@@ -59,29 +58,6 @@ class PacketPluginMessage : LimboPacket {
         if (version == Version.V1_7_6) packet.readShort() // Ignored
         Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
         val data = ByteArray(packet.readableBytes())
-        if (version!!.moreOrEqual(Version.V1_20_2)) {
-            var readConfiguration = false
-            try {
-                val a = this.channel.split("_")
-                Locale(a[0], a[1])
-                readConfiguration = true
-            } catch (_: MissingResourceException) {
-                // Ignore because they maybe not locale data
-            }
-            if (readConfiguration) {
-                val viewDistance = packet.readByte()
-                //if (viewDistance < 2) throw IllegalArgumentException("View distance cannot lower than 2!")
-                Preconditions.checkArgument(viewDistance >= 2, "View distance cannot lower than 2!")
-                val chatMode = packet.readVarInt()
-                Preconditions.checkArgument(!(chatMode < 0 || chatMode > 2), "ChatMode cannot lower than 0 or higher than 2!")
-                packet.readBoolean() // ChatColor. Ignored
-                packet.readUnsignedByte() // Displayed Skin Parts. Ignored
-                val mainHand = packet.readVarInt()
-                Preconditions.checkArgument(!(mainHand > 1 || mainHand < 0), "MainHand only can be 0 or 1!")
-                packet.readBoolean()
-                packet.readBoolean()
-            }
-        }
         if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") {
             packet.readBytes(data)
             /*

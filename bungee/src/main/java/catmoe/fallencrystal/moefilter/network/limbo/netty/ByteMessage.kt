@@ -23,6 +23,7 @@ import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.BinaryTagIO
+import net.kyori.adventure.nbt.BinaryTagTypes
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import se.llbit.nbt.Tag
 import java.io.DataOutputStream
@@ -69,16 +70,15 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
             v = v ushr 7
         }
          */
-        // New code:
-        if (value and -0x80 == 0) { writeByte(value) } else if (value and -0x4000 == 0) {
-            writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
-        } else if (value and -0x200000 == 0) {
-            writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
-        } else if (value and -0x10000000 == 0) {
-            writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
-        } else {
-            writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
-            writeByte(value ushr 28)
+        when {
+            (value and -0x80 == 0) -> writeByte(value)
+            (value and -0x4000 == 0) -> writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
+            (value and -0x200000 == 0) -> writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
+            (value and -0x10000000 == 0) -> writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
+            else -> {
+                writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
+                writeByte(value ushr 28)
+            }
         }
     }
 
@@ -176,7 +176,36 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun writeTag(tag: Tag) { tag.write(DataOutputStream(ByteBufOutputStream(this))) }
+    fun writeHeadlessCompoundTag(compoundTag: CompoundBinaryTag) {
+        try {
+            ByteBufOutputStream(buf).use { stream ->
+                stream.writeByte(10) // CompoundTag ID
+                BinaryTagTypes.COMPOUND.write(compoundTag, stream)
+            }
+        } catch (e: IOException) {
+            throw EncoderException("Cannot write NBT CompoundTag")
+        }
+    }
+
+    fun writeTag(tag: Tag) {
+        //tag.write(DataOutputStream(ByteBufOutputStream(this)))
+        try {
+            tag.write(DataOutputStream(ByteBufOutputStream(this)))
+        } catch (e: IOException) {
+            throw EncoderException("Cannot write NBT CompoundTag")
+        }
+    }
+
+    fun writeTag2(tag: Tag) {
+        try {
+            ByteBufOutputStream(buf).use { stream ->
+                stream.writeByte(10)
+                writeTag(tag)
+            }
+        } catch (e: IOException) {
+            throw EncoderException("Cannot write NBT CompoundTag")
+        }
+    }
 
     fun <E : Enum<E>?> writeEnumSet(enumset: EnumSet<E>, oclass: Class<E>) {
         val enums = oclass.enumConstants

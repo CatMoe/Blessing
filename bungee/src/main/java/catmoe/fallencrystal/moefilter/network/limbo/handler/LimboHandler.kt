@@ -112,7 +112,7 @@ class LimboHandler(
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
 
-        if (version!!.moreOrEqual(Version.V1_8)) {
+        if (version!!.moreOrEqual(Version.V1_8) && version!!.less(Version.V1_20_2)) {
             writePacket(if (version!!.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
         }
 

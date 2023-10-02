@@ -17,8 +17,8 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPingPong
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
@@ -50,7 +50,7 @@ enum class Protocol(var stateId: Int) {
         init {
             serverBound.register({ PacketInitLogin() }, map(0x00, min, max))
             serverBound.register({ PacketPluginResponse() }, map(0x02, min, max))
-            serverBound.register({ LoginAcknowledged() }, map(0x03, V1_20_2, V1_20_2))
+            serverBound.register({ PacketLoginAcknowledged() }, map(0x03, V1_20_2, V1_20_2))
             clientBound.register({ PacketLoginSuccess() }, map(0x02, min, max))
             clientBound.register({ PacketPluginRequest() }, map(0x04, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
@@ -59,15 +59,15 @@ enum class Protocol(var stateId: Int) {
     @JvmStatic
     CONFIGURATION(3) {
         init {
-            clientBound.register({ PacketDisconnect() }, map(0x01, V1_20_2, V1_20_2))
-            serverBound.register({ PacketPluginMessage() }, map(0x00, V1_20_2, V1_20_2))
-            serverBound.register({ PacketKeepAlive() }, map(0x02, V1_20_2, V1_20_2))
-            clientBound.register({ PacketKeepAlive() }, map(0x03, V1_20_2, V1_20_2))
-            clientBound.register({ FinishConfiguration() }, map(0x02, V1_20_2, V1_20_2))
-            serverBound.register({ FinishConfiguration() }, map(0x01, V1_20_2, V1_20_2))
-            serverBound.register({ PacketPingPong() }, map(0x03, V1_20_2, V1_20_2))
-            clientBound.register({ PacketPingPong() }, map(0x04, V1_20_2, V1_20_2))
-            clientBound.register({ RegistryData() }, map(0x05, V1_20_2, V1_20_2))
+            val min = V1_20_2
+            serverBound.register({ PacketClientConfiguration() }, map(0x00, min, max))
+            clientBound.register({ PacketDisconnect() }, map(0x01, min, max))
+            serverBound.register({ PacketPluginMessage() }, map(0x01, min, max))
+            serverBound.register({ PacketKeepAlive() }, map(0x03, min, max))
+            clientBound.register({ PacketKeepAlive() }, map(0x03, min, max))
+            clientBound.register({ PacketFinishConfiguration() }, map(0x02, min, max))
+            serverBound.register({ PacketFinishConfiguration() }, map(0x02, min, max))
+            clientBound.register({ RegistryData() }, map(0x05, min, max))
         }
     },
     @JvmStatic
