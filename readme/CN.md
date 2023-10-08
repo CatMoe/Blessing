@@ -1,6 +1,6 @@
 # Moe Filter
 
-⚡ 强大的,为BungeeCord设计的高性能实用工具兼反机器人. (Minecraft 1.7.6-1.20.1)
+⚡ 强大的,为BungeeCord设计的高性能实用工具兼反机器人. (Minecraft 1.7.6-1.20.2)
 
 ---
 

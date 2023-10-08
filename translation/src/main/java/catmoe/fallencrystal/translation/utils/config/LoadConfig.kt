@@ -391,7 +391,7 @@ class LoadConfig {
                     unsupported-version=[
                         "",
                         "<red>Your version of the Minecraft client is not supported",
-                        "<red>The currently supported version is 1.8-1.20.1",
+                        "<red>The currently supported version is 1.8-1.20.2",
                         ""
                     ]
                 }
