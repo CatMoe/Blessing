@@ -789,8 +789,8 @@ class LoadConfig {
                         sent=true
                         # 区块起始位置
                         start=-1
-                        # 区块链长度. 区块数量为length的二次方. 最高为3, 最低为1
-                        length=3
+                        # 区块链长度. 区块数量为(length+1)的二次方. 最高为2, 最低为1
+                        length=2
                     }
                     check {
                         # 关闭所有检查

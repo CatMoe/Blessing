@@ -24,6 +24,8 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
+import com.github.benmanes.caffeine.cache.Caffeine
+import io.netty.buffer.Unpooled
 
 class RegistryData  : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
@@ -35,6 +37,23 @@ class RegistryData  : LimboS2CPacket() {
             DimensionInterface.LLBIT ->
                 packet.writeHeadlessCompoundTag(StaticDimension.cacheDimension.getIfPresent(version)!!)
                 //packet.writeCompoundTag(StaticDimension.dim.dimension.getAttributes(version))
+        }
+    }
+
+    companion object {
+        private val cacheData = Caffeine.newBuilder().build<Version, ByteArray>()
+
+        fun getCachedRegistry(version: Version): ByteArray {
+            return cacheData.getIfPresent(version) ?: createRegistryData(version)
+        }
+
+        fun createRegistryData(version: Version): ByteArray {
+            val byteBuf = ByteMessage(Unpooled.buffer())
+            RegistryData().encode(byteBuf, version)
+            val result = byteBuf.toByteArray()
+            byteBuf.release()
+            cacheData.put(version, result)
+            return result
         }
     }
 }

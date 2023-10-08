@@ -19,10 +19,12 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.RegistryData
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
@@ -35,7 +37,7 @@ class PacketLoginAcknowledged : LimboC2SPacket() {
         handler.state = Protocol.CONFIGURATION
         handler.updateVersion(handler.version!!, handler.state!!)
         handler.writePacket(EnumPacket.PLUGIN_MESSAGE)
-        handler.writePacket(EnumPacket.REGISTRY_DATA)
+        handler.writePacket(ExplicitPacket(0x05, RegistryData.getCachedRegistry(handler.version!!), "Cached Registry data."))
         //handler.writePacket(PacketPingPong())
         handler.sendPacket(PacketFinishConfiguration())
     }
