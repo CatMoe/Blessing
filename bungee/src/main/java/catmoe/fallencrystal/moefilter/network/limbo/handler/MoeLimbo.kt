@@ -39,14 +39,16 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import net.md_5.bungee.BungeeCord
 
 @Suppress("EnumValuesSoftDeprecate")
-object MoeLimbo {
+@IgnoreInitReload
+object MoeLimbo : Reloadable {
 
     val connections: MutableCollection<LimboHandler> = ArrayList()
-    //val dimensionType = CommonDimensionType.OVERWORLD
     private val rawDimLoaderType = LocalConfig.getLimbo().getAnyRef("dim-loader").toString()
     private val dimension = LocalConfig.getLimbo().getAnyRef("dimension").toString()
     val dimensionType = try {
@@ -62,6 +64,13 @@ object MoeLimbo {
     var debug = LocalConfig.getConfig().getBoolean("debug")
     var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
+    // Debug
+    private val disableCheck = LocalConfig.getLimbo().getBoolean("debug.check.disable-all")
+    val reduceDebug = LocalConfig.getLimbo().getBoolean("debug.reduce-f3-debug")
+    val chunkSent = LocalConfig.getLimbo().getBoolean("debug.chunk.sent")
+    val chunkStart = LocalConfig.getLimbo().getInt("debug.chunk.start")
+    val chunkLength = chunkStart + LocalConfig.getLimbo().getInt("debug.chunk.length")
+
     private val checker = listOf(
         CommonJoinCheck,
         MoveCheck,
@@ -71,10 +80,11 @@ object MoeLimbo {
         ChatCheck,
     )
 
-    fun reload() {
+    override fun reload() {
+        if (!LocalConfig.getLimbo().getBoolean("enabled")) return
         LockdownManager.setLockdown(true)
         calibrateConnections()
-        checker.forEach { it.unregister() }
+        if (!disableCheck) checker.forEach { it.unregister() }
         initLimbo()
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
@@ -127,7 +137,7 @@ object MoeLimbo {
     fun initLimbo() {
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         init()
-        for (c in checker) LimboListener.register(c)
+        if (!disableCheck) for (c in checker) LimboListener.register(c)
         PacketCache.initPacket()
         /*
         val cg = CaptchaGeneration()

@@ -29,13 +29,14 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.protocol.packet.Kick
 
-object FastDisconnect {
+object FastDisconnect : Reloadable {
     val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
     private val cachedByteArray = Caffeine.newBuilder().build<DisconnectReason, ByteArray>()
 
@@ -79,6 +80,10 @@ object FastDisconnect {
             handler.channel.close()
             ConnectionCounter.countBlocked(BlockType.JOIN)
         }
+    }
+
+    override fun reload() {
+        this.initMessages()
     }
 
     @Suppress("EnumValuesSoftDeprecate")

@@ -20,8 +20,9 @@ package catmoe.fallencrystal.moefilter.common.check.name.similarity
 import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.typesafe.config.ConfigException
@@ -30,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 @Suppress("UnstableApiUsage")
-class SimilarityCheck : AbstractCheck() {
+class SimilarityCheck : AbstractCheck(), Reloadable {
     private var config = LocalConfig.getAntibot().getConfig("name-check.similarity")
     private var maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
     private var enable = config.getBoolean("enable")
@@ -45,7 +46,7 @@ class SimilarityCheck : AbstractCheck() {
 
     private var queue = EvictingQueue.create<String>(maxList)
 
-    init { instance =this }
+    init { instance = this }
 
     override fun increase(info: CheckInfo): Boolean {
         if (!enable) return false
@@ -66,7 +67,7 @@ class SimilarityCheck : AbstractCheck() {
         return false
     }
 
-    fun reload() {
+    override fun reload() {
         config = LocalConfig.getAntibot().getConfig("name-check.similarity")
         maxList = try { config.getInt("max-list") } catch (_: ConfigException) { 1 }
         enable = config.getBoolean("enable")

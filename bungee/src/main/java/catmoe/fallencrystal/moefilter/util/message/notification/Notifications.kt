@@ -27,6 +27,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
@@ -36,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 @Suppress("SameParameterValue", "EnumValuesSoftDeprecate")
-object Notifications {
+object Notifications : Reloadable {
     /*
     Don't put val ObjectConfig.getMessage() here.
     It will cause the config to not modify after the class is initialized.
@@ -102,7 +103,7 @@ object Notifications {
         if (it.hasPermission("moefilter.notification.auto.actionbar") || it.hasPermission("moefilter.notification.auto")) { autoNotification.add(it) } }
     }
 
-    fun reload() {
+    override fun reload() {
         conf = LocalConfig.getMessage().getConfig("statistics")
         delay = conf.getLong("actionbar-update-delay")
         attackMessage = conf.getString("actionbar-format.attack")

@@ -20,7 +20,8 @@ package catmoe.fallencrystal.translation.utils.config
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
-object LocalConfig {
+@IgnoreInitReload
+object LocalConfig : Reloadable {
     private var config = ConfigFactory.parseFile(LoadConfig.instance.configFile)
     private var message = ConfigFactory.parseFile(LoadConfig.instance.messageFile)
     private var proxy = ConfigFactory.parseFile(LoadConfig.instance.proxyFile)
@@ -37,7 +38,7 @@ object LocalConfig {
 
     fun getLimbo(): Config { return limbo }
 
-    fun reloadConfig() {
+    override fun reload() {
         config = ConfigFactory.parseFile(LoadConfig.instance.configFile)
         message = ConfigFactory.parseFile(LoadConfig.instance.messageFile)
         proxy = ConfigFactory.parseFile(LoadConfig.instance.proxyFile)

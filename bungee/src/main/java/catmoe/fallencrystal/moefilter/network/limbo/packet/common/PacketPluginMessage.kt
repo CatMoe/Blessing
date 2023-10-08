@@ -26,6 +26,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.translation.utils.version.Version
+import com.google.common.base.Preconditions
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 
@@ -55,10 +56,10 @@ class PacketPluginMessage : LimboPacket {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         this.channel = packet.readString()
         if (version == Version.V1_7_6) packet.readShort() // Ignored
-        if (packet.readableBytes() >= 32767) throw IllegalArgumentException("Payload is too large")
+        Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
         val data = ByteArray(packet.readableBytes())
-        packet.readBytes(data)
         if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") {
+            packet.readBytes(data)
             /*
             val m = byteArrayOf((data.size - 1).toByte())
             System.arraycopy(data, 1, m, 0, m.size)
@@ -74,7 +75,8 @@ class PacketPluginMessage : LimboPacket {
             message = b.readString()
             b.release()
             // 错误抛出必须在release()后面 避免内存泄漏
-            if (message.isEmpty() || message.length > 128 || message.contains("jndi")) throw IllegalArgumentException("Invalid brand data because they is empty or too large")
+            //if (message.isEmpty() || message.length > 128 || message.contains("jndi")) throw IllegalArgumentException("Invalid brand data.")
+            Preconditions.checkArgument(!(message.isEmpty() || message.length > 128 || message.contains("jndi")), "Invalid brand data.")
             MoeLimbo.debug("Brand: $message")
         }
     }

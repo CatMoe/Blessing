@@ -21,12 +21,13 @@ import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.check.name.valid.AutoFirewallMode.*
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 
-class ValidNameCheck : AbstractCheck() {
+class ValidNameCheck : AbstractCheck(), Reloadable {
 
     private var regexPattern = "(?i)^(?!.*(?:mcstorm|mcdown|bot))[A-Za-z0-9_]{3,16}$"
 
@@ -46,6 +47,10 @@ class ValidNameCheck : AbstractCheck() {
             }
         }
         return result
+    }
+
+    override fun reload() {
+        this.init()
     }
 
     fun init() {

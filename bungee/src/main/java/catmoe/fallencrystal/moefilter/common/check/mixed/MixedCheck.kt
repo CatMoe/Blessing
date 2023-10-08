@@ -27,14 +27,17 @@ import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import com.typesafe.config.ConfigException
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
-object MixedCheck {
+@IgnoreInitReload
+object MixedCheck : Reloadable {
 
     private var conf = LocalConfig.getAntibot().getConfig("mixed-check")
     private var maxCacheTime = conf.getLong("max-cache-time")
@@ -150,7 +153,7 @@ object MixedCheck {
         catch (ex: IllegalArgumentException) { MessageUtil.logWarn("[MoeFilter] [MixedCheck] Unknown mode \"${conf.getAnyRef(path)}\", Disabling.."); DISABLED }
     }
 
-    fun reload() {
+    override fun reload() {
         conf = LocalConfig.getAntibot().getConfig("mixed-check")
         //if (type == DISABLED && this.type == DISABLED) return
         defaultType = loadType("default")

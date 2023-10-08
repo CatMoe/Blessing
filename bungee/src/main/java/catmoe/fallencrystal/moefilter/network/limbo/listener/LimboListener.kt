@@ -17,15 +17,15 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.listener
 
-import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Suppress("unused")
-object LimboListener {
+object LimboListener : Reloadable {
 
     val listener = Caffeine.newBuilder()
         .build<Class<out LimboPacket>, MutableCollection<ILimboListener>>()
@@ -46,7 +46,7 @@ object LimboListener {
         clazz.register()
     }
 
-    fun reload() { for (c in listeners) { if (c is LimboChecker) c.reload() else continue } }
+    override fun reload() { for (c in listeners) { if (c is Reloadable) c.reload() else continue } }
 
     fun unregister(clazz: ILimboListener) {
         val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()

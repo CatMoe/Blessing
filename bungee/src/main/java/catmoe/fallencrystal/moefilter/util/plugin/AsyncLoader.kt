@@ -142,7 +142,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         for (listener in listOf(
             this,
             BungeeSwitcher,
-            ReloadConfig(),
+            ReloadConfig,
             AttackCounterListener(),
         )) {
             EventManager.unregister(listener)
@@ -190,7 +190,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         EventManager.registerListener(plugin, AttackCounterListener())
         EventManager.triggerEvent(PluginReloadEvent(null))
          */
-        EventManager.register(ReloadConfig())
+        EventManager.register(ReloadConfig)
         EventManager.register(AttackCounterListener())
         EventManager.callEvent(PluginReloadEvent(null))
         registerLuckPermsListener()

@@ -70,8 +70,13 @@ class LoadConfig {
                     list=[""]
                 }
 
+                # 域名检查: 仅允许指定的域连接到服务器
                 domain-check {
+                    # 是否限制域名
+                    # 开: 基本检查 + 指定域名限制
+                    # 关: 仅开启域名有效检查
                     enabled=false
+                    # 允许的列表
                     allow-lists=["127.0.0.1", "localhost", "mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 
@@ -775,6 +780,25 @@ class LoadConfig {
                         max=14
                     }
                 }
+                
+                # 仅供开发人员使用! 如果您不知道您做什么将会导致什么后果, 请不要调整其中的任何选项.
+                debug {
+                    # 虚拟区块设置
+                    chunk {
+                        # false = 不发送区块数据包
+                        sent=true
+                        # 区块起始位置
+                        start=-1
+                        # 区块链长度. 区块数量为(length+1)的二次方. 最高为2, 最低为1
+                        length=2
+                    }
+                    check {
+                        # 关闭所有检查
+                        disable-all=false
+                    }
+                    # 减少在f3上的调试信息.
+                    reduce-f3-debug=false
+                }
     """.trimIndent()
 
     fun loadConfig() {
@@ -789,7 +813,7 @@ class LoadConfig {
         if (proxy.getString("version") != version || proxy.isEmpty) { updateConfig("proxy", proxy) }
         if (antibot.getString("version") != version || antibot.isEmpty) { updateConfig("antibot", antibot) }
         if (limbo.getString("version") != version || limbo.isEmpty) { updateConfig("limbo", limbo) }
-        LocalConfig.reloadConfig()
+        LocalConfig.reload()
     }
 
     private fun updateConfig(file: String, config: Config) {

@@ -19,11 +19,12 @@ package catmoe.fallencrystal.moefilter.network.limbo.netty
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.BitSetTooLargeException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import io.netty.buffer.*
-import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.BinaryTagIO
+import net.kyori.adventure.nbt.BinaryTagTypes
 import net.kyori.adventure.nbt.CompoundBinaryTag
+import se.llbit.nbt.CompoundTag
 import se.llbit.nbt.Tag
 import java.io.DataOutputStream
 import java.io.IOException
@@ -69,16 +70,15 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
             v = v ushr 7
         }
          */
-        // New code:
-        if (value and -0x80 == 0) { writeByte(value) } else if (value and -0x4000 == 0) {
-            writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
-        } else if (value and -0x200000 == 0) {
-            writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
-        } else if (value and -0x10000000 == 0) {
-            writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
-        } else {
-            writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
-            writeByte(value ushr 28)
+        when {
+            (value and -0x80 == 0) -> writeByte(value)
+            (value and -0x4000 == 0) -> writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
+            (value and -0x200000 == 0) -> writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
+            (value and -0x10000000 == 0) -> writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
+            else -> {
+                writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
+                writeByte(value ushr 28)
+            }
         }
     }
 
@@ -158,14 +158,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun readCompoundTag(): CompoundBinaryTag {
-        try {
-            ByteBufInputStream(buf).use { stream -> return BinaryTagIO.reader().read((stream as InputStream)) }
-        } catch (thrown: IOException) {
-            throw DecoderException("Cannot read NBT CompoundTag")
-        }
-    }
-
     fun writeCompoundTag(compoundTag: CompoundBinaryTag?) {
         try {
             ByteBufOutputStream(buf).use { stream ->
@@ -176,7 +168,36 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun writeTag(tag: Tag) { tag.write(DataOutputStream(ByteBufOutputStream(this))) }
+    fun writeHeadlessCompoundTag(compoundTag: CompoundBinaryTag) {
+        try {
+            ByteBufOutputStream(buf).use { stream ->
+                stream.writeByte(CompoundTag.TAG_COMPOUND) // CompoundTag ID
+                BinaryTagTypes.COMPOUND.write(compoundTag, stream)
+            }
+        } catch (e: IOException) {
+            throw EncoderException("Cannot write NBT CompoundTag")
+        }
+    }
+
+    fun writeCompoundTag(tag: Tag) {
+        //tag.write(DataOutputStream(ByteBufOutputStream(this)))
+        try {
+            tag.write(DataOutputStream(ByteBufOutputStream(this)))
+        } catch (e: IOException) {
+            throw EncoderException("Cannot write NBTTag")
+        }
+    }
+
+    fun writeHeadlessCompoundTag(tag: Tag?) {
+        try {
+            if (tag == null) { writeByte(0); return }
+            val out = ByteBufOutputStream(this)
+            out.writeByte(Tag.TAG_COMPOUND)
+            tag.write(DataOutputStream(out))
+        } catch (ex: IOException) {
+            throw EncoderException("Cannot write NBTTag")
+        }
+    }
 
     fun <E : Enum<E>?> writeEnumSet(enumset: EnumSet<E>, oclass: Class<E>) {
         val enums = oclass.enumConstants

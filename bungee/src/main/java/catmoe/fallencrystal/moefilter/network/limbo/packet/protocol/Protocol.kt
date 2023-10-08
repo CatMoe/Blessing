@@ -17,6 +17,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
@@ -49,13 +50,28 @@ enum class Protocol(var stateId: Int) {
         init {
             serverBound.register({ PacketInitLogin() }, map(0x00, min, max))
             serverBound.register({ PacketPluginResponse() }, map(0x02, min, max))
+            serverBound.register({ PacketLoginAcknowledged() }, map(0x03, V1_20_2, V1_20_2))
             clientBound.register({ PacketLoginSuccess() }, map(0x02, min, max))
             clientBound.register({ PacketPluginRequest() }, map(0x04, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
         }
     },
     @JvmStatic
-    PLAY(3) {
+    CONFIGURATION(3) {
+        init {
+            val min = V1_20_2
+            serverBound.register({ PacketClientConfiguration() }, map(0x00, min, max))
+            clientBound.register({ PacketDisconnect() }, map(0x01, min, max))
+            serverBound.register({ PacketPluginMessage() }, map(0x01, min, max))
+            serverBound.register({ PacketKeepAlive() }, map(0x03, min, max))
+            clientBound.register({ PacketKeepAlive() }, map(0x03, min, max))
+            clientBound.register({ PacketFinishConfiguration() }, map(0x02, min, max))
+            serverBound.register({ PacketFinishConfiguration() }, map(0x02, min, max))
+            clientBound.register({ RegistryData() }, map(0x05, min, max))
+        }
+    },
+    @JvmStatic
+    PLAY(4) {
         init {
             clientBound.register(
                 { PacketDisconnect() },
@@ -326,7 +342,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x59, V1_18, V1_19),
                 map(0x5C, V1_19_1, V1_19_1),
                 map(0x5A, V1_19_3, V1_19_3),
-                map(0x5E, V1_19_4, V1_20_2)
+                map(0x5E, V1_19_4, V1_20),
+                map(0x60, V1_20_2, V1_20_2)
             )
             serverBound.register(
                 { PacketClientChat() },

@@ -17,43 +17,28 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
-import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.RegistryData
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
-class PacketInitLogin : LimboC2SPacket() {
-
-    var username = ""
-
+class PacketLoginAcknowledged : LimboC2SPacket() {
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        username = packet.readString(packet.readVarInt())
-        if (username == "") throw InvalidUsernameException("Username is empty!")
-        //if (version!!.less(Version.V1_20_2) && !packet.readBoolean()) return
-        //packet.readUuid()
+        // This packet does not have any field.
     }
 
     override fun handle(handler: LimboHandler) {
-        val profile = handler.profile
-        profile.username=this.username
-        profile.address=handler.channel.remoteAddress()
-        profile.channel=handler.channel
-        profile.version=handler.version
-        handler.sendPacket(handler.getCachedPacket(EnumPacket.LOGIN_SUCCESS))
-        MoeLimbo.connections.add(handler)
-        if (handler.fakeHandler is FakeInitialHandler) handler.fakeHandler.username=profile.username
-        if (handler.version!!.less(Version.V1_20_2)) {
-            handler.state = Protocol.PLAY
-            handler.updateVersion(handler.version!!, handler.state!!)
-            handler.sendPlayPackets()
-        }
+        handler.state = Protocol.CONFIGURATION
+        handler.updateVersion(handler.version!!, handler.state!!)
+        handler.writePacket(EnumPacket.PLUGIN_MESSAGE)
+        handler.writePacket(ExplicitPacket(0x05, RegistryData.getCachedRegistry(handler.version!!), "Cached Registry data."))
+        //handler.writePacket(PacketPingPong())
+        handler.sendPacket(PacketFinishConfiguration())
     }
-
-    override fun toString(): String { return "PacketInitLogin(username=$username)" }
 }

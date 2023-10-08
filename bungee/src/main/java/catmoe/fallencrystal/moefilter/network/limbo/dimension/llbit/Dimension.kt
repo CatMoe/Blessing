@@ -17,6 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
+import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension.d1
+import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension.d2
 import catmoe.fallencrystal.translation.utils.version.Version
 import se.llbit.nbt.*
 import java.util.*
@@ -50,7 +52,7 @@ class Dimension(
         val attributes = encodeAttributes(version)
         val data = CompoundTag()
         if (version.lessOrEqual(Version.V1_16_1)) {
-            data.add("dimension", ListTag(Tag.TAG_COMPOUND, listOf(attributes)))
+            data.add("dimension", ListTag(Tag.TAG_COMPOUND /* 10 */, listOf(attributes)))
             return NamedTag("", data)
         }
         data.add("name", StringTag(key))
@@ -59,14 +61,12 @@ class Dimension(
         val d = CompoundTag()
         d.add("type", StringTag("minecraft:dimension_type"))
         d.add("value", ListTag(Tag.TAG_COMPOUND, Collections.singletonList(data)))
-        // dimensions.add("value", ListTag(Tag.TAG_COMPOUND, Collections.singletonList(dimensionData)))
         val root = CompoundTag()
         root.add("minecraft:dimension_type", d)
-        root.add("minecraft:worldgen/biome", createBiomeRegistry())
-        if (version == Version.V1_19_4) root.add("minecraft:damage_type", StaticDimension.d1)
-        if (version == Version.V1_20) root.add("minecraft:damage_type", StaticDimension.d2)
+        root.add("minecraft:worldgen/biome", createBiomeRegistry(version))
+        if (version.moreOrEqual(Version.V1_19_4)) root.add("minecraft:damage_type", if (version == Version.V1_19_4) d1 else d2)
         if (version.moreOrEqual(Version.V1_19)) root.add("minecraft:chat_type", createChatRegistry(version))
-        return NamedTag("", root)
+        return if (version.moreOrEqual(Version.V1_20_2)) root else NamedTag("", root)
     }
 
     fun getAttributes(version: Version): Tag { return NamedTag("", encodeAttributes(version)) }
@@ -107,22 +107,22 @@ class Dimension(
         return tag
     }
 
-    fun createBiomeRegistry(): CompoundTag {
+    fun createBiomeRegistry(version: Version): CompoundTag {
         val root = CompoundTag()
         root.add("type", StringTag("minecraft:worldgen/biome"))
         val biomes: MutableList<CompoundTag> = ArrayList()
-        for (biome in this.biomes) { biomes.add(encodeBiome(biome)) }
+        for (biome in this.biomes) { biomes.add(encodeBiome(biome, version)) }
         root.add("value", ListTag(Tag.TAG_COMPOUND, biomes))
         return root
     }
 
-    fun encodeBiome(biome: Biome): CompoundTag {
+    fun encodeBiome(biome: Biome, version: Version): CompoundTag {
         val biomeTag = CompoundTag()
         biomeTag.add("name", StringTag(biome.biome))
         biomeTag.add("id", IntTag(biome.id))
         val element = CompoundTag()
         element.add("precipitation", StringTag(biome.precipitation))
-        element.add("has_precipitation", ByteTag(if (biome.precipitation == "none") 0 else 1))
+        if (version.moreOrEqual(Version.V1_19_4)) element.add("has_precipitation", ByteTag(if (biome.precipitation == "none") 0 else 1))
         element.add("depth", FloatTag(biome.depth))
         element.add("temperature", FloatTag(biome.temperature))
         element.add("scale", FloatTag(biome.scale))

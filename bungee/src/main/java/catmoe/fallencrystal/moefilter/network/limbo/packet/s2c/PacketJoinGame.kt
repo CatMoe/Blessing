@@ -50,9 +50,9 @@ class PacketJoinGame : LimboS2CPacket() {
     var hashedSeed: Long = 0
     var maxPlayers = 1
     var viewDistance = 2
-    var reducedDebugInfo = true
+    var reducedDebugInfo = false
     var enableRespawnScreen = true
-    var isDebug = false
+    var isDebug = true
     var isFlat = true
 
     override fun encode(packet: ByteMessage, version: Version?) {
@@ -75,10 +75,10 @@ class PacketJoinGame : LimboS2CPacket() {
             if (version.less(V1_20_2)) packet.writeByte(previousGameMode)
             packet.writeStringsArray(worldNames)
             if (version.less(V1_20_2)) {
-                packet.writeTag(tag)
+                packet.writeCompoundTag(tag)
                 if ((version.fromTo(V1_19, V1_20) || version.fromTo(V1_16, V1_16_1)))
                     packet.writeString(worldName)
-                else packet.writeTag(dim.getAttributes(version))
+                else packet.writeCompoundTag(dim.getAttributes(version))
                 packet.writeString(worldName)
             }
         }
@@ -134,23 +134,6 @@ class PacketJoinGame : LimboS2CPacket() {
         if (version.moreOrEqual(V1_16)) packet.writeStringsArray(worldNames)
 
         // Dimension
-        /*
-        if (version.fromTo(V1_7_6, V1_9)) packet.writeByte(defaultDimension1_16.dimensionId)
-        else if (version.fromTo(V1_9_1, V1_15_2)) packet.writeInt(defaultDimension1_16.dimensionId)
-        else if (version.fromTo(V1_16, V1_16_1)) {
-            packet.writeCompoundTag(codec_Legacy)
-            packet.writeString(defaultDimension1_16.name)
-        } else if (version.fromTo(V1_16_2, V1_18)) {
-            packet.writeCompoundTag(codec_1_16)
-            packet.writeCompoundTag(defaultDimension1_16.data)
-        } else if (version == V1_18_2) {
-            packet.writeCompoundTag(codec_1_18_2)
-            packet.writeCompoundTag(defaultDimension1_18_2.data)
-        } else if (version == V1_19) packet.writeCompoundTag(codec_1_19)
-        else if (version.fromTo(V1_19_1, V1_19_3)) packet.writeCompoundTag(codec_1_19_1)
-        else if (version == V1_19_4) packet.writeCompoundTag(codec_1_19_4)
-        else packet.writeCompoundTag(codec_1_20)
-         */
         when {
             version.fromTo(V1_7_6, V1_9) -> packet.writeByte(defaultDimension1_16.dimensionId)
             version.fromTo(V1_9_1, V1_15_2) -> packet.writeInt(defaultDimension1_16.dimensionId)
@@ -169,6 +152,7 @@ class PacketJoinGame : LimboS2CPacket() {
             version == V1_19 -> packet.writeCompoundTag(codec_1_19)
             version.fromTo(V1_19_1, V1_19_3) -> packet.writeCompoundTag(codec_1_19_1)
             version == V1_19_4 ->  packet.writeCompoundTag(codec_1_20)
+            version == V1_20 -> packet.writeCompoundTag(codec_1_20)
             else -> {}
         }
 

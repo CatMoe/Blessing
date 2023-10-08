@@ -24,9 +24,10 @@ import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestWebhookCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.gui.TestGuiCommand
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import kotlin.reflect.full.createInstance
 
-class LoadCommand {
+class LoadCommand : Reloadable {
 
     companion object {
         val commands = mutableListOf(
@@ -46,7 +47,7 @@ class LoadCommand {
 
     fun load(){ loadCommand() }
 
-    fun reload() { CommandManager.dropAll(); loadCommand() }
+    override fun reload() { CommandManager.dropAll(); loadCommand() }
 
     private fun loadCommand() {
         for (c in commands) {

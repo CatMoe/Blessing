@@ -17,16 +17,19 @@
 
 package catmoe.fallencrystal.moefilter.common.geoip
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.DISABLED
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode.WHITELIST
+import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.maxmind.geoip2.DatabaseReader
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
+@IgnoreInitReload
 @Suppress("MemberVisibilityCanBePrivate")
-object GeoIPManager {
+object GeoIPManager : Reloadable {
     val available = AtomicBoolean(false)
     private var conf = LocalConfig.getProxy().getConfig("country")
     private var list = conf.getStringList("list")
@@ -36,7 +39,7 @@ object GeoIPManager {
     private val cache = Caffeine.newBuilder().build<String, Boolean>()
     private val regex = "^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\.\\d{1,3}\$".toRegex()
 
-    fun reload() {
+    override fun reload() {
         val conf = LocalConfig.getProxy().getConfig("country")
         this.list = conf.getStringList("list")
         val type = try { CountryMode.valueOf(conf.getAnyRef("mode").toString()) } catch (_: Exception) { DISABLED }
