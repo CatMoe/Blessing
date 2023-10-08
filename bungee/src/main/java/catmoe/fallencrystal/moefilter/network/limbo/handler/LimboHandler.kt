@@ -112,9 +112,9 @@ class LimboHandler(
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
 
-        if (version!!.moreOrEqual(Version.V1_8) && version!!.less(Version.V1_20_2)) {
+        if (version!!.moreOrEqual(Version.V1_8) && version!!.less(Version.V1_20_2))
+            // About ignore 1.20.2, See PacketLoginAcknowledged.handle() method.
             writePacket(if (version!!.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
-        }
 
         keepAliveScheduler()
         keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
@@ -131,7 +131,8 @@ class LimboHandler(
 
     private fun keepAliveScheduler() {
         var task: ScheduledTask? = null
-        task = scheduler.repeatScheduler( LocalConfig.getLimbo().getLong("keep-alive.delay"), TimeUnit.SECONDS) {
+        val delay = LocalConfig.getLimbo().getLong("keep-alive.delay")
+        task = scheduler.repeatScheduler(delay, delay, TimeUnit.SECONDS) {
             if (disconnected.get()) scheduler.cancelTask(task!!)
             keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)

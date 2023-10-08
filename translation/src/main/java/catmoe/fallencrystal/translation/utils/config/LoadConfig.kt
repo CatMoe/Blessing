@@ -70,8 +70,13 @@ class LoadConfig {
                     list=[""]
                 }
 
+                # 域名检查: 仅允许指定的域连接到服务器
                 domain-check {
+                    # 是否限制域名
+                    # 开: 基本检查 + 指定域名限制
+                    # 关: 仅开启域名有效检查
                     enabled=false
+                    # 允许的列表
                     allow-lists=["127.0.0.1", "localhost", "mc.miaomoe.net", "catmoe.realms.moe"]
                 }
                 

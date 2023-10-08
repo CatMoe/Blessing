@@ -58,9 +58,8 @@ class LockdownCommand : ICommand {
             MessageUtil.sendMessage(stateMessage, MessagesType.CHAT, sender)
             return
         }
-        val args2 = args[1]
         val prefix = LocalConfig.getMessage().getString("prefix")
-        when (args2) {
+        when (args[1]) {
             "toggle" -> {
                 when (LockdownManager.state.get()) {
                     true -> {

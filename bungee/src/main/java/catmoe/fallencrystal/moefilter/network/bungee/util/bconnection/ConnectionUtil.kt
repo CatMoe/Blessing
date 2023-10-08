@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.util.bconnection
 
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.PendingConnection
@@ -28,6 +29,7 @@ import java.lang.reflect.Field
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketAddress
+import java.util.concurrent.TimeUnit
 
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class ConnectionUtil(val connection: PendingConnection) {
@@ -51,13 +53,22 @@ class ConnectionUtil(val connection: PendingConnection) {
     fun writePacket(packet: Any) { pipeline!!.write(packet) }
 
     private fun initChannelWrapper(): ChannelWrapper? {
+
         val initialHandler = connection as InitialHandler
         var field: Field? = null
-        return try {
+        val result =  try {
             field = initialHandler.javaClass.getDeclaredField("ch")
             field!!.isAccessible=true
             field[initialHandler] as ChannelWrapper
         } catch (_: NoSuchFieldException) { null }
         finally { if (field != null) { field.isAccessible=false } }
+        result?.let { wrapperCache.put(initialHandler, it) }
+        return result
+    }
+
+    companion object {
+        val wrapperCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build<InitialHandler, ChannelWrapper>()
     }
 }
