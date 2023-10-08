@@ -18,11 +18,12 @@
 package catmoe.fallencrystal.moefilter.common.firewall
 
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
-object Throttler {
+object Throttler : Reloadable {
     private val ipCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build<InetAddress, Int>()
 
     private var throttle = 3
@@ -35,5 +36,5 @@ object Throttler {
 
     fun isThrottled(address: InetAddress): Boolean { return (ipCache.getIfPresent(address) ?: 0) >= throttle }
 
-    fun reload() { throttle = LocalConfig.getConfig().getInt("throttle-limit") }
+    override fun reload() { throttle = LocalConfig.getConfig().getInt("throttle-limit") }
 }

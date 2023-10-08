@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
@@ -30,7 +31,7 @@ import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-object PingManager {
+object PingManager : Reloadable {
     private var conf = LocalConfig.getConfig().getConfig("ping.cache")
 
     private var useStandardDomain = conf.getBoolean("stable-domain-cache")
@@ -53,7 +54,7 @@ object PingManager {
         if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(p1, p2)
     }
 
-    fun reload() {
+    override fun reload() {
         conf = LocalConfig.getConfig().getConfig("ping.cache")
         useStandardDomain = conf.getBoolean("stable-domain-cache")
         protocolAlwaysUnsupported = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")

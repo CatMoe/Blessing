@@ -27,13 +27,14 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.typesafe.config.ConfigException
 import io.netty.channel.Channel
 import io.netty.handler.timeout.ReadTimeoutException
 import java.io.IOException
 import java.net.InetSocketAddress
 
-object ExceptionCatcher {
+object ExceptionCatcher : Reloadable {
     private var debug = false
     @JvmStatic
     fun handle(channel: Channel, cause: Throwable) {
@@ -63,5 +64,5 @@ object ExceptionCatcher {
         ConnectionCounter.countBlocked(BlockType.FIREWALL)
     }
 
-    fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }
+    override fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }
 }

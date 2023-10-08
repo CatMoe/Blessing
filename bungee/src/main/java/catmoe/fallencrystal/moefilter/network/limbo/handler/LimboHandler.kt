@@ -21,6 +21,10 @@ import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkLength
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkSent
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkStart
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.connections
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
@@ -81,7 +85,7 @@ class LimboHandler(
     }
 
     private fun fireDisconnect() {
-        MoeLimbo.connections.remove(this)
+        connections.remove(this)
         LimboListener.handleReceived(Disconnect(), this)
         MoeLimbo.debug("Client disconnected")
         disconnected.set(true)
@@ -111,6 +115,7 @@ class LimboHandler(
         writePacket(POS_AND_LOOK)
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
+        writePacket(UPDATE_TIME)
 
         if (version!!.moreOrEqual(Version.V1_8) && version!!.less(Version.V1_20_2))
             // About ignore 1.20.2, See PacketLoginAcknowledged.handle() method.
@@ -126,14 +131,14 @@ class LimboHandler(
         *   客户端**不一定**会回应KeepAlive. 但客户端除了不回应心跳包之外,
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
-        (-1..1).forEach { x -> (-1..1).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+        if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
     }
 
     private fun keepAliveScheduler() {
         var task: ScheduledTask? = null
         val delay = LocalConfig.getLimbo().getLong("keep-alive.delay")
         task = scheduler.repeatScheduler(delay, delay, TimeUnit.SECONDS) {
-            if (disconnected.get()) scheduler.cancelTask(task!!)
+            if (disconnected.get()) task?.cancel()
             keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
             sendPacket(keepAlive)
         }

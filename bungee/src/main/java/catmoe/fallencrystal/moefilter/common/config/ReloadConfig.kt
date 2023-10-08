@@ -28,52 +28,54 @@ import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
-import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.PingManager
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
-import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
+import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
 import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
-import catmoe.fallencrystal.translation.utils.config.LoadConfig
+import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
+import java.util.concurrent.CopyOnWriteArrayList
 
-class ReloadConfig : EventListener {
+object ReloadConfig : EventListener {
 
-    @EventHandler(PluginReloadEvent::class)
+    val reloadable: MutableCollection<Reloadable> = CopyOnWriteArrayList(listOf(
+        LocalConfig,
+        MixedCheck,
+        GeoIPManager,
+        Firewall,
+        ProxyCache,
+        Notifications,
+        FastDisconnect,
+        ExceptionCatcher,
+        Throttler,
+        try { SimilarityCheck.instance } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() },
+        try { DomainCheck.instance } catch (safe: UninitializedPropertyAccessException) { DomainCheck() },
+        try { ValidNameCheck.instance } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck() },
+        MoeLimbo,
+        PingManager,
+        BrandCheck,
+        LimboListener,
+    ))
+
+    @EventHandler(PluginReloadEvent::class, priority = HandlerPriority.HIGHEST)
     @Platform(ProxyPlatform.BUNGEE)
     fun reloadConfig(event: PluginReloadEvent) {
         // Executor is null == Starting plugin.
         // Load can hot load module without "if" syntax.
         val executor = event.executor
-        if (executor != null) {
-            LoadConfig.instance.loadConfig()
-            LocalConfig.reloadConfig()
-            LoadCommand().reload()
-            warnMessage(event)
-            MixedCheck.reload()
-            GeoIPManager.reload()
-            if (LocalConfig.getLimbo().getBoolean("enabled")) MoeLimbo.reload()
+        for (reloadable in this.reloadable) {
+            if (reloadable::class.java.isAnnotationPresent(IgnoreInitReload::class.java) && executor == null) continue
+            try { reloadable.reload() } catch (e: Exception) { e.printStackTrace(); continue }
         }
-        Firewall.reload()
-        ProxyCache.reload()
-        Notifications.reload()
-        FastDisconnect.initMessages()
-        ExceptionCatcher.reload()
-        Throttler.reload()
-        PingManager.reload()
-        BrandCheck.init()
-        HAProxyManager.load()
-        LimboListener.reload()
-        // Init checks
-        try { SimilarityCheck.instance.reload() } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() }
-        try { DomainCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { DomainCheck().init() }
-        try { ValidNameCheck.instance.init() } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck().init() }
+        warnMessage(event)
     }
 
     private fun warnMessage(event: PluginReloadEvent) {

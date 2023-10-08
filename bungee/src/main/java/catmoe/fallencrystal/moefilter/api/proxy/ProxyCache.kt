@@ -18,16 +18,17 @@
 package catmoe.fallencrystal.moefilter.api.proxy
 
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
 
-object ProxyCache {
+object ProxyCache : Reloadable {
     val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
     private val whitelistedAddress = listOf("127.0.0.1")
 
     private val fetchProxy = FetchProxy()
 
-    fun reload() { fetchProxy.reload() }
+    override fun reload() { fetchProxy.reload() }
 
     fun isProxy(address: InetAddress): Boolean {
         if (whitelistedAddress.contains(address.hostAddress)) return false

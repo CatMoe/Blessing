@@ -780,6 +780,25 @@ class LoadConfig {
                         max=14
                     }
                 }
+                
+                # 仅供开发人员使用! 如果您不知道您做什么将会导致什么后果, 请不要调整其中的任何选项.
+                debug {
+                    # 虚拟区块设置
+                    chunk {
+                        # false = 不发送区块数据包
+                        sent=true
+                        # 区块起始位置
+                        start=-1
+                        # 区块链长度. 区块数量为length的二次方. 最高为3, 最低为1
+                        length=3
+                    }
+                    check {
+                        # 关闭所有检查
+                        disable-all=false
+                    }
+                    # 减少在f3上的调试信息.
+                    reduce-f3-debug=false
+                }
     """.trimIndent()
 
     fun loadConfig() {
@@ -794,7 +813,7 @@ class LoadConfig {
         if (proxy.getString("version") != version || proxy.isEmpty) { updateConfig("proxy", proxy) }
         if (antibot.getString("version") != version || antibot.isEmpty) { updateConfig("antibot", antibot) }
         if (limbo.getString("version") != version || limbo.isEmpty) { updateConfig("limbo", limbo) }
-        LocalConfig.reloadConfig()
+        LocalConfig.reload()
     }
 
     private fun updateConfig(file: String, config: Config) {

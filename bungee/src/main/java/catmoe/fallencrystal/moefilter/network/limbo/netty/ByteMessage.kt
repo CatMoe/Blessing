@@ -19,12 +19,12 @@ package catmoe.fallencrystal.moefilter.network.limbo.netty
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.BitSetTooLargeException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
 import io.netty.buffer.*
-import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.BinaryTagIO
 import net.kyori.adventure.nbt.BinaryTagTypes
 import net.kyori.adventure.nbt.CompoundBinaryTag
+import se.llbit.nbt.CompoundTag
 import se.llbit.nbt.Tag
 import java.io.DataOutputStream
 import java.io.IOException
@@ -158,14 +158,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun readCompoundTag(): CompoundBinaryTag {
-        try {
-            ByteBufInputStream(buf).use { stream -> return BinaryTagIO.reader().read((stream as InputStream)) }
-        } catch (thrown: IOException) {
-            throw DecoderException("Cannot read NBT CompoundTag")
-        }
-    }
-
     fun writeCompoundTag(compoundTag: CompoundBinaryTag?) {
         try {
             ByteBufOutputStream(buf).use { stream ->
@@ -179,7 +171,7 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     fun writeHeadlessCompoundTag(compoundTag: CompoundBinaryTag) {
         try {
             ByteBufOutputStream(buf).use { stream ->
-                stream.writeByte(10) // CompoundTag ID
+                stream.writeByte(CompoundTag.TAG_COMPOUND) // CompoundTag ID
                 BinaryTagTypes.COMPOUND.write(compoundTag, stream)
             }
         } catch (e: IOException) {
@@ -200,7 +192,7 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         try {
             if (tag == null) { writeByte(0); return }
             val out = ByteBufOutputStream(this)
-            out.writeByte(10)
+            out.writeByte(Tag.TAG_COMPOUND)
             tag.write(DataOutputStream(out))
         } catch (ex: IOException) {
             throw EncoderException("Cannot write NBTTag")

@@ -120,3 +120,15 @@ Tbungee/src/main/java/catmoe/fallencrystal/moefilter/listener/main/ExceptionFilt
 cbungee/src/main/java/catmoe/fallencrystal/moefilter/listener/listener/waterfall/IncomingListener.kt,c\1\c14d2afdbdb46fc047a601751570f73747fe07e3
 ~
 Nbungee/src/main/java/catmoe/fallencrystal/moefilter/util/plugin/AsyncLoader.kt,f\0\f099e2aefacf7355410a8a8496eacc3d92d91423
+É
+Stranslation/src/main/java/catmoe/fallencrystal/translation/server/ServerInstance.kt,0\4\04644ebbc9d7c8318453c42a0b11c74beb6a16ca
+à
+Xtranslation/src/main/java/catmoe/fallencrystal/translation/player/bungee/BungeePlayer.kt,f\2\f202ab61ec8279a7814c94af0a15e6603b0c2d06
+Ç
+Rbungee/src/main/java/catmoe/fallencrystal/moefilter/util/message/v2/MessageUtil.kt,7\3\735ff37bfd993c6971a41458f601636ad72e492d
+á
+Wbungee/src/main/java/catmoe/fallencrystal/moefilter/api/command/impl/LockdownCommand.kt,5\7\57839f7d7815922665d0da3e5392e7daf574cc01
+ê
+`bungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/s2c/PacketPlayerInfo.kt,5\1\5108b7ccf0a9582f053ff02c0a4cc4686d065eb8
+ã
+[bungee/src/main/java/catmoe/fallencrystal/moefilter/network/bungee/handler/PacketHandler.kt,9\6\968de69b66b7acad409e070fa1445c5eefccdf83

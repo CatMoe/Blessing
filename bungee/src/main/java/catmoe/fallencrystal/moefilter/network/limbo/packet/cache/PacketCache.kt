@@ -17,10 +17,12 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.ProxyServer
@@ -33,10 +35,10 @@ object PacketCache {
     val packetCache = Caffeine.newBuilder().build<EnumPacket, PacketSnapshot>()
     private val loc = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
     private val proxy = ProxyServer.getInstance()
-    private val brand = LocalConfig.getConfig().getString("f3-brand.custom")
+    private val brand = MessageUtil.colorize(LocalConfig.getConfig().getString("f3-brand.custom")
         .replace("%bungee%", proxy.name)
         .replace("%version%", proxy.version)
-        .replace("%backend%", "MoeLimbo")
+        .replace("%backend%", "MoeLimbo")).toLegacyText()
 
     fun initPacket() {
         val username = "MoeLimbo"
@@ -48,6 +50,7 @@ object PacketCache {
         loginSuccess.uuid=uuid
 
         val join = PacketJoinGame()
+        join.reducedDebugInfo=MoeLimbo.reduceDebug
 
         val abilities = PacketPlayerAbilities()
 

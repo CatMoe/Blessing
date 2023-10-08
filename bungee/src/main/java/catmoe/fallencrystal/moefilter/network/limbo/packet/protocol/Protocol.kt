@@ -342,7 +342,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x59, V1_18, V1_19),
                 map(0x5C, V1_19_1, V1_19_1),
                 map(0x5A, V1_19_3, V1_19_3),
-                map(0x5E, V1_19_4, V1_20_2)
+                map(0x5E, V1_19_4, V1_20),
+                map(0x60, V1_20_2, V1_20_2)
             )
             serverBound.register(
                 { PacketClientChat() },

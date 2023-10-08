@@ -23,14 +23,17 @@ import catmoe.fallencrystal.moefilter.check.brand.BrandMatchType.*
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.config.Reloadable
 
-object BrandCheck : AbstractCheck() {
+object BrandCheck : AbstractCheck(), Reloadable {
 
     private var config = LocalConfig.getConfig().getConfig("client-brand")
     private var a1 = ""
     private var matchType = CONTAINS
     private var matchMode = BLACKLIST
     private var list: List<String> = listOf()
+
+    override fun reload() { this.init()  }
 
     fun init() {
         config = LocalConfig.getConfig().getConfig("client-brand")

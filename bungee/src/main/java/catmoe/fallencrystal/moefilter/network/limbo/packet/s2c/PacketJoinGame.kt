@@ -50,9 +50,9 @@ class PacketJoinGame : LimboS2CPacket() {
     var hashedSeed: Long = 0
     var maxPlayers = 1
     var viewDistance = 2
-    var reducedDebugInfo = true
+    var reducedDebugInfo = false
     var enableRespawnScreen = true
-    var isDebug = false
+    var isDebug = true
     var isFlat = true
 
     override fun encode(packet: ByteMessage, version: Version?) {
