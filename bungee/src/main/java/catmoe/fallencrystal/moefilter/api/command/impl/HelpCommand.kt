@@ -104,7 +104,8 @@ class HelpCommand : ICommand {
                 l.joinToString("")
             } else parsedInfo.description
             // ${parsedInfo.description}
-            val command = if (sender !is ProxiedPlayer) parsedInfo.command else ""
+            val raw = parsedInfo.command
+            val command = if (sender !is ProxiedPlayer) raw else "<click:suggestion_command:/moefilter $raw>$raw</click>"
             MessageUtil.sendMessage("  <white>/moefilter $command <aqua>- <reset>$description", MessagesType.CHAT, sender)
         }
         MessageUtil.sendMessage(line, MessagesType.CHAT, sender)

@@ -69,7 +69,7 @@ class PacketJoinGame : LimboS2CPacket() {
         // Hardcore
         if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
         // Game mode
-        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 /* 1.7 Not supported spectator */ else gameMode)
+        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 0 /* 1.7 Not supported spectator */ else gameMode)
         else if (version.less(V1_20_2)) packet.writeByte(gameMode)
         if (version.moreOrEqual(V1_16)) {
             if (version.less(V1_20_2)) packet.writeByte(previousGameMode)

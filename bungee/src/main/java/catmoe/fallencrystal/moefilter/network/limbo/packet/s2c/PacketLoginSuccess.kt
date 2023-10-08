@@ -28,8 +28,7 @@ class PacketLoginSuccess : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         val uuid = this.uuid ?: UUID.randomUUID()
         if (version!!.moreOrEqual(Version.V1_16)) packet.writeUuid(uuid)
-        else if (version.moreOrEqual(Version.V1_7_6)) packet.writeString(uuid.toString())
-        else packet.writeString(uuid.toString().replace("-", ""))
+        else packet.writeString(uuid.toString())
         packet.writeString(username)
         if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
     }
