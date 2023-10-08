@@ -62,7 +62,7 @@ class LimboHandler(
     var state: Protocol? = null
     var version: Version? = null
     var host: InetSocketAddress? = null
-    var profile: VirtualConnection = VirtualConnection()
+    var profile: LimboProfile = LimboProfile()
     val fakeHandler: LimboCompat? = getFakeProxyHandler()
     private val scheduler = Scheduler(MoeFilterBungee.instance)
 
@@ -87,7 +87,7 @@ class LimboHandler(
     private fun fireDisconnect() {
         connections.remove(this)
         LimboListener.handleReceived(Disconnect(), this)
-        MoeLimbo.debug("Client disconnected")
+        MoeLimbo.debug(this,"Client disconnected")
         disconnected.set(true)
     }
 

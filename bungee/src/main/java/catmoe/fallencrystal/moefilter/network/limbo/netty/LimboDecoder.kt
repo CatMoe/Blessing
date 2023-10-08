@@ -38,7 +38,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         mappings = state.serverBound.registry[version]
-        MoeLimbo.debug("Decoder state changed. Version: ${version.name} State: ${state.name}")
+        MoeLimbo.debug(handler,"Decoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {
@@ -54,10 +54,10 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         if (packet == null) {
             LimboListener.handleReceived(Unknown(id), handler)
             if (mappings == null) {
-                MoeLimbo.debug("Failed to decode incoming packet ${"0x%02X".format(id)}: Mappings is empty")
+                MoeLimbo.debug(handler,"Failed to decode incoming packet ${"0x%02X".format(id)}: Mappings is empty")
                 throw NullPointerException("Mappings cannot be null!")
             }
-            MoeLimbo.debug("Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
+            MoeLimbo.debug(handler,"Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
             return
         }
         // Unreached code?
@@ -66,8 +66,8 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         // 进行数据包调试时首选打开debug模式
         packet.decode(byteMessage, ctx.channel(), version)
         LimboListener.handleReceived(packet, handler)
-        MoeLimbo.debug("Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
-        MoeLimbo.debug(packet.toString())
+        MoeLimbo.debug(handler, "Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
+        MoeLimbo.debug(handler, packet.toString())
         ctx.fireChannelRead(packet)
         MoeChannelHandler.sentHandshake.put(handler!!.channel, true)
     }

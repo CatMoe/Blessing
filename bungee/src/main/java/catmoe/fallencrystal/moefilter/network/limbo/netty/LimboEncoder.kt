@@ -38,7 +38,7 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         registry = state.clientBound.registry[version]
-        MoeLimbo.debug("Encoder state changed. Version: ${version.name} State: ${state.name}")
+        MoeLimbo.debug(handler, "Encoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
     override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket, out: ByteBuf) {
@@ -61,8 +61,8 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         try {
             if (LimboListener.handleSend(packetClazz, handler)) return
             packet.encode(msg, version)
-            MoeLimbo.debug("Encoding ${"0x%02X".format(packetId)} packet with ${msg.readableBytes()} bytes length")
-            MoeLimbo.debug(packetClazz.toString())
+            MoeLimbo.debug(handler, "Encoding ${"0x%02X".format(packetId)} packet with ${msg.readableBytes()} bytes length")
+            MoeLimbo.debug(handler, packetClazz.toString())
         } catch (ex: Exception) { ex.printStackTrace() }
     }
 

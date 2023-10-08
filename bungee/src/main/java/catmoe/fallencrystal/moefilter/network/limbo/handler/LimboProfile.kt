@@ -19,11 +19,16 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
+import java.net.InetSocketAddress
 import java.net.SocketAddress
 
-class VirtualConnection {
+class LimboProfile {
     var channel: Channel? = null
     var username: String? = null
     var version: Version? = null
     var address: SocketAddress? = null
+
+    override fun toString(): String {
+        return "[${address as InetSocketAddress} | $username]"
+    }
 }

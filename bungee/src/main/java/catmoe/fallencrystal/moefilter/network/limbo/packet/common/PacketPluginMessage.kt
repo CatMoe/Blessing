@@ -77,14 +77,17 @@ class PacketPluginMessage : LimboPacket {
             // 错误抛出必须在release()后面 避免内存泄漏
             //if (message.isEmpty() || message.length > 128 || message.contains("jndi")) throw IllegalArgumentException("Invalid brand data.")
             Preconditions.checkArgument(!(message.isEmpty() || message.length > 128 || message.contains("jndi")), "Invalid brand data.")
-            MoeLimbo.debug("Brand: $message")
+            //MoeLimbo.debug(handler,"Brand: $message")
         }
     }
 
     override fun handle(handler: LimboHandler) {
-        if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") handler.brand=this.message
-        if (BrandCheck.increase(Brand(this.message))) {
-            FastDisconnect.disconnect(handler, DisconnectType.BRAND_NOT_ALLOWED)
+        if (this.channel == "MC|Brand" || this.channel == "minecraft:brand") {
+            handler.brand=this.message
+            if (BrandCheck.increase(Brand(this.message))) {
+                FastDisconnect.disconnect(handler, DisconnectType.BRAND_NOT_ALLOWED)
+            }
+            MoeLimbo.debug(handler, "Brand: $message")
         }
     }
 

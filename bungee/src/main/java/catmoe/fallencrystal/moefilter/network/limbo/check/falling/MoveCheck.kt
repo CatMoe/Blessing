@@ -137,9 +137,7 @@ object MoveCheck: LimboChecker {
             /*
             Check duplicated rotations
              */
-            if (a != null && a.yaw != 0f && a.pitch != 0f && o >= 3) {
-                if (a.yaw == h.yaw && a.pitch == h.pitch) k(handler)
-            }
+            if ((a != null && a.yaw != 0f && a.pitch != 0f && o >= 3) && (a.yaw == h.yaw && a.pitch == h.pitch)) k(handler)
         }
         this.a.put(handler, LimboLocation(b ?: 0.0, c ?: 0.0, d ?: 0.0, e ?: 0f, f ?: 0f, g ?: false))
 
@@ -177,12 +175,12 @@ object MoveCheck: LimboChecker {
             val l = this.c(h, k?.x ?: h)
             val m = this.c(i, k?.y ?: i)
             val n = this.c(j, k?.z ?: j)
-            MoeLimbo.debug("X: $b(C: $h M: ${k?.x} A: $l) Y: $c(C: $i M: ${k?.y} A: $m) Z: $d(C: $j M: ${k?.z} A: $n) C=$o")
+            MoeLimbo.debug(handler, "X: $b(C: $h M: ${k?.x} A: $l) Y: $c(C: $i M: ${k?.y} A: $m) Z: $d(C: $j M: ${k?.z} A: $n) C=$o")
             this.b.put(handler, LimboLocation(a(k?.x, h), a(k?.y, i), a(k?.z, j), 0f, 0f, false))
             if (k != null) {
-                if (k.x == h && h != 0.0) MoeLimbo.debug("Final max x speed: $h")
-                if (k.y == i && i != 0.0) MoeLimbo.debug("Final max y speed: $i")
-                if (k.z == j && j != 0.0) MoeLimbo.debug("Final max z speed: $j")
+                if (k.x == h && h != 0.0) MoeLimbo.debug(handler, "Final max x speed: $h")
+                if (k.y == i && i != 0.0) MoeLimbo.debug(handler, "Final max y speed: $i")
+                if (k.z == j && j != 0.0) MoeLimbo.debug(handler, "Final max z speed: $j")
             }
             if (!this.s(m, o)) { k(handler); return true }
         }
@@ -232,7 +230,7 @@ object MoveCheck: LimboChecker {
 
     private val simulation = Caffeine.newBuilder().build<Int, Double>()
 
-    init {
+    override fun register() {
         mapOf(
             3..7 to 0.07,
             8..15 to 0.06,
@@ -244,7 +242,5 @@ object MoveCheck: LimboChecker {
         ).forEach { it.key.forEach { h -> simulation.put(h, it.value) } }
     }
 
-    override fun register() {}
-
-    override fun unregister() {}
+    override fun unregister() { /* Ignored */ }
 }

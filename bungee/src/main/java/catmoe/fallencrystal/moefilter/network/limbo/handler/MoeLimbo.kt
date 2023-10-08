@@ -134,6 +134,8 @@ object MoeLimbo : Reloadable {
         if (debug) MessageUtil.logInfo("[MoeLimbo] $log")
     }
 
+    fun debug(handler: LimboHandler?, log: String) { this.debug("${handler?.profile} $log") }
+
     fun initLimbo() {
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         init()
