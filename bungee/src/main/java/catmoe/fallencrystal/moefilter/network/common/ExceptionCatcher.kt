@@ -54,7 +54,7 @@ object ExceptionCatcher : Reloadable {
             }
             is InvalidStatusPingException -> { Firewall.addAddress(address); return }
             is InvalidHandshakeException -> { Firewall.addAddress(address); return }
-            is InvalidPacketException -> Firewall.addAddress(address)
+            is InvalidPacketException ->  { Firewall.addAddress(address); return }
             is ConfigException -> {
                 MessageUtil.logError("<red>A connection forced closed because your config has critical issue")
                 cause.printStackTrace(); return

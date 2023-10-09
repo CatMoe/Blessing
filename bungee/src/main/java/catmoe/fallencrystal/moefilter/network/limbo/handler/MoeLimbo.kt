@@ -48,16 +48,16 @@ import net.md_5.bungee.BungeeCord
 @IgnoreInitReload
 object MoeLimbo : Reloadable {
 
+    private var limboConfig = LocalConfig.getLimbo()
     val connections: MutableCollection<LimboHandler> = ArrayList()
-    private val rawDimLoaderType = LocalConfig.getLimbo().getAnyRef("dim-loader").toString()
-    private val dimension = LocalConfig.getLimbo().getAnyRef("dimension").toString()
+    private val rawDimLoaderType = limboConfig.getAnyRef("dim-loader").toString()
+    private val dimension = limboConfig.getAnyRef("dimension").toString()
     val dimensionType = try {
         CommonDimensionType.valueOf(dimension)
     } catch (_: IllegalArgumentException) {
         MessageUtil.logWarn("[MoeLimbo] Unknown dimension $dimension, Fallback to OVERWORLD.")
         CommonDimensionType.OVERWORLD
     }
-    private var conf = LocalConfig.getLimbo()
     var dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
         MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
     }
@@ -65,11 +65,16 @@ object MoeLimbo : Reloadable {
     var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
     // Debug
-    private val disableCheck = LocalConfig.getLimbo().getBoolean("debug.check.disable-all")
-    val reduceDebug = LocalConfig.getLimbo().getBoolean("debug.reduce-f3-debug")
-    val chunkSent = LocalConfig.getLimbo().getBoolean("debug.chunk.sent")
-    val chunkStart = LocalConfig.getLimbo().getInt("debug.chunk.start")
-    val chunkLength = chunkStart + LocalConfig.getLimbo().getInt("debug.chunk.length")
+    private val disableCheck = limboConfig.getBoolean("debug.check.disable-all")
+    val reduceDebug = limboConfig.getBoolean("debug.reduce-f3-debug")
+    val chunkSent = limboConfig.getBoolean("debug.chunk.sent")
+    val chunkStart = limboConfig.getInt("debug.chunk.start")
+    val chunkLength = chunkStart + limboConfig.getInt("debug.chunk.length")
+
+    // Packet Limit
+    var packetMaxSize = limboConfig.getInt("packet-limit.packet-max-size")
+    var packetIncomingPerSec = limboConfig.getInt("packet-limit.packet-incoming-per-sec")
+    var packetBytesPerSec = limboConfig.getInt("packet-limit.packet-bytes-per-sec")
 
     private val checker = listOf(
         CommonJoinCheck,
@@ -109,16 +114,6 @@ object MoeLimbo : Reloadable {
         this.connections.removeAll(connections.toSet())
     }
 
-    private fun init() {
-        conf = LocalConfig.getLimbo()
-        dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
-            MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
-        }
-        initDimension()
-        initEvent()
-        debug = LocalConfig.getConfig().getBoolean("debug")
-    }
-
     private fun initDimension() {
         when (dimLoaderMode) {
             ADVENTURE -> {
@@ -140,16 +135,19 @@ object MoeLimbo : Reloadable {
     }
 
     fun initLimbo() {
+        limboConfig = LocalConfig.getLimbo()
+        dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
+            MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
+        }
+        initDimension()
+        initEvent()
+        debug = LocalConfig.getConfig().getBoolean("debug")
+        packetMaxSize = limboConfig.getInt("packet-limit.packet-max-size")
+        packetIncomingPerSec = limboConfig.getInt("packet-limit.packet-incoming-per-sec")
+        packetBytesPerSec = limboConfig.getInt("packet-limit.packet-bytes-per-sec")
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
-        init()
         if (!disableCheck) for (c in checker) LimboListener.register(c)
         PacketCache.initPacket()
-        /*
-        val cg = CaptchaGeneration()
-        (0..(Runtime.getRuntime().availableProcessors() * 2)).forEach {
-            Scheduler(MoeFilter.instance).runAsync { cg.generateImages() }
-        }
-         */
     }
 
 }

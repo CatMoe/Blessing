@@ -15,8 +15,12 @@ import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetBytesPerSec
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetIncomingPerSec
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetMaxSize
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
+import catmoe.fallencrystal.moefilter.network.limbo.netty.TrafficLimiter
 import catmoe.fallencrystal.moefilter.network.limbo.netty.VarIntLengthEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.*
@@ -24,7 +28,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
-import net.md_5.bungee.netty.PipelineUtils
+import net.md_5.bungee.netty.PipelineUtils.*
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
 
@@ -44,7 +48,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
         val pipeline = channel.pipeline()
-        val listener = channel.attr(PipelineUtils.LISTENER).get()
+        val listener = channel.attr(LISTENER).get()
         if (listener.isProxyProtocol) HAProxyManager.handle(ctx)
         val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
         val inetAddress = (remoteAddress as InetSocketAddress).address
@@ -68,35 +72,36 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         val handler = LimboHandler(encoder, decoder, channel, ctx)
         decoder.handler=handler
         encoder.handler=handler
-        pipeline.addLast(PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
-        pipeline.addLast(PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
-        pipeline.addLast(PipelineUtils.FRAME_PREPENDER, VarIntLengthEncoder())
-        pipeline.addLast(PipelineUtils.PACKET_DECODER, decoder)
-        pipeline.addLast(PipelineUtils.PACKET_ENCODER, encoder)
-        pipeline.addLast(PipelineUtils.BOSS_HANDLER, handler)
+        pipeline.addFirst(TrafficLimiter.NAME, TrafficLimiter(packetMaxSize, packetIncomingPerSec, packetBytesPerSec))
+        pipeline.addBefore(TrafficLimiter.NAME, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
+        pipeline.addLast(FRAME_DECODER, VarIntFrameDecoder())
+        pipeline.addLast(FRAME_PREPENDER, VarIntLengthEncoder())
+        pipeline.addLast(PACKET_DECODER, decoder)
+        pipeline.addLast(PACKET_ENCODER, encoder)
+        pipeline.addLast(BOSS_HANDLER, handler)
     }
 
     open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, eventCaller: EventCaller, listener: ListenerInfo) {
         MoeChannelHandler.register(pipeline)
-        PipelineUtils.BASE.initChannel(channel)
+        BASE.initChannel(channel)
 
         // MoeFilter has VarIntFrameDecoder, TimeoutHandler and InboundHandler itself.
-        pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, VarIntFrameDecoder())
+        pipeline.replace(FRAME_DECODER, FRAME_DECODER, VarIntFrameDecoder())
         // like https://github.com/PaperMC/Waterfall/commit/6702e0f69b2fa32c1046d277ade2107e22ba9134
-        pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
-        pipeline.replace(PipelineUtils.BOSS_HANDLER, PipelineUtils.BOSS_HANDLER, InboundHandler())
+        pipeline.replace(TIMEOUT_HANDLER, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
+        pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, InboundHandler())
 
         // Init default BungeeCord pipeline
-        pipeline.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.LEGACY_DECODER, LegacyDecoder())
-        pipeline.addAfter(PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
-        pipeline.addAfter(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, MinecraftEncoder(Protocol.HANDSHAKE, true, protocol))
-        pipeline.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.LEGACY_KICKER, legacyKicker)
+        pipeline.addBefore(FRAME_DECODER, LEGACY_DECODER, LegacyDecoder())
+        pipeline.addAfter(FRAME_DECODER, PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
+        pipeline.addAfter(FRAME_PREPENDER, PACKET_ENCODER, MinecraftEncoder(Protocol.HANDSHAKE, true, protocol))
+        pipeline.addBefore(FRAME_PREPENDER, LEGACY_KICKER, legacyKicker)
 
         // MoeFilter -- TND default should be true.
         channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
         // MoeFilter's InitialHandler
-        pipeline.get(InboundHandler::class.java).setHandler(
+        pipeline[InboundHandler::class.java].setHandler(
             if (MoeLimbo.useOriginalHandler) InitialHandler(bungee, listener) else MoeInitialHandler(ctx, listener)
         )
 
