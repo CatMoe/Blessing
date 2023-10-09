@@ -120,4 +120,6 @@ Thanks for all the above items. to help us structure these things better.
 
 ![Contributors](https://contrib.rocks/image?repo=CatMoe/MoeFilter)
 
+![Alt](https://repobeats.axiom.co/api/embed/f665cd4fc79f5d2012357d69f3ea2a1f505d77cf.svg "Repobeats analytics image")
+
 Made by [@CatMoe](https://github.com/CatMoe) / [@FallenCrystal](https://github.com/FallenCrystal) on 🌏 with 💖
