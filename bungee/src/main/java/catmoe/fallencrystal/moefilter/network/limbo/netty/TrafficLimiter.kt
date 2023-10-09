@@ -33,16 +33,20 @@ class TrafficLimiter(
     var packetsPerSec = 0
     var bytesPerSec = 0
 
+    @Suppress("GrazieInspection", "ConvertTwoComparisonsToRangeCheck")
     @Throws(Exception::class)
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         if (msg is ByteBuf) {
             val size = msg.readableBytes()
-            if (this.sizeLimit in 1..<size) throw PacketOverflowException("Readable byte(s) is $size but limit is ${this.sizeLimit}")
+            //if (this.sizeLimit in 1..<size) throw PacketOverflowException("Readable byte(s) is $size but limit is ${this.sizeLimit}")
+            if (sizeLimit > 1 && size > sizeLimit) throw PacketOverflowException("Readable byte(s) is $size but limit is ${this.sizeLimit}")
             val now = System.currentTimeMillis()
             if ((now - lastTime) > 1000) { packetsPerSec=0; bytesPerSec=0; lastTime=now }
             packetsPerSec++; bytesPerSec += size
-            if (incomingLimit in 1..<packetsPerSec) throw PacketOverflowException("Throttled because connection reached $incomingLimit packet(s) per/sec limit")
-            if (byteLimit in 1..<bytesPerSec) throw PacketOverflowException("Throttled because connection reached $byteLimit byte(s) per/sec limit")
+            //if (incomingLimit in 1..<packetsPerSec) throw PacketOverflowException("Throttled because connection reached $incomingLimit packet(s) per/sec limit")
+            //if (byteLimit in 1..<bytesPerSec) throw PacketOverflowException("Throttled because connection reached $byteLimit byte(s) per/sec limit")
+            if (incomingLimit > 1 && packetsPerSec > incomingLimit) throw PacketOverflowException("Throttled because connection reached $incomingLimit packet(s) per/sec limit")
+            if (byteLimit > 1 && bytesPerSec > byteLimit) throw PacketOverflowException("Throttled because connection reached $byteLimit byte(s) per/sec limit")
         }
         super.channelRead(ctx, msg)
     }
