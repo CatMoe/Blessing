@@ -42,8 +42,6 @@ class PacketInitLogin : LimboC2SPacket() {
     override fun handle(handler: LimboHandler) {
         val profile = handler.profile
         profile.username=this.username
-        profile.address=handler.channel.remoteAddress()
-        profile.channel=handler.channel
         profile.version=handler.version
         handler.sendPacket(handler.getCachedPacket(EnumPacket.LOGIN_SUCCESS))
         MoeLimbo.connections.add(handler)

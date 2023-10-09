@@ -50,6 +50,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         if (id == 0x00 && (handler?.state ?: Protocol.HANDSHAKING) == Protocol.HANDSHAKING) { MoeChannelHandler.sentHandshake.put(handler!!.channel, true) }
         else if (MoeChannelHandler.sentHandshake.getIfPresent(handler!!.channel) != true) throw InvalidPacketException("No valid handshake packet received")
          */
+        MoeLimbo.debug(handler, "Decoding ${"0x%02X".format(id)} packet with ${byteMessage.readableBytes()} bytes length")
         val packet = mappings?.getPacket(id)
         if (packet == null) {
             LimboListener.handleReceived(Unknown(id), handler)
@@ -66,7 +67,6 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         // 进行数据包调试时首选打开debug模式
         packet.decode(byteMessage, ctx.channel(), version)
         LimboListener.handleReceived(packet, handler)
-        MoeLimbo.debug(handler, "Decoding ${"0x%02X".format(id)} packet with ${byteBuf.readableBytes()} bytes length")
         MoeLimbo.debug(handler, packet.toString())
         ctx.fireChannelRead(packet)
         MoeChannelHandler.sentHandshake.put(handler!!.channel, true)

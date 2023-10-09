@@ -29,6 +29,6 @@ class LimboProfile {
     var address: SocketAddress? = null
 
     override fun toString(): String {
-        return "[${address as InetSocketAddress} | $username]"
+        return "[${address as? InetSocketAddress} | $username]"
     }
 }

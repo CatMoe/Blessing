@@ -74,6 +74,12 @@ class LimboHandler(
 
    private fun getFakeProxyHandler(): LimboCompat { return FakeInitialHandler(ctx) }
 
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        val channel = ctx.channel()
+        profile.channel=channel
+        profile.address=channel.remoteAddress()
+    }
+
     override fun channelInactive(ctx: ChannelHandlerContext) {
         if (!disconnected.get()) fireDisconnect()
         super.channelInactive(ctx)

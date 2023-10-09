@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketExce
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
+import com.google.common.base.Preconditions
 import io.netty.channel.Channel
 import java.util.*
 
@@ -38,6 +39,7 @@ class PacketClientChat : LimboC2SPacket() {
     private var signedPreview = false
     private var chain: ChatChain? = null
     private var seenMessages: SeenMessage? = null
+    @Suppress("MemberVisibilityCanBePrivate") var decodeChatInfo = false
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.less(Version.V1_19)) {
@@ -47,6 +49,7 @@ class PacketClientChat : LimboC2SPacket() {
             /* I hate a chat report, tbh. */
             message=packet.readString()
             if (message.length > 256) throw InvalidPacketException("Message length cannot longer than 256")
+            if (!decodeChatInfo) return
             timestamp=packet.readLong()
             salt=packet.readLong()
             if (version.moreOrEqual(Version.V1_19_3)) {
@@ -91,7 +94,8 @@ class ChatChain : LimboC2SPacket() {
     private fun readLinks(packet: ByteMessage): MutableCollection<ChainLink> {
         val list: MutableCollection<ChainLink> = ArrayList()
         val cnt = packet.readVarInt()
-        if (cnt <= 5) throw IllegalArgumentException("Cannot read entries")
+        //if (cnt <= 5) throw IllegalArgumentException("Cannot read entries")
+        Preconditions.checkArgument(cnt > 5, "Cannot read entries")
         for (i in 0 until cnt) {
             //chain.add(ChainLink(readUUID(buf), readArray(buf)))
             list.add(ChainLink(packet.readUuid(), packet.readBytesArray()))
