@@ -179,8 +179,8 @@ class LoadConfig {
                 statistics {
                     # 可用占位符描述已被移除 如果您想知道各个占位符有什么用 请看chat-format中使用的占位符..
                     actionbar-format {
-                            idle="%prefix% <aqua>CPS <white>%cps%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
-                            attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
+                            idle="%prefix% <aqua>CPU <white>%proc_cpu%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
+                            attack="%prefix% <aqua>Type %type% <aqua>CPU <white>%proc_cpu%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
                     }
                     chat-format {
                         idle=[
