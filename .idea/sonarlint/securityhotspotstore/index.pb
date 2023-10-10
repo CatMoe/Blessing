@@ -130,8 +130,6 @@ Rbungee/src/main/java/catmoe/fallencrystal/moefilter/util/message/v2/MessageUtil
 Wbungee/src/main/java/catmoe/fallencrystal/moefilter/api/command/impl/LockdownCommand.kt,5\7\57839f7d7815922665d0da3e5392e7daf574cc01
 ê
 `bungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/s2c/PacketPlayerInfo.kt,5\1\5108b7ccf0a9582f053ff02c0a4cc4686d065eb8
-ã
-[bungee/src/main/java/catmoe/fallencrystal/moefilter/network/bungee/handler/PacketHandler.kt,9\6\968de69b66b7acad409e070fa1445c5eefccdf83
 å
 \common/src/main/java/catmoe/fallencrystal/moefilter/network/common/haproxy/HAProxyManager.kt,1\a\1a01e5b24ff4fe906303c4eedaa55d799e76f75d
 ê

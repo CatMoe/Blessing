@@ -175,7 +175,7 @@ object Notifications : Reloadable {
     /* Bytes */
 
     // Why... This kotlin version does not support that.
-    @Suppress("ConvertTwoComparisonsToRangeCheck")
+    @Suppress("ConvertTwoComparisonsToRangeCheck", "MemberVisibilityCanBePrivate")
     fun conversionBytesFormat(bytes: Long): String {
         val bytesPerKiB = 1024L
         val bytesPerMiB = bytesPerKiB * 1024L
