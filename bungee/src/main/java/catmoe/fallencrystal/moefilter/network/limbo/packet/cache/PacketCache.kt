@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom
 object PacketCache {
 
     val packetCache = Caffeine.newBuilder().build<EnumPacket, PacketSnapshot>()
-    private val loc = LimboLocation(8.0, 450.0, 8.0, 90f, 10f, false)
+    private val loc = LimboLocation(7.5, 450.0, 7.5, 90f, 10f, false)
     private val proxy = ProxyServer.getInstance()
     private val brand = MessageUtil.colorize(LocalConfig.getConfig().getString("f3-brand.custom")
         .replace("%bungee%", proxy.name)

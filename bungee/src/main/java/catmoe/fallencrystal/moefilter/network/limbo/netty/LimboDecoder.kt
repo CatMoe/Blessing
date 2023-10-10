@@ -66,7 +66,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         // Try-catch 语句已被删除 因为对于某些异常解码的抛出可以直接顺着exception Caught方法直接切断连接并列入黑名单
         // 进行数据包调试时首选打开debug模式
         packet.decode(byteMessage, ctx.channel(), version)
-        LimboListener.handleReceived(packet, handler)
+        if (LimboListener.handleReceived(packet, handler)) return
         MoeLimbo.debug(handler, packet.toString())
         ctx.fireChannelRead(packet)
         MoeChannelHandler.sentHandshake.put(handler!!.channel, true)

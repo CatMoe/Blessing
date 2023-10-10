@@ -120,9 +120,9 @@ class LimboHandler(
         // writePacket(PLAYER_ABILITIES)
 
         writePacket(POS_AND_LOOK)
-        if (version.moreOrEqual(Version.V1_8)) writePacket(SPAWN_POSITION)
+        writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
-        writePacket(UPDATE_TIME)
+        //writePacket(UPDATE_TIME)
 
         if (version.moreOrEqual(Version.V1_8) && version.less(Version.V1_20_2))
             // About ignore 1.20.2, See PacketLoginAcknowledged.handle() method.
@@ -139,6 +139,7 @@ class LimboHandler(
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
         if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+        sendPacket(keepAlive)
     }
 
     private fun keepAliveScheduler() {

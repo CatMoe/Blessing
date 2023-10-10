@@ -48,11 +48,6 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
             is ExplicitPacket -> packet.id
             else -> registry!!.getPacketId(packet::class.java)
         }
-            /*
-            if (packet is PacketSnapshot) registry!!.getPacketId(packet.wrappedPacket::class.java)
-            else if (packet is ExplicitPacket) packet.id
-            else registry!!.getPacketId(packet::class.java)
-             */
         if (packetId != -1) msg.writeVarInt(packetId) else return
         val packetClazz =
             try {

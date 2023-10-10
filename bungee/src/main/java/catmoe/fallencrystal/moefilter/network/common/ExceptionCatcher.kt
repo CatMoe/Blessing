@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.common
 
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
@@ -45,12 +45,12 @@ object ExceptionCatcher : Reloadable {
             is IOException -> return
             is InvalidVarIntException -> {
                 Firewall.addAddress(address)
-                ConnectionCounter.countBlocked(BlockType.FIREWALL)
+                ConnectionStatistics.countBlocked(BlockType.FIREWALL)
                 return
             }
             is ReadTimeoutException -> {
                 if (Throttler.isThrottled(address)) Firewall.addAddress(address)
-                ConnectionCounter.countBlocked(BlockType.TIMEOUT); return
+                ConnectionStatistics.countBlocked(BlockType.TIMEOUT); return
             }
             is InvalidStatusPingException -> { Firewall.addAddress(address); return }
             is InvalidHandshakeException -> { Firewall.addAddress(address); return }
@@ -61,7 +61,7 @@ object ExceptionCatcher : Reloadable {
             }
         }
         Firewall.addAddressTemp(address)
-        ConnectionCounter.countBlocked(BlockType.FIREWALL)
+        ConnectionStatistics.countBlocked(BlockType.FIREWALL)
     }
 
     override fun reload() { debug = LocalConfig.getConfig().getBoolean("debug") }

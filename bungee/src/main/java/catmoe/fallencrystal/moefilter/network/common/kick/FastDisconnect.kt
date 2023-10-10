@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.common.kick
 
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.ServerType
@@ -55,14 +55,14 @@ object FastDisconnect : Reloadable {
             VELOCITY -> throw UnsupportedOperationException("Velocity support soon.")
         }
         channel.writeAndFlush(packet); channel.close()
-        ConnectionCounter.countBlocked(BlockType.JOIN)
+        ConnectionStatistics.countBlocked(BlockType.JOIN)
     }
 
     fun disconnect(connection: ConnectionUtil, type: DisconnectType) {
         if (connection.isConnected) {
             val packet = (reasonCache.getIfPresent(type) ?: getCacheReason(type, ComponentUtil.parse("<red>Unknown kick reason: ${type.messagePath}"))).packet.bungeecord
             connection.writePacket(packet); connection.close()
-            ConnectionCounter.countBlocked(BlockType.JOIN)
+            ConnectionStatistics.countBlocked(BlockType.JOIN)
         }
     }
 
@@ -78,7 +78,7 @@ object FastDisconnect : Reloadable {
                 else -> handler.sendPacket(cs.packet.moelimbo)
             }
             handler.channel.close()
-            ConnectionCounter.countBlocked(BlockType.JOIN)
+            ConnectionStatistics.countBlocked(BlockType.JOIN)
         }
     }
 

@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.common.state
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
@@ -51,7 +51,7 @@ object StateManager {
     fun attackMethodAnalyser() {
         if (!inAttack.get()) return
         val conf = LocalConfig.getAntibot().getConfig("attack-mode")
-        val cps = ConnectionCounter.getConnectionPerSec()
+        val cps = ConnectionStatistics.getConnectionPerSec()
         val inc = conf.getInt("incoming")
         if (cps < inc && attackMethods.isNotEmpty()) return
         val methodSize = AttackState.values().size
@@ -59,7 +59,7 @@ object StateManager {
             val method: MutableCollection<AttackState> = ArrayList()
             if (cps > methodSize * 2) {
                 BlockType.values().forEach {
-                    if ((ConnectionCounter.sessionBlocked.getIfPresent(it) ?: 0) > cps / methodSize) { method.add(it.state) }
+                    if ((ConnectionStatistics.sessionBlocked.getIfPresent(it) ?: 0) > cps / methodSize) { method.add(it.state) }
                 }
                 if (method == lastMethod) return
                 lastMethod.clear(); lastMethod.addAll(method)
@@ -70,7 +70,7 @@ object StateManager {
 
     fun attackEndedDetector() {
         val conf = LocalConfig.getAntibot().getConfig("attack-mode.un-attacked")
-        val cps = ConnectionCounter.getConnectionPerSec()
+        val cps = ConnectionStatistics.getConnectionPerSec()
         if (inAttack.get() && cps == 0) {
             if (conf.getBoolean("instant")) { fireNotInAttackEvent() }
             else {
@@ -79,7 +79,7 @@ object StateManager {
                     var task: ScheduledTask? = null
                     task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
                         if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); scheduler.cancelTask(task!!) }
-                        if (ConnectionCounter.getConnectionPerSec() != 0) {
+                        if (ConnectionStatistics.getConnectionPerSec() != 0) {
                             attackEndedCount.set(conf.getInt("wait"))
                             attackEndedWaiter.set(false); scheduler.cancelTask(task!!)
                         }

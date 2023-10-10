@@ -6,19 +6,18 @@ import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBoundsException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.common.ServerType
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
@@ -40,14 +39,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Suppress("MemberVisibilityCanBePrivate")
 class MoeInitialHandler(
     private val ctx: ChannelHandlerContext,
-    listenerInfo: ListenerInfo,
+    listenerInfo: ListenerInfo
 ) : InitialHandler(BungeeCord.getInstance(), listenerInfo), IPipeline {
     private val channel = ctx.channel()
     private var currentState = ConnectionState.HANDSHAKE
     private var inetSocketAddress: InetSocketAddress? = null
     private var inetAddress: InetAddress? = null
     private var pipeline: ChannelPipeline? = null
-    private val packetHandler = PacketHandler()
+    private val packetHandler = BungeePacketHandler()
     @Throws(Exception::class)
     override fun connected(wrapper: ChannelWrapper) {
         super.connected(wrapper)
@@ -96,7 +95,7 @@ class MoeInitialHandler(
         }
         handshake.host=checkHost(handshake.host)
         this.handshake=handshake
-        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, PACKET_INTERCEPTOR, packetHandler)
+        pipeline!!.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
         packetHandler.protocol.set(handshake.protocolVersion)
         pipeline!!.addLast(LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         if (superHandshake.get()) { try { super.handle(handshake) } catch (exception: Exception) { exception.printStackTrace(); channel.close() } }
@@ -115,7 +114,7 @@ class MoeInitialHandler(
     @Throws(Exception::class)
     override fun handle(statusRequest: StatusRequest) {
         if (hasRequestedPing || hasSuccessfullyPinged || currentState !== ConnectionState.STATUS) {
-            ConnectionCounter.countBlocked(BlockType.PING)
+            ConnectionStatistics.countBlocked(BlockType.PING)
             throw InvalidStatusPingException()
         }
         hasRequestedPing = true
@@ -130,7 +129,7 @@ class MoeInitialHandler(
         But they are actually safe to ignore, I don't want console spam.
          */
        CompletableFuture.runAsync {
-           if (!isConnected) { ConnectionCounter.countBlocked(BlockType.PING); throw InvalidStatusPingException() }
+           if (!isConnected) { ConnectionStatistics.countBlocked(BlockType.PING); throw InvalidStatusPingException() }
            currentState = ConnectionState.PINGING
            hasSuccessfullyPinged = true
            MixedCheck.increase(Pinging((inetAddress ?: return@runAsync), packetHandler.protocol.get()))
@@ -173,7 +172,7 @@ class MoeInitialHandler(
         val parent = InitialHandler::class.java
         val field = parent.getDeclaredField("uniqueId")
         field.isAccessible=true
-        field.set(parent, uniqueId)
+        field[parent] = uniqueId
     }
 
     // Override = always use moefilter myself initialHandler's uniqueId field.

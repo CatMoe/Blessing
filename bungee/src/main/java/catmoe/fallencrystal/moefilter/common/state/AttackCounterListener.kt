@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.common.state
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
@@ -44,37 +44,35 @@ class AttackCounterListener : EventListener {
     private var inAttack = false
     private val scheduler = Scheduler(MoeFilterBungee.instance)
 
-    @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.HIGHEST)
+    @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.LOWEST)
     @AsynchronousHandler
     @Suppress("UNUSED_PARAMETER")
     @Platform(ProxyPlatform.BUNGEE)
     fun startSessionCount(event: UnderAttackEvent) {
         if (!inAttack) {
-            inAttack=true; ConnectionCounter.setInAttack(true)
-            Notifications.autoNotificationPlayer()
-            MessageUtil.logWarn("[MoeFilter] [AntiBot] The server is under attack!")
-            scheduler.runAsync {
-                sendTitle(true)
-                WebhookSender().sendWebhook(LocalConfig.getAntibot().getConfig("notifications.webhook.attack-start"))
+            inAttack=true; ConnectionStatistics.inAttack=true
+            ProxyServer.getInstance().players.forEach {
+                if (it.hasPermission("moefilter.notification.auto.actionbar") || it.hasPermission("moefilter.notification.auto")) Notifications.autoNotification.add(it)
             }
+            MessageUtil.logWarn("[MoeFilter] [AntiBot] The server is under attack!")
+            sendTitle(true)
+            WebhookSender().sendWebhook(LocalConfig.getAntibot().getConfig("notifications.webhook.attack-start"))
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    @EventHandler(AttackStoppedEvent::class, priority = HandlerPriority.HIGHEST)
+    @EventHandler(AttackStoppedEvent::class, priority = HandlerPriority.LOWEST)
     @AsynchronousHandler
     @Platform(ProxyPlatform.BUNGEE)
     fun stopSessionCount(event: AttackStoppedEvent) {
         if (inAttack) {
-            inAttack=false; ConnectionCounter.setInAttack(false)
+            inAttack=false; ConnectionStatistics.inAttack=false
             MoeLimbo.calibrateConnections()
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")
-            ConnectionCounter.sessionIpCache.invalidateAll()
-            scheduler.runAsync {
-                Notifications.autoNotification.clear()
-                sendTitle(false)
-                WebhookSender().sendWebhook(LocalConfig.getAntibot().getConfig("notifications.webhook.attack-stopped"))
-            }
+            ConnectionStatistics.sessionIpCache.invalidateAll()
+            Notifications.autoNotification.clear()
+            sendTitle(false)
+            WebhookSender().sendWebhook(LocalConfig.getAntibot().getConfig("notifications.webhook.attack-stopped"))
         }
     }
 

@@ -1,3 +1,20 @@
+/*
+ * Copyright 2023. CatMoe / FallenCrystal
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
@@ -26,7 +43,6 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
-import lombok.RequiredArgsConstructor
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
@@ -35,8 +51,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-@RequiredArgsConstructor
-class PacketHandler : ChannelDuplexHandler() {
+class BungeePacketHandler : ChannelDuplexHandler() {
     @Suppress("OVERRIDE_DEPRECATION")
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
@@ -48,7 +63,7 @@ class PacketHandler : ChannelDuplexHandler() {
     private val proxy = ProxyServer.getInstance()
 
     val cancelled = AtomicBoolean(false)
-    val isAvailable = AtomicBoolean(false)
+    @Suppress("MemberVisibilityCanBePrivate") val isAvailable = AtomicBoolean(false)
 
     @Throws(Exception::class)
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
@@ -90,7 +105,7 @@ class PacketHandler : ChannelDuplexHandler() {
                 if (packet is PluginMessage) {
                     try {
                         if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {
-                            val player = PipelineUtil.getPlayer(ctx) ?: return
+                            val player = PipelineUtil.getPlayer(ctx) ?: return@run
                             val brand = Unpooled.wrappedBuffer(packet.data)
                             val clientBrand = DefinedPacket.readString(brand)
                             brand.release()

@@ -89,7 +89,7 @@ object MoeLimbo : Reloadable {
         if (!LocalConfig.getLimbo().getBoolean("enabled")) return
         LockdownManager.setLockdown(true)
         calibrateConnections()
-        if (!disableCheck) checker.forEach { it.unregister() }
+        if (!disableCheck) checker.forEach { it.reload() }
         initLimbo()
         LockdownManager.setLockdown(false)
         val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")

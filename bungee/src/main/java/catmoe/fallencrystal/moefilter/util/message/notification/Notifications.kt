@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.util.message.notification
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
@@ -29,7 +29,6 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
 import catmoe.fallencrystal.translation.utils.system.CPUMonitor
-import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.util.*
@@ -74,19 +73,21 @@ object Notifications : Reloadable {
             "%process_cpu%" to "${cpu.processCPU}",
             "%system_cpu%" to "${cpu.systemCPU}",
             //"%cps%" to "${ConnectionCounter.getConnectionPerSec()}",
-            "%cps%" to getReplacedCPS(ConnectionCounter.getConnectionPerSec()),
-            "%total%" to "${ConnectionCounter.total}",
-            "%total_session%" to "${ConnectionCounter.sessionTotal}",
-            "%total_ips%" to "${ConnectionCounter.totalIps}",
-            "%total_ips_session%" to "${ConnectionCounter.sessionTotalIps}",
-            "%blocked%" to "${ConnectionCounter.totalBlocked()}",
-            "%blocked_session%" to "${ConnectionCounter.totalSessionBlocked()}",
-            "%peak_cps%" to getReplacedCPS(ConnectionCounter.peakCps),
-            "%peak_cps_session%" to getReplacedCPS(ConnectionCounter.sessionPeakCps),
+            "%cps%" to getReplacedCPS(ConnectionStatistics.getConnectionPerSec()),
+            "%total%" to "${ConnectionStatistics.total}",
+            "%total_session%" to "${ConnectionStatistics.sessionTotal}",
+            "%total_ips%" to "${ConnectionStatistics.totalIps}",
+            "%total_ips_session%" to "${ConnectionStatistics.sessionTotalIps}",
+            "%blocked%" to "${ConnectionStatistics.totalBlocked()}",
+            "%blocked_session%" to "${ConnectionStatistics.totalSessionBlocked()}",
+            "%peak_cps%" to getReplacedCPS(ConnectionStatistics.peakCps),
+            "%peak_cps_session%" to getReplacedCPS(ConnectionStatistics.sessionPeakCps),
             "%prefix%" to config.getString("prefix"),
             "%duration%" to getDuration(StateManager.duration.getDuration()),
             "%type%" to getType(),
             "%limbo%" to MoeLimbo.connections.size.toString(),
+            "%incoming-bytes%" to conversionBytesFormat(ConnectionStatistics.getIncoming()),
+            "%outgoing-bytes%" to conversionBytesFormat(ConnectionStatistics.getOutgoing()),
         )
         internalPlaceholder.forEach { output = output.replace(it.key, it.value) }
         return output
@@ -98,9 +99,6 @@ object Notifications : Reloadable {
         val message = placeholder(if (StateManager.inAttack.get()) attackMessage else idleMessage)
         if (autoNotification.isNotEmpty()) { sendActionbar(autoNotification, message) }
         if (switchNotification.isNotEmpty()) { sendActionbar(switchNotification, message) }
-    }
-    fun autoNotificationPlayer() { ProxyServer.getInstance().players.forEach {
-        if (it.hasPermission("moefilter.notification.auto.actionbar") || it.hasPermission("moefilter.notification.auto")) { autoNotification.add(it) } }
     }
 
     override fun reload() {
@@ -126,7 +124,7 @@ object Notifications : Reloadable {
             try { n.add(i.toInt()) } catch (_: NumberFormatException)
             { MessageUtil.logWarn("[MoeFilter] [Notifications] (In colorize cps configuration) $i is not a valid number.") }
         }
-        // 小妙招+1? tbh, 只要将-it改成it 就是从小到大了
+        // 小妙招+1? 只要将-it改成it 就是从小到大了
         n=n.sortedWith(compareBy { -it }).toMutableList()
         for (i in n) { customCPS[i]=config.getString("$i") }
     }
@@ -172,6 +170,25 @@ object Notifications : Reloadable {
 
         }
         return sb.toString()
+    }
+
+    /* Bytes */
+
+    // Why... This kotlin version does not support that.
+    @Suppress("ConvertTwoComparisonsToRangeCheck")
+    fun conversionBytesFormat(bytes: Long): String {
+        val bytesPerKiB = 1024L
+        val bytesPerMiB = bytesPerKiB * 1024L
+        val bytesPerGiB = bytesPerMiB * 1024L
+        val bytesPerTiB = bytesPerGiB * 1024L
+
+        return when {
+            bytes >= 0L && bytes < bytesPerKiB -> "$bytes B"
+            bytes >= bytesPerKiB && bytes < bytesPerMiB -> "${bytes / bytesPerKiB} KB"
+            bytes >= bytesPerMiB && bytes < bytesPerGiB -> "${bytes / bytesPerMiB} MB"
+            bytes >= bytesPerGiB && bytes < bytesPerTiB -> "${bytes / bytesPerGiB} GB"
+            else -> "${bytes / bytesPerTiB} TB"
+        }
     }
 
 

@@ -61,8 +61,16 @@ object KeepAliveTimeout : LimboChecker {
         FastDisconnect.disconnect(handler, DisconnectType.UNEXPECTED_PING)
     }
 
-    override fun register() {}
+    override fun register() {
+        /*
+        This module does not need that.
+         */
+    }
 
-    override fun unregister() {}
+    override fun unregister() {
+        /*
+        This module does not need that.
+         */
+    }
 
 }

@@ -173,13 +173,13 @@ class LoadConfig {
     private val defaultMessage = """
                 version="$version"
                 # API v6已经切换到MiniMessage.
-                prefix="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient> <gray>>> "
+                prefix="<gradient:#F9A8FF:#97FFFF>MoeFilter</gradient> <gray>» "
                 reload-warn="<green>已重新加载配置文件 部分内容可能需要重启代理生效."
                 
                 statistics {
                     # 可用占位符描述已被移除 如果您想知道各个占位符有什么用 请看chat-format中使用的占位符..
                     actionbar-format {
-                            idle="%prefix% <aqua>CPU <gray>proc. <white>%process_cpu%% <gray>sys. <white>%system_cpu%%   <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%"
+                            idle="%prefix% <aqua>CPS <white>%cps%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
                             attack="%prefix% <aqua>Type %type%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%"
                     }
                     chat-format {

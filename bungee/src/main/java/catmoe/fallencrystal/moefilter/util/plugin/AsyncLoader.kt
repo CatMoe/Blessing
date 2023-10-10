@@ -27,7 +27,7 @@ import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
@@ -108,7 +108,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
 
                 registerListener()
-                ConnectionCounter
+                ConnectionStatistics
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
                 LoadCommand().load()
@@ -156,7 +156,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
         else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
         when (mode) {
-            PIPELINE -> { InitChannel().initPipeline() }
+            PIPELINE -> InitChannel().initPipeline()
             EVENT -> {
                 pluginManager.registerListener(plugin, MainListener.incomingListener)
                 MessageUtil.logWarn("[MoeFilter] EVENT mode is deprecated. Don't expect strong protection!")

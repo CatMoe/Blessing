@@ -23,11 +23,11 @@ import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
-import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeePacketHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -39,8 +39,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.PendingConnection
 import net.md_5.bungee.api.plugin.Listener
-import net.md_5.bungee.netty.PipelineUtils.BOSS_HANDLER
-import net.md_5.bungee.netty.PipelineUtils.TIMEOUT_HANDLER
+import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.packet.Handshake
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -64,20 +63,20 @@ object MainListener {
         val inetAddress = (address as InetSocketAddress).address
         // Don't firewall them.
         if (connectionCache.getIfPresent(inetAddress) == true) { return true } else { connectionCache.put(inetAddress, true) }
-        if (!isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
+        if (!isProxyProtocol) { ConnectionStatistics.increase(inetAddress) }
         val result = Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress)
-        if (result) ConnectionCounter.countBlocked(BlockType.FIREWALL)
+        if (result) ConnectionStatistics.countBlocked(BlockType.FIREWALL)
         return result
     }
 
     fun onHandshake(handshake: Handshake, pc: PendingConnection) {
         val connection = ConnectionUtil(pc)
         val inetAddress = connection.inetAddress
-        if (isProxyProtocol) { ConnectionCounter.increase(inetAddress) }
+        if (isProxyProtocol) { ConnectionStatistics.increase(inetAddress) }
         connectionCache.invalidate(inetAddress)
         val result = Firewall.isFirewalled(inetAddress) || Throttler.increase(inetAddress)
-        if (result) { connection.close(); ConnectionCounter.countBlocked(BlockType.FIREWALL); return }
-        val packetHandler = PacketHandler()
+        if (result) { connection.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
+        val packetHandler = BungeePacketHandler()
         val method = handshake.requestedProtocol
         packetHandler.inetSocketAddress=connection.inetSocketAddress
         packetHandler.protocol.set(handshake.protocolVersion)
@@ -97,8 +96,8 @@ object MainListener {
         if (connection.isConnected) {
             val pipeline = connection.pipeline ?: return
             if (GeyserInitializer.isGeyser(pipeline.channel())) return
-            pipeline.replace(TIMEOUT_HANDLER, TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
-            pipeline.addBefore(BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
+            pipeline.replace(PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, TimeoutHandler(BungeeCord.getInstance().getConfig().timeout.toLong()))
+            pipeline.addBefore(PipelineUtils.BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, packetHandler)
             pipeline.addLast(IPipeline.LAST_PACKET_INTERCEPTOR, MoeChannelHandler.EXCEPTION_HANDLER)
         } else { if (method != 1) { Firewall.addAddressTemp(inetAddress) } }
     }

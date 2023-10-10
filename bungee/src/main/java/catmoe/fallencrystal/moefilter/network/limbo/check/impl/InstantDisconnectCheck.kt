@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
-import catmoe.fallencrystal.moefilter.common.counter.ConnectionCounter
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -35,7 +35,9 @@ import java.net.InetSocketAddress
 @HandlePacket(Disconnect::class)
 object InstantDisconnectCheck : LimboChecker {
 
-    override fun reload() {}
+    override fun reload() {
+        // This module does not need to reload
+    }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         val address = (handler.address as InetSocketAddress).address
@@ -48,14 +50,18 @@ object InstantDisconnectCheck : LimboChecker {
          */
         if (MoeChannelHandler.sentHandshake.getIfPresent(handler.channel) != true) {
             Firewall.addAddressTemp(address)
-            ConnectionCounter.countBlocked(BlockType.FIREWALL)
+            ConnectionStatistics.countBlocked(BlockType.FIREWALL)
         }
         return false
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return false }
 
-    override fun register() {}
+    override fun register() {
+        // This module does not need to do something on registering
+    }
 
-    override fun unregister() {}
+    override fun unregister() {
+        // This module does not need to do something on unregistering
+    }
 }

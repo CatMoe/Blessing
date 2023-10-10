@@ -36,7 +36,7 @@ class PacketServerPositionLook: LimboS2CPacket() {
         //listOf(sendLoc.yaw, sendLoc.pitch).forEach { packet.writeFloat(it) }
         packet.writeFloat(sendLoc.yaw)
         packet.writeFloat(sendLoc.pitch)
-        if (version.moreOrEqual(Version.V1_8)) packet.writeByte(0x08) else packet.writeBoolean(true)
+        if (version.moreOrEqual(Version.V1_8)) packet.writeByte(0x08) else packet.writeBoolean(sendLoc.onGround)
         // 1.9+ 的 ConfirmTeleport实际上是在此处处理的 而不是另一个数据包 :|
         if (version.moreOrEqual(Version.V1_9)) packet.writeVarInt(teleport ?: 7890)
         // 是否骑乘在实体身上
