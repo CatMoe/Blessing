@@ -22,9 +22,12 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.IMessagePacketProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import com.github.benmanes.caffeine.cache.Caffeine
+import java.util.concurrent.TimeUnit
 
 object MessagePacketCache {
-    private val cache = Caffeine.newBuilder().build<String, MessagePacket>()
+    private val cache = Caffeine.newBuilder()
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .build<String, MessagePacket>()
 
     fun writePacket(processor: IMessagePacketProcessor, packet: MessagePacket) { cache.put("${getType(processor).prefix}${packet.getOriginal()}", packet) }
 
