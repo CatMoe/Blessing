@@ -58,10 +58,12 @@ class ExecutorHelper(private val command: String) {
     }
 
     private fun watchDog() {
-        scheduler.repeatScheduler(1, TimeUnit.SECONDS) {
+        var task: ScheduledTask? = null
+        task = scheduler.repeatScheduler(1, TimeUnit.SECONDS) {
             schedules.forEach { if (activeThread.getIfPresent(it) == null) { schedules.remove(it) } }
-            if (!watchdog.get()) return@repeatScheduler
-            if (queue.size == 0 || count.get() == 0) idle.set(true)
+            val t = task
+            if (!watchdog.get() && t != null) t.cancel()
+            if (queue.isEmpty() || count.get() == 0) idle.set(true)
             if (debug.get() && !idle.get()) { MessageUtil.logInfo("[MoeFilter] [ExecutorHelper] Queue: ${queue.size} Threads: ${count.get()}") }
         }
     }
@@ -74,7 +76,7 @@ class ExecutorHelper(private val command: String) {
         this.threads.set(threads)
         if (!watchdog.get()) this.watchDog()
         var schedule: ScheduledTask? = null
-        schedule = scheduler.repeatScheduler(10, TimeUnit.MILLISECONDS) {
+        schedule = scheduler.repeatScheduler(5, TimeUnit.MILLISECONDS) {
             val task = intThread.getIfPresent(threads)
             if (task != null) {
                 activeThread.put(task, true); schedules.add(task)
