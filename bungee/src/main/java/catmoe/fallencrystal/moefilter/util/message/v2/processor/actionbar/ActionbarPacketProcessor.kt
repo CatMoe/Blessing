@@ -40,7 +40,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
     private val aOrdinal = ChatMessageType.ACTION_BAR.ordinal
 
     override fun process(message: String, protocol: List<Int>): MessagePacket {
-        val cached = MessagePacketCache.readPacket(this, message) as? MessageActionbarPacket
+        val cached = MessagePacketCache(this).readPacket(message) as? MessageActionbarPacket
         val baseComponent = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, baseComponent)
@@ -51,14 +51,14 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         var need111 = cached?.v111 != null
         var need110 = cached?.v110 != null
         protocol.forEach {
-            /*
-            if (it >= ProtocolConstants.MINECRAFT_1_19) need119=true else if (it > ProtocolConstants.MINECRAFT_1_17) need117=true
-            else if (it > ProtocolConstants.MINECRAFT_1_16) need116=true
-            else if (it > ProtocolConstants.MINECRAFT_1_10) need111=true else need110=true
-             */
-            if (it >= V1_19.number) need119=true else if (it > V1_17.number) need117=true
-            else if (it > V1_16.number) need116=true else if (it > V1_10.number) need111=true
-            else need110 = true
+            val version = Version.of(it)
+            when {
+                version.moreOrEqual(V1_19) -> need119=true
+                version.more(V1_17) -> need117=true
+                version.more(V1_16) -> need116=true
+                version.more(V1_10) -> need111=true
+                else -> need110=true
+            }
         }
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
         val p117 = cached?.v117 ?: get117(serializer, need117)
@@ -69,7 +69,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
             p119, p117, p116, p111, p110,
             baseComponent, serializer, legacyComponent, legacySerializer, message
         )
-        MessagePacketCache.writePacket(this, packet)
+        MessagePacketCache(this).writePacket(packet)
         return packet
     }
 

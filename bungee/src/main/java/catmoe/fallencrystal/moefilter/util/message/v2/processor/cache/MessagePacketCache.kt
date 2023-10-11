@@ -24,14 +24,17 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageTyp
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.concurrent.TimeUnit
 
-object MessagePacketCache {
-    private val cache = Caffeine.newBuilder()
-        .expireAfterWrite(1, TimeUnit.MINUTES)
-        .build<String, MessagePacket>()
+class MessagePacketCache(@Suppress("MemberVisibilityCanBePrivate") val processor: IMessagePacketProcessor) {
 
-    fun writePacket(processor: IMessagePacketProcessor, packet: MessagePacket) { cache.put("${getType(processor).prefix}${packet.getOriginal()}", packet) }
+    fun writePacket(packet: MessagePacket) { cache.put("${getType().prefix}${packet.getOriginal()}", packet) }
 
-    fun readPacket(processor: IMessagePacketProcessor, message: String): MessagePacket? { return cache.getIfPresent("${getType(processor).prefix}$message") }
+    fun readPacket(message: String): MessagePacket? { return cache.getIfPresent("${getType().prefix}$message") }
 
-    private fun getType(processor: IMessagePacketProcessor): MessagesType { return processor::class.java.getAnnotation(PacketMessageType::class.java).type }
+    fun getType(): MessagesType { return processor::class.java.getAnnotation(PacketMessageType::class.java).type }
+
+    companion object {
+        private val cache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .build<String, MessagePacket>()
+    }
 }

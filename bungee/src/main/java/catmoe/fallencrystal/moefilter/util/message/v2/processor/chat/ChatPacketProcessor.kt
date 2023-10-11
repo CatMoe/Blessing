@@ -25,7 +25,8 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageP
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
 import catmoe.fallencrystal.translation.utils.version.Version
-import catmoe.fallencrystal.translation.utils.version.Version.*
+import catmoe.fallencrystal.translation.utils.version.Version.V1_16
+import catmoe.fallencrystal.translation.utils.version.Version.V1_19
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
@@ -37,7 +38,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         笔记: 即使as ViaChatPacket没有显式可空. cached的赋值实际上也是ViaChatPacket?
         如果转换失败 cached不会抛出ClassCastException 而是返回null
          */
-        val cached = MessagePacketCache.readPacket(this, message) as? MessageChatPacket
+        val cached = MessagePacketCache(this).readPacket(message) as? MessageChatPacket
         // getBaseComponent & getSerializer 方法都在抽象类中实践.
         val component = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
@@ -49,13 +50,17 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         var needLegacy2 = cached?.legacy2 != null
         protocol.forEach {
             val v = Version.of(it)
-            if (v.moreOrEqual(V1_19)) need119=true else if (v.moreOrEqual(V1_16)) needLegacy=true else if (v.moreOrEqual(V1_7_6)) needLegacy2 = true
+            when {
+                v.moreOrEqual(V1_19) -> need119=true
+                v.moreOrEqual(V1_16) -> needLegacy=true
+                else -> needLegacy2=true
+            }
         }
         val p119 = cached?.v119 ?: get119(serializer, need119)
         val legacy = cached?.legacy ?: getLegacy(serializer, needLegacy)
         val legacy2 = cached?.legacy2 ?: getLegacy(legacySerializer, needLegacy2)
         val packet = MessageChatPacket(p119, legacy, legacy2, component, serializer, legacyComponent, serializer, message)
-        MessagePacketCache.writePacket(this, packet)
+        MessagePacketCache(this).writePacket(packet)
         return packet
     }
 
@@ -63,15 +68,11 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         var p = packet as MessageChatPacket
         if (!p.supportChecker(connection.version)) p = process(p.originalMessage, listOf(connection.version)) as MessageChatPacket
         val v = Version.of(connection.version)
-        /*
-        if (v >= ProtocolConstants.MINECRAFT_1_19) connection.writePacket(p.v119!!)
-        else if (v >= ProtocolConstants.MINECRAFT_1_16) connection.writePacket(p.legacy!!)
-        else if (v >= ProtocolConstants.MINECRAFT_1_8) connection.writePacket(p.legacy2!!)
-        else throw IllegalStateException("Need send protocol ${connection.version} but not available packets for this version.")
-         */
-        if (v.moreOrEqual(V1_19)) connection.writePacket(p.v119!!)
-        else if (v.moreOrEqual(V1_16)) connection.writePacket(p.legacy!!)
-        else if (v.moreOrEqual(V1_7_6)) connection.writePacket(p.legacy2!!)
+        when {
+            v.moreOrEqual(V1_19) -> connection.writePacket(p.v119!!)
+            v.moreOrEqual(V1_16) -> connection.writePacket(p.legacy!!)
+            else -> connection.writePacket(p.legacy2!!)
+        }
     }
 
     private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, ChatMessageType.SYSTEM.ordinal) else null }
