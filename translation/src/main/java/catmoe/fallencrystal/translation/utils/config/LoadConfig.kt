@@ -87,7 +87,13 @@ class LoadConfig {
                         # 缓存有效时间. 单位为秒
                         max-life-time=5
                         # 是否为独立的域创建MOTD缓存?
-                        stable-domain-cache=true
+                        stable-domain-cache=false
+                        # 域名数量限制: 用于预防当stable-domain-cache为true时, 被迫呼叫无用的事件和制作新的缓存.
+                        max-domain-cache=5
+                        # 以下域名将自动忽略限制. 条目数量必须小于max-domain-cache.
+                        whitelisted-domain=[
+                            "127.0.0.1", "catmoe.realms.moe"
+                        ]
                         # 在攻击时仅使用缓存而不是呼叫ProxyPingEvent
                         full-cache-during-attack=true
                         # 五分钟内只发送一次avatar

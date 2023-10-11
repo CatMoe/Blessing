@@ -15,23 +15,23 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.handler
+package catmoe.fallencrystal.moefilter.network.limbo.handler.ping
 
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
+import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
-import io.netty.buffer.Unpooled
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-object PingManager : Reloadable {
+object CacheMotdManager : Reloadable {
     private var conf = LocalConfig.getConfig().getConfig("ping.cache")
 
     private var useStandardDomain = conf.getBoolean("stable-domain-cache")
@@ -42,15 +42,19 @@ object PingManager : Reloadable {
     private var cacheLifeTime = conf.getLong("max-life-time")
     private var motdCache = Caffeine.newBuilder()
         .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
-        .build<String, MutableMap<Version, MotdInfo>>()
+        .build<String, MutableMap<Version, CachedMotd>>()
     private val onceIconCache = Caffeine.newBuilder()
         .expireAfterWrite(5, TimeUnit.MINUTES)
         .build<InetAddress, Boolean>()
     private var instantCloseAfterPing = LocalConfig.getLimbo().getBoolean("instant-close-after-ping")
 
+    private var domainLimit = conf.getInt("max-domain-cache")
+    private val domainList: MutableCollection<String> = ArrayList()
+    private var whitelistedDomainList: List<String> = listOf()
+
     private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
 
-    fun a(p1: String, p2: MutableMap<Version, MotdInfo>) {
+    fun a(p1: String, p2: MutableMap<Version, CachedMotd>) {
         if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(p1, p2)
     }
 
@@ -62,18 +66,28 @@ object PingManager : Reloadable {
         sendIconOnce = conf.getBoolean("send-icon-once")
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
         val cacheLifeTime = conf.getLong("max-life-time")
-        if (PingManager.cacheLifeTime != cacheLifeTime) {
-            PingManager.cacheLifeTime =cacheLifeTime
+        if (CacheMotdManager.cacheLifeTime != cacheLifeTime) {
+            CacheMotdManager.cacheLifeTime =cacheLifeTime
         }
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
             .build()
         instantCloseAfterPing = LocalConfig.getLimbo().getBoolean("instant-close-after-ping")
+        domainLimit = conf.getInt("max-domain-cache")
+        domainList.clear()
+        whitelistedDomainList = conf.getStringList("whitelisted-domain")
+        if (whitelistedDomainList.size > domainLimit) {
+            MessageUtil.logWarn("[MoeFilter] [PingManager] whitelisted-domain size is more than domain-limit ($domainLimit). Limit will be auto set to ${whitelistedDomainList.size}")
+            domainLimit = whitelistedDomainList.size
+        }
+        domainList.addAll(whitelistedDomainList)
     }
 
     fun handlePing(handler: LimboHandler) {
         val version = handler.version!!
-        val i = if (useStandardDomain) handler.host!!.hostString else ""
+        val host = handler.host?.hostString ?: ""
+        if (!checkHost(host))  { handler.channel.close(); return }
+        val i = if (useStandardDomain) host else ""
         val cache = motdCache.getIfPresent(i)
         val c = if (cache?.get(version) == null) createMap(handler, cache) else cache
         val address = (handler.address as InetSocketAddress).address
@@ -86,44 +100,30 @@ object PingManager : Reloadable {
         if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(i, c)
     }
 
-    private fun sendMotd(map: MutableMap<Version, MotdInfo>, handler: LimboHandler, noIcon: Boolean) {
+    private fun sendMotd(map: MutableMap<Version, CachedMotd>, handler: LimboHandler, noIcon: Boolean) {
         val p = map[dv ?: handler.version!!]!!
         // handler.writePacket(if (noIcon) packet.bmNoIcon else packet.bm)
-        val pa = ExplicitPacket(0x00, (if (noIcon) p.bmNoIcon else p.bm), "Cached ping packet")
+        val pa = ExplicitPacket(0x00, (if (noIcon) p.bmNoIcon else p.bm), "Cached ping packet (icon: ${!noIcon})")
         handler.sendPacket(pa)
         if (instantCloseAfterPing) handler.channel.close()
     }
 
-    private fun createMap(handler: LimboHandler, map: MutableMap<Version, MotdInfo>?): MutableMap<Version, MotdInfo> {
+    private fun createMap(handler: LimboHandler, map: MutableMap<Version, CachedMotd>?): MutableMap<Version, CachedMotd> {
         val m = map ?: EnumMap(Version::class.java)
         val packet = PacketPingResponse()
         packet.output=handler.fakeHandler!!.handlePing(handler.host!!, handler.version!!).description
-        val i = MotdInfo(
-            packet,
-            process(packet, handler.version!!, false),
-            process(packet, handler.version!!, true),
-            handler.version!!
-        )
+        val i = CachedMotd.process(packet, handler.version!!)
         m[dv ?: handler.version!!] = i
         motdCache.put(if (useStandardDomain) handler.host!!.hostString else "", m)
         return m
     }
-
-    private fun process(packet: PacketPingResponse, version: Version, noIcon: Boolean): ByteArray {
-        val bm = ByteMessage(Unpooled.buffer())
-        if (noIcon) packet.output=packet.output!!.replace(""","favicon":"data:(.*?)"""".toRegex(), "")
-        MoeLimbo.debug("${packet.output}")
-        packet.encode(bm, version)
-        val array = bm.toByteArray()
-        bm.release()
-        return array
+    private fun checkHost(host: String): Boolean {
+        return if  (!useStandardDomain) true
+        else {
+            if (domainList.contains(host)) true else {
+                if (domainList.size + 1 > domainLimit) false else { domainList.add(host); true }
+            }
+        }
     }
 
 }
-
-class MotdInfo(
-    val packet: PacketPingResponse,
-    val bm: ByteArray,
-    val bmNoIcon: ByteArray,
-    val version: Version,
-)

@@ -105,27 +105,6 @@ class BungeeEvent : Listener {
         return PlayerInstance.getPlayer(p.uniqueId) ?: TranslatePlayer(BungeePlayer(p))
     }
 
-    /*
-    @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerConnect(event: ServerConnectEvent){
-        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.target, false, event.isCancelled)) // old event...
-    }
-
-    /*
-    isCancelled is not available on this event
-    so isCancelled is always false.
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerConnected(event: ServerConnectedEvent) {
-        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerConnectEvent(event.player, event.server.info, event.server.isConnected, false)) // old event...
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    fun onServerSwitch(event: ServerSwitchEvent) {
-        catmoe.fallencrystal.moefilter.api.event.EventManager.triggerEvent(AsyncServerSwitchEvent(event.player, event.from)) // old event...
-    }
-     */
-
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {
         PipelineUtil.invalidateChannel(event.player)

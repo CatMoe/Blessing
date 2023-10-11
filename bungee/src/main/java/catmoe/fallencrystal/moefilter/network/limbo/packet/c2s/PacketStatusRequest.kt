@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.PingManager
+import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.CacheMotdManager
 import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -26,7 +26,9 @@ import io.netty.channel.Channel
 
 class PacketStatusRequest : LimboC2SPacket() {
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {}
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        // This packet is no any field to read.
+    }
 
-    override fun handle(handler: LimboHandler) { PingManager.handlePing(handler) }
+    override fun handle(handler: LimboHandler) { CacheMotdManager.handlePing(handler) }
 }
