@@ -186,7 +186,7 @@ class LoadConfig {
                     # 可用占位符描述已被移除 如果您想知道各个占位符有什么用 请看chat-format中使用的占位符..
                     actionbar-format {
                         idle="%prefix% <aqua>CPU <white>%process_cpu%%  <aqua>CPS <white>%cps%  <aqua>Total <white>%total%  <aqua>Blocked <white>%blocked%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
-                        attack="%prefix% <aqua>Type %type% <aqua>CPU <white>%process_cpu%%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
+                        attack="%prefix% <aqua>Type %type%  <aqua>CPU <white>%process_cpu%%  <aqua>CPS <white>%cps%  <aqua>Peak <white>%peak_cps_session%  <aqua>Total <white>%total_session%  <aqua>Blocked <white>%blocked_session%  <aqua>CPU <white>%process_cpu%%  <aqua>Duration <white>%duration%  <red>↑ %outgoing-bytes%  <green>↓ %incoming-bytes%"
                     }
                     chat-format {
                         idle=[
@@ -433,7 +433,7 @@ class LoadConfig {
                 # 攻击模式激活设置
                 attack-mode { 
                     # 当一秒内的连接超过此设定的值 将激活攻击模式
-                    incoming=5
+                    incoming=8
                     # 模式激活设置
                     mode {
                         # 当阻止总数在1秒内达到此值 将会将状态设置为被此模式攻击
@@ -441,7 +441,7 @@ class LoadConfig {
                     }
                     un-attacked {
                         # 当1秒内没有任何连接传入时 立即解除攻击模式
-                        instant=true
+                        instant=false
                         # 如果instant模式为false且 x 秒内没有传入连接 则解除戒备模式
                         wait=5
                     }

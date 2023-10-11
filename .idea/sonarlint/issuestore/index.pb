@@ -158,8 +158,6 @@ Vtranslation/src/main/java/catmoe/fallencrystal/translation/utils/config/LocalCo
 Tbungee/src/main/java/catmoe/fallencrystal/moefilter/common/check/mixed/MixedCheck.kt,a\2\a2e9f42b1720b0249e0250b583e27f415b3bbcb9
 é
 ^bungee/src/main/java/catmoe/fallencrystal/moefilter/util/message/notification/Notifications.kt,a\0\a03b98f9aeb0f3f54f12fabba364f838d94535a9
-à
-Xbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/handler/PingManager.kt,d\c\dc8495d442417e700eab27750b6cec50c9a7349e
 {
 Kbungee/src/main/java/catmoe/fallencrystal/moefilter/api/proxy/ProxyCache.kt,f\e\fefaebadf7d3abaf4044296ca5f1ee0ecfcaa406
 Å
@@ -182,3 +180,11 @@ hbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/s2c/Pa
 bbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/s2c/PacketLoginSuccess.kt,9\f\9fcb00f6d198c2256d76fffe4d172cab1d697b6d
 í
 bbungee/src/main/java/catmoe/fallencrystal/moefilter/network/bungee/pipeline/AbstractInitializer.kt,9\9\99b8d8f87141972b9f9029b84c99cbde8e3e2ac5
+å
+\bungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/handler/ping/CachedMotd.kt,2\3\235d15435a9e1b3d622cf94c795998fbf3d1f9db
+í
+bbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/handler/ping/CacheMotdManager.kt,c\2\c26c1997554ea80f9dd73f156a3029727917bb68
+ì
+cbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/c2s/PacketStatusRequest.kt,d\f\dfb77599aa51eb5c79d80460ddbcf22a33378d8d
+â
+Ybungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/netty/TrafficLimiter.kt,6\8\680ea15b49e84c6997b24d7f5009c88fc42173b6
