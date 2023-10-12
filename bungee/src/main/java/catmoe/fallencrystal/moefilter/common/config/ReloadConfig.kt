@@ -29,6 +29,7 @@ import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.CacheMotdManager
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -63,6 +64,7 @@ object ReloadConfig : EventListener {
         CacheMotdManager,
         BrandCheck,
         LimboListener,
+        TrafficManager,
     ))
 
     @EventHandler(PluginReloadEvent::class, priority = HandlerPriority.HIGHEST)

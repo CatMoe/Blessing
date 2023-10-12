@@ -92,7 +92,7 @@
 
 ## 📚 学分
 
-此储存库借用了以下储存库的代码
+此储存库含有来自以下储存库或网站的内容
  - [BungeeCord](https://github.com/SpigotMC/BungeeCord)
  - [Velocity](https://github.com/PaperMC/Velocity) `一些解码器之类的参考`
  - [Sonar](https://github.com/jonesdevelopment/sonar) `劫持 SERVER_CHILD 以及初始化管道的反射代码`
@@ -102,6 +102,9 @@
  - [wiki.vg](https://wiki.vg/Protocol) `1.7.6至最新的Minecraft版本的协议支持.`
  - [NullCordX](https://builtbybit.com/resources/nullcordx-lightweight-antibot.22322/) `代理列表提供者`
  - [FlameCord](https://builtbybit.com/resources/flamecord-the-ultimate-antibot.13492/) `代理列表提供者`
+ - [PacketLimiter](https://github.com/Spottedleaf/PacketLimiter) `数据包限制参考`
+
+感谢上述所有项目帮助我们更好地构建这些东西.
 
 ---
 

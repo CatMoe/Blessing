@@ -12,16 +12,13 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
+import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficMonitor
 import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetBytesPerSec
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetIncomingPerSec
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.packetMaxSize
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
-import catmoe.fallencrystal.moefilter.network.limbo.netty.TrafficLimiter
 import catmoe.fallencrystal.moefilter.network.limbo.netty.VarIntLengthEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.*
@@ -74,8 +71,9 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         val handler = LimboHandler(encoder, decoder, channel, ctx)
         decoder.handler=handler
         encoder.handler=handler
-        pipeline.addFirst(TrafficLimiter.NAME, TrafficLimiter(packetMaxSize, packetIncomingPerSec, packetBytesPerSec))
-        pipeline.addBefore(TrafficLimiter.NAME, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
+        //pipeline.addFirst(TrafficLimiter.NAME, TrafficLimiter(packetMaxSize, packetIncomingPerSec, packetBytesPerSec))
+        pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
+        TrafficManager.addLimiter(pipeline, TrafficManager.limbo, false)
         pipeline.addLast(FRAME_DECODER, VarIntFrameDecoder())
         pipeline.addLast(FRAME_PREPENDER, VarIntLengthEncoder())
         pipeline.addLast(PACKET_DECODER, decoder)
@@ -86,6 +84,9 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, eventCaller: EventCaller, listener: ListenerInfo) {
         MoeChannelHandler.register(pipeline)
         BASE.initChannel(channel)
+
+        // MoeFilter: TrafficLimiter
+        TrafficManager.addLimiter(pipeline, TrafficManager.proxy, true)
 
         // MoeFilter has VarIntFrameDecoder, TimeoutHandler and InboundHandler itself.
         pipeline.replace(FRAME_DECODER, FRAME_DECODER, VarIntFrameDecoder())
