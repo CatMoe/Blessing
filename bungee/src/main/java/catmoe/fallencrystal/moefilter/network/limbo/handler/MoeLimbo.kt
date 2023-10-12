@@ -71,11 +71,6 @@ object MoeLimbo : Reloadable {
     val chunkStart = limboConfig.getInt("debug.chunk.start")
     val chunkLength = chunkStart + limboConfig.getInt("debug.chunk.length")
 
-    // Packet Limit
-    var packetMaxSize = limboConfig.getInt("packet-limit.packet-max-size")
-    var packetIncomingPerSec = limboConfig.getInt("packet-limit.packet-incoming-per-sec")
-    var packetBytesPerSec = limboConfig.getInt("packet-limit.packet-bytes-per-sec")
-
     private val checker = listOf(
         CommonJoinCheck,
         MoveCheck,
@@ -142,9 +137,6 @@ object MoeLimbo : Reloadable {
         initDimension()
         initEvent()
         debug = LocalConfig.getConfig().getBoolean("debug")
-        packetMaxSize = limboConfig.getInt("packet-limit.packet-max-size")
-        packetIncomingPerSec = limboConfig.getInt("packet-limit.packet-incoming-per-sec")
-        packetBytesPerSec = limboConfig.getInt("packet-limit.packet-bytes-per-sec")
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         if (!disableCheck) for (c in checker) LimboListener.register(c)
         PacketCache.initPacket()

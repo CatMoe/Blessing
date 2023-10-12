@@ -15,24 +15,53 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.netty
+package catmoe.fallencrystal.moefilter.network.common.traffic
 
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOverflowException
+import catmoe.fallencrystal.translation.logger.CubeLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import java.net.InetSocketAddress
+import java.util.logging.Level
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter", "ConvertTwoComparisonsToRangeCheck")
 class TrafficLimiter(
-    var sizeLimit: Int,
-    var incomingLimit: Int,
-    var byteLimit: Int
+    val sizeLimit: Int,
+    val interval: Double,
+    val maxPacketRate: Double,
+    val silentException: Boolean
 ) : ChannelInboundHandlerAdapter() {
 
-    var lastTime = System.currentTimeMillis()
-    var packetsPerSec = 0
-    var bytesPerSec = 0
+    val packetBucket: PacketBucket? = if (interval > 0.0 && maxPacketRate > 0.0) PacketBucket(interval * 1000.0, 150) else null
 
+    override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
+        if (msg is ByteBuf) {
+            val bytes = msg.readableBytes()
+            if (sizeLimit > 0 && bytes > sizeLimit) throw PacketOverflowException("Packet to large! ($bytes bytes, reached $sizeLimit limit)")
+            if (packetBucket != null) {
+                packetBucket.incrementPackets(1)
+                if (packetBucket.getCurrentPacketRate() > maxPacketRate) throw PacketOverflowException("Too many packets!")
+            }
+        }
+        super.channelRead(ctx, msg)
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
+        if (silentException) {
+            val channel = ctx.channel()
+            val c = cause.cause ?: cause
+            // Only handle PacketOverflowException to prevent unexpected throwable caught by this.
+            if (c is PacketOverflowException) {
+                CubeLogger.log(Level.INFO, "[PacketLimiter] ${channel.remoteAddress() as? InetSocketAddress}'s connection is closing: ${c.message}")
+                channel.close(); return
+            }
+        }
+        super.exceptionCaught(ctx, cause)
+    }
+
+    /*
     @Suppress("GrazieInspection", "ConvertTwoComparisonsToRangeCheck")
     @Throws(Exception::class)
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
@@ -50,6 +79,8 @@ class TrafficLimiter(
         }
         super.channelRead(ctx, msg)
     }
+     */
+
 
     companion object {
         const val NAME = "moe-traffic-limit"
