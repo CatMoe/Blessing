@@ -819,16 +819,6 @@ class LoadConfig {
                     }
                 }
                 
-                # 连接数据包限制. 设置成-1以忽略
-                packet-limit {
-                   # 单个数据包字节最大限制
-                    packet-max-size=1024
-                    # 每秒可以发送多少个数据包
-                    packet-incoming-per-sec=35
-                    # 每秒共计可以发送多少个字节
-                    packet-bytes-per-sec=2048
-                }
-                
                 # 仅供开发人员使用! 如果您不知道您做什么将会导致什么后果, 请不要调整其中的任何选项.
                 debug {
                     # 虚拟区块设置
