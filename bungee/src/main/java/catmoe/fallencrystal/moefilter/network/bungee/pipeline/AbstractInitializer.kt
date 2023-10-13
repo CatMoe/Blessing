@@ -14,12 +14,12 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficMonitor
-import catmoe.fallencrystal.moefilter.network.common.varint.VarIntFrameDecoder
+import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
-import catmoe.fallencrystal.moefilter.network.limbo.netty.VarIntLengthEncoder
+import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntLengthEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder

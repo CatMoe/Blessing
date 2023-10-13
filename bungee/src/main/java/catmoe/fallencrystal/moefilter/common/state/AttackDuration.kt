@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
+import com.google.common.base.Preconditions
 import java.util.concurrent.TimeUnit
 
 class AttackDuration {
@@ -24,7 +25,8 @@ class AttackDuration {
     private var startTime: Long = 0
 
     fun start() {
-        if (!StateManager.inAttack.get()) { throw IllegalStateException("Cannot start count when not in attack!") }
+        //if (!StateManager.inAttack.get()) { throw IllegalStateException("Cannot start count when not in attack!") }
+        Preconditions.checkArgument(StateManager.inAttack.get(), "Cannot start count when not in attack!")
         startTime = System.currentTimeMillis()
     }
 

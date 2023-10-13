@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.api.logger
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import java.util.concurrent.CopyOnWriteArrayList
@@ -48,7 +47,7 @@ object LoggerManager : Filter {
 
     @Suppress("UNUSED")
     fun unregisterFilter(c: ILogger) {
-        Scheduler(MoeFilterBungee.instance).runAsync {
+        Scheduler.getDefault().runAsync {
             val removeLogger: MutableList<ILogger> = ArrayList()
             for (it in logger) { if (it::class.java == c::class.java) { removeLogger.add(it); break; } }
             logger.removeAll(removeLogger.toSet())

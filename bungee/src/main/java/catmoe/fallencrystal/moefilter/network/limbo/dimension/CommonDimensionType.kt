@@ -17,21 +17,23 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.dimension
 
+import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType
+
 @Suppress("unused", "SpellCheckingInspection")
 enum class CommonDimensionType(
-    @JvmField val adventure: catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType,
+    @JvmField val adventure: DimensionType,
     @JvmField val llbit: catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType
 ) {
     OVERWORLD(
-        catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType.OVERWORLD,
+        DimensionType.OVERWORLD,
         catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType.OVERWORLD
     ),
     NETHER(
-        catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType.THE_NETHER,
+        DimensionType.THE_NETHER,
         catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType.NETHER
     ),
     THE_END(
-        catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType.THE_END,
+        DimensionType.THE_END,
         catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType.THE_END
     ),
 }

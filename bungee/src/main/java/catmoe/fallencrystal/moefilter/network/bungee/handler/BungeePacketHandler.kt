@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.network.bungee.handler
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.check.info.impl.Brand
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
+import catmoe.fallencrystal.moefilter.check.misc.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.*
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck

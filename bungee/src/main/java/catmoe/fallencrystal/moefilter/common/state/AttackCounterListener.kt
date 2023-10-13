@@ -17,9 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
@@ -36,13 +34,14 @@ import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
+import catmoe.fallencrystal.translation.utils.webhook.WebhookSender
 import com.typesafe.config.Config
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
 class AttackCounterListener : EventListener {
     private var inAttack = false
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
+    private val scheduler = Scheduler.getDefault()
 
     @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.LOWEST)
     @AsynchronousHandler

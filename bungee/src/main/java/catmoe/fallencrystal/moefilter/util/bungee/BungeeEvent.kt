@@ -53,7 +53,7 @@ class BungeeEvent : Listener {
     fun onChat(event: ChatEvent) {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
         if (event.isProxyCommand && event.message.equals("/bungee", ignoreCase = true)) {
-            Scheduler(MoeFilterBungee.instance).runAsync {
+            Scheduler.getDefault().runAsync {
                 MessageUtil.sendMessage(
                     listOf(
                         "<gradient:green:yellow>This server is running " +

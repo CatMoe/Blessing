@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
@@ -61,11 +61,18 @@ class PacketSetHeldSlot : LimboS2CPacket() {
         }
     }
     private fun getCaptchaId(version: Version): Int {
-        return if (version.lessOrEqual(Version.V1_12)) 358 else if (version.lessOrEqual(Version.V1_13)) 608
-        else if (version.lessOrEqual(Version.V1_13_2)) 613 else if (version.lessOrEqual(Version.V1_15_2)) 671
-        else if (version.lessOrEqual(Version.V1_16_4)) 733 else if (version.lessOrEqual(Version.V1_18_2)) 847
-        else if (version.lessOrEqual(Version.V1_19_1)) 886 else if (version.lessOrEqual(Version.V1_19_3)) 914
-        else if (version.lessOrEqual(Version.V1_19_4)) 937 else 941
+        return when {
+            version.lessOrEqual(Version.V1_12) -> 358
+            version.lessOrEqual(Version.V1_13) -> 608
+            version.lessOrEqual(Version.V1_13_2) -> 613
+            version.lessOrEqual(Version.V1_15_2) -> 671
+            version.lessOrEqual(Version.V1_16_4) -> 733
+            version.lessOrEqual(Version.V1_18_2) -> 847
+            version.lessOrEqual(Version.V1_19_1) -> 886
+            version.lessOrEqual(Version.V1_19_3) -> 914
+            version.lessOrEqual(Version.V1_19_4) -> 937
+            else -> 941
+        }
     }
 
     override fun toString(): String {

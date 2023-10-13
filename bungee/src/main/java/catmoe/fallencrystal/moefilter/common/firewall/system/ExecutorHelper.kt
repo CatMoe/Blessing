@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.firewall.system
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.system.CommandUtil
@@ -40,7 +39,7 @@ class ExecutorHelper(private val command: String) {
     val watchdog = AtomicBoolean(false)
     val thread = Runtime.getRuntime().availableProcessors() * 2
     val count = AtomicInteger(0)
-    val scheduler = Scheduler(MoeFilterBungee.instance)
+    val scheduler = Scheduler.getDefault()
     val schedules: MutableCollection<ScheduledTask> = CopyOnWriteArrayList()
     val threads = AtomicInteger(0)
     val activeThread = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MILLISECONDS).build<ScheduledTask, Boolean>()

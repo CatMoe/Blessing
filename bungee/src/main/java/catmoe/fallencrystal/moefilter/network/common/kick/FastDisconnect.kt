@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.Connection
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.ServerType.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect

@@ -16,7 +16,7 @@
  */
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.nio.charset.StandardCharsets

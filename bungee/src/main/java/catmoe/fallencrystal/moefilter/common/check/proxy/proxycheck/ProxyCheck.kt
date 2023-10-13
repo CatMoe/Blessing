@@ -17,15 +17,14 @@
 
 package catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.IProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
 import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.md_5.bungee.api.scheduler.ScheduledTask
 import okhttp3.OkHttpClient
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class ProxyCheck : IProxyChecker {
-    private val schedule = Scheduler(MoeFilterBungee.instance)
+    private val schedule = Scheduler.getDefault()
 
     private var config = LocalConfig.getProxy().getConfig("proxycheck-io")
     private var dayLimit = config.getInt("limit")

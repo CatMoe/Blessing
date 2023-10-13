@@ -34,7 +34,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosit
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
-import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version

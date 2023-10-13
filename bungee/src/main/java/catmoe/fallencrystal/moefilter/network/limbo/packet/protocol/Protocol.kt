@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAliv
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
+import catmoe.fallencrystal.moefilter.network.limbo.protocol.Mapping
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
 import catmoe.fallencrystal.translation.utils.version.Version.Companion.max

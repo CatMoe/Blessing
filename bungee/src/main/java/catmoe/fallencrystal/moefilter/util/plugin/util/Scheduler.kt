@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin.util
 
+import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.scheduler.ScheduledTask
@@ -39,4 +40,8 @@ class Scheduler(private val plugin: Plugin) {
     fun cancelTask(plugin: Plugin) { scheduler.cancel(plugin) }
 
     fun cancelTask(task: ScheduledTask) { scheduler.cancel(task) }
+
+    companion object {
+        fun getDefault(): Scheduler { return Scheduler(MoeFilterBungee.instance) }
+    }
 }

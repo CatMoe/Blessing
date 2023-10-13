@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.geoip
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
@@ -51,7 +50,7 @@ class DownloadDatabase(folder: File) {
     private val currentTime = System.currentTimeMillis()
     private val conf = LocalConfig.getProxy().getConfig("country")
     private val parent = File(folder, "/geoip")
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
+    private val scheduler = Scheduler.getDefault()
 
     private var proxy: Proxy? = null
 
@@ -81,15 +80,17 @@ class DownloadDatabase(folder: File) {
             update()
             var task: ScheduledTask? = null
             task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
-                if (countryAvailable.get() && cityAvailable.get()) {
-                    GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
-                    GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
-                    GeoIPManager.available.set(true)
-                    scheduler.repeatScheduler(1, 1, TimeUnit.DAYS) { update() }
-                    scheduler.cancelTask(task!!)
+                when {
+                    (countryAvailable.get() && cityAvailable.get()) -> {
+                        GeoIPManager.country = DatabaseReader.Builder(countryDatabase).withCache(CHMCache()).build()
+                        GeoIPManager.city = DatabaseReader.Builder(cityDatabase).withCache(CHMCache()).build()
+                        GeoIPManager.available.set(true)
+                        scheduler.repeatScheduler(1, 1, TimeUnit.DAYS) { update() }
+                        scheduler.cancelTask(task!!)
+                    }
+                    hasError.get() -> { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); scheduler.cancelTask(task!!) }
+                    debug -> MessageUtil.logInfo("[MoeFilter] [GeoIP] Waiting download task complete..")
                 }
-                else if (hasError.get()) { if (debug) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Error detected. Cancelling init task."); scheduler.cancelTask(task!!) } }
-                else if (debug) { MessageUtil.logInfo("[MoeFilter] [GeoIP] Waiting download task complete..") }
             }
         } catch (ex: IOException) {
             MessageUtil.logError("[MoeFilter] [GeoIP] A critical error occurred when initing database files.")
@@ -110,7 +111,7 @@ class DownloadDatabase(folder: File) {
         }
     }
 
-    fun update() {
+    private fun update() {
         scheduler.runAsync {
             try { downloadDatabase(countryDatabase, countryArchive, getUrl(countryDatabase)); countryAvailable.set(true) } catch (ex: Exception) { throwError(countryDatabase, countryArchive, ex); countryAvailable.set(false) }
         }

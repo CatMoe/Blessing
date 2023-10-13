@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.state
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
@@ -45,7 +44,7 @@ object StateManager {
 
     val lastMethod: MutableCollection<AttackState> = ArrayList()
 
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
+    private val scheduler = Scheduler.getDefault()
 
     @Suppress("EnumValuesSoftDeprecate")
     fun attackMethodAnalyser() {

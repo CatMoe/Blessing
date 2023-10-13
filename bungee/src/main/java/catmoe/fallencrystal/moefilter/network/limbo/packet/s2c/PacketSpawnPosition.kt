@@ -17,9 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
-import catmoe.fallencrystal.moefilter.network.limbo.netty.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.translation.utils.version.Version
 
 

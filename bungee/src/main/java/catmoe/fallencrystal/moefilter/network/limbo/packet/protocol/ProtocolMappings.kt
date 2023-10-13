@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
+import catmoe.fallencrystal.moefilter.network.limbo.protocol.Mapping
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.util.*
 import java.util.function.Supplier

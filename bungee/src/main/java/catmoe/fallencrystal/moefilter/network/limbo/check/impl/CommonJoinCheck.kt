@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.impl.Address
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.check.info.impl.Pinging
-import catmoe.fallencrystal.moefilter.common.check.misc.AlreadyOnlineCheck
+import catmoe.fallencrystal.moefilter.check.misc.AlreadyOnlineCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.CountryCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck

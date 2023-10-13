@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.check.proxy.ipapi
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.IProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
@@ -35,7 +34,7 @@ class IPAPIChecker : IProxyChecker {
 
     private val checked = Caffeine.newBuilder().build<InetAddress, Boolean>()
     private val queue: Queue<InetAddress> = ArrayDeque()
-    private val schedule = Scheduler(MoeFilterBungee.instance)
+    private val schedule = Scheduler.getDefault()
 
     private var scheduleTask: ScheduledTask? = null
 

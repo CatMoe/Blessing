@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.common.counter
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -34,7 +33,7 @@ object ConnectionStatistics {
     var inAttack = false
     // Startup schedule to put value when after 100 milliseconds.
 
-    init { Scheduler(MoeFilterBungee.instance).repeatScheduler(50, TimeUnit.MILLISECONDS) { schedule() } }
+    init { Scheduler.getDefault().repeatScheduler(50, TimeUnit.MILLISECONDS) { schedule() } }
 
     fun schedule() {
         putCPStoCache()

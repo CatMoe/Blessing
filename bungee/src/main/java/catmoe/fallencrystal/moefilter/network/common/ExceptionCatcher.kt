@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
-import catmoe.fallencrystal.moefilter.network.limbo.packet.exception.InvalidVarIntException
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidVarIntException
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable

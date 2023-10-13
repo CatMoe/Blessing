@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.util.message.v2
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.MessagePacket
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
@@ -44,7 +43,7 @@ object MessageUtil {
     private val packetCache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build<String, MessagePacket>()
     private val bungee = ProxyServer.getInstance()
     private val logger = bungee.logger
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
+    private val scheduler = Scheduler.getDefault()
 
     private fun packetBuilder(message: String, type: MessagesType, protocol: List<Int>) : MessagePacket {
         return when (type) {

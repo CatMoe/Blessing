@@ -17,15 +17,14 @@
 
 package catmoe.fallencrystal.moefilter.api.command.impl.test
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.ICommand
-import catmoe.fallencrystal.moefilter.common.utils.webhook.WebhookSender
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.webhook.WebhookSender
 import net.md_5.bungee.api.CommandSender
 import java.awt.Color
 
@@ -45,7 +44,7 @@ import java.awt.Color
 )
 class TestWebhookCommand : ICommand {
     override fun execute(sender: CommandSender, args: Array<out String>) {
-        Scheduler(MoeFilterBungee.instance).runAsync {
+        Scheduler.getDefault().runAsync {
             val conf = LocalConfig.getConfig().getConfig("notifications.webhook.test")
             if (!conf.getBoolean("enabled")) { MessageUtil.sendMessage("<red>Rejected send request because this webhook is disabled", MessagesType.ACTION_BAR, sender); return@runAsync }
             val url = conf.getString("url")

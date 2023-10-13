@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkLength
@@ -36,7 +36,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
-import catmoe.fallencrystal.moefilter.network.limbo.util.LimboLocation
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -64,7 +63,7 @@ class LimboHandler(
     var host: InetSocketAddress? = null
     var profile: LimboProfile = LimboProfile()
     val fakeHandler: LimboCompat? = getFakeProxyHandler()
-    private val scheduler = Scheduler(MoeFilterBungee.instance)
+    private val scheduler = Scheduler.getDefault()
 
     val disconnected = AtomicBoolean(false)
     var brand = ""
