@@ -49,5 +49,6 @@ class ReloadCommand : ICommand {
         EventManager.callEvent(PluginReloadEvent(executor))
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    //override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? { return null }
 }

@@ -19,21 +19,24 @@ package catmoe.fallencrystal.translation.command.bungee
 
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.command.CommandAdapter
-import catmoe.fallencrystal.translation.command.ICommand
+import catmoe.fallencrystal.translation.command.TranslationCommand
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.executor.CommandExecutor
 import catmoe.fallencrystal.translation.executor.bungee.BungeeConsole
 import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlayerInstance
+import catmoe.fallencrystal.translation.player.TranslatePlayer
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.TabExecutor
 import java.util.concurrent.CompletableFuture
 
 @Platform(ProxyPlatform.BUNGEE)
-class BungeeCommandAdapter(val command: ICommand) : CommandAdapter {
+class BungeeCommandAdapter(val command: TranslationCommand) : CommandAdapter {
 
     val plugin = TranslationLoader.instance.loader.getPluginInstance() as Plugin
     val proxy = TranslationLoader.instance.loader.getProxyServer().obj as ProxyServer
@@ -62,10 +65,20 @@ class BungeeCommandAdapter(val command: ICommand) : CommandAdapter {
         proxy.pluginManager.unregisterCommand(handler ?: return)
     }
 
+    companion object {
+        fun getCastedSender(sender: CommandExecutor): CommandSender? {
+            return when (sender) {
+                is BungeeConsole -> sender.console
+                is TranslatePlayer -> sender.upstream as ProxiedPlayer
+                else -> null
+            }
+        }
+    }
+
 }
 
 @Platform(ProxyPlatform.BUNGEE)
-class Handler(name: String, permission: String, vararg aliases: String, val adapter: BungeeCommandAdapter) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
+class Handler(name: String, permission: String, vararg aliases: String, val adapter: BungeeCommandAdapter) : Command(name, permission, *aliases), TabExecutor {
 
     val target = adapter.command
 

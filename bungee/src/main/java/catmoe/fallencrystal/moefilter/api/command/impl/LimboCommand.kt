@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.api.command.impl
 
+import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
@@ -109,11 +110,28 @@ class LimboCommand : ICommand {
         }
     }
 
+    /*
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         return mapOf(
             1 to listOf("list", "kick"),
             2 to listOf("<Address>", "-a", "--all", "-c", "--confirm"),
             3 to listOf("-c", "--confirm")
         ) as MutableMap<Int, List<String>>
+    }
+     */
+
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? {
+        return when (args.size) {
+            2 -> CommandManager.sortContext(args[1], listOf("list", "kick").toMutableList())
+            3 -> {
+                when (args[1].lowercase()) {
+                    "list" -> if (StateManager.inAttack.get()) mutableListOf("-c", "--confirm") else mutableListOf()
+                    "kick" -> mutableListOf("<Address>", "-a", "--all")
+                    else -> null
+                }
+            }
+            4 -> if (StateManager.inAttack.get() && args[1].equals("kick", ignoreCase = true)) mutableListOf("-c", "--confirm") else mutableListOf()
+            else -> null
+        }
     }
 }

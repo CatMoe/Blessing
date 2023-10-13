@@ -19,7 +19,7 @@ package catmoe.fallencrystal.translation.command.velocity
 
 import catmoe.fallencrystal.translation.TranslationLoader
 import catmoe.fallencrystal.translation.command.CommandAdapter
-import catmoe.fallencrystal.translation.command.ICommand
+import catmoe.fallencrystal.translation.command.TranslationCommand
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.executor.velocity.VelocityConsole
 import catmoe.fallencrystal.translation.player.PlayerInstance
@@ -30,7 +30,7 @@ import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
 import java.util.concurrent.CompletableFuture
 
-class VelocityCommandAdapter(val command: ICommand) : CommandAdapter {
+class VelocityCommandAdapter(val command: TranslationCommand) : CommandAdapter {
 
     val plugin = TranslationLoader.instance.loader.getPluginInstance()
     val proxy = TranslationLoader.instance.loader.getProxyServer().obj as ProxyServer

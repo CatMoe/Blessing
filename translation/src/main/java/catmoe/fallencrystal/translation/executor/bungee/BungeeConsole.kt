@@ -19,16 +19,17 @@ package catmoe.fallencrystal.translation.executor.bungee
 
 import catmoe.fallencrystal.translation.executor.CommandConsole
 import catmoe.fallencrystal.translation.logger.CubeLogger
+import com.google.common.base.Preconditions
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import java.util.logging.Level
 
-@Suppress("CanBeParameter")
-class BungeeConsole(private val console: CommandSender) : CommandConsole() {
+class BungeeConsole(val console: CommandSender) : CommandConsole() {
 
     init {
-        if (console != ProxyServer.getInstance().console) throw IllegalArgumentException("Target isn't BungeeCord console.")
+        //if (console != ProxyServer.getInstance().console) throw IllegalArgumentException("Target isn't BungeeCord console.")
+        Preconditions.checkArgument(console == ProxyServer.getInstance().console, "Target isn't BungeeCord console.")
     }
 
     override fun getName(): String {

@@ -33,6 +33,7 @@ import net.md_5.bungee.api.CommandSender
 @CommandUsage(["/moefilter testkick"])
 @CommandDescription(DescriptionFrom.STRING, "testkick")
  */
+@Suppress("SpellCheckingInspection")
 @MoeCommand(
     name = "testkick",
     permission = "moefilter.testkick",
@@ -47,5 +48,7 @@ class TestKickCommand : ICommand {
         FastDisconnect.disconnect(connection, DisconnectType.ALREADY_ONLINE)
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? {
+        return null
+    }
 }

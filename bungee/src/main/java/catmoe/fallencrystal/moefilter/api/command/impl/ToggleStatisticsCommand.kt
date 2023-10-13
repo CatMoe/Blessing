@@ -62,5 +62,6 @@ class ToggleStatisticsCommand : ICommand {
         }
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    //override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? { return null }
 }

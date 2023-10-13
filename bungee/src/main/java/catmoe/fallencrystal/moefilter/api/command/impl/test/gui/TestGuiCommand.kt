@@ -29,6 +29,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 @CommandUsage(["/moefilter gui"])
 @DebugCommand
  */
+@Suppress("SpellCheckingInspection")
 @MoeCommand(
     name = "testgui",
     permission = "moefilter.testgui",
@@ -46,5 +47,7 @@ class TestGuiCommand : ICommand {
         menu.open()
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? {
+        return null
+    }
 }

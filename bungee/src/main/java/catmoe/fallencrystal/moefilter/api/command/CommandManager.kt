@@ -100,4 +100,13 @@ object CommandManager {
         }
         return listWithPermission
     }
+
+    fun sortContext(context: String, input: MutableCollection<String>): MutableCollection<String> {
+        val inputCopy = input.toMutableList()
+        val o = inputCopy.filter { it.startsWith(context, ignoreCase = true) }.toMutableList()
+        inputCopy.removeAll(o)
+        o.addAll(input)
+        return o
+    }
+
 }

@@ -19,7 +19,7 @@ package catmoe.fallencrystal.translation.command
 
 import catmoe.fallencrystal.translation.executor.CommandExecutor
 
-interface ICommand {
+interface TranslationCommand {
 
     fun execute(sender: CommandExecutor, input: Array<out String>)
 

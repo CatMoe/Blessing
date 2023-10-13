@@ -54,10 +54,18 @@ class RegexParseCommand : ICommand {
         catch (p: PatternSyntaxException) { MessageUtil.logInfo(p.localizedMessage) }
     }
 
+    /*
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = mutableMapOf()
         map[1] = listOf("<Regex>")
         map[2] = listOf("<Parse>")
         return map
+    }
+     */
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String> {
+        return when (args.size) {
+            2 -> mutableListOf("<Regex>")
+            else -> mutableListOf("<Parse>")
+        }
     }
 }

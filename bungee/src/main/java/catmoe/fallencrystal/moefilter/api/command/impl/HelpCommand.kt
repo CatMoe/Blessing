@@ -112,16 +112,14 @@ class HelpCommand : ICommand {
         return
     }
 
-    //private fun joinLine(string: List<String>): String { return string.joinToString("<reset><newline>") }
-
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
-        val map: MutableMap<Int, List<String>> = HashMap()
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String> {
         val list = mutableListOf<String>()
-        CommandManager.getCommandList(sender).forEach {
-            val parsedInfo = CommandManager.getParsedCommand(it)!!
-            if (sender.hasPermission(parsedInfo.permission)) { list.add(parsedInfo.command) }
+        if (args.size == 2)  {
+            CommandManager.getCommandList(sender).forEach {
+                val parsedInfo = CommandManager.getParsedCommand(it)!!
+                if (sender.hasPermission(parsedInfo.permission)) { list.add(parsedInfo.command) }
+            }
         }
-        map[1] = list
-        return map
+        return if (list.isNotEmpty()) CommandManager.sortContext(args[1], list) else list
     }
 }

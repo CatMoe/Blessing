@@ -33,6 +33,7 @@ import java.awt.Color
 @CommandDescription(DescriptionFrom.STRING, "Send a test webhook")
 @ConsoleCanExecute
  */
+@Suppress("SpellCheckingInspection")
 @MoeCommand(
     name = "testwebhook",
     permission = "moefilter.testwebhook",
@@ -56,5 +57,7 @@ class TestWebhookCommand : ICommand {
         }
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? {
+        return null
+    }
 }

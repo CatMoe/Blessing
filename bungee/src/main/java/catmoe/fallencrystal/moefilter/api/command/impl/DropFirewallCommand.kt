@@ -71,5 +71,7 @@ class DropFirewallCommand : ICommand {
         MessageUtil.sendMessage("${conf.getString("prefix")}${conf.getString("drop-command.$key")}", MessagesType.CHAT, sender)
     }
 
-    override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+    //override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> { return mutableMapOf() }
+
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? { return null }
 }

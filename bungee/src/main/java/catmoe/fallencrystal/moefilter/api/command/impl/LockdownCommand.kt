@@ -129,10 +129,22 @@ class LockdownCommand : ICommand {
          */
     }
 
+    /*
     override fun tabComplete(sender: CommandSender): MutableMap<Int, List<String>> {
         val map: MutableMap<Int, List<String>> = HashMap()
         map[1] = listOf("toggle", "add", "remove")
         map[2] = listOf("<Address>")
         return map
+    }
+     */
+    override fun tabComplete(sender: CommandSender, args: Array<out String>): MutableCollection<String>? {
+        return when (args.size) {
+            2 -> mutableListOf("toggle", "add", "remove")
+            3 -> {
+                val a = args[1]
+                if (a.equals("add", ignoreCase = true) || a.equals("remove", ignoreCase = true)) mutableListOf("<Address>") else mutableListOf()
+            }
+            else -> null
+        }
     }
 }

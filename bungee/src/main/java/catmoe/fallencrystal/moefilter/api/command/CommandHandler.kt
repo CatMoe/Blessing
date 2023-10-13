@@ -22,33 +22,46 @@ import catmoe.fallencrystal.moefilter.api.command.CommandManager.getCommandList
 import catmoe.fallencrystal.moefilter.api.command.CommandManager.getParsedCommand
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
+import catmoe.fallencrystal.translation.command.TranslationCommand
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.command.annotation.misc.DescriptionType
+import catmoe.fallencrystal.translation.command.bungee.BungeeCommandAdapter
+import catmoe.fallencrystal.translation.executor.CommandExecutor
+import catmoe.fallencrystal.translation.executor.bungee.BungeeConsole
+import catmoe.fallencrystal.translation.platform.Platform
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import net.md_5.bungee.api.CommandSender
-import net.md_5.bungee.api.connection.ProxiedPlayer
-import net.md_5.bungee.api.plugin.TabExecutor
 import java.util.concurrent.CompletableFuture
-
-class CommandHandler(name: String?, permission: String?, vararg aliases: String?) : net.md_5.bungee.api.plugin.Command(name, permission, *aliases), TabExecutor {
+@MoeCommand(
+    name = "moefilter",
+    aliases = ["mf", "moefilter"],
+    permission = "",
+    allowConsole = true,
+    asyncExecute = true,
+    descType = DescriptionType.MESSAGE_CONFIG,
+    descValue = "prefix"
+)
+class CommandHandler : TranslationCommand {
 
     private val config = LocalConfig.getMessage() // Message Config
     private val prefix: String = config.getString("prefix")
     private val fullHideCommand = config.getBoolean("command.full-hide-command")
 
-    override fun execute(sender: CommandSender, args: Array<out String>) {
-        // 当玩家没有权限或未输入任何子命令时  详见 infoCommand 方法.
-        if (args.isEmpty() || !sender.hasPermission("moefilter")) { infoCommand(sender); return }
-        val command = CommandManager.getICommand(args[0])
+    @Platform(ProxyPlatform.BUNGEE)
+    override fun execute(sender: CommandExecutor, input: Array<out String>) {
+        val casted = BungeeCommandAdapter.getCastedSender(sender) ?: return
+        if (input.isEmpty() || !sender.hasPermission("moefilter")) { infoCommand(casted); return }
+        val command = CommandManager.getICommand(input[0])
         if (command != null) {
             val parsedInfo = getParsedCommand(command)!!
             val permission = parsedInfo.permission
-            if (sender !is ProxiedPlayer && !parsedInfo.allowConsole) { MessageUtil.sendMessage("$prefix${config.getString("command.only-player")}", MessagesType.CHAT, sender); return }
+            if (sender is BungeeConsole && !parsedInfo.allowConsole) { MessageUtil.sendMessage("$prefix${config.getString("command.only-player")}", MessagesType.CHAT, casted); return }
             if (!sender.hasPermission(permission)) {
-                if (fullHideCommand) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
-                else { MessageUtil.sendMessage("$prefix${config.getString("command.no-permission").replace("[permission]", permission)}", MessagesType.CHAT, sender) }; return
-            }
-            else { execute(command, sender, args) }
-        } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, sender) }
+                if (fullHideCommand) { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, casted) }
+                else { MessageUtil.sendMessage("$prefix${config.getString("command.no-permission").replace("[permission]", permission)}", MessagesType.CHAT, casted) }; return
+            } else { execute(command, casted, input) }
+        } else { MessageUtil.sendMessage("$prefix${config.getString("command.not-found")}", MessagesType.CHAT, casted) }
     }
 
     fun execute(command: ICommand, executor: CommandSender, args: Array<out String>) {
@@ -60,6 +73,7 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         command.execute(executor, args)
     }
 
+    /*
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         val noPermission = if (config.getString("command.tabComplete.no-permission").isNotEmpty()) { listOf(config.getString("command.tabComplete.no-permission")) } else listOf()
         val noSubPermission = if (config.getString("command.tabComplete.no-subcommand-permission").isNotEmpty()) listOf(config.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", permission)) else listOf()
@@ -78,8 +92,32 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         val command = CommandManager.getICommand(args[0])
         return if (command != null) {
             val permission = getParsedCommand(command)!!.permission
-            if (!sender.hasPermission(permission)) { if (!fullHideCommand) { noSubPermission } else { listOf() } } else command.tabComplete(sender)[args.size - 1] ?: listOf()
+            if (!sender.hasPermission(permission)) { if (!fullHideCommand) { noSubPermission } else { listOf() } } else command.tabComplete(sender, args).toMutableList()
         } else { listOf() }
+    }
+     */
+
+    override fun tabComplete(sender: CommandExecutor, input: Array<out String>): MutableList<String> {
+        val casted = BungeeCommandAdapter.getCastedSender(sender) ?: return mutableListOf()
+        val noPermission = config.getString("command.tabComplete.no-permission")
+        val noSubPermission = config.getString("command.tabComplete.no-subcommand-permission")
+        if (!sender.hasPermission("moefilter")) return if (noPermission.isEmpty()) mutableListOf() else mutableListOf(
+            noPermission
+        )
+        if (input.size == 1) {
+            val list = mutableListOf<String>()
+            for (it in getCommandList(casted)) {
+                val info = getParsedCommand(it) ?: continue
+                if (input[0].isNotEmpty() && !info.command.startsWith(input[0])) continue
+                list.add(info.command)
+            }
+            return list
+        }
+        val command = CommandManager.getICommand(input[0]) ?: return mutableListOf()
+        if (!sender.hasPermission(getParsedCommand(command)!!.command)) {
+            return if (fullHideCommand || noSubPermission.isEmpty()) mutableListOf() else mutableListOf(noSubPermission)
+        }
+        return command.tabComplete(casted, input)?.toMutableList() ?: mutableListOf()
     }
 
     private fun infoCommand(sender: CommandSender) {
