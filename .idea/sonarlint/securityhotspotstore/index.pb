@@ -186,5 +186,3 @@ bbungee/src/main/java/catmoe/fallencrystal/moefilter/network/bungee/pipeline/Abs
 bbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/handler/ping/CacheMotdManager.kt,c\2\c26c1997554ea80f9dd73f156a3029727917bb68
 “
 cbungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/packet/c2s/PacketStatusRequest.kt,d\f\dfb77599aa51eb5c79d80460ddbcf22a33378d8d
-‰
-Ybungee/src/main/java/catmoe/fallencrystal/moefilter/network/limbo/netty/TrafficLimiter.kt,6\8\680ea15b49e84c6997b24d7f5009c88fc42173b6

@@ -64,7 +64,17 @@ class CommandHandler(name: String?, permission: String?, vararg aliases: String?
         val noPermission = if (config.getString("command.tabComplete.no-permission").isNotEmpty()) { listOf(config.getString("command.tabComplete.no-permission")) } else listOf()
         val noSubPermission = if (config.getString("command.tabComplete.no-subcommand-permission").isNotEmpty()) listOf(config.getString("command.tabComplete.no-subcommand-permission").replace("[permission]", permission)) else listOf()
         if (!sender.hasPermission("moefilter")) return noPermission
-        if (args.size == 1) { val list = mutableListOf<String>(); getCommandList(sender).forEach { list.add(getParsedCommand(it)!!.command) }; return list }
+        if (args.size == 1) {
+            val list = mutableListOf<String>()
+            //getCommandList(sender).forEach { list.add(getParsedCommand(it)!!.command) }
+            val arg0 = args[0]
+            for (it in getCommandList(sender)) {
+                val info = getParsedCommand(it) ?: continue
+                if (arg0.isNotEmpty() && !info.command.startsWith(arg0)) continue
+                list.add(info.command)
+            }
+            return list
+        }
         val command = CommandManager.getICommand(args[0])
         return if (command != null) {
             val permission = getParsedCommand(command)!!.permission
