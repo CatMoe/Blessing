@@ -17,10 +17,41 @@
 
 package catmoe.fallencrystal.translation.command
 
-interface CommandAdapter {
+import catmoe.fallencrystal.translation.TranslationLoader
+import catmoe.fallencrystal.translation.command.bungee.BungeeCommandAdapter
+import catmoe.fallencrystal.translation.command.velocity.VelocityCommandAdapter
+import catmoe.fallencrystal.translation.platform.ProxyPlatform
+import com.github.benmanes.caffeine.cache.Caffeine
+import kotlin.reflect.KClass
 
-    fun register()
+@Suppress("MemberVisibilityCanBePrivate")
+object CommandAdapter {
 
-    fun unregister()
+    private val platform = TranslationLoader.instance.loader.platform
+    val adapter: KClass<out ICommandAdapter> = when (platform) {
+        ProxyPlatform.BUNGEE -> BungeeCommandAdapter::class
+        ProxyPlatform.VELOCITY -> VelocityCommandAdapter::class
+    }
+
+    val list = mutableListOf<TranslationCommand>()
+    val adapters = Caffeine.newBuilder().build<TranslationCommand, ICommandAdapter>()
+
+    fun register(command: TranslationCommand): ICommandAdapter {
+        val adapter = when (platform) {
+            ProxyPlatform.BUNGEE -> BungeeCommandAdapter(command)
+            ProxyPlatform.VELOCITY -> VelocityCommandAdapter(command)
+        }
+        adapter.register()
+        list.add(command)
+        adapters.put(command, adapter)
+        return adapter
+    }
+
+    fun unregister(command: TranslationCommand) {
+        val adapter = this.adapters.getIfPresent(command) ?: return
+        adapter.unregister()
+        list.remove(command)
+        adapters.invalidate(command)
+    }
 
 }

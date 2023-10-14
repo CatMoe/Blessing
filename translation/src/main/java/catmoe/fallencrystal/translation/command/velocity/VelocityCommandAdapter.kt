@@ -18,21 +18,29 @@
 package catmoe.fallencrystal.translation.command.velocity
 
 import catmoe.fallencrystal.translation.TranslationLoader
-import catmoe.fallencrystal.translation.command.CommandAdapter
+import catmoe.fallencrystal.translation.command.ICommandAdapter
 import catmoe.fallencrystal.translation.command.TranslationCommand
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
+import catmoe.fallencrystal.translation.executor.CommandExecutor
 import catmoe.fallencrystal.translation.executor.velocity.VelocityConsole
 import catmoe.fallencrystal.translation.player.PlayerInstance
+import catmoe.fallencrystal.translation.player.TranslatePlayer
+import catmoe.fallencrystal.translation.player.velocity.VelocityPlayer
 import com.velocitypowered.api.command.CommandMeta
+import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.command.SimpleCommand
 import com.velocitypowered.api.command.SimpleCommand.Invocation
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
 import java.util.concurrent.CompletableFuture
 
-class VelocityCommandAdapter(val command: TranslationCommand) : CommandAdapter {
+class VelocityCommandAdapter(val command: TranslationCommand) : ICommandAdapter {
 
-    val plugin = TranslationLoader.instance.loader.getPluginInstance()
+    constructor(command: TranslationCommand, plugin: Any): this(command) {
+        this.plugin=plugin
+    }
+
+    var plugin: Any = TranslationLoader.instance.loader.getPluginInstance()
     val proxy = TranslationLoader.instance.loader.getProxyServer().obj as ProxyServer
     private val manager = proxy.commandManager
     var permission = ""
@@ -58,6 +66,16 @@ class VelocityCommandAdapter(val command: TranslationCommand) : CommandAdapter {
     }
 
     override fun unregister() { manager.unregister(meta ?: return) }
+
+    companion object {
+        fun getCastedSender(sender: CommandExecutor): CommandSource? {
+            return when (sender) {
+                is VelocityConsole -> sender.orig
+                is TranslatePlayer -> (sender.upstream as VelocityPlayer).player
+                else -> null
+            }
+        }
+    }
 }
 class Handler(private val adapter: VelocityCommandAdapter) : SimpleCommand {
 

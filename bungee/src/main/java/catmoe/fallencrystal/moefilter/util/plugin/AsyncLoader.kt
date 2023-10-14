@@ -48,7 +48,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.CPlatform
-import catmoe.fallencrystal.translation.command.bungee.BungeeCommandAdapter
+import catmoe.fallencrystal.translation.command.CommandAdapter
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
@@ -107,7 +107,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 ProxyCache
                 CPUMonitor.startSchedule()
                 //pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
-                BungeeCommandAdapter(CommandHandler()).register()
+                CommandAdapter.register(CommandHandler())
 
                 registerListener()
                 ConnectionStatistics
@@ -133,6 +133,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     @Suppress("UNUSED_PARAMETER")
     @EventHandler(PluginUnloadEvent::class, priority = HandlerPriority.LOWEST)
     fun unload(event: PluginUnloadEvent) {
+        CommandAdapter.unregister(CommandHandler.instance)
         CPUMonitor.shutdownSchedule()
         try {
             MessageUtil.logInfo("[MoeFilter] Waiting event calling")

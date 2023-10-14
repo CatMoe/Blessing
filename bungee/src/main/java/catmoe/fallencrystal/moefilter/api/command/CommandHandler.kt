@@ -44,6 +44,10 @@ import java.util.concurrent.CompletableFuture
 )
 class CommandHandler : TranslationCommand {
 
+    init {
+        instance=this
+    }
+
     private val config = LocalConfig.getMessage() // Message Config
     private val prefix: String = config.getString("prefix")
     private val fullHideCommand = config.getBoolean("command.full-hide-command")
@@ -131,6 +135,11 @@ class CommandHandler : TranslationCommand {
             ).joinToString("<reset><newline>"),
             MessagesType.CHAT, sender
         )
+    }
+
+    companion object {
+        lateinit var instance: CommandHandler
+            private set
     }
 
 }

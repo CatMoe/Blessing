@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.translation.command.bungee
 
 import catmoe.fallencrystal.translation.TranslationLoader
-import catmoe.fallencrystal.translation.command.CommandAdapter
+import catmoe.fallencrystal.translation.command.ICommandAdapter
 import catmoe.fallencrystal.translation.command.TranslationCommand
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.executor.CommandExecutor
@@ -27,6 +27,7 @@ import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.TranslatePlayer
+import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
@@ -36,9 +37,13 @@ import net.md_5.bungee.api.plugin.TabExecutor
 import java.util.concurrent.CompletableFuture
 
 @Platform(ProxyPlatform.BUNGEE)
-class BungeeCommandAdapter(val command: TranslationCommand) : CommandAdapter {
+class BungeeCommandAdapter(val command: TranslationCommand) : ICommandAdapter {
 
-    val plugin = TranslationLoader.instance.loader.getPluginInstance() as Plugin
+    constructor(command: TranslationCommand, plugin: Plugin) : this(command) {
+        this.plugin=plugin
+    }
+
+    var plugin = TranslationLoader.instance.loader.getPluginInstance() as Plugin
     val proxy = TranslationLoader.instance.loader.getProxyServer().obj as ProxyServer
     var handler: Handler? = null
 
@@ -69,7 +74,7 @@ class BungeeCommandAdapter(val command: TranslationCommand) : CommandAdapter {
         fun getCastedSender(sender: CommandExecutor): CommandSender? {
             return when (sender) {
                 is BungeeConsole -> sender.console
-                is TranslatePlayer -> sender.upstream as ProxiedPlayer
+                is TranslatePlayer -> (sender.upstream as BungeePlayer).player
                 else -> null
             }
         }

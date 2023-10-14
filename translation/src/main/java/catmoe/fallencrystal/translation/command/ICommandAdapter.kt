@@ -15,9 +15,12 @@
  *
  */
 
-package catmoe.fallencrystal.translation.platform
+package catmoe.fallencrystal.translation.command
 
-enum class ProxyPlatform {
-    BUNGEE,
-    VELOCITY,
+interface ICommandAdapter {
+
+    fun register()
+
+    fun unregister()
+
 }
