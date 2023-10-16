@@ -39,6 +39,7 @@
     <build>
         <finalName>MoeFilter</finalName>
         <defaultGoal>clean install</defaultGoal>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -96,7 +97,7 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/java</source>
+                                <source>src/main/kotlin</source>
                                 <source>../target/generated-sources/annotations</source>
                             </sourceDirs>
                         </configuration>

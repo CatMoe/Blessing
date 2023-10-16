@@ -38,6 +38,7 @@
     <build>
         <finalName>MoeFilter</finalName>
         <defaultGoal>clean install</defaultGoal>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
