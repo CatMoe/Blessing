@@ -94,12 +94,13 @@ object EventManager {
     }
 
     fun register(listener: EventListener) {
+        if (!TranslationLoader.canAccess(listener)) return
         debug("Listener ${listener.javaClass.name} is trying register.")
         val a: MutableCollection<Method> = CopyOnWriteArrayList()
         val method = listener.javaClass.declaredMethods
         for (it in method) {
             /* it.parameterTypes[0]::class.java.isAssignableFrom(TranslationEvent::class.java) */
-            if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1) {
+            if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1 && TranslationLoader.canAccess(it)) {
                 debug("Founded handler method: ${it.name}")
                 a.add(it)
             }

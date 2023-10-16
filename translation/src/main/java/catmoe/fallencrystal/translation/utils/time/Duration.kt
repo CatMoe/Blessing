@@ -15,25 +15,32 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.state
+package catmoe.fallencrystal.translation.utils.time
 
-import com.google.common.base.Preconditions
 import java.util.concurrent.TimeUnit
 
-class AttackDuration {
+@Suppress("MemberVisibilityCanBePrivate")
+class Duration {
 
     private var startTime: Long = 0
 
     fun start() {
-        //if (!StateManager.inAttack.get()) { throw IllegalStateException("Cannot start count when not in attack!") }
-        Preconditions.checkArgument(StateManager.inAttack.get(), "Cannot start count when not in attack!")
         startTime = System.currentTimeMillis()
     }
 
     fun getDuration(): Long {
-        if (!StateManager.inAttack.get()) return 0
+        if (startTime == 0.toLong()) return 0
         return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime)
     }
 
+    fun getFormat(): String { return getFormat(getDuration()) }
+
     fun stop() { startTime = 0 }
+
+    companion object {
+        fun getFormat(sec: Long): String {
+            return if (sec >= 3600) String.format("%02d:%02d:%02d", sec / 3600, sec % 3600 / 60, sec % 60)
+            else String.format("%02d:%02d", sec % 3600 / 60, sec % 60)
+        }
+    }
 }

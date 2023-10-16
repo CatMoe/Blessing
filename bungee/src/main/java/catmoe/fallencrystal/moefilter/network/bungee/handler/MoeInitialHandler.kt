@@ -7,7 +7,7 @@ import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
+import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline.Companion.LAST_PACKET_INTERCEPTOR
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler

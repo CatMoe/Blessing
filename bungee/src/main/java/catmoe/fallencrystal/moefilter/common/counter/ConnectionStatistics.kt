@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.common.counter
 
-import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
 import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine.newBuilder
@@ -49,6 +49,7 @@ object ConnectionStatistics {
             sessionBlocked.invalidateAll()
             StateManager.lastMethod.clear()
         }
+        StateManager.tickProfile()
     }
 
     private val ticks = 1..20

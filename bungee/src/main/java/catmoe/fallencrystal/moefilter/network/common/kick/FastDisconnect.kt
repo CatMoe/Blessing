@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.common.kick
 
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
+import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.ServerType.*

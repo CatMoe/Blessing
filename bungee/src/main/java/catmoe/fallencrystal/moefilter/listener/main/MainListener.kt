@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.ProxyCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.common.counter.type.BlockType
+import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.BungeePacketHandler

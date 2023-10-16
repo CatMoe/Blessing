@@ -82,7 +82,7 @@ object Notifications : Reloadable {
             "%peak_cps%" to getReplacedCPS(ConnectionStatistics.peakCps),
             "%peak_cps_session%" to getReplacedCPS(ConnectionStatistics.sessionPeakCps),
             "%prefix%" to config.getString("prefix"),
-            "%duration%" to getDuration(StateManager.duration.getDuration()),
+            "%duration%" to StateManager.duration.getFormat(),
             "%type%" to getType(),
             "%limbo%" to MoeLimbo.connections.size.toString(),
             "%incoming-bytes%" to conversionBytesFormat(ConnectionStatistics.getIncoming()),
@@ -135,14 +135,6 @@ object Notifications : Reloadable {
             if (cps >= it.key) return it.value.replace("[value]", "$cps")
         }
         return "$cps"
-    }
-
-    /* Duration */
-
-    private fun getDuration(sec: Long): String {
-        // Hours:Minutes:Seconds or Minutes:Seconds
-        return if (sec >= 3600) String.format("%02d:%02d:%02d", sec / 3600, sec % 3600 / 60, sec % 60)
-        else String.format("%02d:%02d", sec % 3600 / 60, sec % 60)
     }
 
     /* AttackType get */

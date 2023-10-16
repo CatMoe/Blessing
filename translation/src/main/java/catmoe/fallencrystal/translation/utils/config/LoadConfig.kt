@@ -672,7 +672,6 @@ class LoadConfig {
                         "https://reputation.alienvault.com/reputation.generic",
                         "https://gist.githubusercontent.com/BBcan177/bf29d47ea04391cb3eb0/raw",
                         "https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw",
-                        "http://lists.blocklist.de/lists/all.txt"
                     ]
                 }
                 

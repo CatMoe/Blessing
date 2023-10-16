@@ -15,13 +15,20 @@
  *
  */
 
-package catmoe.fallencrystal.moefilter.common.counter.type
+package catmoe.fallencrystal.moefilter.data.ticking
 
-import catmoe.fallencrystal.moefilter.state.AttackState
+import catmoe.fallencrystal.moefilter.data.BlockType
+import catmoe.fallencrystal.translation.utils.system.impl.CpuUsage
 
-enum class BlockType(@JvmField val state: AttackState) {
-    FIREWALL(AttackState.FIREWALL),
-    TIMEOUT(AttackState.NOT_HANDLED),
-    JOIN(AttackState.JOIN),
-    PING(AttackState.PING),
-}
+@Suppress("MemberVisibilityCanBePrivate")
+class TickingProfile(
+    val attackProfile: TickingAttackProfile?,
+    val cps: Int,
+    val peakCPS: Int,
+    val total: Long,
+    val totalIPs: Long,
+    val blocked: MutableMap<BlockType, Long>,
+    val cpu: CpuUsage,
+    val incoming: Long,
+    val outgoing: Long
+)
