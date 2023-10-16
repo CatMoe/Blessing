@@ -68,30 +68,25 @@ class MoeFilterBungee : Plugin(), PlatformLoader {
         var mode: WorkingMode? = null
     }
 
-    override fun getPluginFolder(): File {
-        return dataFolder
+    override fun getPluginFolder(): File = dataFolder
+
+    override fun getPluginInstance() = instance
+
+    override fun whenLoad() {
+        // Do not need that.
     }
 
-    override fun getPluginInstance(): PlatformLoader {
-        return instance
+    override fun whenUnload() {
+        // Do not need that.
     }
 
-    override fun whenLoad() {  }
+    override fun pluginVersion(): String = this.description.version
 
-    override fun whenUnload() {  }
-
-    override fun pluginVersion(): String {
-        return this.description.version
+    override fun readyLoad() {
+        // Do not need that.
     }
 
-    override fun readyLoad() {  }
+    override fun getPlatformLogger() = SimpleLogger(BungeeCord.getInstance().logger)
 
-    override fun getPlatformLogger(): SimpleLogger {
-        return SimpleLogger(BungeeCord.getInstance().logger)
-    }
-
-    override fun getProxyServer(): MoeProxyServer {
-        val proxy = ProxyServer.getInstance()
-        return MoeProxyServer(ProxyPlatform.BUNGEE, proxy)
-    }
+    override fun getProxyServer() = MoeProxyServer(ProxyPlatform.BUNGEE, ProxyServer.getInstance())
 }

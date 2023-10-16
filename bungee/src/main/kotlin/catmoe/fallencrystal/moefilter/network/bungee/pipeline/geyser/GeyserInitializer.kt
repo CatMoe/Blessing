@@ -21,7 +21,7 @@ class GeyserInitializer {
         pipeline.addAfter(PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
         pipeline.addAfter(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, MinecraftEncoder(Protocol.HANDSHAKE, true, protocol))
         pipeline.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.LEGACY_KICKER, legacyKicker)
-        channel.pipeline().get(HandlerBoss::class.java).setHandler(InitialHandler(BungeeCord.getInstance(), listener))
+        channel.pipeline()[HandlerBoss::class.java].setHandler(InitialHandler(BungeeCord.getInstance(), listener))
 
         if (listener.isProxyProtocol) { channel.pipeline().addFirst(HAProxyMessageDecoder()) }
     }

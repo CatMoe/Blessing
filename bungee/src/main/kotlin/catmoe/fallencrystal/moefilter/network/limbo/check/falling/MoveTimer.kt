@@ -79,9 +79,7 @@ object MoveTimer : LimboChecker {
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         val now = System.currentTimeMillis()
-        if (packet is PacketKeepAlive) {
-            if (firstTime.getIfPresent(handler) == null) firstTime.put(handler, now)
-        }
+        if (packet is PacketKeepAlive && firstTime.getIfPresent(handler) == null) firstTime.put(handler, now)
         if (packet is Disconnect) { vlCache.invalidate(handler); lastTime.invalidate(handler); return false }
         if (cancelledRead) return false
         val lastTime = this.lastTime.getIfPresent(handler)
@@ -103,7 +101,11 @@ object MoveTimer : LimboChecker {
         return false
     }
 
-    override fun register() {}
+    override fun register() {
+        // Do not need that.
+    }
 
-    override fun unregister() {}
+    override fun unregister() {
+        // Do not need that.
+    }
 }

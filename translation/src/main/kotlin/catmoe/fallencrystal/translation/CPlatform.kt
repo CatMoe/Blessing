@@ -17,12 +17,9 @@
 
 package catmoe.fallencrystal.translation
 
-import catmoe.fallencrystal.translation.platform.MoeProxyServer
 import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.PlatformLoader
-import catmoe.fallencrystal.translation.platform.SimpleLogger
 import catmoe.fallencrystal.translation.utils.config.LoadConfig
-import java.io.File
 
 @Suppress("MemberVisibilityCanBePrivate")
 class CPlatform(val loader: PlatformLoader) : PlatformLoader {
@@ -33,10 +30,10 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
 
     val translationLoader = TranslationLoader(this)
 
-    override fun getPluginFolder(): File { return loader.getPluginFolder() }
-    override fun getPluginInstance(): PlatformLoader { return loader.getPluginInstance() }
-    override fun getPlatformLogger(): SimpleLogger { return loader.getPlatformLogger() }
-    override fun getProxyServer(): MoeProxyServer { return loader.getProxyServer() }
+    override fun getPluginFolder() = loader.getPluginFolder()
+    override fun getPluginInstance() = loader.getPluginInstance()
+    override fun getPlatformLogger() = loader.getPlatformLogger()
+    override fun getProxyServer() = loader.getProxyServer()
 
     override fun readyLoad() {
         LoadConfig().loadConfig()
@@ -47,10 +44,10 @@ class CPlatform(val loader: PlatformLoader) : PlatformLoader {
     }
 
     override fun whenUnload() {
-
+        // Do not need that.
     }
 
-    override fun pluginVersion(): String { return loader.pluginVersion() }
+    override fun pluginVersion() = loader.pluginVersion()
 
     companion object {
         lateinit var instance: CPlatform

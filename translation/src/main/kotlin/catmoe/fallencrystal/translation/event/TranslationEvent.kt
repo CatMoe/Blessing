@@ -23,6 +23,8 @@ abstract class TranslationEvent {
 
     open fun setCancelled() { throw UnsupportedOperationException("Event do not supported cancelled operation.") }
 
-    open fun ifCancelled() {}
+    open fun ifCancelled() {
+        // When event is canceled and called complete. This method will be call.
+    }
 
 }

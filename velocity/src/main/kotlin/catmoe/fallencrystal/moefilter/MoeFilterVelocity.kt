@@ -64,9 +64,9 @@ class MoeFilterVelocity @Inject constructor(
         proxyServer.eventManager.register(this, ConversionListener(this))
     }
 
-    override fun getPluginFolder(): File { return pluginFolder }
+    override fun getPluginFolder() = pluginFolder
 
-    override fun getPluginInstance(): PlatformLoader { return this }
+    override fun getPluginInstance() = this
     override fun readyLoad() {
         // Do not have any impl need that.
     }
@@ -77,13 +77,11 @@ class MoeFilterVelocity @Inject constructor(
     override fun whenUnload() {
         // Do not have any impl need that.
     }
-    override fun pluginVersion(): String { return "0.1.4-Beta" }
+    override fun pluginVersion() = "0.1.4-Beta"
 
-    override fun getPlatformLogger(): SimpleLogger { return SimpleLogger(logger) }
+    override fun getPlatformLogger() = SimpleLogger(logger)
 
-    override fun getProxyServer(): MoeProxyServer {
-        return MoeProxyServer(ProxyPlatform.VELOCITY, proxyServer)
-    }
+    override fun getProxyServer() = MoeProxyServer(ProxyPlatform.VELOCITY, proxyServer)
 
     companion object {
         lateinit var instance: MoeFilterVelocity

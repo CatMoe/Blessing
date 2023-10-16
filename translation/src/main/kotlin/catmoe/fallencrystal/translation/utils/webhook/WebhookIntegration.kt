@@ -132,6 +132,7 @@ open class WebhookIntegration {
             var i = 0
             entrySet.forEach { (it, obj) ->
                 builder.append("\"$it\"").append(":")
+                /*
                 if (obj is String) { builder.append("\"$obj\"") } else if (obj is Int) { builder.append(Integer.valueOf(obj.toString()))
                 } else if (obj is Boolean) { builder.append(obj) } else if (obj is JSONObject) { builder.append(obj.toString())
                 } else if (obj.javaClass.isArray) {
@@ -139,6 +140,22 @@ open class WebhookIntegration {
                     val len = Array.getLength(obj)
                     for (j in 0 until len) { builder.append(Array.get(obj, j).toString()).append(if (j != len - 1) "," else "") }
                     builder.append("]")
+                }
+                 */
+                when (obj) {
+                    is String -> builder.append("\"$obj\"")
+                    is Int -> builder.append(Integer.valueOf(obj.toString()))
+                    is Boolean -> builder.append(obj)
+                    is JSONObject -> builder.append(obj.toString())
+                    else -> {
+                        if (obj.javaClass.isArray) {
+                            builder.append("[")
+                            //val len = Array.getLength(obj)
+                            val len = Array.getLength(obj)
+                            for (j in 0 until len) { builder.append(Array.get(obj, j).toString()).append(if (j != len - 1) "," else "") }
+                            builder.append("]")
+                        }
+                    }
                 }
                 builder.append(if (++i == entrySet.size) "}" else ",")
             }

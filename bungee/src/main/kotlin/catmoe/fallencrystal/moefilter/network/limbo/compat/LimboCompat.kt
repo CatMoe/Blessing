@@ -21,6 +21,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.compat.converter.PingConvert
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.net.InetSocketAddress
 
-interface LimboCompat {
+fun interface LimboCompat {
     fun handlePing(host: InetSocketAddress, version: Version): PingConverter
 }

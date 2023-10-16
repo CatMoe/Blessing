@@ -43,7 +43,9 @@ abstract class MenuBuilder {
 
     open fun setPlayer(player: ProxiedPlayer) { this.player=player }
 
-    open fun define() {}
+    open fun define() {
+        // idk
+    }
 
     open fun setTitle(component: Component) { this.title=component }
 
@@ -66,9 +68,13 @@ abstract class MenuBuilder {
         Protocolize.playerProvider().player(player!!.uniqueId).openInventory(inv)
     }
 
-    open fun onClose(close: InventoryClose) {}
+    open fun onClose(close: InventoryClose) {
+        // Override to listen when closing inventory
+    }
 
-    open fun onClick(click: InventoryClick) {}
+    open fun onClick(click: InventoryClick) {
+        // Override to listen when clicking inventory
+    }
 
     open fun close() { Protocolize.playerProvider().player(player!!.uniqueId).closeInventory() }
 

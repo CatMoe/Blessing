@@ -42,6 +42,6 @@ class EventCaller(val ctx: ChannelHandlerContext, val listener: ListenerInfo) {
                 if (throwable != null) { ExceptionCatcher.handle(channel, throwable) }
             }
         }
-        if (bungee.pluginManager.callEvent(ClientConnectEvent(channel.remoteAddress(), listener)).isCancelled) { if (channel.isActive) channel.close() }
+        if (bungee.pluginManager.callEvent(ClientConnectEvent(channel.remoteAddress(), listener)).isCancelled && channel.isActive) { channel.close() }
     }
 }

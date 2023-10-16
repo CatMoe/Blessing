@@ -22,29 +22,37 @@ import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlayerGetter
 import catmoe.fallencrystal.translation.player.TranslatePlayer
+import com.google.common.base.Preconditions
 import java.util.*
 
 @Platform(ProxyPlatform.VELOCITY)
 class VelocityPlayerGetter : PlayerGetter {
+
+    val platform = TranslationLoader.instance.loader.platform
+
+    private fun checkPlatform() {
+        Preconditions.checkArgument(platform != ProxyPlatform.VELOCITY, "Wrong proxy type")
+    }
+
     override fun getPlayer(uuid: UUID): TranslatePlayer? {
-        if (TranslationLoader.instance.loader.platform != ProxyPlatform.VELOCITY) throw IllegalArgumentException("Wrong proxy type")
+        checkPlatform()
         val proxyServer = getProxyServer() as com.velocitypowered.api.proxy.ProxyServer
         return try { TranslatePlayer(VelocityPlayer(proxyServer.getPlayer(uuid).get())) } catch (_: NullPointerException) { null }
     }
 
     override fun getPlayer(name: String): TranslatePlayer? {
-        if (TranslationLoader.instance.loader.platform != ProxyPlatform.VELOCITY) throw IllegalArgumentException("Wrong proxy type")
+        checkPlatform()
         val proxyServer = getProxyServer() as com.velocitypowered.api.proxy.ProxyServer
         return try { TranslatePlayer(VelocityPlayer(proxyServer.getPlayer(name).get())) } catch (_: NullPointerException) { null }
     }
 
     private fun getProxyServer(): Any {
-        if (TranslationLoader.instance.loader.platform != ProxyPlatform.VELOCITY) throw IllegalArgumentException("Wrong proxy type")
+        checkPlatform()
         return TranslationLoader.instance.loader.getProxyServer().obj
     }
 
     override fun getPlayers(): MutableCollection<TranslatePlayer> {
-        if (TranslationLoader.instance.loader.platform != ProxyPlatform.VELOCITY) throw IllegalArgumentException("Wrong proxy type")
+        checkPlatform()
         val proxyServer = getProxyServer() as com.velocitypowered.api.proxy.ProxyServer
         val a: MutableCollection<TranslatePlayer> = ArrayList()
         try {

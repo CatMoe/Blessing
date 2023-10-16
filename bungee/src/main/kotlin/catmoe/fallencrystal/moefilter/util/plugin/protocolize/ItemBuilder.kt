@@ -78,7 +78,7 @@ class ItemBuilder(material: ItemType) {
             }
             nbt.put("Enchantments", enchantments)
             if (hideEnchant) nbt.put("HideFlags", IntTag(5))
-            if (tags.size > 0) {
+            if (tags.isNotEmpty()) {
                 val customTags = (ListTag.createUnchecked(CompoundTag::class.java) as ListTag<CompoundTag>)
                 customTags.addAll(tags)
                 nbt.put("custom", customTags)
