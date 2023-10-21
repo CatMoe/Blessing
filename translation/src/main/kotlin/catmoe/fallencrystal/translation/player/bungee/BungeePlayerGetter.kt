@@ -22,7 +22,6 @@ import catmoe.fallencrystal.translation.platform.Platform
 import catmoe.fallencrystal.translation.platform.ProxyPlatform
 import catmoe.fallencrystal.translation.player.PlayerGetter
 import catmoe.fallencrystal.translation.player.TranslatePlayer
-import com.google.common.base.Preconditions
 import java.util.*
 
 @Platform(ProxyPlatform.BUNGEE)
@@ -30,22 +29,22 @@ class BungeePlayerGetter : PlayerGetter {
 
     val platform = TranslationLoader.instance.loader.platform
 
-    private fun checkPlatform() {
-        Preconditions.checkArgument(platform != ProxyPlatform.BUNGEE, "Wrong proxy type")
+    private fun checkPlatform(): Boolean {
+        return platform == ProxyPlatform.BUNGEE
     }
 
     override fun getPlayer(uuid: UUID): TranslatePlayer? {
-        checkPlatform()
+        if (!checkPlatform()) return null
         return try { TranslatePlayer(BungeePlayer(net.md_5.bungee.api.ProxyServer.getInstance().getPlayer(uuid))) } catch (_: NullPointerException) { null }
     }
 
     override fun getPlayer(name: String): TranslatePlayer? {
-        checkPlatform()
+        if (!checkPlatform()) return null
         return try { TranslatePlayer(BungeePlayer(net.md_5.bungee.api.ProxyServer.getInstance().getPlayer(name))) } catch (_: NullPointerException) { null }
     }
 
     override fun getPlayers(): MutableCollection<TranslatePlayer> {
-        checkPlatform()
+        if (!checkPlatform()) return mutableListOf()
         val a: MutableCollection<TranslatePlayer> = ArrayList()
         try {
             net.md_5.bungee.api.ProxyServer.getInstance().players.forEach { a.add(TranslatePlayer(BungeePlayer(it))) }

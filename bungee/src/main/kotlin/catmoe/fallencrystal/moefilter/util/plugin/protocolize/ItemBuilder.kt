@@ -22,7 +22,6 @@ import dev.simplix.protocolize.api.item.ItemStack
 import dev.simplix.protocolize.data.ItemType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.querz.nbt.tag.CompoundTag
 import net.querz.nbt.tag.IntTag
@@ -41,7 +40,7 @@ class ItemBuilder(material: ItemType) {
 
     fun name(name: Component): ItemBuilder {
         name.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-        val bc = ComponentUtil.toBaseComponents(name) as? BaseComponent ?: TextComponent()
+        val bc = ComponentUtil.toBaseComponents(name) ?: TextComponent()
         bc.isItalic=false
         item.displayName(bc.toLegacyText())
         return this
@@ -49,7 +48,7 @@ class ItemBuilder(material: ItemType) {
 
     fun lore(lore: Component): ItemBuilder {
         lore.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-        val bc = ComponentUtil.toBaseComponents(lore) as? BaseComponent ?: TextComponent()
+        val bc = ComponentUtil.toBaseComponents(lore) ?: TextComponent()
         bc.isItalic=false
         item.addToLore(bc.toLegacyText())
         return this

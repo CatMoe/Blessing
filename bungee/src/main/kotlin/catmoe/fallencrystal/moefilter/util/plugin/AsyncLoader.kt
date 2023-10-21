@@ -113,7 +113,6 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 ConnectionStatistics
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
-                LoadCommand().load()
                 Firewall.load()
                 loadProxyAPI()
                 if (LocalConfig.getLimbo().getBoolean("enabled")) {

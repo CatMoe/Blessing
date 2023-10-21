@@ -23,7 +23,6 @@ import catmoe.fallencrystal.translation.logger.ICubeLogger
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.BungeeCord
-import net.md_5.bungee.api.chat.BaseComponent
 import java.util.logging.Level
 
 class InitLogger : ICubeLogger {
@@ -68,7 +67,7 @@ class InitLogger : ICubeLogger {
     }
 
     override fun log(level: Level, component: Component) {
-        logger.log(level, (ComponentUtil.toBaseComponents(component) as? BaseComponent)?.toLegacyText())
+        logger.log(level, ComponentUtil.toBaseComponents(component)?.toLegacyText())
     }
 
     override fun logInstance(): Any {

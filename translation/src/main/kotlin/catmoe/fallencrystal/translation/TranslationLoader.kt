@@ -54,7 +54,7 @@ class TranslationLoader(val loader: CPlatform) {
                 is KClass<*> -> obj.java.getAnnotation(platformAnnotation)
                 else -> obj::class.java.getAnnotation(platformAnnotation)
             }
-            return platformAnnotation?.platform == instance.loader.platform
+            return (platformAnnotation ?: return true).platform == instance.loader.platform
         }
 
 

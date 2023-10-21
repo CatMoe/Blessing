@@ -98,12 +98,13 @@ object MessageUtil {
 
     fun logError(message: String) { logger.log(Level.SEVERE, logColorize(message)) }
 
-    fun colorize(message: String): BaseComponent { return (ComponentUtil.toBaseComponents(ComponentUtil.parse(message)) as? BaseComponent) ?: return TextComponent("") }
+    fun colorize(message: String): BaseComponent { return ComponentUtil.toBaseComponents(ComponentUtil.parse(message))
+        ?: return TextComponent("") }
 
     fun colorize(message: String, hex: Boolean): BaseComponent {
         val c = ComponentUtil.parse(message)
         return when (hex) {
-            true -> { (ComponentUtil.toBaseComponents(ComponentUtil.parse(message, true)) as? BaseComponent) ?: return TextComponent("") }
+            true -> { ComponentUtil.toBaseComponents(ComponentUtil.parse(message, true)) ?: return TextComponent("") }
             false -> { BungeeComponentSerializer.legacy().serialize(c)[0] }
         }
     }

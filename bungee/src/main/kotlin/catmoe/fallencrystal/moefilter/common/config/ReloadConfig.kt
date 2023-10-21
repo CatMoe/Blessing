@@ -34,6 +34,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.CacheMotdManager
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
+import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
 import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
@@ -65,6 +66,7 @@ object ReloadConfig : EventListener {
         BrandCheck,
         LimboListener,
         TrafficManager,
+        LoadCommand(),
     ))
 
     @EventHandler(PluginReloadEvent::class, priority = HandlerPriority.HIGHEST)

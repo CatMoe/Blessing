@@ -33,8 +33,8 @@ object ComponentUtil {
     @Platform(ProxyPlatform.BUNGEE)
     private fun a(component: Component): net.md_5.bungee.api.chat.BaseComponent { return net.md_5.bungee.api.chat.TextComponent(*net.md_5.bungee.chat.ComponentSerializer.parse(toGson(component))) }
 
-    fun toBaseComponents(component: Component): Any? {
-        return if (TranslationLoader.canAccess(this::class.java.getDeclaredMethod("a", Component::class.java))) this.a(component) else null
+    fun toBaseComponents(component: Component): net.md_5.bungee.api.chat.BaseComponent? {
+        return TranslationLoader.secureAccess(a(component))
     }
 
     fun legacyToComponent(legacy: String): Component { return LegacyComponentSerializer.legacySection().deserialize(legacy) }

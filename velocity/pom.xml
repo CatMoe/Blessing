@@ -23,7 +23,7 @@
     <description>❤ by CatMoe</description>
     <groupId>catmoe.fallencrystal.moefilter</groupId>
     <artifactId>MoeFilter-velocity</artifactId>
-    <version>0.1.4-Beta</version>
+    <version>0.1.4</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -31,7 +31,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.10</kotlin.version>
-        <project.version>0.1.4-Beta</project.version>
+        <project.version>0.1.4</project.version>
     </properties>
 
     <build>
@@ -154,7 +154,7 @@
         <dependency>
             <groupId>catmoe.fallencrystal.moefilter</groupId>
             <artifactId>MoeFilter-common</artifactId>
-            <version>0.1.4-Beta</version>
+            <version>0.1.4</version>
             <scope>compile</scope>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->

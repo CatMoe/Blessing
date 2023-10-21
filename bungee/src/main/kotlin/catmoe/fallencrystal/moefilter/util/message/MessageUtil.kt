@@ -38,7 +38,7 @@ object MessageUtil {
     fun colorize(text: String): String { return ChatColor.translateAlternateColorCodes('&', text) }
 
     fun colorizeMiniMessage(text: String): BaseComponent {
-        val result = (mmCache.getIfPresent(text) ?: ComponentUtil.toBaseComponents(ComponentUtil.parse(text)) as? BaseComponent) ?: return TextComponent("")
+        val result = (mmCache.getIfPresent(text) ?: ComponentUtil.toBaseComponents(ComponentUtil.parse(text))) ?: return TextComponent("")
         mmCache.put(text, result); return result
     }
 
