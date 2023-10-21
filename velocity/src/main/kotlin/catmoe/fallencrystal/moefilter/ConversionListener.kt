@@ -43,7 +43,7 @@ class ConversionListener(private val plugin: MoeFilterVelocity) {
 
     @Subscribe
     fun onLeave(event: DisconnectEvent) {
-        val player = PlayerInstance.getOrNull(event.player.uniqueId) ?: return
+        val player = PlayerInstance.getCachedOrNull(event.player.uniqueId) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
         PlayerInstance.cacheUUID.invalidate(player.getUniqueId())
         PlayerInstance.cacheName.invalidate(player.getName())
@@ -51,7 +51,7 @@ class ConversionListener(private val plugin: MoeFilterVelocity) {
 
     @Subscribe
     fun postBrand(event: PlayerClientBrandEvent) {
-        val player = PlayerInstance.getOrNull(event.player.uniqueId) ?: return
+        val player = PlayerInstance.getCachedOrNull(event.player.uniqueId) ?: return
         EventManager.callEvent(PlayerPostBrandEvent(player, event.brand))
     }
 
@@ -65,7 +65,7 @@ class ConversionListener(private val plugin: MoeFilterVelocity) {
             val has = cm.hasCommand(c)
             if (has) { isProxyCommand=true; break }
         }
-        val player = PlayerInstance.getOrNull(event.player.uniqueId) ?: return
+        val player = PlayerInstance.getCachedOrNull(event.player.uniqueId) ?: return
         val e =
             catmoe.fallencrystal.translation.event.events.player.PlayerChatEvent(player, event.message, isProxyCommand)
         if (!event.result.isAllowed) e.setCancelled()

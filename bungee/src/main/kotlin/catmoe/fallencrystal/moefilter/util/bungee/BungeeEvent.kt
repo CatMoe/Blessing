@@ -65,7 +65,7 @@ class BungeeEvent : Listener {
                     , MessagesType.CHAT, player)
             }; event.isCancelled = true; return
         }
-        val p = PlayerInstance.getOrNull(player.uniqueId) ?: return
+        val p = PlayerInstance.getCachedOrNull(player.uniqueId) ?: return
         val e = PlayerChatEvent(p, event.message, event.isProxyCommand)
         if (event.isCancelled) e.setCancelled()
         EventManager.callEvent(e)
@@ -108,7 +108,7 @@ class BungeeEvent : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {
         PipelineUtil.invalidateChannel(event.player)
-        val player = PlayerInstance.getOrNull(event.player.name) ?: return
+        val player = PlayerInstance.getCachedOrNull(event.player.name) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
         PlayerInstance.removeFromList(player)
     }

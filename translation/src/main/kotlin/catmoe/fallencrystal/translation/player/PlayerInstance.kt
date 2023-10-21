@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 object PlayerInstance : PlayerGetter, EventListener {
 
     private val list: MutableCollection<TranslatePlayer> = CopyOnWriteArrayList()
+    private val platform = TranslationLoader.instance.loader.platform
 
     val cacheUUID = Caffeine.newBuilder().build<UUID, TranslatePlayer>()
     val cacheName = Caffeine.newBuilder().build<String, TranslatePlayer>()
@@ -40,27 +41,27 @@ object PlayerInstance : PlayerGetter, EventListener {
         val a = cacheUUID.getIfPresent(uuid)
         if (a != null) return a
         list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getUniqueId() == uuid) return it }
-        val r = when (TranslationLoader.instance.loader.platform) {
-            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter().getPlayer(uuid))
-            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter().getPlayer(uuid))
-        } as? TranslatePlayer
+        val r = when (platform) {
+            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter())?.getPlayer(uuid)
+            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter())?.getPlayer(uuid)
+        }
         if (r != null) addToList(r)
         return r
     }
 
     override fun getPlayer(name: String): TranslatePlayer? {
         list.forEach { if (!it.isOnline()) list.remove(it) else if (it.getName() == name) return it }
-        val r = when (TranslationLoader.instance.loader.platform) {
-            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter().getPlayer(name))
-            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter().getPlayer(name))
-        } as? TranslatePlayer
+        val r = when (platform) {
+            BUNGEE -> TranslationLoader.secureAccess(BungeePlayerGetter())?.getPlayer(name)
+            VELOCITY -> TranslationLoader.secureAccess(VelocityPlayerGetter())?.getPlayer(name)
+        }
         if (r != null) addToList(r)
         return r
     }
 
-    fun getOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name.lowercase()) }
+    fun getCachedOrNull(name: String): TranslatePlayer? { return cacheName.getIfPresent(name.lowercase()) }
 
-    fun getOrNull(uuid: UUID): TranslatePlayer? { return cacheUUID.getIfPresent(uuid) }
+    fun getCachedOrNull(uuid: UUID): TranslatePlayer? { return cacheUUID.getIfPresent(uuid) }
 
     fun addToList(player: TranslatePlayer) {
         list.add(player)
