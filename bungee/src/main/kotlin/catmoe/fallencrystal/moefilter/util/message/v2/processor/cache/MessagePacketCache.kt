@@ -24,13 +24,30 @@ import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageTyp
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.util.concurrent.TimeUnit
 
-class MessagePacketCache(@Suppress("MemberVisibilityCanBePrivate") val processor: IMessagePacketProcessor) {
 
-    fun writePacket(packet: MessagePacket) { cache.put("${getType().prefix}${packet.getOriginal()}", packet) }
+@Suppress("MemberVisibilityCanBePrivate")
+class MessagePacketCache(val processor: IMessagePacketProcessor) {
 
-    fun readPacket(message: String): MessagePacket? { return cache.getIfPresent("${getType().prefix}$message") }
+    fun writeCache(packet: MessagePacket) { cache.put(getContext(packet.getOriginal()), packet) }
+
+    @Deprecated("Use readCachedAndWrite method.")
+    fun getCachedPacket(message: String): MessagePacket? { return cache.getIfPresent(getContext(message)) }
 
     fun getType(): MessagesType { return processor::class.java.getAnnotation(PacketMessageType::class.java).type }
+
+    @Deprecated("It will be auto expire in cache.")
+    fun invalidateCache(message: String) { cache.invalidate(getContext(message)) }
+
+    fun readCachedAndWrite(message: String): MessagePacket? {
+        val point = "${getType().prefix}$message"
+        val context = cache.getIfPresent(point)
+        if (context != null) cache.put(point, context)
+        return context
+    }
+
+    fun getContext(message: String): String {
+        return "${getType().prefix}$message"
+    }
 
     companion object {
         private val cache = Caffeine.newBuilder()

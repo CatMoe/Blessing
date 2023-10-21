@@ -38,7 +38,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         笔记: 即使as ViaChatPacket没有显式可空. cached的赋值实际上也是ViaChatPacket?
         如果转换失败 cached不会抛出ClassCastException 而是返回null
          */
-        val cached = MessagePacketCache(this).readPacket(message) as? MessageChatPacket
+        val cached = MessagePacketCache(this).readCachedAndWrite(message) as? MessageChatPacket
         // getBaseComponent & getSerializer 方法都在抽象类中实践.
         val component = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
@@ -60,7 +60,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         val legacy = cached?.legacy ?: getLegacy(serializer, needLegacy)
         val legacy2 = cached?.legacy2 ?: getLegacy(legacySerializer, needLegacy2)
         val packet = MessageChatPacket(p119, legacy, legacy2, component, serializer, legacyComponent, serializer, message)
-        MessagePacketCache(this).writePacket(packet)
+        MessagePacketCache(this).writeCache(packet)
         return packet
     }
 

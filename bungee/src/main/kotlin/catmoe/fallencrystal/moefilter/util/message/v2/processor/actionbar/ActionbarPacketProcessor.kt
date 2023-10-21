@@ -40,7 +40,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
     private val aOrdinal = ChatMessageType.ACTION_BAR.ordinal
 
     override fun process(message: String, protocol: List<Int>): MessagePacket {
-        val cached = MessagePacketCache(this).readPacket(message) as? MessageActionbarPacket
+        val cached = MessagePacketCache(this).readCachedAndWrite(message) as? MessageActionbarPacket
         val baseComponent = getComponent(cached, message)
         val legacyComponent = getLegacyComponent(cached, message)
         val serializer = getSerializer(cached, baseComponent)
@@ -69,7 +69,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
             p119, p117, p116, p111, p110,
             baseComponent, serializer, legacyComponent, legacySerializer, message
         )
-        MessagePacketCache(this).writePacket(packet)
+        MessagePacketCache(this).writeCache(packet)
         return packet
     }
 

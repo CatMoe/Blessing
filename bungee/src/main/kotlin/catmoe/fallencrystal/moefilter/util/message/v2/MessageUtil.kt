@@ -70,13 +70,13 @@ object MessageUtil {
 
     fun sendMessage(message: String, type: MessagesType, sender: ProxiedPlayer) {
         val connection = ConnectionUtil(sender.pendingConnection)
-        val packet =  MessagePacketCache(type.processor).readPacket(message) ?: packetBuilder(message, type, listOf(connection.version))
+        val packet =  MessagePacketCache(type.processor).readCachedAndWrite(message) ?: packetBuilder(message, type, listOf(connection.version))
         packetSender(packet, connection)
     }
 
     fun sendMessage(message: String, type: MessagesType, sender: CommandSender) {
         val version = if (sender is ProxiedPlayer) sender.pendingConnection.version else 0
-        val packet = MessagePacketCache(type.processor).readPacket(message) ?: packetBuilder(message, type, listOf(version))
+        val packet = MessagePacketCache(type.processor).readCachedAndWrite(message) ?: packetBuilder(message, type, listOf(version))
         if (sender is ProxiedPlayer) {
             val connection = ConnectionUtil(sender.pendingConnection)
             packetSender(packet, connection)
