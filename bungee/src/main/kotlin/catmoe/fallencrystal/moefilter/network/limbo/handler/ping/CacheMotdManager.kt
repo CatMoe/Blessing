@@ -67,7 +67,7 @@ object CacheMotdManager : Reloadable {
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
         val cacheLifeTime = conf.getLong("max-life-time")
         if (CacheMotdManager.cacheLifeTime != cacheLifeTime) {
-            CacheMotdManager.cacheLifeTime =cacheLifeTime
+            CacheMotdManager.cacheLifeTime=cacheLifeTime
         }
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
@@ -81,6 +81,7 @@ object CacheMotdManager : Reloadable {
             domainLimit = whitelistedDomainList.size
         }
         domainList.addAll(whitelistedDomainList)
+        onceIconCache.invalidateAll()
     }
 
     fun handlePing(handler: LimboHandler) {
