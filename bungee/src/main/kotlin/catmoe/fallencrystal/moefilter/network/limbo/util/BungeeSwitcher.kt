@@ -80,7 +80,7 @@ object BungeeSwitcher : EventListener {
     }
 
     fun verify(info: CheckInfo): Boolean {
-        if (!limbo || (StateManager.inAttack.get() && connectDuringAttack)) return true
+        if (!limbo || !(StateManager.inAttack.get() && connectDuringAttack)) return true
         info as Joining
         val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
         val result = a.username == info.username && a.version.number == info.protocol
