@@ -1,13 +1,16 @@
-<!--- @formatter:off --->
+<!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
-
-![ba-icon.png](https://i.postimg.cc/fLTbc7VB/ba-icon.png)
-![Code-Size](https://img.shields.io/github/languages/code-size/CatMoe/MoeFilter?style=flat-square)
-![Release](https://img.shields.io/github/v/release/FloraCore/FloraCore?style=flat-square)
-![License](https://img.shields.io/github/license/CatMoe/MoeFilter?style=plastic)
-![Actions](https://img.shields.io/github/actions/workflow/status/CatMoe/MoeFilter/test.yml?style=flat-square)
-
+  <div class="icon-container">
+    <img src="https://i.postimg.cc/fLTbc7VB/ba-icon.png" alt="ba-icon">
+  </div>
+  <div class="shields">
+    <img src="https://img.shields.io/github/languages/code-size/CatMoe/MoeFilter?style=flat-square" alt="Code-Size">
+    <img src="https://img.shields.io/github/v/release/FloraCore/FloraCore?style=flat-square" alt="Release">
+    <img src="https://img.shields.io/github/license/CatMoe/MoeFilter?style=plastic" alt="License">
+    <img src="https://img.shields.io/github/actions/workflow/status/CatMoe/MoeFilter/test.yml?style=flat-square" alt="Actions">
+  </div>
 </div>
+
 
 # Moe Filter
 
