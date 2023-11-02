@@ -1,3 +1,14 @@
+<!--- @formatter:off --->
+<div align="center">
+
+![ba-icon.png](https://i.postimg.cc/fLTbc7VB/ba-icon.png)
+![Code-Size](https://img.shields.io/github/languages/code-size/CatMoe/MoeFilter?style=flat-square)
+![Release](https://img.shields.io/github/v/release/FloraCore/FloraCore?style=flat-square)
+![License](https://img.shields.io/github/license/CatMoe/MoeFilter?style=plastic)
+![Actions](https://img.shields.io/github/actions/workflow/status/CatMoe/MoeFilter/test.yml?style=flat-square)
+
+</div>
+
 # Moe Filter
 
 ⚡ 强大的,为BungeeCord设计的高性能实用工具兼反机器人. (Minecraft 1.7.6-1.20.2)
