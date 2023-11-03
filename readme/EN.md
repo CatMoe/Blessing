@@ -7,7 +7,6 @@
     <img src="https://img.shields.io/github/languages/code-size/CatMoe/MoeFilter?style=flat-square" alt="Code-Size">
     <img src="https://img.shields.io/github/v/release/FloraCore/FloraCore?style=flat-square" alt="Release">
     <img src="https://img.shields.io/github/license/CatMoe/MoeFilter?style=plastic" alt="License">
-    <img src="https://img.shields.io/github/actions/workflow/status/CatMoe/MoeFilter/test.yml?style=flat-square" alt="Actions">
   </div>
 </div>
 
