@@ -155,7 +155,7 @@ enum class Protocol(var stateId: Int) {
             )
             serverBound.register(
                 { PacketPluginMessage() },
-                map(0x17, V1_8, V1_8),
+                map(0x17, V1_7_6, V1_8),
                 map(0x09, V1_9, V1_11_1),
                 map(0x0A, V1_12, V1_12),
                 map(0x09, V1_12_1, V1_12_2),

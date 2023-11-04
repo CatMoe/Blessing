@@ -46,12 +46,10 @@ import com.github.benmanes.caffeine.cache.Caffeine
     PacketKeepAlive::class,
     PacketLoginAcknowledged::class
 )
-object PacketValidCheck : LimboChecker {
+object PacketOrderCheck : LimboChecker {
 
     private val allowUnknown = Caffeine.newBuilder().build<LimboHandler, Boolean>()
     private val next = Caffeine.newBuilder().build<LimboHandler, NextPacket>()
-
-    private val w = listOf(0x17)
 
     override fun reload() {
         /*
@@ -67,12 +65,6 @@ object PacketValidCheck : LimboChecker {
             }
             is Unknown -> {
                 if (allowUnknown.getIfPresent(handler) == null) {
-                    //if (handler.version == Version.V1_7_6 && w.contains(packet.id)) return false
-                    when (handler.version) {
-                        Version.V1_7_6 -> { if (w.contains(packet.id)) return false }
-                        Version.V1_20_2 -> { if (w.contains(packet.id)) return false }
-                        else -> {}
-                    }
                     handler.channel.close()
                     throw InvalidPacketException("This state is not allowed unknown packet. (${"0x%02X".format(packet.id)})")
                 }
@@ -105,7 +97,6 @@ object PacketValidCheck : LimboChecker {
             is PacketLoginAcknowledged -> {
                 verify(packet, NextPacket.LOGIN_ACK)
                 next.put(handler, NextPacket.CONFIGURATION)
-                // Next?
             }
             is PacketFinishConfiguration -> {
                 verify(packet, NextPacket.CONFIGURATION)
