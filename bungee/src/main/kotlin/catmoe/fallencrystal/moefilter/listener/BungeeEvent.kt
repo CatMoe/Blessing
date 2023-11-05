@@ -15,13 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.util.bungee
+package catmoe.fallencrystal.moefilter.listener
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
-import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
-import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
-import catmoe.fallencrystal.moefilter.util.bungee.ping_modifier.PingServerType
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -33,8 +30,6 @@ import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.server.ServerInstance
 import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.bungee.BungeeServer
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
-import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ServerInfo
 import net.md_5.bungee.api.connection.ProxiedPlayer
@@ -42,7 +37,6 @@ import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
-import java.net.InetSocketAddress
 
 @Suppress("SpellCheckingInspection")
 class BungeeEvent : Listener {
@@ -111,35 +105,5 @@ class BungeeEvent : Listener {
         val player = PlayerInstance.getCachedOrNull(event.player.name) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
         PlayerInstance.removeFromList(player)
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    fun onPing(event: ProxyPingEvent) {
-        val conf = LocalConfig.getConfig().getConfig("ping")
-        val modInfo = event.response.modinfo
-        val rawType = conf.getAnyRef("type")
-        modInfo.type =
-            (try { PingServerType.valueOf(rawType.toString()) }
-            catch (_: IllegalArgumentException) {
-                MessageUtil.logWarn("[MoeFilter] [Ping] Unknown fml server type: $rawType, Fallback to VANILLA")
-                PingServerType.VANILLA
-            }).name
-        if (modInfo.type != PingServerType.FML.name) modInfo.modList = mutableListOf()
-        val brand = conf.getString("brand")
-        if (brand.isNotEmpty()) event.response.version.name=MessageUtil.colorize(brand).toLegacyText()
-        var protocol = event.response.version.protocol
-        val version = Version.of(protocol)
-        if (!version.isSupported) protocol=0
-        if (conf.getBoolean("protocol-always-unsupported")) protocol=0
-        event.response.version.protocol=protocol
-        if (event.connection.isLegacy
-            && event.connection.version >= Version.V1_7_6.number
-            && !BungeeSwitcher.connectToBungee((event.connection.socketAddress as InetSocketAddress).address)
-            && event.connection is FakeInitialHandler) {
-            try {
-                val fake = event.connection as FakeInitialHandler
-                fake.fakeLegacy=false
-            } catch (_: NoSuchFieldException) { }
-        }
     }
 }

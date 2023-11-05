@@ -101,15 +101,6 @@ class LoadConfig {
                         # 在攻击时不发送图标信息. 覆盖send-icon-once选项.
                         cancel-send-icon-during-attack=true
                     }
-                    # 服务端标识选项 通常会在客户端版本不支持时显示
-                    # 仅支持经典MC16色. 为空 = 不更改
-                    brand="<red>Requires MC 1.8 - 1.20"
-                    # 无论协议是否支持都向客户端发送不支持的协议? 这么做会导致brand总是显示在motd中.
-                    # 如果motd缓存可用 此行为也会影响到缓存返回的内容 并不需要因为版本更改而刷新motd
-                    protocol-always-unsupported=false
-                    # 欺骗FML客户端服务器属于哪些类型的服务器
-                    # VANILLA, FML, BUKKIT, UNKNOWN
-                    type=VANILLA
                 }
                 
                 # 每秒连接数限制. 当您正在使用PIPELINE模式时非常有用.
