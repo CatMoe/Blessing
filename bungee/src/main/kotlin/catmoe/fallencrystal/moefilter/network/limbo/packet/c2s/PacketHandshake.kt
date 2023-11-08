@@ -17,9 +17,10 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
+import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -50,6 +51,7 @@ class PacketHandshake : LimboC2SPacket() {
     override fun handle(handler: LimboHandler) {
         handler.host = InetSocketAddress(host, port)
         handler.updateVersion(version, nextState)
+        if (handler.fakeHandler is FakeInitialHandler) handler.fakeHandler.connectionFrom=handler.host
     }
 
     override fun toString(): String {
