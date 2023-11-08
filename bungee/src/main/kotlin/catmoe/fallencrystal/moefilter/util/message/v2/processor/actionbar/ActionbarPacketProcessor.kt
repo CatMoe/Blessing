@@ -65,7 +65,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
         val p117 = cached?.v117 ?: get117(serializer, need117)
         val p116 = cached?.v116 ?: /* get116(serializer, need116) */ createTitleText(serializer, need116)
-        val p111 = cached?.v111 ?: /* get111(legacySerializer, need111) */ createTitleText(legacySerializer, need111)
+        val p111 = cached?.v111 ?: /* get111(legacySerializer, need111) */ createTitleText(if (AsyncLoader.isLegacy) legacySerializer else legacyComponent, need111)
         val p110 = cached?.v110 ?: get110(legacyComponent, need110)
         val packet = MessageActionbarPacket(
             p119, p117, p116, p111, p110,
@@ -96,12 +96,16 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     private fun get117(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, aOrdinal.toByte(), null) else null }
 
-    private fun createTitleText(serializer: String, need: Boolean): Title? {
+    private fun createTitleText(serializer: Any, need: Boolean): Title? {
         if (!need) return null
         val title = Title(Title.Action.ACTIONBAR)
         when (AsyncLoader.isLegacy) {
             true -> setTitleMethod!!.invoke(title, serializer)
-            false -> title.text=ComponentSerializer.deserialize(serializer)
+            false -> title.text=when (serializer) {
+                is String -> ComponentSerializer.deserialize(serializer)
+                is BaseComponent -> serializer
+                 else -> throw IllegalArgumentException()
+            }
         }
         return title
     }
