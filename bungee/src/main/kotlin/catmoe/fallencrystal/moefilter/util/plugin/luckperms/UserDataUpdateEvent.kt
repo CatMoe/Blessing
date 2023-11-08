@@ -17,13 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.util.plugin.luckperms
 
-import catmoe.fallencrystal.moefilter.api.user.displaycache.ReCacheDisplayOnJoin
-import catmoe.fallencrystal.translation.event.EventManager
-import java.util.*
-import kotlin.concurrent.schedule
+import catmoe.fallencrystal.translation.event.TranslationEvent
+import net.luckperms.api.event.user.UserDataRecalculateEvent
 
-class LuckPermsRegister {
-    private fun isAvailable(): Boolean { return try { net.luckperms.api.LuckPermsProvider.get(); true } catch (e: Exception) { false } }
-
-    fun register() { if (isAvailable()) { LuckPermsListener.registerEvent(); EventManager.register(ReCacheDisplayOnJoin()) } else { Timer().schedule(1000) { register() } } }
-}
+class UserDataUpdateEvent(val event: UserDataRecalculateEvent) : TranslationEvent()

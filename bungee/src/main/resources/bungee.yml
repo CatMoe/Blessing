@@ -5,3 +5,4 @@ main: catmoe.fallencrystal.moefilter.MoeFilterBungee
 description: 'A antibot & utils for BungeeCord'
 softDepends:
   - LuckPerms
+  - Protocolize

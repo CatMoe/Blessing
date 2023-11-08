@@ -25,15 +25,11 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent
 
 object LuckPermsListener {
 
-    fun registerEvent() {
-        val luckperms = LuckPermsProvider.get()
-        val plugin = MoeFilterBungee.instance
-
-        // private fun onUserDataRecalculateEvent -> UserDataRecalculateEvent
-        luckperms.eventBus.subscribe(plugin, UserDataRecalculateEvent::class.java, LuckPermsListener::onUserDataRecalculateEvent)
-    }
+    fun registerEvent() = LuckPermsProvider.get().eventBus.subscribe(MoeFilterBungee.instance, UserDataRecalculateEvent::class.java, LuckPermsListener::onUserDataRecalculateEvent)
 
     private fun onUserDataRecalculateEvent(event: UserDataRecalculateEvent) {
-        DisplayCache.updateDisplayCache(event.user.uniqueId, Display(event.user.uniqueId, event.user.cachedData.metaData.prefix ?: "", event.user.cachedData.metaData.suffix ?: ""))
+        val metaData = event.user.cachedData.metaData
+        val uuid = event.user.uniqueId
+        DisplayCache.updateDisplayCache(uuid, Display(uuid, metaData.prefix ?: "", metaData.suffix ?: ""))
     }
 }
