@@ -89,13 +89,12 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
 
 
     fun load() {
-        try {
+        isLegacy = try {
             // If successful. Indicates that the user is using an older version of BungeeCord.
+            // See this issue on https://github.com/CatMoe/MoeFilter/issues/75
             Kick::class.java.getConstructor(String::class.java).newInstance("")
-            throw UnsupportedOperationException("You are using a old version for BungeeCord! Please use version 0.1.4 for your server. To get more information, Please see this issue on https://github.com/CatMoe/MoeFilter/issues/75.")
-        } catch (e: Exception) {
-            if (e is UnsupportedOperationException) { e.printStackTrace(); return }
-        }
+            true
+        } catch (_: NoSuchMethodException) { false }
         try {
             cLoader.whenLoad()
             loadAntibot()
@@ -222,6 +221,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
 
     companion object {
         lateinit var instance: AsyncLoader
+            private set
+        var isLegacy: Boolean = false
             private set
     }
 }
