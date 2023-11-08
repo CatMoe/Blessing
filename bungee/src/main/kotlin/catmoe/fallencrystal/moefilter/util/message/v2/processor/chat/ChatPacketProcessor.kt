@@ -28,6 +28,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.V1_16
 import catmoe.fallencrystal.translation.utils.version.Version.V1_19
 import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 
@@ -75,7 +76,7 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         }
     }
 
-    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, ChatMessageType.SYSTEM.ordinal) else null }
+    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(ComponentSerializer.deserialize(serializer), ChatMessageType.SYSTEM.ordinal) else null }
 
     private fun getLegacy(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, ChatMessageType.CHAT.ordinal.toByte(), null) else null }
 }

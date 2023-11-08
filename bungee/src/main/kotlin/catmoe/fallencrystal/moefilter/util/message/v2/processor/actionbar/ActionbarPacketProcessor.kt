@@ -93,7 +93,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         throw IllegalStateException("Need send protocol ${version.number} but not available packets for this version.")
     }
 
-    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, aOrdinal) else null }
+    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(ComponentSerializer.deserialize(serializer), aOrdinal) else null }
 
     private fun get117(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, aOrdinal.toByte(), null) else null }
 
@@ -101,7 +101,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         if (!need) return null
         val t = Title()
         t.action=Title.Action.ACTIONBAR
-        t.text=serializer
+        t.text=ComponentSerializer.deserialize(serializer)
         return t
     }
 
@@ -109,7 +109,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         if (!need) return null
         val title = Title()
         title.action=Title.Action.ACTIONBAR
-        title.text=serializer
+        title.text=ComponentSerializer.deserialize(serializer)
         return title
     }
 

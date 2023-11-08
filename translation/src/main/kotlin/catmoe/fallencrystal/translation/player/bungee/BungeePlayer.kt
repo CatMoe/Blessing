@@ -24,7 +24,6 @@ import catmoe.fallencrystal.translation.server.PlatformServer
 import catmoe.fallencrystal.translation.server.ServerInstance
 import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.bungee.BungeeServer
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
@@ -100,7 +99,8 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
     override fun isOnline(): Boolean { return player.isConnected }
 
     override fun disconnect(reason: Component) {
-        if (player.isConnected) player.unsafe().sendPacket(Kick(ComponentUtil.toGson(reason)))
+        val serializer = if (getVersion().moreOrEqual(Version.V1_16)) BungeeComponentSerializer.get() else BungeeComponentSerializer.legacy()
+        if (player.isConnected) player.unsafe().sendPacket(Kick(serializer.serialize(reason)[0]))
     }
 
     override fun disconnect() {
