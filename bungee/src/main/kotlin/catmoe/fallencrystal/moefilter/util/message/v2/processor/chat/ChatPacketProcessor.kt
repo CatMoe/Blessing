@@ -24,10 +24,12 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.V1_16
 import catmoe.fallencrystal.translation.utils.version.Version.V1_19
 import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 
@@ -75,7 +77,19 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
         }
     }
 
-    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, ChatMessageType.SYSTEM.ordinal) else null }
+    private fun get119(serializer: String, need: Boolean): SystemChat? {
+        val ordinal = ChatMessageType.SYSTEM.ordinal
+        return if (need) when (AsyncLoader.isLegacy) {
+            true -> c1!!.newInstance(serializer, ordinal)
+            false -> SystemChat(ComponentSerializer.deserialize(serializer), ordinal)
+        } else null
+    }
 
-    private fun getLegacy(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, ChatMessageType.CHAT.ordinal.toByte(), null) else null }
+    private fun getLegacy(serializer: String, need: Boolean): Chat? {
+        return if (need) Chat(serializer, ChatMessageType.CHAT.ordinal.toByte(), null) else null
+    }
+
+    companion object {
+        private val c1 = try { SystemChat::class.java.getConstructor(String::class.java, Int::class.java) } catch (_: NoSuchMethodException) { null }
+    }
 }

@@ -35,6 +35,7 @@ import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
+import catmoe.fallencrystal.moefilter.listener.BungeeEvent
 import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.InitChannel
@@ -42,7 +43,6 @@ import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
-import catmoe.fallencrystal.moefilter.listener.BungeeEvent
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
@@ -58,6 +58,7 @@ import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import com.typesafe.config.ConfigException
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
+import net.md_5.bungee.protocol.packet.Kick
 
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
@@ -88,6 +89,12 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
 
 
     fun load() {
+        isLegacy = try {
+            // If successful. Indicates that the user is using an older version of BungeeCord.
+            // See this issue on https://github.com/CatMoe/MoeFilter/issues/75
+            Kick::class.java.getConstructor(String::class.java).newInstance("")
+            true
+        } catch (_: NoSuchMethodException) { false }
         try {
             cLoader.whenLoad()
             loadAntibot()
@@ -214,6 +221,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
 
     companion object {
         lateinit var instance: AsyncLoader
+            private set
+        var isLegacy: Boolean = false
             private set
     }
 }

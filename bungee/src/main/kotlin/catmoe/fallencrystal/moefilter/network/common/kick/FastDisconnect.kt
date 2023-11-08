@@ -20,13 +20,15 @@ package catmoe.fallencrystal.moefilter.network.common.kick
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.ServerType.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketDisconnect
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
+import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
@@ -34,7 +36,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
-import net.md_5.bungee.protocol.packet.Kick
 
 object FastDisconnect : Reloadable {
     val reasonCache = Caffeine.newBuilder().build<DisconnectType, DisconnectReason>()
@@ -86,10 +87,9 @@ object FastDisconnect : Reloadable {
         this.initMessages()
     }
 
-    @Suppress("EnumValuesSoftDeprecate")
-    fun initMessages() {
+    private fun initMessages() {
         val placeholder = getPlaceholders()
-        for (type in DisconnectType.values()) {
+        for (type in DisconnectType.entries) {
             // <newline> is MiniMessage's syntax. use it instead of \n
             val message = ComponentUtil.parse(replacePlaceholder(
                 LocalConfig.getMessage().getStringList("kick.${type.messagePath}")
@@ -115,6 +115,10 @@ object FastDisconnect : Reloadable {
         ba.release()
         // End
 
-        return DisconnectReason(type, cs, KickPacket(Kick(cs), ExplicitPacket(0x00, array, "Cached kick packet (type=${type.name})")), component)
+        return DisconnectReason(type, cs, KickPacket(
+            BungeePlayer.getKickPacket(cs, AsyncLoader.isLegacy),
+            ExplicitPacket(0x00, array, "Cached kick packet (type=${type.name})")),
+            component
+        )
     }
 }

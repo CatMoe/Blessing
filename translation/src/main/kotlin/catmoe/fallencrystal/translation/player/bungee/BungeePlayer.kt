@@ -33,6 +33,7 @@ import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
 import net.md_5.bungee.protocol.DefinedPacket
@@ -77,30 +78,27 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
         }
     }
 
-    override fun sendMessage(component: Component) {
-        player.sendMessage(ChatMessageType.CHAT, getBaseComponent(component))
-    }
+    override fun sendMessage(component: Component) = player.sendMessage(ChatMessageType.CHAT, getBaseComponent(component))
 
-    override fun sendActionbar(component: Component) {
-        player.sendMessage(ChatMessageType.ACTION_BAR, getBaseComponent(component))
-    }
+    override fun sendActionbar(component: Component) = player.sendMessage(ChatMessageType.ACTION_BAR, getBaseComponent(component))
 
-    override fun hasPermission(permission: String): Boolean {
-        return player.hasPermission(permission)
-    }
+    override fun hasPermission(permission: String) = player.hasPermission(permission)
 
-    override fun getUniqueId(): UUID {
-        return player.uniqueId
-    }
+    override fun getUniqueId(): UUID = player.uniqueId
 
-    override fun isOnlineMode(): Boolean {
-        return player.pendingConnection.isOnlineMode
-    }
+    override fun isOnlineMode() = player.pendingConnection.isOnlineMode
 
     override fun isOnline(): Boolean { return player.isConnected }
 
     override fun disconnect(reason: Component) {
-        if (player.isConnected) player.unsafe().sendPacket(Kick(ComponentUtil.toGson(reason)))
+        val serialize = ComponentUtil.toGson(reason)
+        val packet = try {
+            getKickPacket(serialize, legacyKick)
+        } catch (_: Exception) {
+            legacyKick=true
+            getKickPacket(serialize, true)
+        }
+        if (player.isConnected) player.unsafe().sendPacket(packet)
     }
 
     override fun disconnect() {
@@ -125,5 +123,16 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
     override fun getServer(): TranslateServer {
         val info = player.server.info
         return ServerInstance.getServer(info.name) ?: TranslateServer(BungeeServer(info))
+    }
+
+    companion object {
+        private var legacyKick = false
+
+        private val c1 = try { Kick::class.java.getConstructor(String::class.java) } catch (_: NoSuchMethodException) { null }
+        @Platform(ProxyPlatform.BUNGEE)
+        fun getKickPacket(reason: String, legacy: Boolean): Kick = when (legacy) {
+            true -> c1!!.newInstance(reason)
+            false -> Kick(ComponentSerializer.deserialize(reason))
+        }
     }
 }

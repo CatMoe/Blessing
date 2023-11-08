@@ -112,4 +112,6 @@ object MessageUtil {
     private fun logColorize(message: String): String {
         return if (message.contains("<") && message.contains(">")) colorize(message).toLegacyText() else message
     }
+
+
 }

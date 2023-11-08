@@ -24,6 +24,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.AbstractMessageProcessor
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.PacketMessageType
 import catmoe.fallencrystal.moefilter.util.message.v2.processor.cache.MessagePacketCache
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
 import net.md_5.bungee.api.ChatMessageType
@@ -33,6 +34,7 @@ import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
+import java.lang.reflect.Method
 
 @PacketMessageType(MessagesType.ACTION_BAR)
 class ActionbarPacketProcessor : AbstractMessageProcessor() {
@@ -62,8 +64,8 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         }
         val p119 = if (cached?.v119 != null) cached.v119 else get119(serializer, need119)
         val p117 = cached?.v117 ?: get117(serializer, need117)
-        val p116 = cached?.v116 ?: get116(serializer, need116)
-        val p111 = cached?.v111 ?: get111(legacySerializer, need111)
+        val p116 = cached?.v116 ?: /* get116(serializer, need116) */ createTitleText(serializer, need116)
+        val p111 = cached?.v111 ?: /* get111(legacySerializer, need111) */ createTitleText(if (AsyncLoader.isLegacy) legacySerializer else legacyComponent, need111)
         val p110 = cached?.v110 ?: get110(legacyComponent, need110)
         val packet = MessageActionbarPacket(
             p119, p117, p116, p111, p110,
@@ -77,14 +79,6 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         var p = packet as MessageActionbarPacket
         val version = Version.of(connection.version)
         if (!p.supportChecker(version.number)) p = process(p.originalMessage, listOf(version.number)) as MessageActionbarPacket
-        /*
-        if (version >= ProtocolConstants.MINECRAFT_1_19) { connection.writePacket(p.v119!!); return }
-        if (version > ProtocolConstants.MINECRAFT_1_17) { connection.writePacket(p.v117!!); return }
-        if (version >= ProtocolConstants.MINECRAFT_1_16) { connection.writePacket(p.v116!!); return }
-        if (version > ProtocolConstants.MINECRAFT_1_10) { connection.writePacket(p.v111!!); return }
-        if (version >= ProtocolConstants.MINECRAFT_1_8) { connection.writePacket(p.v110!!); return }
-        throw IllegalStateException("Need send protocol $version but not available packets for this version.")
-         */
         if (version.moreOrEqual(V1_19)) { connection.writePacket(p.v119!!); return }
         if (version.moreOrEqual(V1_17)) { connection.writePacket(p.v117!!); return }
         if (version.moreOrEqual(V1_16)) { connection.writePacket(p.v116!!); return }
@@ -93,27 +87,36 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         throw IllegalStateException("Need send protocol ${version.number} but not available packets for this version.")
     }
 
-    private fun get119(serializer: String, need: Boolean): SystemChat? { return if (need) SystemChat(serializer, aOrdinal) else null }
+    private fun get119(serializer: String, need: Boolean): SystemChat? {
+        return if (need) when (AsyncLoader.isLegacy) {
+            true -> c1!!.newInstance(serializer, aOrdinal)
+            false -> SystemChat(ComponentSerializer.deserialize(serializer), aOrdinal)
+        } else null
+    }
 
     private fun get117(serializer: String, need: Boolean): Chat? { return if (need) Chat(serializer, aOrdinal.toByte(), null) else null }
 
-    private fun get116(serializer: String, need: Boolean): Title? {
+    private fun createTitleText(serializer: Any, need: Boolean): Title? {
         if (!need) return null
-        val t = Title()
-        t.action=Title.Action.ACTIONBAR
-        t.text=serializer
-        return t
-    }
-
-    private fun get111(serializer: String, need: Boolean): Title? {
-        if (!need) return null
-        val title = Title()
-        title.action=Title.Action.ACTIONBAR
-        title.text=serializer
+        val title = Title(Title.Action.ACTIONBAR)
+        when (AsyncLoader.isLegacy) {
+            true -> setTitleMethod!!.invoke(title, serializer)
+            false -> title.text=when (serializer) {
+                is String -> ComponentSerializer.deserialize(serializer)
+                is BaseComponent -> serializer
+                 else -> throw IllegalArgumentException()
+            }
+        }
         return title
     }
 
     private fun get110(component: BaseComponent, need: Boolean): Chat? {
         return if (need) Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(component))), aOrdinal.toByte(), null) else null
+    }
+
+    companion object {
+        //private val setTitleMethod: Method = Title::class.java.getMethod("setText", String::class.java)
+        private val c1 = try { SystemChat::class.java.getConstructor(String::class.java, Int::class.java) } catch (_: NoSuchMethodException) { null }
+        private val setTitleMethod: Method? = try { Title::class.java.getMethod("setText", String::class.java) } catch (_: NoSuchMethodException) { null }
     }
 }
