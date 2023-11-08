@@ -128,9 +128,10 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
     companion object {
         private var legacyKick = false
 
+        private val c1 = try { Kick::class.java.getConstructor(String::class.java) } catch (_: NoSuchMethodException) { null }
         @Platform(ProxyPlatform.BUNGEE)
         fun getKickPacket(reason: String, legacy: Boolean): Kick = when (legacy) {
-            true -> Kick::class.java.getConstructor(String::class.java).newInstance(reason)
+            true -> c1!!.newInstance(reason)
             false -> Kick(ComponentSerializer.deserialize(reason))
         }
     }

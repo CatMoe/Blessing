@@ -80,12 +80,16 @@ class ChatPacketProcessor : AbstractMessageProcessor() {
     private fun get119(serializer: String, need: Boolean): SystemChat? {
         val ordinal = ChatMessageType.SYSTEM.ordinal
         return if (need) when (AsyncLoader.isLegacy) {
-            true -> SystemChat::class.java.getConstructor(String::class.java, Int::class.java).newInstance(serializer, ordinal)
+            true -> c1!!.newInstance(serializer, ordinal)
             false -> SystemChat(ComponentSerializer.deserialize(serializer), ordinal)
         } else null
     }
 
     private fun getLegacy(serializer: String, need: Boolean): Chat? {
         return if (need) Chat(serializer, ChatMessageType.CHAT.ordinal.toByte(), null) else null
+    }
+
+    companion object {
+        private val c1 = try { SystemChat::class.java.getConstructor(String::class.java, Int::class.java) } catch (_: NoSuchMethodException) { null }
     }
 }

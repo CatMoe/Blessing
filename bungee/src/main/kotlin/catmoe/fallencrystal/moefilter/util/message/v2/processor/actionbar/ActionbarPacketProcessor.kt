@@ -34,6 +34,7 @@ import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.protocol.packet.Chat
 import net.md_5.bungee.protocol.packet.SystemChat
 import net.md_5.bungee.protocol.packet.Title
+import java.lang.reflect.Method
 
 @PacketMessageType(MessagesType.ACTION_BAR)
 class ActionbarPacketProcessor : AbstractMessageProcessor() {
@@ -88,7 +89,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     private fun get119(serializer: String, need: Boolean): SystemChat? {
         return if (need) when (AsyncLoader.isLegacy) {
-            true -> SystemChat::class.java.getConstructor(String::class.java, Int::class.java).newInstance(serializer, aOrdinal)
+            true -> c1!!.newInstance(serializer, aOrdinal)
             false -> SystemChat(ComponentSerializer.deserialize(serializer), aOrdinal)
         } else null
     }
@@ -99,7 +100,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         if (!need) return null
         val title = Title(Title.Action.ACTIONBAR)
         when (AsyncLoader.isLegacy) {
-            true -> title::class.java.getMethod("setText", String::class.java).invoke(title, serializer)
+            true -> setTitleMethod!!.invoke(title, serializer)
             false -> title.text=ComponentSerializer.deserialize(serializer)
         }
         return title
@@ -107,5 +108,11 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
 
     private fun get110(component: BaseComponent, need: Boolean): Chat? {
         return if (need) Chat(ComponentSerializer.toString(TextComponent(BaseComponent.toLegacyText(component))), aOrdinal.toByte(), null) else null
+    }
+
+    companion object {
+        //private val setTitleMethod: Method = Title::class.java.getMethod("setText", String::class.java)
+        private val c1 = try { SystemChat::class.java.getConstructor(String::class.java, Int::class.java) } catch (_: NoSuchMethodException) { null }
+        private val setTitleMethod: Method? = try { Title::class.java.getMethod("setText", String::class.java) } catch (_: NoSuchMethodException) { null }
     }
 }
