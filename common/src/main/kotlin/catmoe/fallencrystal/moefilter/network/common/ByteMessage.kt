@@ -211,6 +211,80 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         )
     }
 
+    // refer: https://github.com/GeyserMC/PacketLib/blob/e21e6c4e86bd9755afaa2dda9fd0f2a52eae7f7e/src/main/java/com/github/steveice10/packetlib/codec/BasePacketCodecHelper.java#L33
+    fun writeVarLong(value: Long) {
+        when {
+            (value and 0x7FL.inv()) == 0L -> writeByte(value.toInt())
+            (value and 0x3FFFL.inv()) == 0L -> writeShort(((value and 0x7FL or 0x80L) shl 8 or (value ushr 7)).toInt())
+            else -> when {
+                /*
+                Ignore?
+                (value and 0x7FL.inv()) == 0L -> writeByte(value.toInt())
+                (value and 0x3FFFL.inv()) == 0L -> writeShort(((value and 0x7FL or 0x80L) shl 8 or (value ushr 7)).toInt())
+                 */
+                (value and 0x1FFFFFL.inv()) == 0L -> writeMedium(((value and 0x7FL or 0x80L) shl 16 or ((value ushr 7) and 0x7FL or 0x80L) shl 8 or (value ushr 14)).toInt())
+                (value and 0xFFFFFFFL.inv()) == 0L -> writeInt((
+                        (value and 0x7F or 0x80) shl 24 or
+                                ((value ushr 7) and 0x7F or 0x80) shl 16 or
+                                ((value ushr 14) and 0x7F or 0x80) shl 8 or
+                                (value ushr 21)).toInt()
+                )
+                (value and 0x7FFFFFFFFL.inv()) == 0L -> {
+                    writeInt(varLong1(value))
+                    writeByte((((value ushr 28) and 0x7FL or 0x80L) shl 8 or (value ushr 35)).toInt())
+                }
+                (value and 0x1FFFFFFFFFFFFL.inv()) == 0L -> {
+                    writeInt(varLong1(value))
+                    writeMedium((
+                            ((value ushr 28) and 0x7FL or 0x80L) shl 16 or
+                            ((value ushr 35) and 0x7FL or 0x80L) shl 8 or
+                            (value ushr 42)).toInt()
+                    )
+                }
+                (value and 0xFFFFFFFFFFFFFFL.inv()) == 0L -> writeLong(varLong2(value))
+                (value and 0x7FFFFFFFFFFFFFFFL.inv()) == 0L -> {
+                    writeLong(varLong2(value))
+                    writeByte((value ushr 56).toInt())
+                }
+                else -> {
+                    writeLong(varLong2(value))
+                    writeShort((((value ushr 56) and 0x7FL or 0x80L) shl 8 or (value ushr 63)).toInt())
+                }
+            }
+        }
+    }
+
+    private fun varLong1(value: Long): Int {
+        return ((value and 0x7F or 0x80) shl 24 or
+                ((value ushr 7) and 0x7F or 0x80) shl 16 or
+                ((value ushr 14) and 0x7F or 0x80) shl 8 or
+                ((value ushr 21) and 0x7F or 0x80)).toInt()
+    }
+
+    private fun varLong2(value: Long): Long {
+        return (value and 0x7F or 0x80) shl 56 or
+                ((value ushr 7) and 0x7F or 0x80) shl 48 or
+                ((value ushr 14) and 0x7F or 0x80) shl 40 or
+                ((value ushr 21) and 0x7F or 0x80) shl 32 or
+                ((value ushr 28) and 0x7FL or 0x80L) shl 24 or
+                ((value ushr 35) and 0x7FL or 0x80L) shl 16 or
+                ((value ushr 42) and 0x7FL or 0x80L) shl 8 or
+                (value ushr 49)
+    }
+
+    fun readVarLong(): Long {
+        var value = 0L
+        var size = 0
+        var b: Int
+        do {
+            b = readByte().toInt()
+            value = value or ((b and 0x7F).toLong() shl (size++ * 7))
+
+            require(size <= 10) { "VarLong too long (length must be <= 10)" }
+        } while ((b and 0x80) == 0x80)
+        return value
+    }
+
     /* Delegated methods */
     override fun capacity() = buf.capacity()
     override fun capacity(newCapacity: Int): ByteBuf = buf.capacity(newCapacity)
