@@ -108,8 +108,6 @@ class LimboHandler(
         if (fakeHandler is FakeInitialHandler) { fakeHandler.v = version }
     }
 
-    val keepAlive = PacketKeepAlive()
-
     @Suppress("SpellCheckingInspection")
     fun sendPlayPackets() {
         val version = this.version!!
@@ -128,8 +126,7 @@ class LimboHandler(
             writePacket(if (version.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
 
         keepAliveScheduler()
-        keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
-        sendPacket(keepAlive)
+        sendPacket(PacketKeepAlive(abs(ThreadLocalRandom.current().nextInt()).toLong()))
 
         /*
         *1: 不确定我们应该是否穷举方法, 因为对于valueOf和IntRange的forEach成本都似乎有些高昂.
@@ -138,7 +135,7 @@ class LimboHandler(
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
         if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
-        sendPacket(keepAlive)
+        channel.flush()
     }
 
     private fun keepAliveScheduler() {
@@ -146,8 +143,7 @@ class LimboHandler(
         val delay = LocalConfig.getLimbo().getLong("keep-alive.delay")
         task = scheduler.repeatScheduler(delay, delay, TimeUnit.SECONDS) {
             if (disconnected.get()) task?.cancel()
-            keepAlive.id = abs(ThreadLocalRandom.current().nextInt()).toLong()
-            sendPacket(keepAlive)
+            sendPacket(PacketKeepAlive(abs(ThreadLocalRandom.current().nextInt()).toLong()))
         }
     }
 

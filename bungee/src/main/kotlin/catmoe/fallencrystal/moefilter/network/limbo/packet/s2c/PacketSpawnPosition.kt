@@ -18,16 +18,16 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketSpawnPosition : LimboS2CPacket() {
-
-    var location = LimboLocation(0.0, 450.0, 0.0, 0f, 0f, false)
-    var angle = 0f
+class PacketSpawnPosition(
+    var location: LimboLocation = LimboLocation(0.0, 450.0, 0.0, 0f, 0f, false),
+    var angle: Float = 0f
+) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
 

@@ -62,6 +62,11 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
         } catch (ex: Exception) { ex.printStackTrace() }
     }
 
+    override fun flush(ctx: ChannelHandlerContext) {
+        MoeLimbo.debug(handler, "Output flushed.")
+        super.flush(ctx)
+    }
+
     @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(ctx.channel(), cause) }
 }

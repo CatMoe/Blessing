@@ -22,11 +22,11 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketPlayerAbilities : LimboS2CPacket() {
-
-    var flags: Int? = null
-    var flyingSpeed: Float = 0f
+class PacketPlayerAbilities(
+    var flags: Int? = null,
+    var flyingSpeed: Float = 0f,
     var fieldOfView: Float = 0.1f
+) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         packet.writeByte(flags ?: 0x02)

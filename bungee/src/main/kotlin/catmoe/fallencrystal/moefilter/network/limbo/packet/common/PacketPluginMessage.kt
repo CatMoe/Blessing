@@ -31,17 +31,19 @@ import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 
 // 注: 我仍在研究1.7的PluginMessage, 因此对此暂时禁用
-class PacketPluginMessage : LimboPacket {
-
-
-    var channel = ""
-    var message = ""
-
-    var data: ByteArray? = null
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketPluginMessage(
+    var channel: String = "",
+    var message: String = "",
+    var data: ByteArray? = null,
+) : LimboPacket {
 
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        listOf(this.channel, this.message).forEach { packet.writeString(it) }
+        //listOf(this.channel, this.message).forEach { packet.writeString(it) }
+        packet.writeString(channel)
+        val data = this.data
+        if (message.isNotEmpty()) packet.writeString(message) else if (data != null) packet.writeBytes(data)
     }
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {

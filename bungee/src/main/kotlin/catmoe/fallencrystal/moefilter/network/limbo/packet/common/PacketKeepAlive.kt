@@ -22,9 +22,9 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
-class PacketKeepAlive : LimboPacket {
-
+class PacketKeepAlive(
     var id: Long = 9876
+) : LimboPacket {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         if (version!!.moreOrEqual(Version.V1_12_2)) { packet.writeLong(id)

@@ -22,9 +22,11 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.util.*
 
-class PacketLoginSuccess : LimboS2CPacket() {
-    var uuid: UUID? = null
-    var username = ""
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketLoginSuccess(
+    var uuid: UUID? = null,
+    var username: String = ""
+) : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         val uuid = this.uuid ?: UUID.randomUUID()
         if (version!!.moreOrEqual(Version.V1_16)) packet.writeUuid(uuid)

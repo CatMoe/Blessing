@@ -17,11 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
+import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
-import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -43,55 +43,26 @@ object PacketCache {
     fun initPacket() {
         val username = "MoeLimbo"
         val uuid = UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray(StandardCharsets.UTF_8))
+        val join = PacketJoinGame(reducedDebugInfo=MoeLimbo.reduceDebug)
 
-        // PostLogin
-        val loginSuccess = PacketLoginSuccess()
-        loginSuccess.username=username
-        loginSuccess.uuid=uuid
-
-        val join = PacketJoinGame()
-        join.reducedDebugInfo=MoeLimbo.reduceDebug
-
-        val abilities = PacketPlayerAbilities()
-
-        val teleportId = ThreadLocalRandom.current().nextInt()
-
-        val pal = PacketServerPositionLook()
-        pal.sendLoc = loc
-        pal.teleport=teleportId
-
-        val spawnLocation = PacketSpawnPosition()
-        spawnLocation.location = loc
-
-        val info = PacketPlayerInfo()
-        info.username=username
-        info.gameMode=join.gameMode
-        info.uuid=uuid
-
-        packetCache.put(LOGIN_SUCCESS, PacketSnapshot.of(loginSuccess))
+        packetCache.put(LOGIN_SUCCESS, PacketSnapshot.of(PacketLoginSuccess(uuid, username)))
         packetCache.put(JOIN_GAME, PacketSnapshot.of(join))
-        packetCache.put(POS_AND_LOOK, PacketSnapshot.of(pal))
-        packetCache.put(SPAWN_POSITION, PacketSnapshot.of(spawnLocation))
-        packetCache.put(PLAYER_ABILITIES, PacketSnapshot.of(abilities))
-        packetCache.put(PLAYER_INFO, PacketSnapshot.of(info))
+        packetCache.put(POS_AND_LOOK, PacketSnapshot.of(PacketServerPositionLook(loc, ThreadLocalRandom.current().nextInt())))
+        packetCache.put(SPAWN_POSITION, PacketSnapshot.of(PacketSpawnPosition(loc)))
+        packetCache.put(PLAYER_ABILITIES, PacketSnapshot.of(PacketPlayerAbilities()))
+        packetCache.put(PLAYER_INFO, PacketSnapshot.of(PacketPlayerInfo(join.gameMode, username, uuid)))
 
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
 
-        val pm = PacketPluginMessage()
-        pm.message=this.brand
-        pm.channel="minecraft:brand"
+        val pm = PacketPluginMessage("minecraft:brand", this.brand)
         packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(pm))
         pm.channel="MC|Brand"
         packetCache.put(PLUGIN_MESSAGE_LEGACY, PacketSnapshot.of(pm))
-
         packetCache.put(REGISTRY_DATA, PacketSnapshot.of(RegistryData()))
 
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
-            val chunk = PacketEmptyChunk()
-            chunk.x=x; chunk.z=z
-            val enum = EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")
-            packetCache.put(enum, PacketSnapshot.of(chunk))
+            packetCache.put(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}"), PacketSnapshot.of(PacketEmptyChunk(x, z)))
         }}
 
     }

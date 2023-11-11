@@ -507,9 +507,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
 
     companion object {
 
-        fun create(): ByteMessage { return ByteMessage(
-            Unpooled.buffer()
-        )
-        }
+        fun create() = ByteMessage(Unpooled.buffer())
     }
 }

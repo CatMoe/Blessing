@@ -22,10 +22,11 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-class PacketPlayerInfo : LimboS2CPacket() {
-    var gameMode = 2
-    var username = "MoeLimbo"
+class PacketPlayerInfo(
+    var gameMode: Int = 2,
+    var username: String = "MoeLimbo",
     var uuid: UUID = UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray(StandardCharsets.UTF_8))
+) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_8)) {

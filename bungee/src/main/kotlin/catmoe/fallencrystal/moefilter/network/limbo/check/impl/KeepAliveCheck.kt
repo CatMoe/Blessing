@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 
 @Checker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
 @HandlePacket(PacketKeepAlive::class)
-object KeepAliveTimeout : LimboChecker {
+object KeepAliveCheck : LimboChecker {
 
     private val queue: MutableCollection<LimboHandler> = ArrayList()
     private val scheduler = Scheduler.getDefault()

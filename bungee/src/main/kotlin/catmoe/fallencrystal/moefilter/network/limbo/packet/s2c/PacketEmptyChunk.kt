@@ -28,11 +28,10 @@ import java.util.*
 import java.util.zip.Deflater
 
 
-class PacketEmptyChunk : LimboS2CPacket() {
-
-    var x: Int = 0
+class PacketEmptyChunk(
+    var x: Int = 0,
     var z: Int = 0
-
+) : LimboS2CPacket() {
 
     @Suppress("GrazieInspection")
     override fun encode(packet: ByteMessage, version: Version?) {

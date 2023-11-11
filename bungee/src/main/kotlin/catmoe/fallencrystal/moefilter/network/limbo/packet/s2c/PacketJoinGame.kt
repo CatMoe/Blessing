@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.LLBIT
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_16
@@ -29,31 +30,30 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.Dimensio
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_18_2
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
 
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketJoinGame : LimboS2CPacket() {
-
-    var entityId = 0
-    var isHardcore = true
-    var gameMode = 2
-    var previousGameMode = -1
+class PacketJoinGame(
+    var entityId: Int = 0,
+    var isHardcore: Boolean = true,
+    var gameMode: Int = 2,
+    var previousGameMode: Int = -1,
     var worldName: String = when (MoeLimbo.dimLoaderMode) {
         ADVENTURE -> MoeLimbo.dimensionType.adventure.dimensionName
         LLBIT -> MoeLimbo.dimensionType.llbit.dimension.key
-    }
-    var worldNames: Array<String?> = arrayOf(worldName)
-    var hashedSeed: Long = 0
-    var maxPlayers = 1
-    var viewDistance = 2
-    var reducedDebugInfo = false
-    var enableRespawnScreen = true
-    var isDebug = true
-    var isFlat = true
+    },
+    var worldNames: Array<String?> = arrayOf(worldName),
+    var hashedSeed: Long = 0,
+    var maxPlayers: Int = 1,
+    var viewDistance: Int = 2,
+    var reducedDebugInfo: Boolean = false,
+    var enableRespawnScreen: Boolean = true,
+    var isDebug: Boolean = true,
+    var isFlat: Boolean = true,
+) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
         when (MoeLimbo.dimLoaderMode) {

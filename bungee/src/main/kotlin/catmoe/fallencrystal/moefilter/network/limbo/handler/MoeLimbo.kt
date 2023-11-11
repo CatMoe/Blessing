@@ -26,7 +26,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveTimeout
+import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketOrderCheck
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
@@ -75,7 +75,7 @@ object MoeLimbo : Reloadable {
         CommonJoinCheck,
         MoveCheck,
         MoveTimer,
-        KeepAliveTimeout,
+        KeepAliveCheck,
         PacketOrderCheck,
         ChatCheck,
     )
