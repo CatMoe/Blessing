@@ -101,7 +101,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x12, V1_19_1, V1_19_1),
                 map(0x11, V1_19_3, V1_19_3),
                 map(0x12, V1_19_4, V1_20),
-                map(0x14, V1_20_2, V1_20_2,)
+                map(0x14, V1_20_2, V1_20_2)
             )
             clientBound.register(
                 { PacketKeepAlive() },

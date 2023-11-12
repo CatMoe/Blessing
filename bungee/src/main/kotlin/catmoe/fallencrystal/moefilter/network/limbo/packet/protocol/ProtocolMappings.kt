@@ -17,6 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.protocol.Mapping
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.util.*
@@ -25,7 +26,7 @@ import java.util.function.Supplier
 class ProtocolMappings {
     val registry: MutableMap<Version, PacketRegistry> = EnumMap(Version::class.java)
 
-    fun register(packet: Supplier<*>, vararg mappings: Mapping) {
+    fun register(packet: Supplier<LimboPacket>, vararg mappings: Mapping) {
         for (mapping in mappings) {
             for (ver in getRange(mapping)) {
                 val reg = registry.computeIfAbsent(ver!!) { version: Version -> PacketRegistry(version) }

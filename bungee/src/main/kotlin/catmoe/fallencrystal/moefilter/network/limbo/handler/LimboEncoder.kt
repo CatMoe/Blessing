@@ -43,14 +43,14 @@ class LimboEncoder(var version: Version?) : MessageToByteEncoder<LimboPacket>() 
     override fun encode(ctx: ChannelHandlerContext, packet: LimboPacket, out: ByteBuf) {
         val msg = ByteMessage(out)
         val packetId = when (packet) {
-            is PacketSnapshot -> registry!!.getPacketId(packet.wrappedPacket::class.java)
+            is PacketSnapshot -> registry!!.getPacketId(packet.wrappedPacket::class)
             is ExplicitPacket -> packet.id
-            else -> registry!!.getPacketId(packet::class.java)
+            else -> registry!!.getPacketId(packet::class)
         }
         if (packetId != -1) msg.writeVarInt(packetId) else return
         val packetClazz =
             try {
-                if (packet is PacketSnapshot) registry!!.getPacket(registry!!.getPacketId(packet.wrappedPacket.javaClass)) else packet
+                if (packet is PacketSnapshot) registry!!.getPacket(registry!!.getPacketId(packet.wrappedPacket::class)) else packet
             } catch (npe: NullPointerException) { null } ?: return
         try {
             if (LimboListener.handleSend(packetClazz, handler)) return

@@ -20,20 +20,20 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 class PacketRegistry(val version: Version) {
-    private val packetsById: MutableMap<Int, Supplier<*>> = HashMap()
-    private val packetIdByClass: MutableMap<Class<*>, Int> = HashMap()
+    private val packetsById: MutableMap<Int, Supplier<out LimboPacket>> = HashMap()
+    private val packetIdByClass: MutableMap<KClass<out LimboPacket>, Int> = HashMap()
 
     fun getPacket(packetId: Int): LimboPacket? {
-        val supplier = packetsById[packetId]
-        return if (supplier == null) null else supplier.get() as LimboPacket
+        return packetsById[packetId]?.get()
     }
 
-    fun getPacketId(packetClass: Class<*>?): Int { return packetIdByClass.getOrDefault(packetClass!!, -1) }
+    fun getPacketId(packetClass: KClass<out LimboPacket>?): Int { return packetIdByClass.getOrDefault(packetClass!!, -1) }
 
-    fun register(packetId: Int, supplier: Supplier<*>) {
+    fun register(packetId: Int, supplier: Supplier<out LimboPacket>) {
         packetsById[packetId] = supplier
-        packetIdByClass[supplier.get().javaClass] = packetId
+        packetIdByClass[supplier.get()::class] = packetId
     }
 }

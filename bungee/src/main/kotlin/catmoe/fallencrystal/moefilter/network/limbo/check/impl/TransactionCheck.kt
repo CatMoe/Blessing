@@ -34,7 +34,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketTransact
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlin.random.Random
 
-// This check is useless because clients don't response Transaction packet. (maybe)
+// This check is useless because clients don't response Transaction packet. (Maybe)
 @AntiBotChecker(LimboCheckType.TRANSACTION)
 @HandlePacket(
     PacketTransaction::class,
