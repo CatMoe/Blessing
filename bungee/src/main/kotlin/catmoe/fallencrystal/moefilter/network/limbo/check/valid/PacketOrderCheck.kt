@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.valid
 
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -33,7 +33,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.*
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
 
-@Checker(LimboCheckType.VALID)
+@AntiBotChecker(LimboCheckType.VALID)
 @HandlePacket(
     Unknown::class,
     Disconnect::class,

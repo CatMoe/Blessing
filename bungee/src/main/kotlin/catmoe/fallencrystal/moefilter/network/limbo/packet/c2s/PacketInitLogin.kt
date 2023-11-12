@@ -17,11 +17,11 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
@@ -47,8 +47,7 @@ class PacketInitLogin : LimboC2SPacket() {
         MoeLimbo.connections.add(handler)
         if (handler.fakeHandler is FakeInitialHandler) handler.fakeHandler.username=profile.username
         if (handler.version!!.less(Version.V1_20_2)) {
-            handler.state = Protocol.PLAY
-            handler.updateVersion(handler.version!!, handler.state!!)
+            handler.updateVersion(handler.version!!, Protocol.PLAY)
             handler.sendPlayPackets()
         }
     }

@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.common
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -34,7 +34,6 @@ class PacketFinishConfiguration : LimboPacket {
     }
 
     override fun handle(handler: LimboHandler) {
-        handler.state = Protocol.PLAY
         handler.updateVersion(handler.version!!, Protocol.PLAY)
         handler.sendPlayPackets()
     }

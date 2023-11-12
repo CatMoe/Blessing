@@ -31,7 +31,7 @@ import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType.*
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -52,7 +52,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
-@Checker(LimboCheckType.TRANSLATE_JOIN_CHECK)
+@AntiBotChecker(LimboCheckType.TRANSLATE_JOIN_CHECK)
 @HandlePacket(
     PacketHandshake::class,
     PacketInitLogin::class,

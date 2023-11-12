@@ -38,10 +38,12 @@ class PacketPluginMessage(
     var data: ByteArray? = null,
 ) : LimboPacket {
 
+    var isBrand = false
 
     override fun encode(packet: ByteMessage, version: Version?) {
         //listOf(this.channel, this.message).forEach { packet.writeString(it) }
         packet.writeString(channel)
+        isBrand = this.channel == "MC|Brand" || this.channel == "minecraft:brand"
         val data = this.data
         if (message.isNotEmpty()) packet.writeString(message) else if (data != null) packet.writeBytes(data)
     }
@@ -51,7 +53,10 @@ class PacketPluginMessage(
         if (version == Version.V1_7_6) packet.readShort() // Ignored
         Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
         this.data=ByteArray(packet.readableBytes())
-        if (version?.moreOrEqual(Version.V1_8) == true && (this.channel == "MC|Brand" || this.channel == "minecraft:brand")) this.message=decodeBrand(packet)
+        if (version?.moreOrEqual(Version.V1_8) == true && (this.channel == "MC|Brand" || this.channel == "minecraft:brand")) {
+            isBrand=true
+            this.message=decodeBrand(packet)
+        }
     }
 
     override fun handle(handler: LimboHandler) {

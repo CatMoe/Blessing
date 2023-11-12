@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -42,7 +42,7 @@ import catmoe.fallencrystal.translation.player.velocity.VelocityPlayer
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 
-@Checker(LimboCheckType.CHAT)
+@AntiBotChecker(LimboCheckType.CHAT)
 @HandlePacket(PacketClientChat::class)
 object ChatCheck : LimboChecker, EventListener {
 
@@ -86,7 +86,7 @@ object ChatCheck : LimboChecker, EventListener {
         return true
     }
 
-    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return false }
+    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean) = false
 
     override fun register() { EventManager.register(this) }
 

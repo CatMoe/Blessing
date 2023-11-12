@@ -25,4 +25,5 @@ enum class LimboCheckType {
     INSTANT_DISCONNECT,
     VALID,
     CHAT,
+    TRANSACTION,
 }

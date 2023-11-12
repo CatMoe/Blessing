@@ -34,8 +34,8 @@ import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficMonitor
 import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
-import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboDecoder
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntLengthEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.*

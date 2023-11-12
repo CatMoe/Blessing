@@ -20,7 +20,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 import catmoe.fallencrystal.moefilter.event.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.FallingCalculateType.COUNT
@@ -34,7 +35,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosit
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketJoinGame
-import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -44,7 +44,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-@Checker(LimboCheckType.FALLING_CHECK)
+@AntiBotChecker(LimboCheckType.FALLING_CHECK)
 @HandlePacket(
     PacketJoinGame::class,
     PacketPluginMessage::class,
@@ -191,12 +191,15 @@ object MoveCheck: LimboChecker {
         }
     }
 
-    private fun a(a: Double?, b: Double): Double { return if (a == null || b >= a) b else a }
+    private fun a(a: Double?, b: Double) = if (a == null || b >= a) b else a
 
+    /*
     private fun c(a: Double, b: Double): Double {
         if (a == b) return 0.0
         return if (a > b) a - b else b - a
     }
+     */
+    private fun c(a: Double, b: Double) = if (a == b) 0.0 else (if (a > b) a - b else b - a)
 
     private fun k(a: LimboHandler) {
         FastDisconnect.disconnect(a, DisconnectType.DETECTED)
@@ -226,7 +229,7 @@ object MoveCheck: LimboChecker {
         return a >= t
     }
 
-    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean { return false }
+    override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean) = false
 
     private val simulation = Caffeine.newBuilder().build<Int, Double>()
 

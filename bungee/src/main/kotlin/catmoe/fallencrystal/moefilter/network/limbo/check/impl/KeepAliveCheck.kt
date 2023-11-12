@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.impl
 
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -30,7 +30,7 @@ import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import java.util.concurrent.TimeUnit
 
-@Checker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
+@AntiBotChecker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
 @HandlePacket(PacketKeepAlive::class)
 object KeepAliveCheck : LimboChecker {
 

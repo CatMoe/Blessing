@@ -19,4 +19,4 @@ package catmoe.fallencrystal.moefilter.network.limbo.check
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class Checker(val type: LimboCheckType)
+annotation class AntiBotChecker(val type: LimboCheckType)

@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.check.falling
 
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -35,7 +35,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.RemovalCause
 import java.util.concurrent.TimeUnit
 
-@Checker(LimboCheckType.FALLING_TIMER)
+@AntiBotChecker(LimboCheckType.FALLING_TIMER)
 @HandlePacket(
     PacketKeepAlive::class,
     Disconnect::class,

@@ -21,7 +21,7 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
-import catmoe.fallencrystal.moefilter.network.limbo.check.Checker
+import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
@@ -31,7 +31,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import java.net.InetSocketAddress
 
 @Suppress("unused")
-@Checker(LimboCheckType.INSTANT_DISCONNECT)
+@AntiBotChecker(LimboCheckType.INSTANT_DISCONNECT)
 @HandlePacket(Disconnect::class)
 object InstantDisconnectCheck : LimboChecker {
 

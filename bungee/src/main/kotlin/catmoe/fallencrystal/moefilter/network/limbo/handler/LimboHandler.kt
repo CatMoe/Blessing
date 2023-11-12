@@ -26,8 +26,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkSent
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkStart
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.connections
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
-import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboDecoder
-import catmoe.fallencrystal.moefilter.network.limbo.netty.LimboEncoder
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
@@ -102,6 +100,7 @@ class LimboHandler(
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) { if (msg is LimboPacket) msg.handle(this) }
 
     fun updateVersion(version: Version, state: Protocol) {
+        this.state=state
         this.version=version
         encoder.switchVersion(version, state)
         decoder.switchVersion(version, state)

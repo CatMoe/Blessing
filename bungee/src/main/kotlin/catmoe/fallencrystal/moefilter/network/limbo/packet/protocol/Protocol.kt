@@ -17,10 +17,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.protocol
 
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.*
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketFinishConfiguration
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketStatusPing
+import catmoe.fallencrystal.moefilter.network.limbo.packet.common.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
 import catmoe.fallencrystal.moefilter.network.limbo.protocol.Mapping
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -355,6 +352,36 @@ enum class Protocol(var stateId: Int) {
                 map(0x03, V1_14, V1_18_2),
                 map(0x04, V1_19, V1_19),
                 map(0x05, V1_19_1, V1_20_2)
+            )
+            clientBound.register(
+                { PacketTransaction() },
+                map(0x32, V1_7_6, V1_8),
+                map(0x11, V1_9, V1_12_2),
+                map(0x12, V1_13, V1_14_4),
+                map(0x13, V1_15, V1_15_2),
+                map(0x12, V1_16, V1_16_1),
+                map(0x11, V1_16_2, V1_16_4),
+                map(0x30, V1_17, V1_18_2),
+                map(0x2D, V1_19, V1_19),
+                map(0x2F, V1_19_1, V1_19_1),
+                map(0x2E, V1_19_3, V1_19_3),
+                map(0x32, V1_19_4, V1_20),
+                map(0x33, V1_20_2, V1_20_2)
+            )
+            serverBound.register(
+                { PacketTransaction() },
+                map(0x0F, V1_7_6, V1_8),
+                map(0x05, V1_9, V1_11_1),
+                map(0x06, V1_12, V1_12),
+                map(0x05, V1_12_1, V1_12_2),
+                map(0x06, V1_13, V1_13_2),
+                map(0x07, V1_14, V1_16_4),
+                map(0x1D, V1_17, V1_18_2),
+                map(0x1F, V1_19, V1_19),
+                map(0x20, V1_19_1, V1_19_1),
+                map(0x1F, V1_19_3, V1_19_3),
+                map(0x20, V1_19_4, V1_20),
+                map(0x23, V1_20_2, V1_20_2)
             )
             /*
                         serverBound.register(
