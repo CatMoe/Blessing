@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.block.BlockPosition
+import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
@@ -48,13 +49,18 @@ class PacketBlocksSectionUpdate(
                 }
             }
         } else {
-            // Some unexpected occurred here.
-            val chunkY = 255
-            packet.writeLong((sectionX and 0x3FFFFF shl 42 or (chunkY and 0xFFFFF) or (sectionZ and 0x3FFFFF shl 20)).toLong())
+            // Some unexpected occurred here: The specified block is not the expected block.
+            val chunkY = (blocks.firstOrNull()?.y ?: 1) shr 4
+            var chunk = (0 or (sectionX and 0x3FFFFF shl 42)).toLong()
+            packet.writeLong((sectionZ.toLong() and 0x3FFFFFL shl 20).let { chunk = chunk or it; chunk } or (chunkY.toLong() and 0xFFFFFL))
             if (version.less(Version.V1_20)) packet.writeBoolean(true) // Suppress light updates. But removed on 1.20
             packet.writeVarInt(blocks.size)
             for (block in blocks) {
-                packet.writeVarLong((block.block.getId(version) shl 12 or (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4))).toLong())
+                val id = block.block.getId(version)
+                val position = (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4)).toShort()
+                val value = id.toLong() shl 12 or position.toLong()
+                MoeLimbo.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, value=$value")
+                packet.writeVarLong(value)
             }
         }
     }

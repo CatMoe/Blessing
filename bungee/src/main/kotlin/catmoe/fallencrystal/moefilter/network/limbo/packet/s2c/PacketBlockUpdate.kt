@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.block.BlockPosition
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
+@Deprecated("Use PacketBlocksSectionUpdate")
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketBlockUpdate(
     var block: BlockPosition? = null
@@ -33,8 +34,7 @@ class PacketBlockUpdate(
                 (if (version.more(Version.V1_13_2))
                     ((block.x and 0x3FFFFFF shl 38) or (block.z and 0x3FFFFFF shl 12) or (block.y and 0xFFF))
                 else
-                    (block.x and 0x3FFFFFF shl 38 or (block.y and 0xFFF shl 26) or (block.z and 0x3FFFFFF))
-                        ).toLong()
+                    (block.x and 0x3FFFFFF shl 38 or (block.y and 0xFFF shl 26) or (block.z and 0x3FFFFFF))).toLong()
             )
             packet.writeVarInt(block.block.getId(version))
         } else {
