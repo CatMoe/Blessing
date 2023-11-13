@@ -25,7 +25,5 @@ class LimboLocation(
     val pitch: Float,
     val onGround: Boolean
 ) {
-    override fun toString(): String {
-        return "LimboLocation(x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch, onGround=$onGround)"
-    }
+    override fun toString() = "LimboLocation(x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch, onGround=$onGround)"
 }

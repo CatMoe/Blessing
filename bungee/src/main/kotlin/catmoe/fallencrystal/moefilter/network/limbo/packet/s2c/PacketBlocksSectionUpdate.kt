@@ -49,7 +49,6 @@ class PacketBlocksSectionUpdate(
                 }
             }
         } else {
-            // Some unexpected occurred here: The specified block is not the expected block.
             val chunkY = (blocks.firstOrNull()?.y ?: 1) shr 4
             var chunk = (0 or (sectionX and 0x3FFFFF shl 42)).toLong()
             packet.writeLong((sectionZ.toLong() and 0x3FFFFFL shl 20).let { chunk = chunk or it; chunk } or (chunkY.toLong() and 0xFFFFFL))

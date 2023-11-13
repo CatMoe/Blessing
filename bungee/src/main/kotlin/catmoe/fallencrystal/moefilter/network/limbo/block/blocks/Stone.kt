@@ -26,6 +26,6 @@ class Stone : LimboBlock {
 
     override fun height() = 1.0
 
-    override fun getId(version: Version) = if (version.moreOrEqual(Version.V1_13)) 16 else 1
+    override fun getId(version: Version) = 1
 
 }

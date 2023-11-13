@@ -764,7 +764,7 @@ class LoadConfig {
                 disable-chat=true
                 
                 # 玩家生成的高度.
-                spawn-height=300.0
+                spawn-height=260.0
                 
                 check {
                     # 掉落检查
@@ -773,17 +773,22 @@ class LoadConfig {
                         # 如果想设置一个固定值, 设置相同的值即可.
                         
                         # 平台的随机高度
-                        height {
+                        platform-height {
                             max=255
                             min=100
                         }
+                        # 玩家的随机传送高度
+                        spawn-height {
+                            max=280
+                            min=260
+                        }
                         # 随机重新测试次数
-                        round {
+                        check-round {
                             max=5
                             min=3
                         }
                         # 支持的方块: STONE (石头), BARRIER (屏障)
-                        block=BARRIER
+                        block=STONE
                     }
                     # 变速检查 (依靠监听移动数据包)
                     timer {
@@ -796,7 +801,7 @@ class LoadConfig {
                         # 如果玩家通过检查的速度比此规定的时间快 则他们将被踢出服务器(秒)
                         min=3
                         # 如果玩家通过检查的速度比此规定的时间慢 则他们将会被踢出服务器(秒)
-                        max=14
+                        max=20
                     }
                 }
                 

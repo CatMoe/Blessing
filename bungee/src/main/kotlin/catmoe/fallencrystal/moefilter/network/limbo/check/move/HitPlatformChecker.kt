@@ -55,19 +55,23 @@ object HitPlatformChecker: LimboChecker {
     private val count = Caffeine.newBuilder().build<LimboHandler, Int>()
     private val passOne = Caffeine.newBuilder().build<LimboHandler, Boolean>()
     private var block = try { Block.valueOf(config.getAnyRef("block").toString()) } catch (_: Exception) { Block.STONE }
-    private var heightMax = config.getInt("height.max")
-    private var heightMin = config.getInt("height.min")
-    private var roundMax = config.getInt("round.max")
-    private var roundMin = config.getInt("round.min")
+    private var heightMax = config.getInt("platform-height.max")
+    private var heightMin = config.getInt("platform-height.min")
+    private var roundMax = config.getInt("check-round.max")
+    private var roundMin = config.getInt("check-round.min")
+    private var spawnHeightMax = config.getInt("spawn-height.max")
+    private var spawnHeightMin = config.getInt("spawn-height.min")
     private val loc = LimboLocation(7.5, MoeLimbo.spawnHeight, 7.5, 90f, 10f, false)
 
     override fun reload() {
         config = LocalConfig.getLimbo().getConfig("check.platform-hit")
         try { block=Block.valueOf(config.getAnyRef("block").toString()) } catch (_: Exception) {}
-        heightMax=config.getInt("height.max")
-        heightMin=config.getInt("height.min")
-        roundMax=config.getInt("round.max")
-        roundMax=config.getInt("round.min")
+        heightMax=config.getInt("platform-height.max")
+        heightMin=config.getInt("platform-height.min")
+        roundMax=config.getInt("check-round.max")
+        roundMax=config.getInt("check-round.min")
+        spawnHeightMax=config.getInt("spawn-height.max")
+        spawnHeightMin=config.getInt("spawn-height.min")
     }
 
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
@@ -111,7 +115,10 @@ object HitPlatformChecker: LimboChecker {
 
     private fun sendTest(handler: LimboHandler) {
         val height = random.nextInt(heightMin, heightMax + 1)
-        handler.writePacket(PacketServerPositionLook(loc, random.nextInt(0, 32767)))
+        handler.writePacket(PacketServerPositionLook(
+            LimboLocation(loc.x, random.nextInt(spawnHeightMin, spawnHeightMax+1).toDouble(), loc.z, loc.yaw, loc.pitch, loc.onGround),
+            random.nextInt(0, 32767)
+        ))
         val oldY = platformY.getIfPresent(handler)
         if (oldY != null && oldY != height) handler.sendTestPlatform(oldY, Block.AIR.obj)
         handler.sendTestPlatform(height, block.obj)
