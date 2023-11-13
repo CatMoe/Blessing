@@ -19,6 +19,8 @@ package catmoe.fallencrystal.moefilter.network.limbo.handler
 
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.block.Block
+import catmoe.fallencrystal.moefilter.network.limbo.block.BlockPosition
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkLength
@@ -34,6 +36,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketBlocksSectionUpdate
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -134,7 +137,19 @@ class LimboHandler(
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
         if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+        if (MoeLimbo.summonTestPlatform) sendTestPlatform(MoeLimbo.platformHeight)
         channel.flush()
+    }
+
+    @Suppress("unused")
+    private fun sendTestPlatform(y: Int) {
+        val size = 16
+        val offset = 7.5.toInt() shr 4
+        val list = mutableListOf<BlockPosition>()
+        for (x in 0 until size) {
+            for (z in 0 until size) list.add(BlockPosition(Block.STONE.obj, x, y, z))
+        }
+        writePacket(PacketBlocksSectionUpdate(list, offset, offset))
     }
 
     private fun keepAliveScheduler() {

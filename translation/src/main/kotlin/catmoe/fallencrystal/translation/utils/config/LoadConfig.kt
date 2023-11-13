@@ -821,6 +821,11 @@ class LoadConfig {
                     }
                     # 减少在f3上的调试信息.
                     reduce-f3-debug=false
+                    # 生成一个用于测试方块生成的平台
+                    test-platform {
+                        summon=false
+                        y=0
+                    }
                 }
     """.trimIndent()
 

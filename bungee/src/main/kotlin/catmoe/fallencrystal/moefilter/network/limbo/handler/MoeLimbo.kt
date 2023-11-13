@@ -71,6 +71,8 @@ object MoeLimbo : Reloadable {
     val chunkSent = limboConfig.getBoolean("debug.chunk.sent")
     val chunkStart = limboConfig.getInt("debug.chunk.start")
     val chunkLength = chunkStart + limboConfig.getInt("debug.chunk.length")
+    val summonTestPlatform = limboConfig.getBoolean("debug.test-platform.summon")
+    val platformHeight = limboConfig.getInt("debug.test-platform.y")
 
     private val checker = listOf(
         CommonJoinCheck,

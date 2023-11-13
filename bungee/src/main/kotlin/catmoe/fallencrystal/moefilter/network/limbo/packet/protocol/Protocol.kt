@@ -383,6 +383,32 @@ enum class Protocol(var stateId: Int) {
                 map(0x20, V1_19_4, V1_20),
                 map(0x23, V1_20_2, V1_20_2)
             )
+            clientBound.register(
+                { PacketBlocksSectionUpdate() },
+                map(0x22, V1_7_6, V1_8),
+                map(0x10, V1_9, V1_12_2),
+                map(0x0F, V1_13, V1_14_4),
+                map(0x10, V1_15, V1_15_2),
+                map(0x0F, V1_16, V1_16_2),
+                map(0x3B, V1_16_2, V1_16_4),
+                map(0x3F, V1_17, V1_18_2),
+                map(0x3D, V1_19, V1_19),
+                map(0x40, V1_19_1, V1_19_1),
+                map(0x3F, V1_19_3, V1_19_3),
+                map(0x43, V1_19_4, V1_20),
+                map(0x45, V1_20_2, V1_20_2)
+            )
+            clientBound.register(
+                { PacketBlockUpdate() },
+                map(0x23, V1_7_6, V1_8),
+                map(0x0B, V1_9, V1_14_4),
+                map(0x0C, V1_15, V1_15_2),
+                map(0x0B, V1_16, V1_16_4),
+                map(0x0C, V1_17, V1_18_2),
+                map(0x09, V1_19, V1_19_3),
+                map(0x1A, V1_19_4, V1_20),
+                map(0x09, V1_20_2, V1_20_2)
+            )
             /*
                         serverBound.register(
                 { TabComplete() },
