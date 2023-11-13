@@ -825,6 +825,8 @@ class LoadConfig {
                     test-platform {
                         summon=false
                         y=0
+                        # STONE, BARRIER, AIR
+                        block=STONE
                     }
                 }
     """.trimIndent()

@@ -18,9 +18,11 @@
 package catmoe.fallencrystal.moefilter.network.limbo.block
 
 import catmoe.fallencrystal.moefilter.network.limbo.block.blocks.Air
+import catmoe.fallencrystal.moefilter.network.limbo.block.blocks.Barrier
 import catmoe.fallencrystal.moefilter.network.limbo.block.blocks.Stone
 
 enum class Block(val obj: LimboBlock) {
     AIR(Air()),
-    STONE(Stone());
+    STONE(Stone()),
+    BARRIER(Barrier())
 }

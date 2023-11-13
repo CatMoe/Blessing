@@ -22,6 +22,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
+import catmoe.fallencrystal.moefilter.network.limbo.block.Block
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
@@ -71,8 +72,13 @@ object MoeLimbo : Reloadable {
     val chunkSent = limboConfig.getBoolean("debug.chunk.sent")
     val chunkStart = limboConfig.getInt("debug.chunk.start")
     val chunkLength = chunkStart + limboConfig.getInt("debug.chunk.length")
-    val summonTestPlatform = limboConfig.getBoolean("debug.test-platform.summon")
+    val platformSummon = limboConfig.getBoolean("debug.test-platform.summon")
     val platformHeight = limboConfig.getInt("debug.test-platform.y")
+    val platformBlock = try {
+        Block.valueOf(limboConfig.getAnyRef("debug.test-platform.block").toString()).obj
+    } catch (_: Exception) {
+        Block.STONE.obj
+    }
 
     private val checker = listOf(
         CommonJoinCheck,

@@ -19,7 +19,6 @@ package catmoe.fallencrystal.moefilter.network.limbo.block.blocks
 
 import catmoe.fallencrystal.moefilter.network.limbo.block.LimboBlock
 import catmoe.fallencrystal.translation.utils.version.Version
-import com.github.benmanes.caffeine.cache.Caffeine
 
 class Stone : LimboBlock {
 
@@ -27,14 +26,6 @@ class Stone : LimboBlock {
 
     override fun height() = 1.0
 
-    override fun getId(version: Version) = cache.getIfPresent(version)!!
-
-    companion object {
-
-        private val cache = Caffeine.newBuilder().build<Version, Int>()
-        init {
-            for (version in Version.entries) cache.put(version, if (version.moreOrEqual(Version.V1_13)) 16 else 1)
-        }
-    }
+    override fun getId(version: Version) = if (version.moreOrEqual(Version.V1_13)) 16 else 1
 
 }
