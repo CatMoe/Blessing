@@ -33,7 +33,7 @@ class Stone : LimboBlock {
 
         private val cache = Caffeine.newBuilder().build<Version, Int>()
         init {
-            for (version in Version.entries) cache.put(version, if (version.moreOrEqual(Version.V1_13)) 1 else 16)
+            for (version in Version.entries) cache.put(version, if (version.moreOrEqual(Version.V1_13)) 16 else 1)
         }
     }
 
