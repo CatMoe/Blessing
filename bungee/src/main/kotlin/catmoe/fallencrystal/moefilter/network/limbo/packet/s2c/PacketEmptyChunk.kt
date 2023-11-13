@@ -33,6 +33,7 @@ class PacketEmptyChunk(
     var z: Int = 0
 ) : LimboS2CPacket() {
 
+    // TODO: Fix https://github.com/CatMoe/MoeFilter/issues/79
     @Suppress("GrazieInspection")
     override fun encode(packet: ByteMessage, version: Version?) {
         // Chunk pos

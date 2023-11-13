@@ -48,13 +48,13 @@ class PacketBlocksSectionUpdate(
                 }
             }
         } else {
-            packet.writeLong((sectionX and 0x3FFFFF shl 42 or ((blocks.firstOrNull()?.y ?: 255) and 0xFFFFF) or (sectionZ and 0x3FFFFF shl 20)).toLong())
+            // Some unexpected occurred here.
+            val chunkY = 255
+            packet.writeLong((sectionX and 0x3FFFFF shl 42 or (chunkY and 0xFFFFF) or (sectionZ and 0x3FFFFF shl 20)).toLong())
             if (version.less(Version.V1_20)) packet.writeBoolean(true) // Suppress light updates. But removed on 1.20
             packet.writeVarInt(blocks.size)
             for (block in blocks) {
-                packet.writeVarLong(
-                    ((block.block.getId(version) shl 12) or (block.x - (sectionX shl 4)) shl 8 or ((block.z - (sectionZ shl 4)) shl 4) or (block.y - (block.y shr 4 shl 4))).toLong()
-                )
+                packet.writeVarLong((block.block.getId(version) shl 12 or (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4))).toLong())
             }
         }
     }

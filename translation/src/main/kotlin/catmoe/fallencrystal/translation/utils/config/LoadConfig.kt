@@ -763,31 +763,27 @@ class LoadConfig {
                 # 大部分愚蠢的SpamBot通常不会拥有强大的绕过.
                 disable-chat=true
                 
+                # 玩家生成的高度.
+                spawn-height=300.0
+                
                 check {
                     # 掉落检查
-                    falling {
-                        # 每tick运动的最大速度(方块)
-                        # 如果您不知道调整后有什么后果 应保持默认值.
-                        max-x=2.88
-                        max-y=3.9200038147009764
-                        max-z=2.88
-                        # 当玩家的Pitch为 > 90.0 或 < -90.0(不可能)时 踢出Limbo
-                        wrong-turn=true
-                        # 如果玩家试图向上移动 则踢出Limbo
-                        invalid-y-up=true
-                        # 如果玩家的onGround为true 则踢出Limbo
-                        invalid-on-ground=true
-                        # 如果玩家尝试移动两次但Y轴却没有改变 则踢出Limbo
-                        same-y-position=true
-                        # 超时时间 单位为秒
-                        timeout=5
+                    platform-hit {
+                        # 拥有max和min的配置则是有关随机数的最小值和最大值. 
+                        # 如果想设置一个固定值, 设置相同的值即可.
                         
-                        # 持续掉落检查测量模式:
-                        # DISTANCE: 根据掉落的距离测量
-                        # COUNT: 根据玩家(发送数据包)的移动次数测量
-                        calculate-type=DISTANCE
-                        # 测量的距离 如果达到此值 将通过检查
-                        range=100
+                        # 平台的随机高度
+                        height {
+                            max=255
+                            min=100
+                        }
+                        # 随机重新测试次数
+                        round {
+                            max=5
+                            min=3
+                        }
+                        # 支持的方块: STONE (石头), BARRIER (屏障)
+                        block=BARRIER
                     }
                     # 变速检查 (依靠监听移动数据包)
                     timer {

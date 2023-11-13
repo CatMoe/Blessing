@@ -23,8 +23,8 @@ import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.limbo.block.Block
-import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.falling.MoveTimer
+import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecker
+import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveCheck
@@ -79,10 +79,11 @@ object MoeLimbo : Reloadable {
     } catch (_: Exception) {
         Block.STONE.obj
     }
+    val spawnHeight = limboConfig.getDouble("spawn-height")
 
     private val checker = listOf(
         CommonJoinCheck,
-        MoveCheck,
+        HitPlatformChecker,
         MoveTimer,
         KeepAliveCheck,
         PacketOrderCheck,

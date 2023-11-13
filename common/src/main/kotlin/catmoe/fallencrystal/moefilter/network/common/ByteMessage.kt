@@ -211,6 +211,22 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         )
     }
 
+    // refer: https://wiki.vg/VarInt_And_VarLong
+    fun writeVarLong(value: Long) {
+        var v = value
+        while (true) {
+            if (v and (0x7F.toLong()).inv() == 0L) {
+                writeByte(v.toInt())
+                return
+            }
+            writeByte((v and 0x7F or 0x80).toInt())
+
+            // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
+            v = v ushr 7
+        }
+    }
+
+    /*
     // refer: https://github.com/GeyserMC/PacketLib/blob/e21e6c4e86bd9755afaa2dda9fd0f2a52eae7f7e/src/main/java/com/github/steveice10/packetlib/codec/BasePacketCodecHelper.java#L33
     fun writeVarLong(value: Long) {
         when {
@@ -271,6 +287,7 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
                 ((value ushr 42) and 0x7FL or 0x80L) shl 8 or
                 (value ushr 49)
     }
+     */
 
     fun readVarLong(): Long {
         var value = 0L

@@ -35,7 +35,6 @@ object CacheMotdManager : Reloadable {
     private var conf = LocalConfig.getConfig().getConfig("ping.cache")
 
     private var useStandardDomain = conf.getBoolean("stable-domain-cache")
-    private var protocolAlwaysUnsupported = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
     private var fullCacheInAttack = conf.getBoolean("full-cache-during-attack")
     private var sendIconOnce = conf.getBoolean("send-icon-once")
     private var cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
@@ -52,8 +51,6 @@ object CacheMotdManager : Reloadable {
     private val domainList: MutableCollection<String> = ArrayList()
     private var whitelistedDomainList: List<String> = listOf()
 
-    private val dv get() = if (protocolAlwaysUnsupported) Version.V1_8 else null
-
     fun a(p1: String, p2: MutableMap<Version, CachedMotd>) {
         if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(p1, p2)
     }
@@ -61,7 +58,6 @@ object CacheMotdManager : Reloadable {
     override fun reload() {
         conf = LocalConfig.getConfig().getConfig("ping.cache")
         useStandardDomain = conf.getBoolean("stable-domain-cache")
-        protocolAlwaysUnsupported = LocalConfig.getConfig().getBoolean("ping.protocol-always-unsupported")
         fullCacheInAttack = conf.getBoolean("full-cache-during-attack")
         sendIconOnce = conf.getBoolean("send-icon-once")
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
@@ -102,7 +98,7 @@ object CacheMotdManager : Reloadable {
     }
 
     private fun sendMotd(map: MutableMap<Version, CachedMotd>, handler: LimboHandler, noIcon: Boolean) {
-        val p = map[dv ?: handler.version!!]!!
+        val p = map[handler.version!!]!!
         // handler.writePacket(if (noIcon) packet.bmNoIcon else packet.bm)
         val pa = ExplicitPacket(0x00, (if (noIcon) p.bmNoIcon else p.bm), "Cached ping packet (icon: ${!noIcon})")
         handler.sendPacket(pa)
@@ -114,7 +110,7 @@ object CacheMotdManager : Reloadable {
         val packet = PacketPingResponse()
         packet.output=handler.fakeHandler!!.handlePing(handler.host!!, handler.version!!).description
         val i = CachedMotd.process(packet, handler.version!!)
-        m[dv ?: handler.version!!] = i
+        m[handler.version!!] = i
         motdCache.put(if (useStandardDomain) handler.host!!.hostString else "", m)
         return m
     }

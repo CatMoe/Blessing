@@ -26,26 +26,26 @@ import net.md_5.bungee.BungeeCord
 import java.util.logging.Level
 
 class InitLogger : ICubeLogger {
-    private val ascii: List<String> = listOf(
-        """<aqua>_____ ______   ________  _______   ________ ___  ___   _________  _______   ________     """,
-        """<aqua>|\   _ \  _   \|\   __  \|\  ___ \ |\  _____\\  \|\  \ |\___   ___\\  ___ \ |\   __  \    """,
-        """<aqua>\ \  \\\__\ \  \ \  \|\  \ \   __/|\ \  \__/\ \  \ \  \\|___ \  \_\ \   __/|\ \  \|\  \   """,
-        """<aqua> \ \  \\|__| \  \ \  \\\  \ \  \_|/_\ \   __\\ \  \ \  \    \ \  \ \ \  \_|/_\ \   _  _\  """,
-        """<aqua>  \ \  \    \ \  \ \  \\\  \ \  \_|\ \ \  \_| \ \  \ \  \____\ \  \ \ \  \_|\ \ \  \\  \ """,
-        """<aqua>   \ \__\    \ \__\ \_______\ \_______\ \__\   \ \__\ \_______\ \__\ \ \_______\ \__\\ _\ """,
-        """<aqua>    \|__|     \|__|\|_______|\|_______|\|__|    \|__|\|_______|\|__|  \|_______|\|__|\|__|""",
-        """<aqua>                                                                                          """
-    )
+    private val ascii = """
+_____ ______   ________  _______   ________ ___  ___   _________  _______   ________     
+|\   _ \  _   \|\   __  \|\  ___ \ |\  _____\\  \|\  \ |\___   ___\\  ___ \ |\   __  \    
+\ \  \\\__\ \  \ \  \|\  \ \   __/|\ \  \__/\ \  \ \  \\|___ \  \_\ \   __/|\ \  \|\  \   
+ \ \  \\|__| \  \ \  \\\  \ \  \_|/_\ \   __\\ \  \ \  \    \ \  \ \ \  \_|/_\ \   _  _\  
+  \ \  \    \ \  \ \  \\\  \ \  \_|\ \ \  \_| \ \  \ \  \____\ \  \ \ \  \_|\ \ \  \\  \| 
+   \ \__\    \ \__\ \_______\ \_______\ \__\   \ \__\ \_______\ \__\ \ \_______\ \__\\ _\ 
+    \|__|     \|__|\|_______|\|_______|\|__|    \|__|\|_______|\|__|  \|_______|\|__|\|__|                                                        
+    """.trimIndent()
 
     init { CubeLogger.logger=this }
 
     private var useWaterfallLogger = false
 
     private val logger = try { useWaterfallLogger=true; io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create(); }
-    catch(ex: NoClassDefFoundError) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
+    catch (ex: NoClassDefFoundError) { useWaterfallLogger=false; BungeeCord.getInstance().logger }
 
     fun onLoad() {
-        ascii.forEach { this.log(Level.INFO, ComponentUtil.parse(it)) }
+        //ascii.forEach { this.log(Level.INFO, ComponentUtil.parse(it)) }
+        ascii.split("\n").forEach { this.log(Level.INFO, ComponentUtil.parse("<aqua>$it")) }
         logger.filter = LoggerManager
         if (useWaterfallLogger) {
             this.log(Level.INFO, ComponentUtil.parse("[MoeFilter] <green>Detected Waterfall log4j logger. use it for main logger."))
