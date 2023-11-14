@@ -128,7 +128,7 @@ This project contains content borrowed from the following website/repository.
 - [MaxMind](https://maxmind.com/) `GeoIP database.`
 - [NanoLimbo](https://github.com/Nan1t/NanoLimbo) `Basic limbo server`
 - [BotFilter](https://github.com/Leymooo/BungeeCord) `Dimension, Chunk packets`
-- [wiki.vg](https://wiki.vg/Protocol) `1.7.6-Latest Minecraft version protocol`
+- [wiki.vg](https://wiki.vg/Protocol) `1.8.x-Latest Minecraft version protocol`
 - [NullCordX](https://builtbybit.com/resources/nullcordx-lightweight-antibot.22322/) `proxy list providers.`
 - [FlameCord](https://builtbybit.com/resources/flamecord-the-ultimate-antibot.13492/) `proxy list providers.`
 - [PacketLimiter](https://github.com/Spottedleaf/PacketLimiter) `Refer to Packet Limiter.`

@@ -19,7 +19,10 @@ package catmoe.fallencrystal.translation.utils.version
 @Suppress("unused")
 enum class Version(val number: Int) {
     UNDEFINED(-1),
+    // Only for kick: Dropped 1.7 support.
+    V1_7_2(4),
     V1_7_6(5),
+
     V1_8(47),
     V1_9(107),
     V1_9_1(108),
@@ -72,7 +75,7 @@ enum class Version(val number: Int) {
     fun fromTo(min: Version, max: Version): Boolean { return number >= min.number && number <= max.number }
 
     val isSupported: Boolean
-        get() = (this != UNDEFINED) // && (this != V1_20_2)
+        get() = (this != UNDEFINED && moreOrEqual(V1_8)) // Dropped 1.7 support.
 
     override fun toString(): String {
         return "enum=$name, protocol=$number"

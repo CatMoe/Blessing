@@ -33,7 +33,7 @@ class Barrier : LimboBlock {
         init {
             for (version in Version.entries) {
                 cache.put(version, when {
-                    version == Version.V1_7_6 -> 20 // Glass for 1.7
+                    //version == Version.V1_7_6 -> 20 // Glass for 1.7
                     version.fromTo(Version.V1_8, Version.V1_12_2) -> 166
                     version.fromTo(Version.V1_13, Version.V1_13_1) -> 6493
                     version == Version.V1_13_2 -> 6494

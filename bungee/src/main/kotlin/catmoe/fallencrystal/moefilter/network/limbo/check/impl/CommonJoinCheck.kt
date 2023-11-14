@@ -111,8 +111,8 @@ object CommonJoinCheck : LimboChecker {
         FastDisconnect.disconnect(handler, type)
     }
 
-    private fun kick(handler: LimboHandler, check: AbstractCheck) {
-        kick(handler, reason.getIfPresent(check::class) ?: return)
+    private fun kick(handler: LimboHandler, check: KClass<out AbstractCheck>) {
+        kick(handler, reason.getIfPresent(check) ?: return)
     }
 
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean): Boolean {
@@ -122,11 +122,11 @@ object CommonJoinCheck : LimboChecker {
 
     private fun checkJoin(joining: Joining, handler: LimboHandler): Boolean {
         val a = ValidNameCheck.instance
-        if (a.increase(joining)) { kick(handler, a); return true }
+        if (a.increase(joining)) { kick(handler, a::class); return true }
         val mixinKick = MixedCheck.increase(joining)
         if (mixinKick != null) { kick(handler, mixinKick); return true }
         val b = SimilarityCheck.instance
-        if (b.increase(joining)) { kick(handler, b); return true }
+        if (b.increase(joining)) { kick(handler, b::class); return true }
         //for (i in joinCheck) { if (i.increase(joining)) { kick(handler, reason.getIfPresent(i::class)!!); return true } }
         if (onlineUser.getIfPresent(joining.username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
             kick(handler, ALREADY_ONLINE); return true
