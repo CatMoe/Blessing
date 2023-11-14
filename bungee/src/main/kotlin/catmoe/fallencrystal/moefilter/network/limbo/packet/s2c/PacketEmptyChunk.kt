@@ -20,12 +20,10 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
-import io.netty.buffer.Unpooled
 import se.llbit.nbt.CompoundTag
 import se.llbit.nbt.LongArrayTag
 import se.llbit.nbt.NamedTag
 import java.util.*
-import java.util.zip.Deflater
 
 
 class PacketEmptyChunk(
@@ -33,32 +31,14 @@ class PacketEmptyChunk(
     var z: Int = 0
 ) : LimboS2CPacket() {
 
-    // TODO: Fix https://github.com/CatMoe/MoeFilter/issues/78
-    @Suppress("GrazieInspection")
     override fun encode(packet: ByteMessage, version: Version?) {
         // Chunk pos
         packet.writeInt(x)
         packet.writeInt(z)
-        if (version!!.less(Version.V1_17) /*  || version.fromTo(Version.V1_16, Version.V1_16_1) || version == Version.V1_7_6 */) packet.writeBoolean(true)
+        if (version!!.less(Version.V1_17)) packet.writeBoolean(true)
+        if (version.fromTo(Version.V1_16, Version.V1_16_1)) packet.writeBoolean(true)
         if (version.less(Version.V1_17)) {
             if (version.lessOrEqual(Version.V1_8)) packet.writeShort(1) else packet.writeVarInt(0)
-            if (version == Version.V1_7_6) {
-                // some1 can help me...? I don't know how to send a readable chunk data for a 9yrs ago minecraft client.
-
-                packet.writeShort(1)
-                val byArray = /* byteArrayOf(63) */ ByteArray(256)
-                val deflate = Deflater(9)
-                deflate.setInput(byArray)
-                deflate.finish()
-                val compressed = Unpooled.buffer()
-                val b = ByteArray(1024)
-                while (!deflate.finished()) compressed.writeBytes(b, 0, deflate.deflate(b))
-                packet.writeInt(compressed.readableBytes())
-                packet.writeBytes(compressed)
-                deflate.end()
-                compressed.release()
-                return
-            }
         } else if (version.less(Version.V1_18)) {
             val bitSet = BitSet()
             for (it in 0..15) { bitSet[it] = false }
@@ -72,11 +52,10 @@ class PacketEmptyChunk(
             tag.add("MOTION_BLOCKING", LongArrayTag(LongArray(if (version.less(Version.V1_18)) 36 else 37)))
             val rootTag = CompoundTag()
             rootTag.add("root", tag)
-            if (version.moreOrEqual(Version.V1_20_2)) {
+            if (version.moreOrEqual(Version.V1_20_2))
                 packet.writeHeadlessCompoundTag(rootTag)
-            } else {
+            else
                 packet.writeCompoundTag(NamedTag("", rootTag))
-            }
             // Height maps >> End
             if (version.fromTo(Version.V1_15_2, Version.V1_17_1)) {
                 if (version.moreOrEqual(Version.V1_16_2)) {
@@ -99,8 +78,10 @@ class PacketEmptyChunk(
         if (version.moreOrEqual(Version.V1_18)) { // Light data
             val lightData = byteArrayOf(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, -1, -1, 0, 0)
             packet.ensureWritable(lightData.size)
-            if (version.moreOrEqual(Version.V1_20)) packet.writeBytes(lightData, 1, lightData.size - 1)
-            else packet.writeBytes(lightData)
+            if (version.moreOrEqual(Version.V1_20))
+                packet.writeBytes(lightData, 1, lightData.size - 1)
+            else
+                packet.writeBytes(lightData)
         }
     }
 
