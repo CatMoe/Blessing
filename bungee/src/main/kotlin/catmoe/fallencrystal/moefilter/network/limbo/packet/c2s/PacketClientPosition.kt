@@ -17,23 +17,23 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class PacketClientPosition : LimboC2SPacket() {
 
-    var lastLoc: LimboLocation? = null
+    var loc: LimboLocation? = null
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         val x = packet.readDouble()
         val y = packet.readDouble()
         if (version == Version.V1_7_6) packet.readDouble() // Head y. Deprecated
         val z = packet.readDouble()
-        lastLoc = LimboLocation(
+        loc = LimboLocation(
             x, y, z,
             0f, 0f, // PlayerPosition don't have any method to read yaw & pitch.
             packet.readBoolean() // onGround
@@ -42,7 +42,7 @@ class PacketClientPosition : LimboC2SPacket() {
 
     override fun handle(handler: LimboHandler) {
         val loc = handler.location
-        val lastLoc = lastLoc ?: return
+        val lastLoc = this.loc ?: return
         handler.location = if (loc == null) lastLoc
         else LimboLocation(
             lastLoc.x, lastLoc.y, lastLoc.z,
@@ -51,5 +51,5 @@ class PacketClientPosition : LimboC2SPacket() {
         )
     }
 
-    override fun toString(): String { return "PacketClientPosition(location=$lastLoc)" }
+    override fun toString(): String { return "PacketClientPosition(location=$loc)" }
 }

@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -31,7 +31,7 @@ import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import java.util.concurrent.TimeUnit
 
 @AntiBotChecker(LimboCheckType.KEEP_ALIVE_TIMEOUT)
-@HandlePacket(PacketKeepAlive::class)
+@ListenPacket(PacketKeepAlive::class)
 object KeepAliveCheck : LimboChecker {
 
     private val queue: MutableCollection<LimboHandler> = ArrayList()

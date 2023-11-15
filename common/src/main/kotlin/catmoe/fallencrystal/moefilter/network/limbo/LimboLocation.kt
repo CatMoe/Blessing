@@ -26,4 +26,12 @@ class LimboLocation(
     val onGround: Boolean
 ) {
     override fun toString() = "LimboLocation(x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch, onGround=$onGround)"
+
+    fun equal(location: LimboLocation, compareAxisOnly: Boolean = false): Boolean {
+        return when (compareAxisOnly) {
+            true -> this.x == location.x && this.y == location.y && this.z == location.z
+            false -> this.equal(location, true) && this.yaw == location.yaw  && this.pitch == location.pitch && this.onGround == location.onGround
+        }
+    }
+
 }

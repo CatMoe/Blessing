@@ -24,7 +24,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientChat
 import catmoe.fallencrystal.translation.event.EventListener
@@ -43,7 +43,7 @@ import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 
 @AntiBotChecker(LimboCheckType.CHAT)
-@HandlePacket(PacketClientChat::class)
+@ListenPacket(PacketClientChat::class)
 object ChatCheck : LimboChecker, EventListener {
 
     private val connected = Caffeine.newBuilder().build<TranslatePlayer, Boolean>()

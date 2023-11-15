@@ -399,7 +399,10 @@ enum class Protocol(var stateId: Int) {
                 map(0x45, V1_20_2, V1_20_2)
             )
             clientBound.register(
-                { PacketBlockUpdate() },
+                {
+                    @Suppress("DEPRECATION")
+                    PacketBlockUpdate()
+                },
                 map(0x23, V1_7_6, V1_8),
                 map(0x0B, V1_9, V1_14_4),
                 map(0x0C, V1_15, V1_15_2),
@@ -408,6 +411,10 @@ enum class Protocol(var stateId: Int) {
                 map(0x09, V1_19, V1_19_3),
                 map(0x1A, V1_19_4, V1_20),
                 map(0x09, V1_20_2, V1_20_2)
+            )
+            serverBound.register(
+                { PacketTeleportConfirm() },
+                map(0x00, V1_9, V1_20_2)
             )
             /*
                         serverBound.register(

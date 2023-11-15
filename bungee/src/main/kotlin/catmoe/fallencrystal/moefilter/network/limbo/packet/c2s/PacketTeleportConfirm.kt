@@ -15,11 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.listener
+package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
-import kotlin.reflect.KClass
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
+import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.channel.Channel
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS)
-annotation class HandlePacket(vararg val packets: KClass<out LimboPacket>)
+class PacketTeleportConfirm(var teleportId: Int? = null) : LimboC2SPacket() {
+    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        teleportId=packet.readVarInt()
+    }
+}

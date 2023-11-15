@@ -42,7 +42,7 @@ class PacketPluginMessage(
     override fun encode(packet: ByteMessage, version: Version?) {
         //listOf(this.channel, this.message).forEach { packet.writeString(it) }
         packet.writeString(channel)
-        isBrand = this.channel == "MC|Brand" || this.channel == "minecraft:brand"
+        isBrand = isBrand(this.channel)
         val data = this.data
         if (message.isNotEmpty()) packet.writeString(message) else if (data != null) packet.writeBytes(data)
     }
@@ -52,7 +52,7 @@ class PacketPluginMessage(
         if (version == Version.V1_7_6) packet.readShort() // Ignored
         Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
         this.data=ByteArray(packet.readableBytes())
-        if (version?.moreOrEqual(Version.V1_8) == true && (this.channel == "MC|Brand" || this.channel == "minecraft:brand")) {
+        if (version?.moreOrEqual(Version.V1_8) == true && isBrand(this.channel)) {
             isBrand=true
             this.message=decodeBrand(packet)
         }
@@ -80,9 +80,11 @@ class PacketPluginMessage(
             val b = ByteMessage(Unpooled.wrappedBuffer(data))
             val message = b.readString()
             b.release()
-            Preconditions.checkArgument(!(message.isEmpty() || message.length > 128 || message.contains("jndi")), "Invalid brand data.")
+            //Preconditions.checkArgument(!(message.isEmpty() || message.length > 128 || message.contains("jndi")), "Invalid brand data.")
             return message
         }
+
+        fun isBrand(channel: String) = (channel == "MC|Brand" || channel == "minecraft:brand")
     }
 
 }

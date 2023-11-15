@@ -15,16 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.check
+package catmoe.fallencrystal.moefilter.network.limbo.listener
 
-enum class LimboCheckType {
-    KEEP_ALIVE_TIMEOUT,
-    TRANSLATE_JOIN_CHECK,
-    HIT_PLATFORM_CHECK,
-    FALLING_TIMER,
-    FALLING_MOVEMENT,
-    INSTANT_DISCONNECT,
-    VALID,
-    CHAT,
-    TRANSACTION,
-}
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
+import kotlin.reflect.KClass
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class ListenPacket(vararg val packets: KClass<out LimboPacket>)

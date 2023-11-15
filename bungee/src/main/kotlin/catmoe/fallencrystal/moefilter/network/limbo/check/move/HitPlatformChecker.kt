@@ -27,7 +27,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
@@ -40,8 +40,8 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-@AntiBotChecker(LimboCheckType.FALLING_CHECK)
-@HandlePacket(
+@AntiBotChecker(LimboCheckType.HIT_PLATFORM_CHECK)
+@ListenPacket(
     PacketClientPosition::class,
     PacketClientPositionLook::class,
     Disconnect::class
@@ -50,10 +50,7 @@ object HitPlatformChecker: LimboChecker {
 
     private var config = LocalConfig.getLimbo().getConfig("check.platform-hit")
     private val random = Random
-    private val platformY = Caffeine.newBuilder().build<LimboHandler, Int>()
-    private val round = Caffeine.newBuilder().build<LimboHandler, Int>()
-    private val count = Caffeine.newBuilder().build<LimboHandler, Int>()
-    private val passOne = Caffeine.newBuilder().build<LimboHandler, Boolean>()
+    private val data = Caffeine.newBuilder().build<LimboHandler, TempData>()
     private var block = try { Block.valueOf(config.getAnyRef("block").toString()) } catch (_: Exception) { Block.STONE }
     private var heightMax = config.getInt("platform-height.max")
     private var heightMin = config.getInt("platform-height.min")
@@ -77,53 +74,54 @@ object HitPlatformChecker: LimboChecker {
     override fun received(packet: LimboPacket, handler: LimboHandler, cancelledRead: Boolean): Boolean {
         if (cancelledRead) return true
         var position: LimboLocation? = null
+        val data = this.data.getIfPresent(handler) ?: TempData()
         when (packet) {
             is Disconnect -> {
-                platformY.invalidate(handler)
-                round.invalidate(handler)
-                count.invalidate(handler)
+                this.data.invalidate(handler)
                 return false
             }
-            is PacketClientPosition -> position=packet.lastLoc
-            is PacketClientPositionLook -> position=packet.readLoc
+            is PacketClientPosition -> position=packet.loc
+            is PacketClientPositionLook -> position=packet.loc
         }
-        val platformHeight = platformY.getIfPresent(handler)
+        val platformHeight = data.platformY
         if (platformHeight == null) {
-            sendTest(handler)
+            sendTest(handler, data)
             return false
         }
         val validHeight = (platformHeight + block.obj.height())
         if (position != null) {
             if (position.y < validHeight) {
-                this.passOne.getIfPresent(handler) ?: kick(handler)
-            } else if (position.y > platformHeight && !position.onGround) this.passOne.invalidate(handler)
+                data.passOne ?: kick(handler)
+            } else if (position.y > platformHeight && !position.onGround) data.passOne=null
             if (position.onGround) {
                 val isValid = validHeight == position.y
                 if (!isValid) { kick(handler); return false }
-                val round = this.round.getIfPresent(handler) ?: random.nextInt(roundMin, roundMax + 1)
-                val count = this.count.getIfPresent(handler) ?: 1
+                val round = data.round ?: random.nextInt(roundMin, roundMax + 1)
+                val count = data.count ?: 1
                 if (count >= round) pass(handler) else {
-                    this.round.put(handler, round)
-                    this.count.put(handler, count + 1)
-                    sendTest(handler)
+                    data.round=round
+                    data.count=count + 1
+                    sendTest(handler, data)
                 }
-                passOne.put(handler, true)
+                data.passOne=true
             }
         }
+        this.data.put(handler, data)
         return false
     }
 
-    private fun sendTest(handler: LimboHandler) {
+    private fun sendTest(handler: LimboHandler, data: TempData) {
         val height = random.nextInt(heightMin, heightMax + 1)
         handler.writePacket(PacketServerPositionLook(
             LimboLocation(loc.x, random.nextInt(spawnHeightMin, spawnHeightMax+1).toDouble(), loc.z, loc.yaw, loc.pitch, loc.onGround),
             random.nextInt(0, 32767)
         ))
-        val oldY = platformY.getIfPresent(handler)
+        val oldY = data.platformY
         if (oldY != null && oldY != height) handler.sendTestPlatform(oldY, Block.AIR.obj)
         handler.sendTestPlatform(height, block.obj)
-        platformY.put(handler, height)
+        data.platformY=height
         handler.channel.flush()
+        this.data.put(handler, data)
     }
 
     private fun kick(a: LimboHandler) = FastDisconnect.disconnect(a, DisconnectType.DETECTED)
@@ -138,18 +136,11 @@ object HitPlatformChecker: LimboChecker {
         return
     }
 
-    private const val BORDER = 2.9999999E7
-
-    private fun valid(a: Double?): Boolean {
-        val b = a ?: 0.0
-        return b > BORDER || b.isNaN() || b.isInfinite()
-    }
-
     override fun send(packet: LimboPacket, handler: LimboHandler, cancelled: Boolean) = false
 
-    override fun register() {
-        /* Ignored */
-    }
+    override fun register() {/* Ignored */}
 
-    override fun unregister() { /* Ignored */ }
+    override fun unregister() {/* Ignored */}
+
+    internal data class TempData(var platformY: Int? = null, var round: Int? = null, var count: Int? = null, var passOne: Boolean? = null)
 }

@@ -17,8 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.google.common.base.Preconditions
@@ -38,7 +38,7 @@ class PacketClientChat : LimboC2SPacket() {
     private var signature: ByteArray? = null
     private var signedPreview = false
     private var chain: ChatChain? = null
-    private var seenMessages: SeenMessage? = null
+    private var seenMessages: ChatChain.SeenMessage? = null
     @Suppress("MemberVisibilityCanBePrivate") var decodeChatInfo = false
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
@@ -68,7 +68,7 @@ class PacketClientChat : LimboC2SPacket() {
                     this.chain=chain
                 }
             } else {
-                val sm = SeenMessage()
+                val sm = ChatChain.SeenMessage()
                 sm.decode(packet, channel, version)
                 this.seenMessages=sm
             }
@@ -102,14 +102,15 @@ class ChatChain : LimboC2SPacket() {
         }
         return list
     }
-}
-@Suppress("MemberVisibilityCanBePrivate")
-class SeenMessage : LimboC2SPacket() {
-    var offset = -1
-    var acknowledged: BitSet? = null
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        offset=packet.readVarInt()
-        acknowledged=packet.readFixedBitSet(20)
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    class SeenMessage : LimboC2SPacket() {
+        var offset = -1
+        var acknowledged: BitSet? = null
+        override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+            offset=packet.readVarInt()
+            acknowledged=packet.readFixedBitSet(20)
+        }
     }
+    class ChainLink(val sender: UUID, val signature: ByteArray)
 }
-class ChainLink(val sender: UUID, val signature: ByteArray)

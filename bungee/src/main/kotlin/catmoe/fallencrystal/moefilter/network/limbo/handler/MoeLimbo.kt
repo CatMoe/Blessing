@@ -23,12 +23,12 @@ import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.limbo.block.Block
-import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecker
-import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.TransactionCheck
+import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecker
+import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketOrderCheck
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface

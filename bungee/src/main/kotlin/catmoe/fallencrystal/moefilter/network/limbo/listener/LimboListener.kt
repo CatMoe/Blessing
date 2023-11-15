@@ -32,7 +32,7 @@ object LimboListener : Reloadable {
     private val listeners: MutableCollection<ILimboListener> = CopyOnWriteArrayList()
 
     fun register(clazz: ILimboListener) {
-        val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
+        val packets = clazz::class.java.getAnnotation(ListenPacket::class.java).packets.toList()
         packets.forEach {
             val o = listener.getIfPresent(it.java)
             if (o == null) { listener.put(it.java, mutableListOf(clazz)) }
@@ -49,7 +49,7 @@ object LimboListener : Reloadable {
     override fun reload() { for (c in listeners) { if (c is Reloadable) c.reload() else continue } }
 
     fun unregister(clazz: ILimboListener) {
-        val packets = clazz::class.java.getAnnotation(HandlePacket::class.java).packets.toList()
+        val packets = clazz::class.java.getAnnotation(ListenPacket::class.java).packets.toList()
         packets.forEach {
             val o = listener.getIfPresent(it.java) ?: return
             var t: ILimboListener? = null

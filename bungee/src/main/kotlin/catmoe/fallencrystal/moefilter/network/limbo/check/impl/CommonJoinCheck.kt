@@ -35,7 +35,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketHandshake
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketInitLogin
@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
 @AntiBotChecker(LimboCheckType.TRANSLATE_JOIN_CHECK)
-@HandlePacket(
+@ListenPacket(
     PacketHandshake::class,
     PacketInitLogin::class,
     PacketJoinGame::class,

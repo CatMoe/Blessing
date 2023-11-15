@@ -25,14 +25,14 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import java.net.InetSocketAddress
 
 @Suppress("unused")
 @AntiBotChecker(LimboCheckType.INSTANT_DISCONNECT)
-@HandlePacket(Disconnect::class)
+@ListenPacket(Disconnect::class)
 object InstantDisconnectCheck : LimboChecker {
 
     override fun reload() {

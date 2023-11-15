@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.listener.HandlePacket
+import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientLook
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
@@ -36,7 +36,7 @@ import kotlin.random.Random
 
 // This check is useless because clients don't response Transaction packet. (Maybe)
 @AntiBotChecker(LimboCheckType.TRANSACTION)
-@HandlePacket(
+@ListenPacket(
     PacketTransaction::class,
     Disconnect::class,
     PacketClientPosition::class,

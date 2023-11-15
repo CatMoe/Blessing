@@ -17,22 +17,22 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class PacketClientPositionLook : LimboC2SPacket() {
-    var readLoc : LimboLocation? = null
+    var loc : LimboLocation? = null
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         val x = packet.readDouble()
         val y = packet.readDouble()
         if (version == Version.V1_7_6) packet.readDouble() // Head y. Deprecated
         val z = packet.readDouble()
-        readLoc = LimboLocation(
+        loc = LimboLocation(
             x, y, z,
             packet.readFloat(),
             packet.readFloat(),
@@ -40,7 +40,7 @@ class PacketClientPositionLook : LimboC2SPacket() {
         )
     }
 
-    override fun handle(handler: LimboHandler) { handler.location=this.readLoc }
+    override fun handle(handler: LimboHandler) { handler.location=this.loc }
 
-    override fun toString(): String { return "PacketClientPositionLook(location=$readLoc)" }
+    override fun toString(): String { return "PacketClientPositionLook(location=$loc)" }
 }

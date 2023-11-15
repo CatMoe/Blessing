@@ -35,18 +35,14 @@ class PacketBlocksSectionUpdate(
         if (version!!.less(Version.V1_16_2)) {
             packet.writeInt(sectionX)
             packet.writeInt(sectionZ)
-
-            if (version.less(Version.V1_8)) {
-                packet.writeShort(blocks.size)
-                packet.writeInt(4 * blocks.size)
-            } else packet.writeVarInt(blocks.size)
-
+            packet.writeVarInt(blocks.size)
             for (block in blocks) {
-                packet.writeShort((block.x - (sectionX shl 4)) shl 12 or ((block.z - (sectionZ shl 4)) shl 8) or block.y)
-                if (version.moreOrEqual(Version.V1_13)) packet.writeVarInt(block.block.getId(version)) else {
-                    val id = block.block.getId(version) shl 4
-                    if (version.moreOrEqual(Version.V1_8)) packet.writeVarInt(id) else packet.writeShort(id)
-                }
+                val position = (block.x - (sectionX shl 4)) shl 12 or ((block.z - (sectionZ shl 4)) shl 8) or block.y
+                val id = block.block.getId(version)
+                val writeId = if (version.moreOrEqual(Version.V1_13)) id else id shl 4
+                MoeLimbo.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, writeId=$writeId")
+                packet.writeShort(position)
+                packet.writeVarInt(writeId)
             }
         } else {
             val chunkY = (blocks.firstOrNull()?.y ?: 1) shr 4
