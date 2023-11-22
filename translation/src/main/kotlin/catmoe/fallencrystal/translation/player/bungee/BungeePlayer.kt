@@ -26,17 +26,14 @@ import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.bungee.BungeeServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
-import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.ChatMessageType
-import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.chat.ComponentSerializer
 import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.netty.ChannelWrapper
-import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.packet.Kick
 import java.net.InetSocketAddress
 import java.net.SocketAddress
@@ -45,37 +42,26 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate")
 @Platform(ProxyPlatform.BUNGEE)
 class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
-    override fun getAddress(): SocketAddress { return player.socketAddress }
+    override fun getAddress(): SocketAddress = player.socketAddress
 
-    var realbrand: String? = null
+    var clientBrand: String? = null
     var channelWrapper = getWrapper()
 
-    override fun virtualHost(): InetSocketAddress? { return player.pendingConnection.virtualHost }
+    override fun virtualHost(): InetSocketAddress? = player.pendingConnection.virtualHost
 
-    override fun getBrand(): String {
-        if (realbrand == null) {
-            val b = Unpooled.wrappedBuffer((player as InitialHandler).brandMessage.data)
-            realbrand = DefinedPacket.readString(b)
-            b.release()
-        }
-        return realbrand ?: ""
-    }
+    override fun getBrand() = clientBrand ?: ""
 
-    override fun getVersion(): Version {
-        return Version.of(player.pendingConnection.version)
-    }
+    override fun getVersion() = Version.of(player.pendingConnection.version)
 
-    override fun getName(): String { return player.name }
+    override fun getName(): String = player.name
 
     // TODO: Migrate MessageUtil to translation
 
-    private fun hex(): Boolean { return player.pendingConnection.version >= Version.V1_16.number }
+    private fun hex() = player.pendingConnection.version >= Version.V1_16.number
 
-    private fun getBaseComponent(component: Component): BaseComponent {
-        return when (hex()) {
-            true -> BungeeComponentSerializer.get().serialize(component)[0]
-            false -> BungeeComponentSerializer.legacy().serialize(component)[0]
-        }
+    private fun getBaseComponent(component: Component) = when (hex()) {
+        true -> BungeeComponentSerializer.get().serialize(component)[0]
+        false -> BungeeComponentSerializer.legacy().serialize(component)[0]
     }
 
     override fun sendMessage(component: Component) = player.sendMessage(ChatMessageType.CHAT, getBaseComponent(component))
@@ -114,11 +100,9 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
         } catch (_: Exception) { null }
     }
 
-    override fun channel(): Channel { return channelWrapper!!.handle.pipeline().channel() }
+    override fun channel(): Channel = channelWrapper!!.handle.pipeline().channel()
 
-    override fun send(server: PlatformServer) {
-        (if (server is TranslateServer) (server.upstream as BungeeServer) else server as BungeeServer).send(this)
-    }
+    override fun send(server: PlatformServer) = (if (server is TranslateServer) (server.upstream as BungeeServer) else server as BungeeServer).send(this)
 
     override fun getServer(): TranslateServer {
         val info = player.server.info

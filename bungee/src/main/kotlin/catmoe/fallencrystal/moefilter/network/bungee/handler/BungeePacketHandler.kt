@@ -36,6 +36,7 @@ import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.events.player.PlayerPostBrandEvent
 import catmoe.fallencrystal.translation.player.PlayerInstance
+import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import io.netty.buffer.ByteBufAllocator
@@ -112,7 +113,9 @@ class BungeePacketHandler : ChannelDuplexHandler() {
                             brand.release()
                             if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
                             if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
-                            EventManager.callEvent(PlayerPostBrandEvent(PlayerInstance.getPlayer(player.uniqueId) ?: return@run, clientBrand))
+                            val translatePlayer = PlayerInstance.getPlayer(player.uniqueId) ?: return@run
+                            (translatePlayer.upstream as BungeePlayer).clientBrand=clientBrand
+                            EventManager.callEvent(PlayerPostBrandEvent(translatePlayer, clientBrand))
                         }
                     } catch (_: StringIndexOutOfBoundsException) {
                         MessageUtil.logWarn("Caught StringIndexOutOfBoundsException for PluginMessage! Did this BungeeCord (fork) is fully compatible for 1.7.x clients?")
