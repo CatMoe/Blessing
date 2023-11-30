@@ -40,27 +40,11 @@ Checks that have been implemented:
 
 > The final effect depends on the working mode you choose in `antibot.conf`
 
-### General:
-- Cache message packets
-  - Avoid huge overhead when sending repeatedly or to multiple players
-- Full MiniMessage supports
-  - Also, you can use hex / gradient colors anywhere
-  - (Not available for player client versions below 1.16.x and some BungeeCord logger.)
-- Design with synchrony in mind
-  - Well, we're not actually all async because in some cases it is simply not worth using async.
-  - BungeeCord will never lag because of it.
-- Consider it from a compatibility and performance perspective
-  - Is there anything MoeFilter isn't compatible with?
-  - If you really encounter such problems. You should go and open an [issue](https://github.com/CatMoe/MoeFilter/issues)
-- Easy-to-use interface. Your next BungeeCord utility plugin.
-  - Hey! Stop buying bells and whistles of BungeeCord forks.  
-    It's not worth spending your money on those.
-
 ---
 
 ## 🔧 Supports BungeeCord forks / Plugins:
 
-> **Velocity support will be added later (no ETA). Spigot is not supported at all**
+> **Platforms other than BungeeCord are not supported.**
 
 | BungeeCord & forks | Support |
 |--------------------|---------|
