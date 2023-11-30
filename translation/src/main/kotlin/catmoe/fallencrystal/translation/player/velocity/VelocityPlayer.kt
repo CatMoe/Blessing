@@ -31,70 +31,41 @@ import com.velocitypowered.proxy.connection.client.ConnectedPlayer
 import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import java.net.InetSocketAddress
-import java.net.SocketAddress
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 @Platform(ProxyPlatform.VELOCITY)
 class VelocityPlayer(val player: Player) : PlatformPlayer {
-    override fun getAddress(): SocketAddress {
-        return player.remoteAddress
-    }
+    override fun getAddress(): InetSocketAddress = player.remoteAddress
 
-    override fun virtualHost(): InetSocketAddress {
-        return player.virtualHost.get()
-    }
+    override fun virtualHost() = player.virtualHost.get()
 
-    override fun getBrand(): String {
-        return player.clientBrand ?: ""
-    }
+    override fun getBrand() = player.clientBrand ?: ""
 
-    override fun getVersion(): Version {
-        return Version.of(player.protocolVersion.protocol)
-    }
+    override fun getVersion() = Version.of(player.protocolVersion.protocol)
 
-    override fun getName(): String {
-        return player.username
-    }
+    override fun getName(): String = player.username
 
-    override fun sendMessage(component: Component) { player.sendMessage(component) }
+    override fun sendMessage(component: Component) = player.sendMessage(component)
 
-    override fun hasPermission(permission: String): Boolean {
-        return player.hasPermission(permission)
-    }
+    override fun hasPermission(permission: String) = player.hasPermission(permission)
 
-    override fun getUniqueId(): UUID {
-        return player.uniqueId
-    }
+    override fun getUniqueId(): UUID = player.uniqueId
 
-    override fun isOnlineMode(): Boolean {
-        return player.isOnlineMode
-    }
+    override fun isOnlineMode() = player.isOnlineMode
 
-    override fun isOnline(): Boolean {
-        return player.isActive
-    }
+    override fun isOnline() = player.isActive
 
-    override fun disconnect() {
-        player.disconnect(ComponentUtil.parse("<red>Kicked by MoeTranslation"))
-    }
+    override fun disconnect() = player.disconnect(ComponentUtil.parse("<red>Kicked by MoeTranslation"))
 
-    override fun disconnect(reason: Component) {
-        player.disconnect(reason)
-    }
+    override fun disconnect(reason: Component) = player.disconnect(reason)
 
-    override fun send(server: PlatformServer) {
-        (if (server is TranslateServer) (server.upstream as VelocityServer) else server as VelocityServer).send(this)
-    }
+    override fun send(server: PlatformServer) = (if (server is TranslateServer) (server.upstream as VelocityServer) else server as VelocityServer).send(this)
 
-    override fun sendActionbar(component: Component) {
-        player.sendActionBar(component)
-    }
+    override fun sendActionbar(component: Component) = player.sendActionBar(component)
 
-    override fun channel(): Channel {
-        // D: For this I imported the entire velocity
-        return (player as ConnectedPlayer).connection.channel
-    }
+    // D: For this I imported the entire velocity
+    override fun channel(): Channel = (player as ConnectedPlayer).connection.channel
 
     override fun getServer(): TranslateServer {
         val info = player.currentServer.get().server
