@@ -4,21 +4,11 @@
 
 ***⚡ A open-source antibot & utils for BungeeCord.***
 
-[
-![Release](https://img.shields.io/github/v/release/CatMoe/MoeFilter?style=flat-square)
-](https://github.com/CatMoe/MoeFilter/releases/latest)
-[
-![Download](https://img.shields.io/github/downloads/CatMoe/MoeFilter/total?style=flat-square)
-](https://github.com/CatMoe/MoeFilter/releases/latest)
-[
-![Stars](https://img.shields.io/github/stars/CatMoe/MoeFilter?style=flat-square)
-](https://github.com/CatMoe/MoeFilter/stargazers)
-[
-![Issues](https://img.shields.io/github/issues/CatMoe/MoeFilter?style=flat-square)
-](https://github.com/CatMoe/MoeFilter/issues)
-[
-![License](https://img.shields.io/github/license/CatMoe/MoeFilter?style=flat-square)
-](https://github.com/CatMoe/MoeFilter/blob/0.1.4-Hotfix1/LICENSE)
+[![Release](https://img.shields.io/github/v/release/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/releases/latest)
+[![Download](https://img.shields.io/github/downloads/CatMoe/MoeFilter/total?style=flat-square)](https://github.com/CatMoe/MoeFilter/releases/latest)
+[![Stars](https://img.shields.io/github/stars/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/stargazers)
+[![Issues](https://img.shields.io/github/issues/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/issues)
+[![License](https://img.shields.io/github/license/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/blob/0.1.4-Hotfix1/LICENSE)
 </div>
 <div align="center">
 
