@@ -98,7 +98,7 @@ Velocity已经有许多优秀的反机器人. 例如:
 ---
 
 <!--suppress HtmlDeprecatedAttribute -->
-<a href="https://github.com/FallenCrystal/FallenCrystal">
+<a href="https://github.com/FallenCrystal">
         <p align="right">@FallenCrystal</p>
 </a>
 <p align="right">2023-12-1</p>
