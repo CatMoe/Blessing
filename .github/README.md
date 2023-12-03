@@ -73,7 +73,7 @@ Can run on almost any fork you like.
 > ✅: Full supported.
 > Can use all MoeFilter's features with it  
 > ☑️: Is supported.
-> But some features may not work as expected.
+> But some features may not work as expected.  
 > ❔: Not tested.
 > But it should work.  
 > 🛑: Not supported. 
