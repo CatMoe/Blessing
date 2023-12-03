@@ -1,6 +1,8 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
-  <img src="https://raw.githubusercontent.com/CatMoe/MoeFilter/stray/readme/icon/ba-icon.png" alt="ba-icon">
+  <a href="https://github.com/CatMoe/MoeFilter">
+    <img src="https://raw.githubusercontent.com/CatMoe/MoeFilter/stray/readme/icon/ba-icon.png" alt="ba-icon">
+  </a>
 
 ***⚡ A open-source antibot & utils for BungeeCord.***
 
