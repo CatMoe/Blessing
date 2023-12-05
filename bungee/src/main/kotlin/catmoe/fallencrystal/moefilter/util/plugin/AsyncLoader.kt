@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.api.command.CommandHandler
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.api.user.displaycache.DisplayCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
@@ -45,7 +44,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.moefilter.util.plugin.luckperms.LuckPermsRegister
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.CPlatform
 import catmoe.fallencrystal.translation.command.CommandAdapter
@@ -112,7 +110,6 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             try {
 
                 // check they init method to get more information
-                DisplayCache
                 ProxyCache
                 CPUMonitor.startSchedule()
                 //pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
@@ -191,35 +188,16 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             val folder = MoeFilterBungee.instance.dataFolder
             val maxmindLicense = try { LocalConfig.getProxy().getString("country.key") } catch (_: Exception) { null }
             if (maxmindLicense.isNullOrEmpty()) { MessageUtil.logWarn("[MoeFilter] [GeoIP] Your maxmind license is empty. Country mode are disabled."); return@runAsync }
-            // if (!Paths.get("${folder.absolutePath}/geolite/GeoLite2-Country.mmdb").toFile().exists()) { DownloadDatabase(folder, maxmindLicense) }
             this.geoIPLoader=DownloadDatabase(folder)
         }
     }
 
     private fun registerListener() {
-        /*
-        EventManager.registerListener(plugin, ReloadConfig())
-        EventManager.registerListener(plugin, AttackCounterListener())
-        EventManager.triggerEvent(PluginReloadEvent(null))
-         */
         EventManager.register(ReloadConfig)
         EventManager.register(AttackCounterListener())
         EventManager.callEvent(PluginReloadEvent(null))
-        registerLuckPermsListener()
-
-        /*
-        if (LoggerManager.getType() == BCLogType.WATERFALL) pluginManager.registerListener(plugin, catmoe.fallencrystal.moefilter.listener.firewall.listener.waterfall.IncomingListener())
-        else pluginManager.registerListener(plugin, catmoe.fallencrystal.moefilter.listener.firewall.listener.common.IncomingListener())
-         */
 
         pluginManager.registerListener(plugin, BungeeEvent())
-    }
-
-    private fun registerLuckPermsListener() {
-        if (proxy.pluginManager.getPlugin("LuckPerms") != null) {
-            val luckPermsRegister = LuckPermsRegister()
-            luckPermsRegister.register()
-        }
     }
 
     companion object {
