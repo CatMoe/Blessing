@@ -17,13 +17,9 @@
 
 package catmoe.fallencrystal.moefilter.listener
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
-import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
-import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.events.player.*
 import catmoe.fallencrystal.translation.player.PlayerInstance
@@ -40,7 +36,6 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-@Suppress("SpellCheckingInspection")
 class BungeeEvent : Listener {
 
     private val proxy = ProxyServer.getInstance()
@@ -48,19 +43,6 @@ class BungeeEvent : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onChat(event: ChatEvent) {
         val player = ProxyServer.getInstance().getPlayer(event.sender.toString())
-        if (event.isProxyCommand && event.message.equals("/bungee", ignoreCase = true)) {
-            Scheduler.getDefault().runAsync {
-                MessageUtil.sendMessage(
-                    listOf(
-                        "<gradient:green:yellow>This server is running " +
-                                "<aqua><hover:show_text:'<rainbow>${proxy.name} ${proxy.version}'>${proxy.name}</hover></aqua> & " +
-                                "<gradient:#F9A8FF:#97FFFF>MoeFilter ${MoeFilterBungee.instance.description.version}</gradient> ❤</gradient>",
-                        "<gradient:#9BCD9B:#FFE4E1><click:open_url:'https://github.com/CatMoe/MoeFilter/'>CatMoe/MoeFilter</click> @ " +
-                                "<click:open_url:'https://www.miaomoe.net/'>miaomoe.net</click></gradient>"
-                    ).joinToString("<reset><newline>")
-                    , MessagesType.CHAT, player)
-            }; event.isCancelled = true; return
-        }
         val p = PlayerInstance.getCachedOrNull(player.uniqueId) ?: return
         val e = PlayerChatEvent(p, event.message, event.isProxyCommand)
         if (event.isCancelled) e.setCancelled()
