@@ -24,7 +24,8 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-class IncomingListener : Listener {
+class
+IncomingListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onIncomingConnect(event: ClientConnectEvent) { event.isCancelled = MainListener.initConnection(event.socketAddress) }
 

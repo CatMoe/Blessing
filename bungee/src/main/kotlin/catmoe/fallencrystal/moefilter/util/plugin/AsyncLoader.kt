@@ -36,7 +36,7 @@ import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.BungeeEvent
-import catmoe.fallencrystal.moefilter.listener.main.ExceptionFilter
+import catmoe.fallencrystal.moefilter.listener.main.EventLoggerFilter
 import catmoe.fallencrystal.moefilter.listener.main.MainListener
 import catmoe.fallencrystal.moefilter.network.InitChannel
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
@@ -64,6 +64,8 @@ import net.md_5.bungee.protocol.packet.Kick
 class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
+    var mode: WorkingMode? = null
+        private set
 
     var geoIPLoader: DownloadDatabase? = null
 
@@ -164,15 +166,16 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         MainListener.incomingListener = if (LoggerManager.getType() == BCLogType.WATERFALL)
             catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
         else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
+        this.mode=mode
         when (mode) {
             PIPELINE -> InitChannel().initPipeline()
             EVENT -> {
                 pluginManager.registerListener(plugin, MainListener.incomingListener)
+                LoggerManager.registerFilter(EventLoggerFilter())
                 MessageUtil.logWarn("[MoeFilter] EVENT mode is deprecated. Don't expect strong protection!")
             }
             DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
         }
-        LoggerManager.registerFilter(ExceptionFilter())
         MoeFilterBungee.mode = mode
     }
 

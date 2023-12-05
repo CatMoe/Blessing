@@ -458,9 +458,9 @@ class LoadConfig {
                         count=4
                     }
                     un-attacked {
-                        # 当1秒内没有任何连接传入时 立即解除攻击模式
+                        # 当传入的连接数小于incoming时 则解除攻击模式
                         instant=false
-                        # 如果instant模式为false且 x 秒内没有传入连接 则解除戒备模式
+                        # 当instant为false且指定秒数内没有传入任何连接 则解除攻击模式
                         wait=5
                     }
                 }

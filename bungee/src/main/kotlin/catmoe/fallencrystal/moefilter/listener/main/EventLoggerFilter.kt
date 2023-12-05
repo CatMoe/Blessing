@@ -21,19 +21,11 @@ import catmoe.fallencrystal.moefilter.api.logger.ILogger
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import java.util.logging.LogRecord
 
-class ExceptionFilter : ILogger {
-
-    private val filterException = listOf(
-        "QuietException",
-        "FastException",
-        "BadPacketException",
-        "FastOverflowPacketException",
-    )
+class EventLoggerFilter : ILogger {
 
     override fun isLoggable(record: LogRecord?, isCancelled: Boolean): Boolean {
-        if (isCancelled || record == null) return false
-        val a = if (record.thrown?.cause != null) { !filterException.contains(record.thrown.cause!!::class.java.name) } else record.message?.contains("InitialHandler - encountered exception") != true
-        val b = if (StateManager.inAttack.get()) record.message.contains("{0} has ") else false
-        return a || b
+        val message = record?.message
+        return if (isCancelled || message == null) false else
+            !(StateManager.inAttack.get() && (message.contains("{0} has connected") || message.contains("{0} has pinged")))
     }
 }

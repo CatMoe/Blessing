@@ -51,13 +51,13 @@ object StateManager {
 
     private val scheduler = Scheduler.getDefault()
 
+    val trigger get() = LocalConfig.getAntibot().getInt("attack-mode.incoming")
+
     @Suppress("EnumValuesSoftDeprecate")
     fun attackMethodAnalyser() {
         if (!inAttack.get()) return
-        val conf = LocalConfig.getAntibot().getConfig("attack-mode")
         val cps = ConnectionStatistics.getConnectionPerSec()
-        val inc = conf.getInt("incoming")
-        if (cps < inc && attackMethods.isNotEmpty()) return
+        if (cps < trigger && attackMethods.isNotEmpty()) return
         val methodSize = AttackState.values().size
         if (cps >= methodSize) {
             val method: MutableCollection<AttackState> = ArrayList()
@@ -75,7 +75,7 @@ object StateManager {
     fun attackEndedDetector() {
         val conf = LocalConfig.getAntibot().getConfig("attack-mode.un-attacked")
         val cps = ConnectionStatistics.getConnectionPerSec()
-        if (inAttack.get() && cps == 0) {
+        if (inAttack.get() && cps < trigger) {
             if (conf.getBoolean("instant")) { fireNotInAttackEvent() }
             else {
                 if (!attackEndedWaiter.get()) {
@@ -83,7 +83,7 @@ object StateManager {
                     var task: ScheduledTask? = null
                     task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
                         if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); scheduler.cancelTask(task!!) }
-                        if (ConnectionStatistics.getConnectionPerSec() != 0) {
+                        if (ConnectionStatistics.getConnectionPerSec() > trigger) {
                             attackEndedCount.set(conf.getInt("wait"))
                             attackEndedWaiter.set(false); scheduler.cancelTask(task!!)
                         }

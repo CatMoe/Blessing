@@ -49,7 +49,6 @@ class PacketPluginMessage(
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         this.channel = packet.readString()
-        if (version == Version.V1_7_6) packet.readShort() // Ignored
         Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
         this.data=ByteArray(packet.readableBytes())
         if (version?.moreOrEqual(Version.V1_8) == true && isBrand(this.channel)) {
@@ -68,9 +67,7 @@ class PacketPluginMessage(
         }
     }
 
-    override fun toString(): String {
-        return "PacketPluginMessage(channel=$channel, message=$message)"
-    }
+    override fun toString() = "PacketPluginMessage(channel=$channel, message=$message)"
 
     companion object {
         @Suppress("MemberVisibilityCanBePrivate")

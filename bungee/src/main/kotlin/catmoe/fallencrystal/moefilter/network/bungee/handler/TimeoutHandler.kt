@@ -17,6 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
+import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
+import catmoe.fallencrystal.moefilter.data.BlockType
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
@@ -33,5 +35,7 @@ class TimeoutHandler @JvmOverloads constructor(timeout: Long, timeUnit: TimeUnit
     override fun channelIdle(ctx: ChannelHandlerContext, idleStateEvent: IdleStateEvent) { assert(idleStateEvent.state() == IdleState.READER_IDLE); readTimedOut(ctx) }
 
     @Throws(Exception::class)
-    private fun readTimedOut(ctx: ChannelHandlerContext) { if (!closed) { if (ctx.channel().isActive) { ctx.close() }; closed = true } }
+    private fun readTimedOut(ctx: ChannelHandlerContext) {
+        if (!closed) { if (ctx.channel().isActive) { ctx.close(); ConnectionStatistics.countBlocked(BlockType.TIMEOUT) }; closed = true }
+    }
 }

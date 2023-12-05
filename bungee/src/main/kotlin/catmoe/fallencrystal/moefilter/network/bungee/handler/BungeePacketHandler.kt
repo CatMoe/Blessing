@@ -26,6 +26,7 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidUsernameException
@@ -39,7 +40,6 @@ import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
-import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
@@ -52,6 +52,7 @@ import net.md_5.bungee.protocol.packet.*
 import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+
 
 class BungeePacketHandler : ChannelDuplexHandler() {
     @Suppress("OVERRIDE_DEPRECATION")
@@ -72,18 +73,22 @@ class BungeePacketHandler : ChannelDuplexHandler() {
         isAvailable.set(true)
         if (msg is PluginMessage && LocalConfig.getConfig().getBoolean("f3-brand.enabled")) {
             val pmTag = msg.tag
-            if (pmTag.equals("mc|brand", ignoreCase = true) || pmTag.equals("minecraft:brand", ignoreCase = true)) {
+            if (pmTag == "MC|Brand" || pmTag == "minecraft:brand") {
                 val backend: String
                 val data = String(msg.data)
                 backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
-                val brand = ByteBufAllocator.DEFAULT.heapBuffer()
                 val target = LocalConfig.getConfig().getString("f3-brand.custom")
                     .replace("%bungee%", proxy.name)
                     .replace("%version%", proxy.version)
                     .replace("%backend%", ComponentUtil.componentToRaw(ComponentUtil.legacyToComponent(backend)))
-                DefinedPacket.writeString((MessageUtil.colorize(target, false)).toLegacyText(), brand)
-                msg.data = DefinedPacket.toArray(brand)
-                brand.release()
+                val player = PipelineUtil.getPlayer(ctx)
+                val brand = (MessageUtil.colorize(target, false)).toLegacyText()
+                if ((player?.pendingConnection?.version ?: 0) >= 47) {
+                    val buf = ByteMessage.create()
+                    buf.writeString(brand)
+                    msg.data = buf.toByteArray()
+                    buf.release()
+                }
             }
         }
         super.write(ctx, msg, promise)
@@ -108,17 +113,18 @@ class BungeePacketHandler : ChannelDuplexHandler() {
                     try {
                         if (packet.tag == "MC|Brand" || packet.tag == "minecraft:brand") {
                             val player = PipelineUtil.getPlayer(ctx) ?: return@run
-                            val brand = Unpooled.wrappedBuffer(packet.data)
-                            val clientBrand = DefinedPacket.readString(brand)
-                            brand.release()
+                            if (player.pendingConnection.version < 47) return
+                            val buf = Unpooled.wrappedBuffer(packet.data)
+                            val clientBrand = DefinedPacket.readString(buf)
+                            buf.release()
                             if (clientBrand.isEmpty() || clientBrand.length > 128) { channel.close(); return }
                             if (BrandCheck.increase(Brand(clientBrand))) { kick(channel, BRAND_NOT_ALLOWED) }
                             val translatePlayer = PlayerInstance.getPlayer(player.uniqueId) ?: return@run
                             (translatePlayer.upstream as BungeePlayer).clientBrand=clientBrand
                             EventManager.callEvent(PlayerPostBrandEvent(translatePlayer, clientBrand))
                         }
-                    } catch (_: StringIndexOutOfBoundsException) {
-                        MessageUtil.logWarn("Caught StringIndexOutOfBoundsException for PluginMessage! Did this BungeeCord (fork) is fully compatible for 1.7.x clients?")
+                    } catch (exception: Exception) {
+                        MessageUtil.logWarn("Caught exception when reading brand: ${exception.localizedMessage}")
                     }
                 }
                 // if (packet is KeepAlive) { MessageUtil.logInfo("[MoeFilter] [KeepAlive] id: ${packet.randomId} address: ${ctx.channel().remoteAddress()} Client -> Server") }

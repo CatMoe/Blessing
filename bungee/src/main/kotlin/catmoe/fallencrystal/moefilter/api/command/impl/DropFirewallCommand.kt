@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.api.command.impl
 
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
+import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
@@ -48,14 +49,16 @@ class DropFirewallCommand : ICommand {
         if (args.size < 2) {
             Firewall.cache.invalidateAll()
             Firewall.tempCache.invalidateAll()
+            Throttler.ipCache.invalidateAll()
             sendMessage(sender, "dropped-all")
         } else {
             val raw = MessageUtil.argsBuilder(1, args).toString()
             try {
                 val address = InetAddress.getByName(raw)
-                if (Firewall.isFirewalled(address)) {
+                if (Firewall.isFirewalled(address) || Throttler.isThrottled(address)) {
                     Firewall.cache.invalidate(address)
                     Firewall.tempCache.invalidate(address)
+                    Throttler.ipCache.invalidate(address)
                     sendMessage(sender, "dropped")
                 } else {
                     sendMessage(sender, "not-found")

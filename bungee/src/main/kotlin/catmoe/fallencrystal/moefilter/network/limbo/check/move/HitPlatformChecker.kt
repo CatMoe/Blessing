@@ -93,7 +93,7 @@ object HitPlatformChecker: LimboChecker {
             if (position.y < validHeight) {
                 data.passOne ?: kick(handler)
             } else if (position.y > platformHeight && !position.onGround) data.passOne=null
-            if (position.onGround) {
+            if (position.onGround && data.passOne != true) {
                 val isValid = validHeight == position.y
                 if (!isValid) { kick(handler); return false }
                 val round = data.round ?: random.nextInt(roundMin, roundMax + 1)
