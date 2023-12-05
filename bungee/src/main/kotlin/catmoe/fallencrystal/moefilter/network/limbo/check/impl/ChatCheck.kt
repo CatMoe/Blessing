@@ -71,7 +71,7 @@ object ChatCheck : LimboChecker, EventListener {
     fun chat(event: PlayerChatEvent) {
         if (connected.getIfPresent(event.player) != true && enable) {
             when (val upstream = event.player.upstream) {
-                is BungeePlayer -> { FastDisconnect.disconnect(upstream.channel(), DisconnectType.CANNOT_CHAT, ServerType.BUNGEE_CORD) }
+                is BungeePlayer -> upstream.channel()?.let { FastDisconnect.disconnect(it, DisconnectType.CANNOT_CHAT, ServerType.BUNGEE_CORD) }
                 is VelocityPlayer -> {
                     val reason = FastDisconnect.reasonCache.getIfPresent(DisconnectType.CANNOT_CHAT)?.component
                     if (reason == null) upstream.disconnect() else upstream.disconnect(reason)

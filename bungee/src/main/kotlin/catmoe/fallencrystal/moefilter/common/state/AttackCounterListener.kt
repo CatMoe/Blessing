@@ -89,9 +89,8 @@ class AttackCounterListener : EventListener {
             false -> p.getConfig("attack-stopped")
         }
         if (config.getBoolean("enabled")) {
-            for (i in ProxyServer.getInstance().players) {
-                if (i.hasPermission("moefilter.notification.auto.title") || i.hasPermission("moefilter.notification.auto")) { sendTitle(config, i) }
-            }
+            for (i in ProxyServer.getInstance().players)
+                if (i.hasPermission("moefilter.notification.auto.title")) { sendTitle(config, i) }
         }
     }
 

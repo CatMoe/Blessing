@@ -77,13 +77,9 @@ class BungeeEvent : Listener {
         EventManager.callEvent(PlayerSwitchServerEvent(getTranslatePlayer(event.player), getTranslateServer(from), getTranslateServer(event.player.server.info)))
     }
 
-    private fun getTranslateServer(s: ServerInfo): TranslateServer {
-        return ServerInstance.getServer(s.name) ?: TranslateServer(BungeeServer(s))
-    }
+    private fun getTranslateServer(s: ServerInfo) = ServerInstance.getServer(s.name) ?: TranslateServer(BungeeServer(s))
 
-    private fun getTranslatePlayer(p: ProxiedPlayer): TranslatePlayer {
-        return PlayerInstance.getPlayer(p.uniqueId) ?: TranslatePlayer(BungeePlayer(p))
-    }
+    private fun getTranslatePlayer(p: ProxiedPlayer) = PlayerInstance.getPlayer(p.uniqueId) ?: TranslatePlayer(BungeePlayer(p))
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {

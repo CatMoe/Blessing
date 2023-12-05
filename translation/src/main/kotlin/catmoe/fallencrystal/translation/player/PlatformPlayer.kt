@@ -51,7 +51,7 @@ interface PlatformPlayer : CommandExecutor {
 
     fun sendActionbar(component: Component)
 
-    fun channel(): Channel
+    fun channel(): Channel?
 
     fun getServer(): TranslateServer
 

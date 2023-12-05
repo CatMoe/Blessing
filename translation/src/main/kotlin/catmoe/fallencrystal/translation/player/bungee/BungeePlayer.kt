@@ -26,7 +26,6 @@ import catmoe.fallencrystal.translation.server.TranslateServer
 import catmoe.fallencrystal.translation.server.bungee.BungeeServer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
-import io.netty.channel.Channel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer
 import net.md_5.bungee.api.ChatMessageType
@@ -100,7 +99,7 @@ class BungeePlayer(val player: ProxiedPlayer): PlatformPlayer {
         } catch (_: Exception) { null }
     }
 
-    override fun channel(): Channel = channelWrapper!!.handle.pipeline().channel()
+    override fun channel() = channelWrapper?.handle?.pipeline()?.channel()
 
     override fun send(server: PlatformServer) = (if (server is TranslateServer) (server.upstream as BungeeServer) else server as BungeeServer).send(this)
 
