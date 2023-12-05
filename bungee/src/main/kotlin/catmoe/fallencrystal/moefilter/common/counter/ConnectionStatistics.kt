@@ -38,18 +38,20 @@ object ConnectionStatistics {
     fun schedule() {
         putCPStoCache()
         putBytesToCache()
+        val cps = getConnectionPerSec()
         if (StateManager.inAttack.get()) {
-            StateManager.attackMethodAnalyser(); StateManager.attackEndedDetector()
-        } else if (getConnectionPerSec() >= LocalConfig.getAntibot().getInt("attack-mode.incoming")) {
+            StateManager.attackMethodAnalyser(cps)
+            StateManager.attackEndedDetector(cps)
+        } else if (cps >= LocalConfig.getAntibot().getInt("attack-mode.incoming")) {
             StateManager.fireAttackEvent()
-            inAttack = false
+            inAttack = true
             sessionTotal = 0
             sessionPeakCps = 0
             sessionTotalIps = 0
             sessionBlocked.invalidateAll()
             StateManager.lastMethod.clear()
         }
-        StateManager.tickProfile()
+        //StateManager.tickProfile()
     }
 
     private val ticks = 1..20

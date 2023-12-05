@@ -44,9 +44,6 @@ object StateManager {
     val duration = Duration()
     var profile: TickingProfile? = null
 
-    private val attackEndedWaiter = AtomicBoolean(false)
-    private val attackEndedCount = AtomicInteger(0)
-
     val lastMethod: MutableCollection<AttackState> = ArrayList()
 
     private val scheduler = Scheduler.getDefault()
@@ -54,9 +51,8 @@ object StateManager {
     val trigger get() = LocalConfig.getAntibot().getInt("attack-mode.incoming")
 
     @Suppress("EnumValuesSoftDeprecate")
-    fun attackMethodAnalyser() {
+    fun attackMethodAnalyser(cps: Int) {
         if (!inAttack.get()) return
-        val cps = ConnectionStatistics.getConnectionPerSec()
         if (cps < trigger && attackMethods.isNotEmpty()) return
         val methodSize = AttackState.values().size
         if (cps >= methodSize) {
@@ -72,24 +68,28 @@ object StateManager {
         }
     }
 
-    fun attackEndedDetector() {
+    private val endedWaiter = AtomicBoolean(false)
+    private val endedCount = AtomicInteger(LocalConfig.getAntibot().getInt("attack-mode.un-attacked.wait") + 1)
+    private var endedTask: ScheduledTask? = null
+    fun attackEndedDetector(cps: Int) {
         val conf = LocalConfig.getAntibot().getConfig("attack-mode.un-attacked")
-        val cps = ConnectionStatistics.getConnectionPerSec()
-        if (inAttack.get() && cps < trigger) {
-            if (conf.getBoolean("instant")) { fireNotInAttackEvent() }
-            else {
-                if (!attackEndedWaiter.get()) {
-                    attackEndedWaiter.set(true)
-                    var task: ScheduledTask? = null
-                    task = scheduler.repeatScheduler(1, 1, TimeUnit.SECONDS) {
-                        if (!attackEndedWaiter.get()) { attackEndedCount.set(conf.getInt("wait") + 1); scheduler.cancelTask(task!!) }
-                        if (ConnectionStatistics.getConnectionPerSec() > trigger) {
-                            attackEndedCount.set(conf.getInt("wait"))
-                            attackEndedWaiter.set(false); scheduler.cancelTask(task!!)
+        if (cps < trigger) {
+            if (conf.getBoolean("instant")) fireNotInAttackEvent() else if (!endedWaiter.get() && endedTask == null) {
+                endedTask = scheduler.repeatScheduler(1, TimeUnit.SECONDS) {
+                    fun cancel() {
+                        val task = endedTask
+                        if (task != null) { task.cancel(); endedTask=null }
+                        endedWaiter.set(false)
+                        endedCount.set(conf.getInt("wait") + 1)
+                    }
+                    if (!inAttack.get()) cancel() else {
+                        val cps1 = ConnectionStatistics.getConnectionPerSec()
+                        if (cps1 > trigger) { cancel(); return@repeatScheduler }
+                        endedCount.set(endedCount.get() - 1)
+                        if (endedCount.get() == 0) {
+                            cancel()
+                            fireNotInAttackEvent()
                         }
-                        val c = attackEndedCount.get()
-                        if (c == 0) { fireNotInAttackEvent(); attackEndedWaiter.set(false); scheduler.cancelTask(task!!) }
-                        attackEndedCount.set(c - 1)
                     }
                 }
             }

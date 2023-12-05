@@ -452,13 +452,8 @@ class LoadConfig {
                 attack-mode { 
                     # 当一秒内的连接超过此设定的值 将激活攻击模式
                     incoming=8
-                    # 模式激活设置
-                    mode {
-                        # 当阻止总数在1秒内达到此值 将会将状态设置为被此模式攻击
-                        count=4
-                    }
                     un-attacked {
-                        # 当传入的连接数小于incoming时 则解除攻击模式
+                        # 当传入的连接数小于incoming时 则立即解除攻击模式
                         instant=false
                         # 当instant为false且指定秒数内没有传入任何连接 则解除攻击模式
                         wait=5

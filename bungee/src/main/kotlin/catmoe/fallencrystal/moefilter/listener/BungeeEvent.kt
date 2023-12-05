@@ -18,7 +18,9 @@
 package catmoe.fallencrystal.moefilter.listener
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
+import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -71,6 +73,8 @@ class BungeeEvent : Listener {
         val player = TranslatePlayer(BungeePlayer(event.player))
         PlayerInstance.addToList(player)
         EventManager.callEvent(PlayerJoinEvent(player))
+        if (StateManager.inAttack.get() && player.hasPermission("moefilter.notifications.auto"))
+            Notifications.autoNotification.add(event.player)
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
