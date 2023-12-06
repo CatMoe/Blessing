@@ -24,7 +24,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.block.LimboBlock
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkLength
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkSent
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkStart
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.connections
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -37,6 +36,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketBlocksSectionUpdate
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketGameEvent
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -136,7 +136,8 @@ class LimboHandler(
         *   客户端**不一定**会回应KeepAlive. 但客户端除了不回应心跳包之外,
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
-        if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
+        if (version.moreOrEqual(Version.V1_20_3)) writePacket(PacketGameEvent())
+        (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
         if (LimboLoader.platformSummon) sendTestPlatform(LimboLoader.platformHeight, LimboLoader.platformBlock)
         channel.flush()
     }

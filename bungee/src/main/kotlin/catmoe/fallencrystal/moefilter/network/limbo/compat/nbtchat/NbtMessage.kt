@@ -15,15 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.handler
+package catmoe.fallencrystal.moefilter.network.limbo.compat.nbtchat
 
-import catmoe.fallencrystal.moefilter.network.bungee.util.PlayerChannelRecord
-import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
-import io.netty.channel.ChannelHandlerContext
-import net.md_5.bungee.netty.HandlerBoss
+import net.kyori.adventure.nbt.BinaryTag
 
-class InboundHandler : HandlerBoss() {
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) =
-        if (PlayerChannelRecord.getPlayer(ctx) == null) ExceptionCatcher.handle(ctx.channel(), cause) else super.exceptionCaught(ctx, cause)
-}
+data class NbtMessage(var json: String, var tag: BinaryTag)

@@ -786,8 +786,6 @@ class LoadConfig {
                 debug {
                     # 虚拟区块设置
                     chunk {
-                        # false = 不发送区块数据包
-                        sent=true
                         # 区块起始位置
                         start=-1
                         # 区块链长度. 区块数量为(length+1)的二次方. 最高为2, 最低为1

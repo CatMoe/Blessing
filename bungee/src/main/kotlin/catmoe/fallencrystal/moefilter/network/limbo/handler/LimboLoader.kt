@@ -66,7 +66,6 @@ object LimboLoader : Reloadable {
     // Debug
     private val disableCheck = limboConfig.getBoolean("debug.check.disable-all")
     val reduceDebug = limboConfig.getBoolean("debug.reduce-f3-debug")
-    val chunkSent = limboConfig.getBoolean("debug.chunk.sent")
     val chunkStart = limboConfig.getInt("debug.chunk.start")
     val chunkLength = chunkStart + limboConfig.getInt("debug.chunk.length")
     val platformSummon = limboConfig.getBoolean("debug.test-platform.summon")

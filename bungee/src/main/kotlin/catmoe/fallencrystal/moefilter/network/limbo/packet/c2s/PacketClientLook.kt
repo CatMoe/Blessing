@@ -17,18 +17,16 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.packet.c2s
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboC2SPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 // That packet is for legacy clients.
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketClientLook : LimboC2SPacket() {
-
-    var lastLook: LimboLocation? = null
+class PacketClientLook(var lastLook: LimboLocation? = null) : LimboC2SPacket() {
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
         lastLook = LimboLocation(
@@ -49,5 +47,5 @@ class PacketClientLook : LimboC2SPacket() {
         )
     }
 
-    override fun toString(): String { return "PacketClientLook(look=$lastLook)" }
+    override fun toString() = "PacketClientLook(look=$lastLook)"
 }

@@ -89,14 +89,14 @@ class PacketJoinGame(
         if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
         if (version.fromTo(V1_7_6, V1_15_2)) packet.writeString("flat")
         if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)
-        if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance)
+        if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance) // Simulation Distance
         if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
         if (version.moreOrEqual(V1_15)) packet.writeBoolean(enableRespawnScreen)
 
         if (version.moreOrEqual(V1_20_2)) { // 1.20.2: doLimitedCrafting
             packet.writeBoolean(true) // doLimitedCrafting
-            packet.writeString(worldName) // World type
-            packet.writeString(worldName)
+            packet.writeString(worldName) // Dimension type
+            packet.writeString(worldName) // Dimension name
             packet.writeLong(hashedSeed)
             packet.writeByte(gameMode)
             packet.writeByte(previousGameMode)

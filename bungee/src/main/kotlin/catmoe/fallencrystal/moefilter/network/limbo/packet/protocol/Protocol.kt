@@ -48,7 +48,7 @@ enum class Protocol(var stateId: Int) {
         init {
             serverBound.register({ PacketInitLogin() }, map(0x00, min, max))
             serverBound.register({ PacketPluginResponse() }, map(0x02, min, max))
-            serverBound.register({ PacketLoginAcknowledged() }, map(0x03, V1_20_2, V1_20_2))
+            serverBound.register({ PacketLoginAcknowledged() }, map(0x03, V1_20_2, max))
             clientBound.register({ PacketLoginSuccess() }, map(0x02, min, max))
             clientBound.register({ PacketPluginRequest() }, map(0x04, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x00, min, max))
@@ -57,7 +57,6 @@ enum class Protocol(var stateId: Int) {
     @JvmStatic
     CONFIGURATION(3) {
         init {
-            val min = V1_20_2
             serverBound.register({ PacketClientConfiguration() }, map(0x00, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x01, min, max))
             serverBound.register({ PacketPluginMessage() }, map(0x01, min, max))
@@ -85,7 +84,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x19, V1_19_1, V1_19_1),
                 map(0x17, V1_19_3, V1_19_3),
                 map(0x1A, V1_19_4, V1_20),
-                map(0x1B, V1_20_2, V1_20_2)
+                map(0x1B, V1_20_2, V1_20_3)
             )
             serverBound.register(
                 { PacketKeepAlive() },
@@ -101,7 +100,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x12, V1_19_1, V1_19_1),
                 map(0x11, V1_19_3, V1_19_3),
                 map(0x12, V1_19_4, V1_20),
-                map(0x14, V1_20_2, V1_20_2)
+                map(0x14, V1_20_2, V1_20_2),
+                map(0x15, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 { PacketKeepAlive() },
@@ -117,7 +117,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x20, V1_19_1, V1_19_1),
                 map(0x1F, V1_19_3, V1_19_3),
                 map(0x23, V1_19_4, V1_20),
-                map(0x24, V1_20_2, V1_20_2)
+                map(0x24, V1_20_2, V1_20_3)
             )
             clientBound.register(
                 { PacketJoinGame() },
@@ -132,7 +132,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x25, V1_19_1, V1_19_1),
                 map(0x24, V1_19_3, V1_19_3),
                 map(0x28, V1_19_4, V1_20),
-                map(0x29, V1_20_2, V1_20_2),
+                map(0x29, V1_20_2, V1_20_3),
             )
             clientBound.register(
                 { PacketPluginMessage() },
@@ -148,7 +148,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x16, V1_19_1, V1_19_1),
                 map(0x15, V1_19_3, V1_19_3),
                 map(0x17, V1_19_4, V1_20),
-                map(0x18, V1_20_2, V1_20_2)
+                map(0x18, V1_20_2, V1_20_3)
             )
             serverBound.register(
                 { PacketPluginMessage() },
@@ -180,7 +180,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x31, V1_19_1, V1_19_1),
                 map(0x30, V1_19_3, V1_19_3),
                 map(0x34, V1_19_4, V1_20),
-                map(0x36, V1_20_2, V1_20_2)
+                map(0x36, V1_20_2, V1_20_3)
             )
             clientBound.register(
                 { PacketServerPositionLook() },
@@ -197,7 +197,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x39, V1_19_1, V1_19_1),
                 map(0x38, V1_19_3, V1_19_3),
                 map(0x3C, V1_19_4, V1_20),
-                map(0x3E, V1_20_2, V1_20_2)
+                map(0x3E, V1_20_2, V1_20_3)
             )
             serverBound.register(
                 { PacketClientPositionLook() },
@@ -213,7 +213,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x15, V1_19_1, V1_19_1),
                 map(0x14, V1_19_3, V1_19_3),
                 map(0x15, V1_19_4, V1_20),
-                map(0x17, V1_20_2, V1_20_2)
+                map(0x17, V1_20_2, V1_20_2),
+                map(0x18, V1_20_3, V1_20_3)
             )
             serverBound.register(
                 { PacketClientPosition() },
@@ -229,7 +230,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x14, V1_19_1, V1_19_1),
                 map(0x13, V1_19_3, V1_19_3),
                 map(0x14, V1_19_4, V1_20),
-                map(0x16, V1_20_2, V1_20_2)
+                map(0x16, V1_20_2, V1_20_2),
+                map(0x17, V1_20_3, V1_20_3)
             )
             serverBound.register(
                 { PacketClientLook() },
@@ -245,7 +247,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x16, V1_19_1, V1_19_1),
                 map(0x15, V1_19_3, V1_19_3),
                 map(0x16, V1_19_4, V1_20),
-                map(0x18, V1_20_2, V1_20_2)
+                map(0x18, V1_20_2, V1_20_2),
+                map(0x19, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 { PacketPlayerInfo() },
@@ -262,7 +265,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x37, V1_19_1, V1_19_1),
                 map(0x36, V1_19_3, V1_19_3),
                 map(0x3A, V1_19_4, V1_20),
-                map(0x3C, V1_20_2, V1_20_2)
+                map(0x3C, V1_20_2, V1_20_3)
             )
             clientBound.register(
                 { PacketSpawnPosition() },
@@ -279,7 +282,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x4D, V1_19_1, V1_19_1),
                 map(0x4C, V1_19_3, V1_19_3),
                 map(0x50, V1_19_4, V1_20),
-                map(0x52, V1_20_2, V1_20_2)
+                map(0x52, V1_20_2, V1_20_2),
+                map(0x54, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 { PacketEmptyChunk() },
@@ -295,22 +299,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x21, V1_19_1, V1_19_1),
                 map(0x20, V1_19_3, V1_19_3),
                 map(0x24, V1_19_4, V1_20),
-                map(0x25, V1_20_2, V1_20_2)
-            )
-            clientBound.register(
-                { PacketSetHeldSlot() },
-                map(0x2F, V1_7_6, V1_8),
-                map(0x16, V1_9, V1_12_2),
-                map(0x17, V1_13, V1_13_2),
-                map(0x16, V1_14, V1_14_4),
-                map(0x17, V1_15, V1_15_2),
-                map(0x16, V1_16, V1_16_2),
-                map(0x15, V1_16_3, V1_16_4),
-                map(0x16, V1_17, V1_18_2),
-                map(0x13, V1_19, V1_19_1),
-                map(0x12, V1_19_3, V1_19_3),
-                map(0x14, V1_19_4, V1_20),
-                map(0x15, V1_20_2, V1_20_2)
+                map(0x25, V1_20_2, V1_20_3)
             )
             clientBound.register(
                 { PacketSetExperience() },
@@ -324,7 +313,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x51, V1_17, V1_19),
                 map(0x54, V1_19_1, V1_19_1),
                 map(0x52, V1_19_3, V1_19_3),
-                map(0x56, V1_19_4, V1_20_2)
+                map(0x56, V1_19_4, V1_20_2),
+                map(0x5A, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 { PacketUpdateTime() },
@@ -341,7 +331,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x5C, V1_19_1, V1_19_1),
                 map(0x5A, V1_19_3, V1_19_3),
                 map(0x5E, V1_19_4, V1_20),
-                map(0x60, V1_20_2, V1_20_2)
+                map(0x60, V1_20_2, V1_20_2),
+                map(0x62, V1_20_3, V1_20_3)
             )
             serverBound.register(
                 { PacketClientChat() },
@@ -351,7 +342,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x02, V1_12_1, V1_13_2),
                 map(0x03, V1_14, V1_18_2),
                 map(0x04, V1_19, V1_19),
-                map(0x05, V1_19_1, V1_20_2)
+                map(0x05, V1_19_1, V1_20_3)
             )
             clientBound.register(
                 { PacketTransaction() },
@@ -366,7 +357,7 @@ enum class Protocol(var stateId: Int) {
                 map(0x2F, V1_19_1, V1_19_1),
                 map(0x2E, V1_19_3, V1_19_3),
                 map(0x32, V1_19_4, V1_20),
-                map(0x33, V1_20_2, V1_20_2)
+                map(0x33, V1_20_2, V1_20_3)
             )
             serverBound.register(
                 { PacketTransaction() },
@@ -381,7 +372,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x20, V1_19_1, V1_19_1),
                 map(0x1F, V1_19_3, V1_19_3),
                 map(0x20, V1_19_4, V1_20),
-                map(0x23, V1_20_2, V1_20_2)
+                map(0x23, V1_20_2, V1_20_2),
+                map(0x24, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 { PacketBlocksSectionUpdate() },
@@ -396,7 +388,8 @@ enum class Protocol(var stateId: Int) {
                 map(0x40, V1_19_1, V1_19_1),
                 map(0x3F, V1_19_3, V1_19_3),
                 map(0x43, V1_19_4, V1_20),
-                map(0x45, V1_20_2, V1_20_2)
+                map(0x45, V1_20_2, V1_20_2),
+                map(0x47, V1_20_3, V1_20_3)
             )
             clientBound.register(
                 {
@@ -410,11 +403,15 @@ enum class Protocol(var stateId: Int) {
                 map(0x0C, V1_17, V1_18_2),
                 map(0x09, V1_19, V1_19_3),
                 map(0x1A, V1_19_4, V1_20),
-                map(0x09, V1_20_2, V1_20_2)
+                map(0x09, V1_20_2, V1_20_3)
             )
             serverBound.register(
                 { PacketTeleportConfirm() },
-                map(0x00, V1_9, V1_20_2)
+                map(0x00, V1_9, V1_20_3)
+            )
+            clientBound.register(
+                { PacketGameEvent() },
+                map(0x20, V1_20_3, V1_20_3)
             )
         }
     };

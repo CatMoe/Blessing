@@ -21,10 +21,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidVarIntExce
 import io.netty.buffer.*
 import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
-import net.kyori.adventure.nbt.BinaryTagIO
-import net.kyori.adventure.nbt.BinaryTagTypes
-import net.kyori.adventure.nbt.CompoundBinaryTag
-import se.llbit.nbt.CompoundTag
+import net.kyori.adventure.nbt.*
 import se.llbit.nbt.Tag
 import java.io.DataOutputStream
 import java.io.IOException
@@ -38,6 +35,7 @@ import java.nio.channels.ScatteringByteChannel
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
+import javax.imageio.IIOException
 
 
 @Suppress("unused", "IdentifierGrammar", "SpellCheckingInspection", "DEPRECATION", "MemberVisibilityCanBePrivate")
@@ -168,11 +166,22 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun writeHeadlessCompoundTag(compoundTag: CompoundBinaryTag) {
+    fun writeNamelessCompoundTag(binaryTag: BinaryTag) {
         try {
-            ByteBufOutputStream(buf).use { stream ->
-                stream.writeByte(CompoundTag.TAG_COMPOUND) // CompoundTag ID
-                BinaryTagTypes.COMPOUND.write(compoundTag, stream)
+            ByteBufOutputStream(this).use { stream ->
+                stream.writeByte(binaryTag.type().id().toInt())
+                when (binaryTag) {
+                    is CompoundBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is ByteBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is ShortBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is IntBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is LongBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is DoubleBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is StringBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is ListBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    is EndBinaryTag -> binaryTag.type().write(binaryTag, stream)
+                    else -> throw IIOException("Unknown tag type: $binaryTag")
+                }
             }
         } catch (e: IOException) {
             throw EncoderException("Cannot write NBT CompoundTag")
@@ -188,7 +197,7 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
     }
 
-    fun writeHeadlessCompoundTag(tag: Tag?) {
+    fun writeNamelessCompoundTag(tag: Tag?) {
         try {
             if (tag == null) { writeByte(0); return }
             val out = ByteBufOutputStream(this)

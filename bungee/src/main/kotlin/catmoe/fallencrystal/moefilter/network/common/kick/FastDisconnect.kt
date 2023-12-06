@@ -73,7 +73,7 @@ object FastDisconnect : Reloadable {
             when (handler.state) {
                 Protocol.PLAY -> {
                     val packet = PacketDisconnect()
-                    packet.setReason(cs.raw)
+                    packet.setMessage(cs.raw)
                     handler.sendPacket(packet)
                 }
                 else -> handler.sendPacket(cs.packet.moelimbo)
@@ -108,7 +108,7 @@ object FastDisconnect : Reloadable {
         Limbo Packets:
          */
         val kick = PacketDisconnect()
-        kick.setReason(cs)
+        kick.setMessage(cs)
         val ba = ByteMessage(Unpooled.buffer())
         kick.encode(ba, null)
         val array = ba.toByteArray()

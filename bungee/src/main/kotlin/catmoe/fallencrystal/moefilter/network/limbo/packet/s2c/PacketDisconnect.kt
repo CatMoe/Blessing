@@ -18,25 +18,30 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.compat.nbtchat.NbtMessage
+import catmoe.fallencrystal.moefilter.network.limbo.compat.nbtchat.NbtMessageUtil
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
+import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.chat.ComponentSerializer
 
 @Suppress("unused")
-class PacketDisconnect : LimboS2CPacket() {
+class PacketDisconnect(
+    var message: NbtMessage? = null
+) : LimboS2CPacket() {
 
-    var message: String = ""
+    constructor(message: BaseComponent) : this(NbtMessageUtil.create(message))
+    constructor(message: Component) : this(NbtMessageUtil.create(message))
+    constructor(message: String) : this(NbtMessageUtil.create(message))
 
-    fun setReason(message: String) { this.message=message }
+    fun setMessage(message: String) { this.message = NbtMessageUtil.create(message) }
+    fun setMessage(baseComponent: BaseComponent) { this.message = NbtMessageUtil.create(baseComponent) }
+    fun setMessage(component: Component) { this.message = NbtMessageUtil.create(component) }
+    override fun encode(packet: ByteMessage, version: Version?) {
+        val message = this.message ?: NbtMessageUtil.create(ComponentUtil.parse("null"))
+        if (version?.moreOrEqual(Version.V1_20_2) == true) packet.writeNamelessCompoundTag(message.tag) else packet.writeString(message.json)
+    }
 
-    fun setReason(baseComponent: BaseComponent) { this.message=ComponentSerializer.toString(baseComponent) }
-
-    fun setReason(component: Component) { this.message= ComponentUtil.toGson(component) }
-
-    override fun encode(packet: ByteMessage, version: Version?) { packet.writeString(message) }
-
-    override fun toString(): String { return "PacketDisconnect(message=$message)" }
+    override fun toString() = "PacketDisconnect(message=$message)"
 }

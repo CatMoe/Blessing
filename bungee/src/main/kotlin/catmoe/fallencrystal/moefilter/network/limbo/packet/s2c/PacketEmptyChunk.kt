@@ -53,7 +53,7 @@ class PacketEmptyChunk(
             val rootTag = CompoundTag()
             rootTag.add("root", tag)
             if (version.moreOrEqual(Version.V1_20_2))
-                packet.writeHeadlessCompoundTag(rootTag)
+                packet.writeNamelessCompoundTag(rootTag)
             else
                 packet.writeCompoundTag(NamedTag("", rootTag))
             // Height maps >> End
