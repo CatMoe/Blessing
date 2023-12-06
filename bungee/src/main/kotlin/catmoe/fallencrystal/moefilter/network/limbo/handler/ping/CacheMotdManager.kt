@@ -114,6 +114,7 @@ object CacheMotdManager : Reloadable {
         motdCache.put(if (useStandardDomain) handler.host!!.hostString else "", m)
         return m
     }
+
     private fun checkHost(host: String): Boolean {
         return if  (!useStandardDomain) true
         else {

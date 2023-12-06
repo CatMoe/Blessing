@@ -15,17 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.listener.main
+package catmoe.fallencrystal.moefilter.network.bungee.initializer
 
-import catmoe.fallencrystal.moefilter.api.logger.ILogger
-import catmoe.fallencrystal.moefilter.common.state.StateManager
-import java.util.logging.LogRecord
-
-class EventLoggerFilter : ILogger {
-
-    override fun isLoggable(record: LogRecord?, isCancelled: Boolean): Boolean {
-        val message = record?.message
-        return if (isCancelled || message == null) false else
-            !(StateManager.inAttack.get() && (message.contains("{0} has connected") || message.contains("{0} has pinged")))
+@Suppress("unused")
+interface IPipeline {
+    companion object {
+        const val HANDLER = "moefilter-handler"
+        const val DECODER = "moefilter-decoder"
+        const val PACKET_INTERCEPTOR = "moefilter-packet-interceptor"
+        const val LAST_PACKET_INTERCEPTOR = "moefilter-packet-exception-interceptor"
     }
 }

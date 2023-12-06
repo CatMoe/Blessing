@@ -26,7 +26,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.AntiBotChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboCheckType
 import catmoe.fallencrystal.moefilter.network.limbo.check.LimboChecker
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.listener.ListenPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosition
@@ -58,7 +58,7 @@ object HitPlatformChecker: LimboChecker {
     private var roundMin = config.getInt("check-round.min")
     private var spawnHeightMax = config.getInt("spawn-height.max")
     private var spawnHeightMin = config.getInt("spawn-height.min")
-    private val loc = LimboLocation(7.5, MoeLimbo.spawnHeight, 7.5, 90f, 10f, false)
+    private val loc = LimboLocation(7.5, LimboLoader.spawnHeight, 7.5, 90f, 10f, false)
 
     override fun reload() {
         config = LocalConfig.getLimbo().getConfig("check.platform-hit")
@@ -129,7 +129,7 @@ object HitPlatformChecker: LimboChecker {
     private fun pass(a: LimboHandler) {
         val c = LocalConfig.getLimbo().getConfig("check.timer")
         val t = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - MoveTimer.firstTime.getIfPresent(a)!!)
-        if (t < c.getInt("min") || t > c.getInt("max")) { kick(a); if (MoeLimbo.debug) { try { throw Throwable() } catch (e: Throwable) { e.printStackTrace() } }; return }
+        if (t < c.getInt("min") || t > c.getInt("max")) { kick(a); if (LimboLoader.debug) { try { throw Throwable() } catch (e: Throwable) { e.printStackTrace() } }; return }
         FastDisconnect.disconnect(a, DisconnectType.PASSED_CHECK)
         //EventManager.triggerEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))
         EventManager.callEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))

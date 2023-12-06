@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.cache
 
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketPluginMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.*
@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom
 object PacketCache {
 
     val packetCache = Caffeine.newBuilder().build<EnumPacket, PacketSnapshot>()
-    private val loc = LimboLocation(7.5, MoeLimbo.spawnHeight, 7.5, 90f, 10f, false)
+    private val loc = LimboLocation(7.5, LimboLoader.spawnHeight, 7.5, 90f, 10f, false)
     private val proxy = ProxyServer.getInstance()
     private val brand = MessageUtil.colorize(LocalConfig.getConfig().getString("f3-brand.custom")
         .replace("%bungee%", proxy.name)
@@ -43,7 +43,7 @@ object PacketCache {
     fun initPacket() {
         val username = "MoeLimbo"
         val uuid = UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray(StandardCharsets.UTF_8))
-        val join = PacketJoinGame(reducedDebugInfo=MoeLimbo.reduceDebug)
+        val join = PacketJoinGame(reducedDebugInfo=LimboLoader.reduceDebug)
 
         packetCache.put(LOGIN_SUCCESS, PacketSnapshot.of(PacketLoginSuccess(uuid, username)))
         packetCache.put(JOIN_GAME, PacketSnapshot.of(join))

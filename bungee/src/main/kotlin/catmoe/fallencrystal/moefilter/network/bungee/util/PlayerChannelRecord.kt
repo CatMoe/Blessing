@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-object PipelineUtil {
+object PlayerChannelRecord {
     private val cache = Caffeine.newBuilder().build<ChannelHandlerContext, String>()
     private val playerCache = Caffeine.newBuilder().build<String, ChannelHandlerContext>()
 

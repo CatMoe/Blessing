@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.compat
 
 import catmoe.fallencrystal.moefilter.network.limbo.compat.converter.PingConverter
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.ChannelHandlerContext
 import net.md_5.bungee.BungeeCord
@@ -79,7 +79,7 @@ class FakeInitialHandler(
 
     @Suppress("DEPRECATION")
     override fun handlePing(host: InetSocketAddress, version: Version): PingConverter {
-        MoeLimbo.debug("Try to call ProxyPingEvent for bungee")
+        LimboLoader.debug("Try to call ProxyPingEvent for bungee")
         fakeLegacy=false
         var pingResult = ""
         val pingBack = Callback<ServerPing> {
@@ -99,7 +99,7 @@ class FakeInitialHandler(
             ServerPing(
                 ServerPing.Protocol("MoeLimbo", (v ?: Version.UNDEFINED).number),
                 ServerPing.Players(
-                    (listenerInfo.maxPlayers), MoeLimbo.connections.size + BungeeCord.getInstance().onlineCount, null),
+                    (listenerInfo.maxPlayers), LimboLoader.connections.size + BungeeCord.getInstance().onlineCount, null),
                 listenerInfo.motd,
                 BungeeCord.getInstance().config.faviconObject
             ), null

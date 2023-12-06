@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -37,7 +37,7 @@ object StaticDimension {
 
     val cacheDimension = Caffeine.newBuilder().build<Version, Tag>()
 
-    var dim = MoeLimbo.dimensionType.llbit
+    var dim = LimboLoader.dimensionType.llbit
 
     fun init() {
         Version.entries.forEach { cacheDimension.put(it, dim.dimension.getFullCodec(it)) }

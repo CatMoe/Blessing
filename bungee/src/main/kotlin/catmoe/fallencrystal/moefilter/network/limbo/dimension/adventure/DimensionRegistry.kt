@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.TagStringIO
 import java.io.BufferedReader
@@ -66,6 +66,6 @@ object DimensionRegistry {
         return Dimension(type.dimensionId, type.dimensionName, dimension)
     }
 
-    var defaultDimension1_16 : Dimension = getDimension(MoeLimbo.dimensionType.adventure, codec_1_16)
-    var defaultDimension1_18_2 : Dimension = getDimension(MoeLimbo.dimensionType.adventure, codec_1_18_2)
+    var defaultDimension1_16 : Dimension = getDimension(LimboLoader.dimensionType.adventure, codec_1_16)
+    var defaultDimension1_18_2 : Dimension = getDimension(LimboLoader.dimensionType.adventure, codec_1_18_2)
 }

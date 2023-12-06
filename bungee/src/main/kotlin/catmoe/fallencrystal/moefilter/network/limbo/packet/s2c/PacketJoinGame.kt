@@ -29,7 +29,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.Dimensio
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_16
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_18_2
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import catmoe.fallencrystal.translation.utils.version.Version.*
@@ -41,9 +41,9 @@ class PacketJoinGame(
     var isHardcore: Boolean = true,
     var gameMode: Int = 2,
     var previousGameMode: Int = -1,
-    var worldName: String = when (MoeLimbo.dimLoaderMode) {
-        ADVENTURE -> MoeLimbo.dimensionType.adventure.dimensionName
-        LLBIT -> MoeLimbo.dimensionType.llbit.dimension.key
+    var worldName: String = when (LimboLoader.dimLoaderMode) {
+        ADVENTURE -> LimboLoader.dimensionType.adventure.dimensionName
+        LLBIT -> LimboLoader.dimensionType.llbit.dimension.key
     },
     var worldNames: Array<String?> = arrayOf(worldName),
     var hashedSeed: Long = 0,
@@ -56,7 +56,7 @@ class PacketJoinGame(
 ) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        when (MoeLimbo.dimLoaderMode) {
+        when (LimboLoader.dimLoaderMode) {
             ADVENTURE -> encodeAdventure(packet, version!!)
             LLBIT -> encodeLLBIT(packet, version!!)
         }
@@ -215,7 +215,7 @@ class PacketJoinGame(
                 "enableRespawnScreen=$enableRespawnScreen," +
                 "isDebug=$isDebug," +
                 "isFlat=$isFlat," +
-                "Type=${MoeLimbo.dimensionType.name}," +
-                "Dimension=${MoeLimbo.dimensionType.name})"
+                "Type=${LimboLoader.dimensionType.name}," +
+                "Dimension=${LimboLoader.dimensionType.name})"
     }
 }

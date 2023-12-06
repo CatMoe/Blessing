@@ -15,9 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.bconnection
+package catmoe.fallencrystal.moefilter.network.bungee.util
 
-import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.ChannelPipeline
 import net.md_5.bungee.BungeeCord
@@ -36,7 +35,7 @@ class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
     val pipeline: ChannelPipeline? =
-        (try { PipelineUtil.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } )
+        (try { PlayerChannelRecord.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } )
             ?: initChannelWrapper()?.handle?.pipeline()
 
     val version get() = connection.version

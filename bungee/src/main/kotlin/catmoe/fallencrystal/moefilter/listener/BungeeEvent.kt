@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.listener
 
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.bungee.util.PipelineUtil
+import catmoe.fallencrystal.moefilter.network.bungee.util.PlayerChannelRecord
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.events.player.*
@@ -83,7 +83,7 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {
-        PipelineUtil.invalidateChannel(event.player)
+        PlayerChannelRecord.invalidateChannel(event.player)
         val player = PlayerInstance.getCachedOrNull(event.player.name) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
         PlayerInstance.removeFromList(player)

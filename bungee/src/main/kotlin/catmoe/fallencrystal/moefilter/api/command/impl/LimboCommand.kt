@@ -20,9 +20,9 @@ package catmoe.fallencrystal.moefilter.api.command.impl
 import catmoe.fallencrystal.moefilter.api.command.CommandManager
 import catmoe.fallencrystal.moefilter.api.command.ICommand
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
@@ -58,9 +58,9 @@ class LimboCommand : ICommand {
                 if (StateManager.inAttack.get() && !s.endsWith("-c") && !s.endsWith("--confirm")) {
                     MessageUtil.sendMessage("<red>您不能在攻击期间使用此命令 如需强制执行 请在结尾加上 --confirm", MessagesType.CHAT, sender); return
                 }
-                MessageUtil.sendMessage(" <aqua>连接列表: <aqua>[${MoeLimbo.connections.size}]", MessagesType.CHAT, sender)
+                MessageUtil.sendMessage(" <aqua>连接列表: <aqua>[${LimboLoader.connections.size}]", MessagesType.CHAT, sender)
                 try {
-                    for (it in MoeLimbo.connections) {
+                    for (it in LimboLoader.connections) {
                         try {
                             val t = listOf(
                                 "<aqua>在线: ${if (it.channel.isActive) "<green>是" else "<red>否"}",
@@ -86,8 +86,8 @@ class LimboCommand : ICommand {
                 }
                 if (s.contains("-a") || s.contains("--all")) {
                     val r: MutableCollection<LimboHandler> = ArrayList()
-                    for (it in MoeLimbo.connections) { try { it.channel.close() } catch (_: NullPointerException) {}; r.add(it) }
-                    MoeLimbo.connections.removeAll(r.toSet())
+                    for (it in LimboLoader.connections) { try { it.channel.close() } catch (_: NullPointerException) {}; r.add(it) }
+                    LimboLoader.connections.removeAll(r.toSet())
                     MessageUtil.sendMessage("<green>All connection kicked.", MessagesType.CHAT, sender)
                     return
                 }
@@ -100,10 +100,10 @@ class LimboCommand : ICommand {
                     return
                 }
                 var c: LimboHandler? = null
-                MoeLimbo.connections.forEach { if ((it.address as InetSocketAddress).address == ad) { c=it; return@forEach } }
+                LimboLoader.connections.forEach { if ((it.address as InetSocketAddress).address == ad) { c=it; return@forEach } }
                 if (c == null) { MessageUtil.sendMessage("<red>Target not found.", MessagesType.CHAT, sender) }
                 else {
-                    c?.channel?.close(); MoeLimbo.connections.remove(c)
+                    c?.channel?.close(); LimboLoader.connections.remove(c)
                     MessageUtil.sendMessage("<green>Successfully kicked.", MessagesType.CHAT, sender)
                 }
             }

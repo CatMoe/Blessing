@@ -22,6 +22,8 @@ import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.event.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
 import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
@@ -34,7 +36,7 @@ import java.util.concurrent.TimeUnit
 object BungeeSwitcher : EventListener {
 
     private var conf = LocalConfig.getLimbo()
-    val limbo = conf.getBoolean("enabled")
+    val limbo = AsyncLoader.instance.mode == WorkingMode.HANDLE
     private var timeout = conf.getLong("bungee-queue")
     private var bungeeQueue = Caffeine.newBuilder()
         .expireAfterWrite(timeout, TimeUnit.SECONDS)
@@ -49,12 +51,13 @@ object BungeeSwitcher : EventListener {
         val conf = LocalConfig.getLimbo()
         val timeout = conf.getLong("bungee-queue")
         if (this.timeout == timeout) return
-        this.timeout=timeout
+        this.timeout = timeout
+        bungeeQueue.invalidateAll()
         bungeeQueue = Caffeine.newBuilder()
             .expireAfterWrite(BungeeSwitcher.timeout, TimeUnit.SECONDS)
             .build()
         alwaysCheck = conf.getBoolean("always-check")
-        this.conf=conf
+        this.conf = conf
         connectDuringAttack = BungeeSwitcher.conf.getBoolean("only-connect-during-attack")
     }
 
@@ -72,25 +75,30 @@ object BungeeSwitcher : EventListener {
          */
         if (!limbo) return true
         var connect = false
-        if (connectDuringAttack) connect=!StateManager.inAttack.get()
+        if (connectDuringAttack) connect = !StateManager.inAttack.get()
         val isAllowed = (bungeeQueue.getIfPresent(address) != null)
                 || (if (!alwaysCheck) foreverQueue.getIfPresent(address) != null else false)
-        if (isAllowed && !connect) { connect=true }
+        if (isAllowed && !connect) {
+            connect = true
+        }
         return connect
     }
 
     fun verify(info: CheckInfo): Boolean {
         if (!limbo || !(StateManager.inAttack.get() && connectDuringAttack)) return true
         info as Joining
-        val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address) ?: return false) else return false
+        val a = bungeeQueue.getIfPresent(info.address) ?: if (!alwaysCheck) (foreverQueue.getIfPresent(info.address)
+            ?: return false) else return false
         val result = a.username == info.username && a.version.number == info.protocol
-        if (!result) { bungeeQueue.invalidate(info.address); foreverQueue.invalidate(info.address) }
+        if (!result) {
+            bungeeQueue.invalidate(info.address); foreverQueue.invalidate(info.address)
+        }
         return result
     }
 
-}
+    internal class VerifyInfo(
+        val username: String,
+        val version: Version
+    )
 
-class VerifyInfo(
-    val username: String,
-    val version: Version
-)
+}

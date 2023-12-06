@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler.ping
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.debug
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.debug
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.translation.utils.version.Version

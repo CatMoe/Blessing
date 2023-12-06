@@ -19,8 +19,8 @@ package catmoe.fallencrystal.moefilter.util.message.notification
 
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.bungee.util.bconnection.ConnectionUtil
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.bungee.util.ConnectionUtil
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.state.AttackState
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.message.v2.packet.type.MessagesType
@@ -84,7 +84,7 @@ object Notifications : Reloadable {
             "%prefix%" to config.getString("prefix"),
             "%duration%" to StateManager.duration.getFormat(),
             "%type%" to getType(),
-            "%limbo%" to MoeLimbo.connections.size.toString(),
+            "%limbo%" to LimboLoader.connections.size.toString(),
             "%incoming-bytes%" to conversionBytesFormat(ConnectionStatistics.getIncoming()),
             "%outgoing-bytes%" to conversionBytesFormat(ConnectionStatistics.getOutgoing()),
         )

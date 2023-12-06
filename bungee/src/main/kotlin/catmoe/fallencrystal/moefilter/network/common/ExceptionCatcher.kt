@@ -18,9 +18,9 @@
 package catmoe.fallencrystal.moefilter.network.common
 
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
+import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidStatusPingException
@@ -35,7 +35,8 @@ import java.io.IOException
 import java.net.InetSocketAddress
 
 object ExceptionCatcher : Reloadable {
-    private var debug = false
+    var debug = false
+        private set
     @JvmStatic
     fun handle(channel: Channel, cause: Throwable) {
         channel.close()

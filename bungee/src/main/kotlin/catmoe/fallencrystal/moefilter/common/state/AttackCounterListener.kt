@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.common.state
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.event.AttackStoppedEvent
 import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
@@ -66,7 +66,7 @@ class AttackCounterListener : EventListener {
     fun stopSessionCount(event: AttackStoppedEvent) {
         if (inAttack) {
             inAttack=false; ConnectionStatistics.inAttack=false
-            MoeLimbo.calibrateConnections()
+            LimboLoader.calibrateConnections()
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The attack seems is stopped")
             ConnectionStatistics.sessionIpCache.invalidateAll()
             Notifications.autoNotification.clear()

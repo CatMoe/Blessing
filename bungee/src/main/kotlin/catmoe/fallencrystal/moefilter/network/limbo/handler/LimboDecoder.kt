@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
@@ -37,7 +37,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
     fun switchVersion(version: Version, state: Protocol) {
         this.version=version
         mappings = state.serverBound.registry[version]
-        MoeLimbo.debug(handler,"Decoder state changed. Version: ${version.name} State: ${state.name}")
+        LimboLoader.debug(handler,"Decoder state changed. Version: ${version.name} State: ${state.name}")
     }
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, out: MutableList<Any>?) {
@@ -49,15 +49,15 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         if (id == 0x00 && (handler?.state ?: Protocol.HANDSHAKING) == Protocol.HANDSHAKING) { MoeChannelHandler.sentHandshake.put(handler!!.channel, true) }
         else if (MoeChannelHandler.sentHandshake.getIfPresent(handler!!.channel) != true) throw InvalidPacketException("No valid handshake packet received")
          */
-        MoeLimbo.debug(handler, "Decoding ${"0x%02X".format(id)} packet with ${byteMessage.readableBytes()} bytes length")
+        LimboLoader.debug(handler, "Decoding ${"0x%02X".format(id)} packet with ${byteMessage.readableBytes()} bytes length")
         val packet = mappings?.getPacket(id)
         if (packet == null) {
             LimboListener.handleReceived(Unknown(id), handler)
             if (mappings == null) {
-                MoeLimbo.debug(handler,"Failed to decode incoming packet ${"0x%02X".format(id)}: Mappings is empty")
+                LimboLoader.debug(handler,"Failed to decode incoming packet ${"0x%02X".format(id)}: Mappings is empty")
                 throw NullPointerException("Mappings cannot be null!")
             }
-            MoeLimbo.debug(handler,"Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
+            LimboLoader.debug(handler,"Unknown incoming packet ${"0x%02X".format(id)}. Ignoring.")
             return
         }
         // Unreached code?
@@ -66,7 +66,7 @@ class LimboDecoder(var version: Version?) : MessageToMessageDecoder<ByteBuf>() {
         // 进行数据包调试时首选打开debug模式
         packet.decode(byteMessage, ctx.channel(), version)
         if (LimboListener.handleReceived(packet, handler)) return
-        MoeLimbo.debug(handler, packet.toString())
+        LimboLoader.debug(handler, packet.toString())
         ctx.fireChannelRead(packet)
         MoeChannelHandler.sentHandshake.put(handler!!.channel, true)
     }

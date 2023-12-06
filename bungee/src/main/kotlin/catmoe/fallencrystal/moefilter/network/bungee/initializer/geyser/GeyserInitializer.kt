@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser
+package catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser
 
 import io.netty.channel.Channel
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder

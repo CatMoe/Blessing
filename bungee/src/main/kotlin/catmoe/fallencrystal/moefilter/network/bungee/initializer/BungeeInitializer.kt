@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline
+package catmoe.fallencrystal.moefilter.network.bungee.initializer
 
-@Suppress("unused")
-interface IPipeline {
-    companion object {
-        const val HANDLER = "moefilter-handler"
-        const val DECODER = "moefilter-decoder"
-        const val PACKET_INTERCEPTOR = "moefilter-packet-interceptor"
-        const val LAST_PACKET_INTERCEPTOR = "moefilter-packet-exception-interceptor"
-    }
+import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import io.netty.channel.ChannelHandlerContext
+
+class BungeeInitializer : AbstractInitializer(), IPipeline {
+    override fun handlerAdded(ctx: ChannelHandlerContext) { try { super.handlerAdded(ctx) } finally { if (!ctx.isRemoved) { ctx.pipeline().remove(this) } } }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(ctx: ChannelHandlerContext?, cause: Throwable?) { ExceptionCatcher.handle(ctx!!.channel(), cause!!) }
 }

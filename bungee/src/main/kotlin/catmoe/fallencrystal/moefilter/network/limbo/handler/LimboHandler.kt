@@ -23,10 +23,10 @@ import catmoe.fallencrystal.moefilter.network.limbo.block.BlockPosition
 import catmoe.fallencrystal.moefilter.network.limbo.block.LimboBlock
 import catmoe.fallencrystal.moefilter.network.limbo.compat.FakeInitialHandler
 import catmoe.fallencrystal.moefilter.network.limbo.compat.LimboCompat
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkLength
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkSent
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.chunkStart
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo.connections
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkLength
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkSent
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.chunkStart
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.connections
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
@@ -93,7 +93,7 @@ class LimboHandler(
     private fun fireDisconnect() {
         connections.remove(this)
         LimboListener.handleReceived(Disconnect(), this)
-        MoeLimbo.debug(this,"Client disconnected")
+        LimboLoader.debug(this,"Client disconnected")
         disconnected.set(true)
     }
 
@@ -137,7 +137,7 @@ class LimboHandler(
         *   客户端设置, PluginMessage和移动数据包将向往常一样发送. 但无论如何发送心跳包客户端都不会回应
          */
         if (chunkSent) (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
-        if (MoeLimbo.platformSummon) sendTestPlatform(MoeLimbo.platformHeight, MoeLimbo.platformBlock)
+        if (LimboLoader.platformSummon) sendTestPlatform(LimboLoader.platformHeight, LimboLoader.platformBlock)
         channel.flush()
     }
 

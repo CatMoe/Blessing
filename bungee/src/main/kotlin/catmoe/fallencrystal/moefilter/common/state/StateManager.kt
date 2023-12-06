@@ -61,7 +61,6 @@ object StateManager {
                 BlockType.values().forEach {
                     if ((ConnectionStatistics.sessionBlocked.getIfPresent(it) ?: 0) > cps / methodSize) { method.add(it.state) }
                 }
-                if (method == lastMethod) return
                 lastMethod.clear(); lastMethod.addAll(method)
                 setAttackMethod(method); return
             }

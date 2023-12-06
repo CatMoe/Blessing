@@ -18,8 +18,8 @@
 package catmoe.fallencrystal.moefilter.network
 
 import catmoe.fallencrystal.moefilter.network.bungee.ReflectionUtils
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.BungeeInitializer
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter.BotFilterInitializer
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.BungeeInitializer
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.botfilter.BotFilterInitializer
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -27,18 +27,7 @@ import net.md_5.bungee.BungeeCord
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
 
-class InitChannel {
-
-    private val incompatibility = listOf(
-        "NullCordX",
-        "XCord",
-        "BetterBungee",
-        "AntiAttackRL",
-        "HAProxyDetector",
-        "JH_AntiBot",
-        "nAntiBot",
-        "BotSentry"
-    )
+class InitializerInjector {
 
     private val bungee = BungeeCord.getInstance()
     private var pipeline: ChannelInitializer<Channel> = BungeeInitializer()
@@ -54,13 +43,6 @@ class InitChannel {
                 Thread.sleep(1000)
                 exitProcess(1)
             }
-        incompatibility.forEach {
-            if (it.contains(proxyName) || bungee.pluginManager.getPlugin(it) != null) {
-                log("$it plugin or bungeecord (forks) is not compatibility with MoeFilter PIPELINE mode.")
-                log("Please switch to EVENT mode. or give up use MoeFilter.")
-                bungee.stop(); return
-            }
-        }
         if (proxyName.contains("BotFilter")) {
             log("BotFilter is detected. Using compatibilities choose for it.")
             pipeline=BotFilterInitializer()

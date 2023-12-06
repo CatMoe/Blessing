@@ -425,28 +425,12 @@ class LoadConfig {
                 version="$version"
                 
                 # 反机器人工作模式.
-                # PIPELINE(推荐): 接管BungeeCord管道 实现无效数据包检查和EVENT模式拥有的所有检查
-                # 并且比EVENT更快. 但无法保证所有东西都兼容. 有关兼容的BungeeCord 请移步:
-                # https://github.com/CatMoe/MoeFilter#%E5%AE%8C%E5%85%A8%E5%85%BC%E5%AE%B9%E7%9A%84bungeecord
-                # EVENT: 使用传统事件组合的反机器人. 可以实现一些普通的检查 例如PingJoin, FirstJoin, etc
-                # 理论上兼容所有BungeeCord分叉. 如果您在使用PIPELINE时出现了一些问题 可以选择使用该模式.
-                # DISABLED: 什么也不做. (作为纯实用工具使用)
-                mode=PIPELINE
+                # PACKET: 使用数据包来处理传入的连接. 兼容大多数BungeeCord分叉和1.7客户端, 但无法使用Limbo等功能
+                # HANDLE: 接管Handle, 可以直接使用Limbo等功能
+                mode=HANDLE
                 
-                # 如果您在使用MoeFilter的InitialHandler出现了一些问题 请使用这个
-                # 注意: 此项仅在PIPELINE模式下生效
-                # 建议启用Limbo来提供足够强大的防护 因为开启此项会导致BungeeCord禁用部分检查
-                #
-                # 补充: nah, 考虑到Limbo默认是开启状态, 有越来越多的插件使用反射来做许多东西.. 我想我不会考虑损坏插件兼容性.
-                use-original-handler=true
-                
-                # 选择事件呼叫时机 该选项仅当mode为PIPELINE时有效.
-                # AFTER_INIT: 当连接传入时立马呼叫事件 无论它们是否被阻止 (不推荐)
-                # NON_FIREWALL: 当连接没被防火墙切断时呼叫事件
-                # READY_DECODING: 在解码器解码前呼叫事件 (推荐)
-                # AFTER_DECODER: 当解码器完成解码后呼叫事件 (不推荐, 但如果您正在使用反向代理(e.x HAProxy) 请使用此模式或DISABLED)
-                # DISABLED: 不呼叫事件以保留性能(推荐 但如果遇到问题 请将其设为以上模式的其中一种.)
-                event-call-mode=DISABLED
+                # 呼叫平台自带的ClientConnectEvent和ConnectionInitEvent (waterfall)事件.
+                call-connect-event=false
                 
                 # 攻击模式激活设置
                 attack-mode { 
@@ -472,7 +456,7 @@ class LoadConfig {
                     # PING_AFTER_RECONNECT: 重新连接后Ping
                     # STABLE: 独立模块互相工作
                     # DISABLED: 禁用
-                    default=DISABLED
+                    default=JOIN_AFTER_PING
                     in-attack=PING_AFTER_RECONNECT
                     
                     # join+ping的检查的缓存过期时间 (秒)
@@ -706,10 +690,8 @@ class LoadConfig {
     private val defaultLimbo = """
                 # 这些设置皆在调整MoeLimbo
                 # 其中的设置大部分不可reload 请提前在投入生产环境中测试
-                version=$version
-                
-                # 是否使用Limbo? 仅在使用PIPELINE模式下有效.
-                enabled=true
+                # 如不需要使用Limbo, 请在antibot.conf中将模式设置为PACKET
+                version="$version"
                 
                 # 是否只在攻击状态下将连接转发到limbo
                 only-connect-during-attack=false

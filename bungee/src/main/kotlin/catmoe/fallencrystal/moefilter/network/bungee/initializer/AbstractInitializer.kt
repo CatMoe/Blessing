@@ -15,28 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline
+package catmoe.fallencrystal.moefilter.network.bungee.initializer
 
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
-import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
+import catmoe.fallencrystal.moefilter.data.BlockType
+import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketAntibotHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
-import catmoe.fallencrystal.moefilter.network.bungee.handler.MoeInitialHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.geyser.GeyserInitializer
-import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCallMode
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
+import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntFrameDecoder
+import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntLengthEncoder
 import catmoe.fallencrystal.moefilter.network.common.haproxy.HAProxyManager
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficMonitor
-import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntFrameDecoder
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboDecoder
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboEncoder
-import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntLengthEncoder
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
@@ -67,20 +65,14 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         if (listener.isProxyProtocol) HAProxyManager.handle(ctx)
         val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
         val inetAddress = (remoteAddress as InetSocketAddress).address
-        val eventCaller = EventCaller(ctx, listener)
-
         ConnectionStatistics.increase(inetAddress)
-        eventCaller.call(EventCallMode.AFTER_INIT)
         if (Firewall.isFirewalled(inetAddress)) { channel.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
-        eventCaller.call(EventCallMode.NON_FIREWALL)
         if (Throttler.increase(inetAddress)) { channel.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
-        if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); ConnectionStatistics.countBlocked(
-            BlockType.FIREWALL); return }
-        eventCaller.call(EventCallMode.READY_DECODING)
-        if (!channel.isActive) { return }
+        if (throttler != null && throttler.throttle(remoteAddress)) { channel.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
         pipeline.addFirst(TrafficMonitor.NAME, TrafficMonitor())
-        if (BungeeSwitcher.connectToBungee(inetAddress)) connectToBungee(ctx, pipeline, channel, eventCaller, listener)
+        if (BungeeSwitcher.connectToBungee(inetAddress)) connectToBungee(ctx, pipeline, channel, listener)
         else connectToLimbo(ctx, pipeline, channel)
+        EventCaller(channel, listener).callEvent()
     }
 
     open fun connectToLimbo(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel) {
@@ -89,7 +81,6 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         val handler = LimboHandler(encoder, decoder, channel, ctx)
         decoder.handler=handler
         encoder.handler=handler
-        //pipeline.addFirst(TrafficLimiter.NAME, TrafficLimiter(packetMaxSize, packetIncomingPerSec, packetBytesPerSec))
         pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
         TrafficManager.addLimiter(pipeline, TrafficManager.limbo, false)
         pipeline.addLast(FRAME_DECODER, VarIntFrameDecoder())
@@ -99,7 +90,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.addLast(BOSS_HANDLER, handler)
     }
 
-    open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, eventCaller: EventCaller, listener: ListenerInfo) {
+    open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, listener: ListenerInfo) {
         MoeChannelHandler.register(pipeline)
         BASE.initChannel(channel)
 
@@ -112,6 +103,10 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.replace(TIMEOUT_HANDLER, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
         pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, InboundHandler())
 
+        // Add PacketListener
+        if (MoeChannelHandler.injectPacketListener)
+            pipeline.addBefore(BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketAntibotHandler(ctx))
+
         // Init default BungeeCord pipeline
         pipeline.addBefore(FRAME_DECODER, LEGACY_DECODER, LegacyDecoder())
         pipeline.addAfter(FRAME_DECODER, PACKET_DECODER, MinecraftDecoder(Protocol.HANDSHAKE, true, protocol))
@@ -122,13 +117,10 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
         // MoeFilter's InitialHandler
-        pipeline[InboundHandler::class.java].setHandler(
-            if (MoeLimbo.useOriginalHandler) InitialHandler(bungee, listener) else MoeInitialHandler(ctx, listener)
-        )
+        pipeline[InboundHandler::class.java].setHandler(InitialHandler(bungee, listener))
 
         if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
-
-        eventCaller.call(EventCallMode.AFTER_DECODER)
+        if (MoeChannelHandler.callInitEvent) EventCaller(channel, listener).callEvent()
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }

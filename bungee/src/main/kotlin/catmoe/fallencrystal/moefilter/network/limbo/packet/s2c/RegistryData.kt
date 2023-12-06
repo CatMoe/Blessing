@@ -20,7 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -30,7 +30,7 @@ import io.netty.buffer.Unpooled
 class RegistryData  : LimboS2CPacket() {
     override fun encode(packet: ByteMessage, version: Version?) {
         if (version != Version.V1_20_2) return
-        when (MoeLimbo.dimLoaderMode) {
+        when (LimboLoader.dimLoaderMode) {
             DimensionInterface.ADVENTURE ->
                 //packet.writeCompoundTag(DimensionRegistry.codec_1_20)
                 packet.writeHeadlessCompoundTag(DimensionRegistry.codec_1_20)

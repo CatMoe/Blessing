@@ -38,7 +38,7 @@ class PacketClientChat : LimboC2SPacket() {
     private var signature: ByteArray? = null
     private var signedPreview = false
     private var chain: ChatChain? = null
-    private var seenMessages: ChatChain.SeenMessage? = null
+    private var seenMessages: SeenMessage? = null
     @Suppress("MemberVisibilityCanBePrivate") var decodeChatInfo = false
 
     override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
@@ -57,9 +57,7 @@ class PacketClientChat : LimboC2SPacket() {
                     signature=ByteArray(256)
                     packet.readBytes(signature!!)
                 }
-            } else {
-                signature=packet.readBytesArray()
-            }
+            } else signature=packet.readBytesArray()
             if (version.less(Version.V1_19_3)) {
                 signedPreview=packet.readBoolean()
                 if (version.moreOrEqual(Version.V1_19_1)) {
@@ -68,40 +66,14 @@ class PacketClientChat : LimboC2SPacket() {
                     this.chain=chain
                 }
             } else {
-                val sm = ChatChain.SeenMessage()
+                val sm = SeenMessage()
                 sm.decode(packet, channel, version)
                 this.seenMessages=sm
             }
         }
     }
-    override fun toString(): String {
-        return "PacketClientChat(message=$message)"
-    }
-}
-@Suppress("MemberVisibilityCanBePrivate")
-class ChatChain : LimboC2SPacket() {
-    val seen: MutableCollection<ChainLink> = ArrayList()
-    val received: MutableCollection<ChainLink> = ArrayList()
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        seen.clear()
-        seen.addAll(readLinks(packet))
-        if (packet.readBoolean()) {
-            received.clear()
-            received.addAll(readLinks(packet))
-        }
-    }
+    override fun toString() = "PacketClientChat(message=$message)"
 
-    private fun readLinks(packet: ByteMessage): MutableCollection<ChainLink> {
-        val list: MutableCollection<ChainLink> = ArrayList()
-        val cnt = packet.readVarInt()
-        //if (cnt <= 5) throw IllegalArgumentException("Cannot read entries")
-        Preconditions.checkArgument(cnt > 5, "Cannot read entries")
-        for (i in 0 until cnt) {
-            //chain.add(ChainLink(readUUID(buf), readArray(buf)))
-            list.add(ChainLink(packet.readUuid(), packet.readBytesArray()))
-        }
-        return list
-    }
 
     @Suppress("MemberVisibilityCanBePrivate")
     class SeenMessage : LimboC2SPacket() {
@@ -113,4 +85,30 @@ class ChatChain : LimboC2SPacket() {
         }
     }
     class ChainLink(val sender: UUID, val signature: ByteArray)
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    class ChatChain : LimboC2SPacket() {
+        val seen: MutableCollection<ChainLink> = ArrayList()
+        val received: MutableCollection<ChainLink> = ArrayList()
+        override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+            seen.clear()
+            seen.addAll(readLinks(packet))
+            if (packet.readBoolean()) {
+                received.clear()
+                received.addAll(readLinks(packet))
+            }
+        }
+
+        private fun readLinks(packet: ByteMessage): MutableCollection<ChainLink> {
+            val list: MutableCollection<ChainLink> = ArrayList()
+            val cnt = packet.readVarInt()
+            //if (cnt <= 5) throw IllegalArgumentException("Cannot read entries")
+            Preconditions.checkArgument(cnt > 5, "Cannot read entries")
+            for (i in 0 until cnt) {
+                //chain.add(ChainLink(readUUID(buf), readArray(buf)))
+                list.add(ChainLink(packet.readUuid(), packet.readBytesArray()))
+            }
+            return list
+        }
+    }
 }

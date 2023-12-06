@@ -17,10 +17,8 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.handler
 
-import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.firewall.lockdown.LockdownManager
-import catmoe.fallencrystal.moefilter.listener.main.MainListener
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.MoeChannelHandler
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.MoeChannelHandler
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.limbo.block.Block
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
@@ -41,14 +39,14 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
-import net.md_5.bungee.BungeeCord
 
-@Suppress("EnumValuesSoftDeprecate")
+@Suppress("EnumValuesSoftDeprecate", "SpellCheckingInspection")
 @IgnoreInitReload
-object MoeLimbo : Reloadable {
+object LimboLoader : Reloadable {
 
     private var limboConfig = LocalConfig.getLimbo()
     val connections: MutableCollection<LimboHandler> = ArrayList()
@@ -64,7 +62,6 @@ object MoeLimbo : Reloadable {
         MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
     }
     var debug = LocalConfig.getConfig().getBoolean("debug")
-    var useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
 
     // Debug
     private val disableCheck = limboConfig.getBoolean("debug.check.disable-all")
@@ -92,26 +89,12 @@ object MoeLimbo : Reloadable {
     )
 
     override fun reload() {
-        if (!LocalConfig.getLimbo().getBoolean("enabled")) return
+        if (AsyncLoader.instance.mode == WorkingMode.DISABLED) return
         LockdownManager.setLockdown(true)
         calibrateConnections()
         if (!disableCheck) checker.forEach { it.reload() }
         initLimbo()
         LockdownManager.setLockdown(false)
-        val useOriginalHandler = LocalConfig.getAntibot().getBoolean("use-original-handler")
-        if (this.useOriginalHandler != useOriginalHandler && MoeFilterBungee.mode == WorkingMode.PIPELINE) {
-            this.useOriginalHandler=useOriginalHandler
-            initEvent()
-        }
-    }
-
-    private fun initEvent() {
-        if (MoeFilterBungee.mode != WorkingMode.PIPELINE) return
-        val pm = BungeeCord.getInstance().pluginManager
-        when (useOriginalHandler) {
-            true -> { pm.registerListener(MoeFilterBungee.instance, MainListener.incomingListener) }
-            false -> { pm.unregisterListener(MainListener.incomingListener) }
-        }
     }
 
     fun calibrateConnections() {
@@ -146,7 +129,6 @@ object MoeLimbo : Reloadable {
             MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
         }
         initDimension()
-        initEvent()
         debug = LocalConfig.getConfig().getBoolean("debug")
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         if (!disableCheck) for (c in checker) LimboListener.register(c)

@@ -15,11 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline.botfilter
+package catmoe.fallencrystal.moefilter.network.bungee.initializer.botfilter
 
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.AbstractInitializer
-import catmoe.fallencrystal.moefilter.network.bungee.pipeline.IPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.AbstractInitializer
+import catmoe.fallencrystal.moefilter.network.bungee.initializer.IPipeline
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
@@ -44,10 +43,9 @@ class BotFilterInitializer : AbstractInitializer(), IPipeline {
         ctx: ChannelHandlerContext,
         pipeline: ChannelPipeline,
         channel: Channel,
-        eventCaller: EventCaller,
         listener: ListenerInfo
     ) {
-        super.connectToBungee(ctx, pipeline, channel, eventCaller, listener)
+        super.connectToBungee(ctx, pipeline, channel, listener)
         pipeline.replace(PipelineUtils.FRAME_DECODER, PipelineUtils.FRAME_DECODER, Varint21FrameDecoder())
     }
 

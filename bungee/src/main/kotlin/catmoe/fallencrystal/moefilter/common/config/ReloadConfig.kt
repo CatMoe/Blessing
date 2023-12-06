@@ -30,7 +30,7 @@ import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.CacheMotdManager
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
@@ -61,7 +61,7 @@ object ReloadConfig : EventListener {
         try { SimilarityCheck.instance } catch (safe: UninitializedPropertyAccessException) { SimilarityCheck() },
         try { DomainCheck.instance } catch (safe: UninitializedPropertyAccessException) { DomainCheck() },
         try { ValidNameCheck.instance } catch (safe: UninitializedPropertyAccessException) { ValidNameCheck() },
-        MoeLimbo,
+        LimboLoader,
         CacheMotdManager,
         BrandCheck,
         LimboListener,

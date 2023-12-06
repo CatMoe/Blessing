@@ -19,8 +19,6 @@ package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
-import catmoe.fallencrystal.moefilter.api.logger.BCLogType
-import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
 import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
 import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
@@ -35,12 +33,11 @@ import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.BungeeEvent
-import catmoe.fallencrystal.moefilter.listener.main.EventLoggerFilter
-import catmoe.fallencrystal.moefilter.listener.main.MainListener
-import catmoe.fallencrystal.moefilter.network.InitChannel
+import catmoe.fallencrystal.moefilter.network.InitializerInjector
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
-import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.DISABLED
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.HANDLE
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -112,17 +109,16 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 // check they init method to get more information
                 ProxyCache
                 CPUMonitor.startSchedule()
-                //pluginManager.registerCommand(plugin, CommandHandler("moefilter", "", "ab", "antibot", "filter", "moefilter", "mf"))
                 CommandAdapter.register(CommandHandler())
 
                 registerListener()
                 ConnectionStatistics
                 Notifications
-                if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) { loadMaxmindDatabase() }
+                if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) loadMaxmindDatabase()
                 Firewall.load()
                 loadProxyAPI()
-                if (LocalConfig.getLimbo().getBoolean("enabled")) {
-                    MoeLimbo.initLimbo()
+                if (mode == HANDLE) {
+                    LimboLoader.initLimbo()
                     // EventManager.registerListener(plugin, BungeeSwitcher)
                     EventManager.register(BungeeSwitcher)
                 }
@@ -159,20 +155,11 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     }
 
     private fun loadAntibot() {
-        val mode = try { WorkingMode.valueOf(LocalConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { PIPELINE }
-        MainListener.incomingListener = if (LoggerManager.getType() == BCLogType.WATERFALL)
-            catmoe.fallencrystal.moefilter.listener.listener.waterfall.IncomingListener()
-        else catmoe.fallencrystal.moefilter.listener.listener.common.IncomingListener()
+        val mode = try { WorkingMode.valueOf(LocalConfig.getAntibot().getAnyRef("mode").toString()) } catch (ignore: Exception) { HANDLE }
         this.mode=mode
-        when (mode) {
-            PIPELINE -> InitChannel().initPipeline()
-            EVENT -> {
-                pluginManager.registerListener(plugin, MainListener.incomingListener)
-                LoggerManager.registerFilter(EventLoggerFilter())
-                MessageUtil.logWarn("[MoeFilter] EVENT mode is deprecated. Don't expect strong protection!")
-            }
-            DISABLED -> { MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!") }
-        }
+        if (mode == DISABLED)
+            MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!")
+        else InitializerInjector().initPipeline()
         MoeFilterBungee.mode = mode
     }
 

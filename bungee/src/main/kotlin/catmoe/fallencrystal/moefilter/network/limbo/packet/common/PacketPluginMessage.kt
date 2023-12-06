@@ -23,7 +23,7 @@ import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.google.common.base.Preconditions
@@ -63,7 +63,7 @@ class PacketPluginMessage(
             if (BrandCheck.increase(Brand(this.message))) {
                 FastDisconnect.disconnect(handler, DisconnectType.BRAND_NOT_ALLOWED)
             }
-            MoeLimbo.debug(handler, "Brand: $message")
+            LimboLoader.debug(handler, "Brand: $message")
         }
     }
 

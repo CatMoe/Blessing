@@ -15,12 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.pipeline
+package catmoe.fallencrystal.moefilter.network.bungee.initializer
 
-import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.moefilter.common.state.StateManager
 import catmoe.fallencrystal.moefilter.network.bungee.handler.ByteBufHandler
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.channel.*
 import io.netty.channel.ChannelHandler.Sharable
@@ -51,4 +53,7 @@ object MoeChannelHandler : IPipeline {
     private val MOEFILTER_HANDLER = ByteBufHandler()
 
     fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
+
+    val callInitEvent = LocalConfig.getAntibot().getBoolean("call-connect-event")
+    val injectPacketListener = AsyncLoader.instance.mode != WorkingMode.DISABLED
 }

@@ -19,7 +19,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.block.BlockPosition
-import catmoe.fallencrystal.moefilter.network.limbo.handler.MoeLimbo
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
@@ -40,7 +40,7 @@ class PacketBlocksSectionUpdate(
                 val position = (block.x - (sectionX shl 4)) shl 12 or ((block.z - (sectionZ shl 4)) shl 8) or block.y
                 val id = block.block.getId(version)
                 val writeId = if (version.moreOrEqual(Version.V1_13)) id else id shl 4
-                MoeLimbo.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, writeId=$writeId")
+                LimboLoader.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, writeId=$writeId")
                 packet.writeShort(position)
                 packet.writeVarInt(writeId)
             }
@@ -54,7 +54,7 @@ class PacketBlocksSectionUpdate(
                 val id = block.block.getId(version)
                 val position = (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4)).toShort()
                 val value = id.toLong() shl 12 or position.toLong()
-                MoeLimbo.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, value=$value")
+                LimboLoader.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, value=$value")
                 packet.writeVarLong(value)
             }
         }
