@@ -25,7 +25,7 @@ import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketAntibotHandle
 import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser.GeyserInitializer
-import catmoe.fallencrystal.moefilter.network.bungee.util.event.EventCaller
+import catmoe.fallencrystal.moefilter.network.bungee.util.event.BungeeConnectedEvent
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntFrameDecoder
 import catmoe.fallencrystal.moefilter.network.common.decoder.VarIntLengthEncoder
@@ -72,7 +72,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.addFirst(TrafficMonitor.NAME, TrafficMonitor())
         if (BungeeSwitcher.connectToBungee(inetAddress)) connectToBungee(ctx, pipeline, channel, listener)
         else connectToLimbo(ctx, pipeline, channel)
-        EventCaller(channel, listener).callEvent()
+        BungeeConnectedEvent(channel, listener).callEvent()
     }
 
     open fun connectToLimbo(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel) {
@@ -120,7 +120,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline[InboundHandler::class.java].setHandler(InitialHandler(bungee, listener))
 
         if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
-        if (MoeChannelHandler.callInitEvent) EventCaller(channel, listener).callEvent()
+        if (MoeChannelHandler.callInitEvent) BungeeConnectedEvent(channel, listener).callEvent()
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) { /* Ignored */ }

@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck

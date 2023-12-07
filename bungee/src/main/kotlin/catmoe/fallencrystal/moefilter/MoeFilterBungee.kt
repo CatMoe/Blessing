@@ -43,19 +43,15 @@ class MoeFilterBungee : Plugin(), PlatformLoader {
     }
 
     override fun onEnable() {
-        load()
+        val loader = AsyncLoader(this, viaLoader)
+        initLogger.onLoad()
+        loader.load()
     }
 
     override fun onDisable() {
         viaLoader.whenUnload()
         initLogger.onUnload()
         EventManager.callEvent(PluginUnloadEvent())
-    }
-
-    private fun load() {
-        val loader = AsyncLoader(this, viaLoader)
-        initLogger.onLoad()
-        loader.load()
     }
 
     override fun onLoad() {

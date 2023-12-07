@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.api.command.impl.*
 import catmoe.fallencrystal.moefilter.api.command.impl.test.RegexParseCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestKickCommand
 import catmoe.fallencrystal.moefilter.api.command.impl.test.TestWebhookCommand
-import catmoe.fallencrystal.moefilter.api.command.impl.test.gui.TestGuiCommand
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.translation.command.annotation.MoeCommand
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
@@ -37,7 +36,6 @@ class LoadCommand : Reloadable {
             ToggleStatisticsCommand::class,
             ReloadCommand::class,
             TestKickCommand::class,
-            TestGuiCommand::class,
             TestWebhookCommand::class,
             LockdownCommand::class,
             DropFirewallCommand::class,

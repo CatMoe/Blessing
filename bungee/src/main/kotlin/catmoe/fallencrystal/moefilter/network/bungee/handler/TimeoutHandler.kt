@@ -36,6 +36,12 @@ class TimeoutHandler @JvmOverloads constructor(timeout: Long, timeUnit: TimeUnit
 
     @Throws(Exception::class)
     private fun readTimedOut(ctx: ChannelHandlerContext) {
-        if (!closed) { if (ctx.channel().isActive) { ctx.close(); ConnectionStatistics.countBlocked(BlockType.TIMEOUT) }; closed = true }
+        if (!closed) {
+            if (ctx.channel().isActive) {
+                ctx.close()
+                ConnectionStatistics.countBlocked(BlockType.TIMEOUT)
+            }
+            closed = true
+        }
     }
 }

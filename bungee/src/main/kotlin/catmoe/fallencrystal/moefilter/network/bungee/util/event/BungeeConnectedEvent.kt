@@ -25,7 +25,7 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.api.event.ClientConnectEvent
 
-class EventCaller(val channel: Channel, val listener: ListenerInfo) {
+class BungeeConnectedEvent(val channel: Channel, val listener: ListenerInfo) {
     private val isWaterfall = LoggerManager.getType() == BCLogType.WATERFALL
     private val bungee = ProxyServer.getInstance()
 
@@ -34,10 +34,13 @@ class EventCaller(val channel: Channel, val listener: ListenerInfo) {
             // import then will throw `NoClassDefFoundError` when they don't run waterfall (or forks)
             io.github.waterfallmc.waterfall.event.ConnectionInitEvent(channel.remoteAddress(), listener) {
                     result: io.github.waterfallmc.waterfall.event.ConnectionInitEvent, throwable: Throwable? ->
-                if (result.isCancelled) { if (channel.isActive) channel.close(); return@ConnectionInitEvent }
+                if (result.isCancelled) {
+                    if (channel.isActive) channel.close()
+                    return@ConnectionInitEvent
+                }
                 if (throwable != null) { ExceptionCatcher.handle(channel, throwable) }
             }
         }
-        if (bungee.pluginManager.callEvent(ClientConnectEvent(channel.remoteAddress(), listener)).isCancelled && channel.isActive) { channel.close() }
+        if (bungee.pluginManager.callEvent(ClientConnectEvent(channel.remoteAddress(), listener)).isCancelled && channel.isActive) channel.close()
     }
 }

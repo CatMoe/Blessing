@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.api.proxy
+package catmoe.fallencrystal.moefilter.common.check.proxy
 
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.translation.utils.config.Reloadable

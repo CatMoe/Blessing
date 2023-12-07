@@ -88,7 +88,7 @@ object HitPlatformChecker: LimboChecker {
             sendTest(handler, data)
             return false
         }
-        val validHeight = (platformHeight + block.obj.height())
+        val validHeight = platformHeight + block.obj.height()
         if (position != null) {
             if (position.y < validHeight) {
                 data.passOne ?: kick(handler)
@@ -129,7 +129,11 @@ object HitPlatformChecker: LimboChecker {
     private fun pass(a: LimboHandler) {
         val c = LocalConfig.getLimbo().getConfig("check.timer")
         val t = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - MoveTimer.firstTime.getIfPresent(a)!!)
-        if (t < c.getInt("min") || t > c.getInt("max")) { kick(a); if (LimboLoader.debug) { try { throw Throwable() } catch (e: Throwable) { e.printStackTrace() } }; return }
+        if (t < c.getInt("min") || t > c.getInt("max")) {
+            kick(a)
+            if (LimboLoader.debug) { try { throw Throwable() } catch (e: Throwable) { e.printStackTrace() } }
+            return
+        }
         FastDisconnect.disconnect(a, DisconnectType.PASSED_CHECK)
         //EventManager.triggerEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))
         EventManager.callEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))

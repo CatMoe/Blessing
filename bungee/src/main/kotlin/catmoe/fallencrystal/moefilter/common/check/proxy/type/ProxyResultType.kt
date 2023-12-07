@@ -18,7 +18,5 @@
 package catmoe.fallencrystal.moefilter.common.check.proxy.type
 
 enum class ProxyResultType {
-    INTERNAL,
-    PROXY_CHECK,
-    IP_API
+    INTERNAL
 }

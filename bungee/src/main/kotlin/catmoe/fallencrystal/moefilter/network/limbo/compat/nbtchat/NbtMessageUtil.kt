@@ -58,12 +58,12 @@ object NbtMessageUtil {
 
             is JsonObject -> {
                 val builder = CompoundBinaryTag.builder()
-                for ((key, value) in (json).entrySet()) builder.put(key, fromJson(value))
+                for ((key, value) in json.entrySet()) builder.put(key, fromJson(value))
                 return builder.build()
             }
 
             is JsonArray -> {
-                val jsonArray: List<JsonElement> = (json).asList()
+                val jsonArray: List<JsonElement> = json.asList()
                 if (jsonArray.isEmpty()) {
                     return ListBinaryTag.listBinaryTag(EndBinaryTag.endBinaryTag().type(), Collections.emptyList())
                 }

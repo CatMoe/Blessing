@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.common.check.proxy.util
+package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import okhttp3.OkHttpClient
@@ -24,18 +24,19 @@ import okhttp3.Response
 import java.net.InetSocketAddress
 import java.net.Proxy
 
-class ClientHelper(private val c: OkHttpClient.Builder, private val url: String) {
+@Suppress("MemberVisibilityCanBePrivate")
+class ClientHelper(val builder: OkHttpClient.Builder, private val url: String) {
 
     private val proxyConf = LocalConfig.getProxy().getConfig("proxies-config")
     private val proxyType = try { (Proxy.Type.valueOf(proxyConf.getAnyRef("mode").toString())) } catch (_: IllegalArgumentException) { Proxy.Type.DIRECT }
 
     fun setProxy(boolean: Boolean) {
         if (boolean) {
-            if (proxyType != Proxy.Type.DIRECT) { c.proxy(Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port")))) }
+            if (proxyType != Proxy.Type.DIRECT) { builder.proxy(Proxy(proxyType, InetSocketAddress(proxyConf.getString("host"), proxyConf.getInt("port")))) }
         } else {
-            c.proxy(Proxy.NO_PROXY)
+            builder.proxy(Proxy.NO_PROXY)
         }
     }
 
-    fun getResponse(): Response { return c.build().newCall(Request.Builder().url(url).build()).execute() }
+    fun getResponse(): Response { return builder.build().newCall(Request.Builder().url(url).build()).execute() }
 }

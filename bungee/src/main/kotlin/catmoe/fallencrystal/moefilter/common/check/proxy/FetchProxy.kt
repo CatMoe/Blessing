@@ -15,12 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.api.proxy
+package catmoe.fallencrystal.moefilter.common.check.proxy
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
-import catmoe.fallencrystal.moefilter.common.check.proxy.util.ClientHelper
+import catmoe.fallencrystal.moefilter.util.plugin.ClientHelper
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
@@ -62,7 +62,6 @@ class FetchProxy {
                     val client = ClientHelper(OkHttpClient.Builder(), it)
                     client.setProxy(true)
                     val response = client.getResponse()
-                    val regex = Regex("""(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)""")
                     if (response.isSuccessful) {
                         val lines = response.body?.string()?.split("\n")
                         for (line in lines!!) {
@@ -101,5 +100,9 @@ class FetchProxy {
         } else { if (enabled) { initSchedule() } }
         this.debug = config.getBoolean("internal.debug")
         this.config = config
+    }
+
+    companion object {
+        val regex = Regex("""(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)""")
     }
 }

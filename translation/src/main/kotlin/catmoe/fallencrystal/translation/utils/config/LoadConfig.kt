@@ -640,28 +640,7 @@ class LoadConfig {
                     ]
                 }
                 
-                # 设置来自https://proxycheck.io的服务
-                # 修改此选项需要重启服务器.
-                proxycheck-io {
-                    enable=false
-                    # API秘钥 您需要在上面注册一个账户才可以使用该服务.
-                    key="your-key-here"
-                    # 单日可查询次数限制. 这取决于你的计划. 但由于我们并不真正保存使用次数 
-                    # 而是作为插件在检查时的请求次数-1 以避免无限制调用接口.
-                    limit=1000
-                    # 检查并踢出vpn 但可能会导致消耗两次查询机会
-                    check-vpn=false
-                    # 每分钟请求限制.
-                    throttle=350
-                    # 如果您因为proxies-config中配置的代理而被proxycheck禁止访问 请将其设置为true
-                    direct-response=false
-                }
-                
-                # 是否使用来自ip-api提供的检测代理服务
-                # 修改此选项需要重启服务器.
-                ip-api {
-                    enable=true
-                }
+                # 第三方API的支持已被删除
                 
                 # GeoIP设置 @MaxMind Database
                 country {

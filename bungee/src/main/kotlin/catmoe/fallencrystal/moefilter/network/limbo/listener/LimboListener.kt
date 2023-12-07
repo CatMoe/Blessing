@@ -37,8 +37,10 @@ object LimboListener : Reloadable {
             val o = listener.getIfPresent(it.java)
             if (o == null) { listener.put(it.java, mutableListOf(clazz)) }
             else {
-                var conflict: ILimboListener? = null; o.forEach { c -> if (c::class.java == clazz::class.java) conflict=c }
-                if (conflict != null) o.remove(conflict); o.add(clazz)
+                var conflict: ILimboListener? = null
+                o.forEach { c -> if (c::class.java == clazz::class.java) conflict=c }
+                if (conflict != null) o.remove(conflict)
+                o.add(clazz)
                 listener.put(it.java, o)
             }
         }

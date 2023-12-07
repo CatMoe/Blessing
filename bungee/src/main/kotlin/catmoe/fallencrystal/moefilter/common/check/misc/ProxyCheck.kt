@@ -17,7 +17,7 @@
 
 package catmoe.fallencrystal.moefilter.common.check.misc
 
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
+import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.check.AbstractCheck
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Address
@@ -33,8 +33,7 @@ class ProxyCheck : AbstractCheck() {
     override fun increase(info: CheckInfo): Boolean {
         val inetAddress = (info as Address).address.address
         val result = ProxyCache.getProxy(inetAddress) ?: /* apiCheck(inetAddress);  */return false
-        if (result.type == ProxyResultType.INTERNAL) { Firewall.addAddress(inetAddress) }
-        else if (Throttler.isThrottled(inetAddress)) { Firewall.addAddress(inetAddress) }
+        if (result.type == ProxyResultType.INTERNAL || Throttler.isThrottled(inetAddress)) Firewall.addAddress(inetAddress)
         return true
     }
 

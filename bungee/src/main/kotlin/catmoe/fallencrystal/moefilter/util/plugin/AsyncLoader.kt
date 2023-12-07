@@ -19,10 +19,8 @@ package catmoe.fallencrystal.moefilter.util.plugin
 
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.api.command.CommandHandler
-import catmoe.fallencrystal.moefilter.api.proxy.ProxyCache
-import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyChecker
-import catmoe.fallencrystal.moefilter.common.check.proxy.ipapi.IPAPIChecker
-import catmoe.fallencrystal.moefilter.common.check.proxy.proxycheck.ProxyCheck
+import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
+import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.config.ReloadConfig
 import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
@@ -32,11 +30,11 @@ import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
+import catmoe.fallencrystal.moefilter.listener.AttackLoggerFilter
 import catmoe.fallencrystal.moefilter.listener.BungeeEvent
 import catmoe.fallencrystal.moefilter.network.InitializerInjector
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
-import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.DISABLED
-import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.HANDLE
+import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
@@ -55,7 +53,7 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.protocol.packet.Kick
 
-@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     private val proxy = ProxyServer.getInstance()
     private val pluginManager = proxy.pluginManager
@@ -116,7 +114,6 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 Notifications
                 if ( try { CountryMode.valueOf(LocalConfig.getProxy().getAnyRef("country.mode").toString()) != CountryMode.DISABLED } catch (_: Exception) { false } ) loadMaxmindDatabase()
                 Firewall.load()
-                loadProxyAPI()
                 if (mode == HANDLE) {
                     LimboLoader.initLimbo()
                     // EventManager.registerListener(plugin, BungeeSwitcher)
@@ -160,13 +157,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         if (mode == DISABLED)
             MessageUtil.logWarn("[MoeFilter] [Antibot] You choose to disabled antibot! If that not you want choose. Please select another mode in antibot.conf!")
         else InitializerInjector().initPipeline()
+        if (mode == PACKET) LoggerManager.registerFilter(AttackLoggerFilter())
         MoeFilterBungee.mode = mode
-    }
-
-    private fun loadProxyAPI() {
-        val conf = LocalConfig.getProxy()
-        if (conf.getBoolean("ip-api.enable")) ProxyChecker.addAPI(IPAPIChecker())
-        if (conf.getBoolean("proxycheck-io.enable")) ProxyChecker.addAPI(ProxyCheck())
     }
 
     private fun loadMaxmindDatabase() {

@@ -58,10 +58,11 @@ class PacketEmptyChunk(
                 packet.writeCompoundTag(NamedTag("", rootTag))
             // Height maps >> End
             if (version.fromTo(Version.V1_15_2, Version.V1_17_1)) {
+                val intRange = 0..1023
                 if (version.moreOrEqual(Version.V1_16_2)) {
                     packet.writeVarInt(1024)
-                    (0..1023).forEach { _ -> packet.writeVarInt(1) }
-                } else {  (0..1023).forEach { _ -> packet.writeInt(0) } }
+                    for (i in intRange) packet.writeVarInt(1)
+                } else {  for (i in intRange) packet.writeInt(0) }
             }
         }
         when {
@@ -71,7 +72,7 @@ class PacketEmptyChunk(
             else -> {
                 val sectionData = byteArrayOf(0, 0, 0, 0, 0, 0, 1, 0)
                 packet.writeVarInt(sectionData.size * 16)
-                (0..15).forEach { _ -> packet.writeBytes(sectionData) }
+                for (i in 0..15) packet.writeBytes(sectionData)
             }
         }
         if (version.moreOrEqual(Version.V1_9_4)) packet.writeVarInt(0)
