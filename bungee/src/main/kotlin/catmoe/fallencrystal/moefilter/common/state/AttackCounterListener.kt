@@ -23,7 +23,6 @@ import catmoe.fallencrystal.moefilter.event.UnderAttackEvent
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
-import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.event.EventListener
 import catmoe.fallencrystal.translation.event.annotations.AsynchronousHandler
 import catmoe.fallencrystal.translation.event.annotations.EventHandler
@@ -41,7 +40,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 
 class AttackCounterListener : EventListener {
     private var inAttack = false
-    private val scheduler = Scheduler.getDefault()
 
     @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.LOWEST)
     @AsynchronousHandler
@@ -51,7 +49,8 @@ class AttackCounterListener : EventListener {
         if (!inAttack) {
             inAttack=true; ConnectionStatistics.inAttack=true
             ProxyServer.getInstance().players.forEach {
-                if (it.hasPermission("moefilter.notification.auto.actionbar") || it.hasPermission("moefilter.notification.auto")) Notifications.autoNotification.add(it)
+                if (it.hasPermission("moefilter.notification.auto"))
+                    Notifications.autoNotification.add(it)
             }
             MessageUtil.logWarn("[MoeFilter] [AntiBot] The server is under attack!")
             sendTitle(true)

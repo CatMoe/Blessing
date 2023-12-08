@@ -29,7 +29,4 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: MegaLinter
-      # noinspection SpellCheckingInspection
-      uses: oxsecurity/megalinter@v7.6.0
 

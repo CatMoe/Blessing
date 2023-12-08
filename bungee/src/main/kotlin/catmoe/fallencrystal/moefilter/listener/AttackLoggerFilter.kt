@@ -24,8 +24,8 @@ import java.util.logging.LogRecord
 class AttackLoggerFilter : ILogger {
 
     override fun isLoggable(record: LogRecord?, isCancelled: Boolean): Boolean {
-        val message = record?.message
-        return if (isCancelled || message == null) false else
-            !(StateManager.inAttack.get() && (message.contains("{0} has connected") || message.contains("{0} has pinged")))
+        val log = record?.message
+        return if (isCancelled || log == null) false else
+            !(StateManager.inAttack.get() && (log.contains("{0} has connected") || log.contains("{0} has pinged")))
     }
 }

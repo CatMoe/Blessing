@@ -6,7 +6,7 @@
 
 ***⚡ A open-source antibot & utils for BungeeCord.***
 
-[![Release](https://img.shields.io/github/v/release/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/releases/latest)
+[![Release](https://www.codefactor.io/repository/github/catmoe/moefilter/badge)](https://www.codefactor.io/repository/github/catmoe/moefilter)
 [![Download](https://img.shields.io/github/downloads/CatMoe/MoeFilter/total?style=flat-square)](https://github.com/CatMoe/MoeFilter/releases/latest)
 [![Stars](https://img.shields.io/github/stars/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/stargazers)
 [![Issues](https://img.shields.io/github/issues/CatMoe/MoeFilter?style=flat-square)](https://github.com/CatMoe/MoeFilter/issues)
@@ -14,8 +14,8 @@
 </div>
 <div align="center">
 
-[简体中文](https://github.com/CatMoe/MoeFilter/blob/stray/readme/CN.md) |
-[English](https://github.com/CatMoe/MoeFilter/blob/stray/readme/EN.md)
+[简体中文](https://github.com/CatMoe/MoeFilter/blob/stray/readme/README-CN.md) |
+[English](https://github.com/CatMoe/MoeFilter/blob/stray/readme/README-EN.md)
 </div>
 
 
@@ -23,6 +23,7 @@
 
 MoeFilter is an antibot and utility plugin developed specifically for BungeeCord.
 Can run on almost any fork you like.
+(Such as [Waterfall](https://github.com/PaperMC/Waterfall/), etc.)
 
 ## Features ✨
 
@@ -40,9 +41,8 @@ Can run on almost any fork you like.
   - Register commands with ease. async execute, aliases, player-only operations, etc. can be done with annotations.
   - [`PlayerPostBrandEvent`](https://github.com/CatMoe/MoeFilter/blob/stray/translation/src/main/kotlin/catmoe/fallencrystal/translation/event/events/player/PlayerPostBrandEvent.kt). 
     Call a specific listener when the player sends their own client brand.
-  - Easily write code that works on both [Velocity](https://github.com/PaperMC/Velocity) and [BungeeCord](https://github.com/SpigotMC/BungeeCord). 
-    Simply install MoeFilter to your server.
-  - All are designed with [MiniMessage](https://docs.advntr.dev/minimessage/) in mind.
+  - Use MoeTranslation to easily write code that is compatible with both [Velocity](https://github.com/PaperMC/Velocity) and [BungeeCord](https://github.com/SpigotMC/BungeeCord).
+  - All the features about chat are made with [MiniMessage](https://docs.advntr.dev/minimessage/) in mind.
 
 
 ## Compatibility 🔧
