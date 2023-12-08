@@ -139,6 +139,7 @@ class LimboHandler(
         if (version.moreOrEqual(Version.V1_20_3)) writePacket(PacketGameEvent())
         (chunkStart..chunkLength).forEach { x -> (chunkStart..chunkLength).forEach { z -> writePacket(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}")) }}
         if (LimboLoader.platformSummon) sendTestPlatform(LimboLoader.platformHeight, LimboLoader.platformBlock)
+        writePacket(LimboLoader.testChatPacket)
         channel.flush()
     }
 

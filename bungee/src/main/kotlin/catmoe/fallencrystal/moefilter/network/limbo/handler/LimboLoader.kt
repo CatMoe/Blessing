@@ -28,6 +28,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.impl.TransactionCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketOrderCheck
+import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
@@ -38,8 +39,10 @@ import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimens
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
+import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketServerChat
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
+import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
@@ -76,6 +79,13 @@ object LimboLoader : Reloadable {
         Block.STONE.obj
     }
     val spawnHeight = limboConfig.getDouble("spawn-height")
+
+    val testChatPacket = if (limboConfig.getBoolean("debug.chat.enabled"))
+        PacketServerChat(
+            type = PacketServerChat.MessageType.valueOf(limboConfig.getString("debug.chat.type")),
+            message = NbtMessage.create(ComponentUtil.parse(limboConfig.getString("debug.chat.message")))
+        )
+    else null
 
     private val checker = listOf(
         CommonJoinCheck,

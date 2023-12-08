@@ -783,6 +783,13 @@ class LoadConfig {
                         # STONE, BARRIER, AIR
                         block=STONE
                     }
+                    # 加入时发送聊天信息. (测试)
+                    chat {
+                        enabled=false
+                        # CHAT, SYSTEM, ACTION_BAR
+                        type=ACTION_BAR
+                        message="<yellow>This is a test message!"
+                    }
                 }
     """.trimIndent()
 

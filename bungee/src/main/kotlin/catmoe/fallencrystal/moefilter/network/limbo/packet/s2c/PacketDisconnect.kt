@@ -18,8 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.compat.nbtchat.NbtMessage
-import catmoe.fallencrystal.moefilter.network.limbo.compat.nbtchat.NbtMessageUtil
+import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
@@ -28,20 +27,18 @@ import net.md_5.bungee.api.chat.BaseComponent
 
 @Suppress("unused")
 class PacketDisconnect(
-    var message: NbtMessage? = null
+    var message: NbtMessage = EMPTY
 ) : LimboS2CPacket() {
 
-    constructor(message: BaseComponent) : this(NbtMessageUtil.create(message))
-    constructor(message: Component) : this(NbtMessageUtil.create(message))
-    constructor(message: String) : this(NbtMessageUtil.create(message))
-
-    fun setMessage(message: String) { this.message = NbtMessageUtil.create(message) }
-    fun setMessage(baseComponent: BaseComponent) { this.message = NbtMessageUtil.create(baseComponent) }
-    fun setMessage(component: Component) { this.message = NbtMessageUtil.create(component) }
-    override fun encode(packet: ByteMessage, version: Version?) {
-        val message = this.message ?: NbtMessageUtil.create(ComponentUtil.parse("null"))
-        if (version?.moreOrEqual(Version.V1_20_2) == true) packet.writeNamelessCompoundTag(message.tag) else packet.writeString(message.json)
-    }
+    fun setMessage(message: String) { this.message = NbtMessage.create(message) }
+    fun setMessage(baseComponent: BaseComponent) { this.message = NbtMessage.create(baseComponent) }
+    fun setMessage(component: Component) { this.message = NbtMessage.create(component) }
+    override fun encode(packet: ByteMessage, version: Version?) =
+        this.message.write(packet, version)
 
     override fun toString() = "PacketDisconnect(message=$message)"
+
+    companion object {
+        private val EMPTY = NbtMessage.create(ComponentUtil.parse("null"))
+    }
 }

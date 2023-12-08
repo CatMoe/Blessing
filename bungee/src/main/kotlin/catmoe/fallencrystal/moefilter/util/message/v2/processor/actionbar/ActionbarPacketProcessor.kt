@@ -104,7 +104,7 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
             false -> title.text=when (serializer) {
                 is String -> ComponentSerializer.deserialize(serializer)
                 is BaseComponent -> serializer
-                 else -> throw IllegalArgumentException()
+                else -> throw IllegalArgumentException()
             }
         }
         return title
