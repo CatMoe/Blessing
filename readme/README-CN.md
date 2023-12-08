@@ -17,7 +17,7 @@ MoeFilter是专门为BungeeCord制作的反机器人以及实用工具.
 - 以及其它反机器人几乎都有的检查, 例如用户名有效性检查, IP地理位置检查, 以及更多..
 > 翻译器 / 通用平台
 - 不需要编写冗余的判断逻辑. 异步执行命令, 是否允许控制台执行命令等等 ——只需要在注解中声明它.
-- [`PlayerPostBrandEvent`](https://github.com/CatMoe/MoeFilter/blob/stray/translation/src/main/kotlin/catmoe/fallencrystal/translation/event/events/player/PlayerPostBrandEvent.kt)事件. 当玩家
+- [`PlayerPostBrandEvent`](https://github.com/CatMoe/MoeFilter/blob/stray/translation/src/main/kotlin/catmoe/fallencrystal/translation/event/events/player/PlayerPostBrandEvent.kt)事件. 当玩家声明他们的客户端是什么时执行特定的操作.
 - 你可以使用它来编写同时兼容 [Velocity](https://github.com/PaperMC/Velocity) 和 [BungeeCord](https://github.com/SpigotMC/BungeeCord) 两个平台的代码.
 - 所有关于聊天的功能都考虑到了 [MiniMessage](https://docs.advntr.dev/minimessage/).
 
@@ -75,6 +75,6 @@ MoeFilter是专门为BungeeCord制作的反机器人以及实用工具.
 > ViaVersion是支持的, 但仅限于您安装在后端服务器而不是代理上.
 > [了解更多](https://github.com/CatMoe/MoeFilter/issues/56#issuecomment-1714924303)
 
-## 📷 预览
+## 📷 预览视频
 
-> 这里目前什么都没有. 请稍后再来
+> 还没有任何关于此插件的预览视频或视频教程.
