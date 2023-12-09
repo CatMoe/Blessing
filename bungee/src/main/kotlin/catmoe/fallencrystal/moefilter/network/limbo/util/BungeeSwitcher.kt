@@ -20,7 +20,6 @@ package catmoe.fallencrystal.moefilter.network.limbo.util
 import catmoe.fallencrystal.moefilter.check.info.CheckInfo
 import catmoe.fallencrystal.moefilter.check.info.impl.Joining
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.event.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader

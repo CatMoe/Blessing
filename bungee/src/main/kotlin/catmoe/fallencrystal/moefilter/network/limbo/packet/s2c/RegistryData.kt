@@ -28,14 +28,14 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import io.netty.buffer.Unpooled
 
 class RegistryData  : LimboS2CPacket() {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_20_2)) return
         when (LimboLoader.dimLoaderMode) {
             DimensionInterface.ADVENTURE ->
                 //packet.writeCompoundTag(DimensionRegistry.codec_1_20)
-                packet.writeNamelessCompoundTag(DimensionRegistry.codec_1_20)
+                byteBuf.writeNamelessCompoundTag(DimensionRegistry.codec_1_20)
             DimensionInterface.LLBIT ->
-                packet.writeNamelessCompoundTag(StaticDimension.cacheDimension.getIfPresent(version)!!)
+                byteBuf.writeNamelessCompoundTag(StaticDimension.cacheDimension.getIfPresent(version)!!)
                 //packet.writeCompoundTag(StaticDimension.dim.dimension.getAttributes(version))
         }
     }

@@ -73,7 +73,10 @@ object EventManager {
                     CubeLogger.log(Level.WARNING, "Cannot apply annotation \"EndCallWhenCancelled\" for Async event handler (${m.javaClass.name})")
                 debug("Target has async call annotation.")
                 debug("Try calling..")
-                CompletableFuture.runAsync { try { it.invoke(m, event) } catch (e: Exception) {
+                CompletableFuture.runAsync { try {
+                    it.isAccessible=true
+                    it.invoke(m, event)
+                } catch (e: Exception) {
                     /* IDK why I will create this... */
                     if (it.isAnnotationPresent(SilentException::class.java)) {
                         val ignore = it.getAnnotation(SilentException::class.java).exception
@@ -82,7 +85,10 @@ object EventManager {
                 } }; continue
             }
             debug("Try calling..")
-            try { it.invoke(m, event) } catch (e: Exception) {
+            try {
+                it.isAccessible=true
+                it.invoke(m, event)
+            } catch (e: Exception) {
                 if (it.isAnnotationPresent(SilentException::class.java)) {
                     val ignore = it.getAnnotation(SilentException::class.java).exception
                     if (!ignore.contains(e::class)) e.printStackTrace() // If they have Exception::class, They will ignore all exception(s)?
@@ -100,12 +106,14 @@ object EventManager {
         val method = listener.javaClass.declaredMethods
         for (it in method) {
             /* it.parameterTypes[0]::class.java.isAssignableFrom(TranslationEvent::class.java) */
+            it.isAccessible=true
             if (it.isAnnotationPresent(EventHandler::class.java) && it.parameterCount == 1 && TranslationLoader.canAccess(it)) {
                 debug("Founded handler method: ${it.name}")
                 a.add(it)
             }
         }
         for (it in a) {
+            it.isAccessible=true
             val annotation = it.getAnnotation(EventHandler::class.java)
             val h = annotation.priority
             val c: KClass<out TranslationEvent> = annotation.event

@@ -23,7 +23,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 abstract class LimboS2CPacket : LimboPacket {
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         throw InvalidPacketOperation("decode does not work with S2C packets")
     }
 }

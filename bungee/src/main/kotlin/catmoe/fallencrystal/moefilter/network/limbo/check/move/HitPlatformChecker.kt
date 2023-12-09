@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.limbo.check.move
 
-import catmoe.fallencrystal.moefilter.event.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.LimboLocation
@@ -33,6 +32,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPosit
 import catmoe.fallencrystal.moefilter.network.limbo.packet.c2s.PacketClientPositionLook
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketServerPositionLook
+import catmoe.fallencrystal.moefilter.network.limbo.util.LimboCheckPassedEvent
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -75,6 +75,7 @@ object HitPlatformChecker: LimboChecker {
         if (cancelledRead) return true
         var position: LimboLocation? = null
         val data = this.data.getIfPresent(handler) ?: TempData()
+        if (data.passed) return false
         when (packet) {
             is Disconnect -> {
                 this.data.invalidate(handler)
@@ -98,7 +99,11 @@ object HitPlatformChecker: LimboChecker {
                 if (!isValid) { kick(handler); return false }
                 val round = data.round ?: random.nextInt(roundMin, roundMax + 1)
                 val count = data.count ?: 1
-                if (count >= round) pass(handler) else {
+                if (count >= round) {
+                    pass(handler)
+                    handler.sendTestPlatform(platformHeight, Block.AIR.obj)
+                    handler.channel.flush()
+                } else {
                     data.round=round
                     data.count=count + 1
                     sendTest(handler, data)
@@ -134,9 +139,13 @@ object HitPlatformChecker: LimboChecker {
             if (LimboLoader.debug) { try { throw Throwable() } catch (e: Throwable) { e.printStackTrace() } }
             return
         }
-        FastDisconnect.disconnect(a, DisconnectType.PASSED_CHECK)
-        //EventManager.triggerEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))
-        EventManager.callEvent(LimboCheckPassedEvent(a.version!!, a.profile.username!!, (a.address as InetSocketAddress).address))
+        // cancel kick.
+        data.getIfPresent(a)?.passed = true
+        EventManager.callEvent(LimboCheckPassedEvent(
+            a.version!!,
+            a.profile.username!!,
+            (a.address as InetSocketAddress).address, a
+        ))
         return
     }
 
@@ -146,5 +155,5 @@ object HitPlatformChecker: LimboChecker {
 
     override fun unregister() {/* Ignored */}
 
-    internal data class TempData(var platformY: Int? = null, var round: Int? = null, var count: Int? = null, var passOne: Boolean? = null)
+    internal data class TempData(var platformY: Int? = null, var round: Int? = null, var count: Int? = null, var passOne: Boolean? = null, var passed: Boolean = false)
 }

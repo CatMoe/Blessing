@@ -37,25 +37,25 @@ class PacketClientConfiguration : LimboC2SPacket() {
     var enableTextFiltering: Boolean? = null
     var allowServerListings: Boolean? = null
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        val rawLocale = packet.readString()
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        val rawLocale = byteBuf.readString()
         this.rawLocale = rawLocale
         val a = rawLocale.split("_")
         locale = Locale(a[0], a[1])
-        val viewDistance = packet.readByte()
+        val viewDistance = byteBuf.readByte()
         this.viewDistance = viewDistance
         //if (viewDistance < 2) throw IllegalArgumentException("View distance cannot lower than 2!")
         Preconditions.checkArgument(viewDistance > 2, "View distance cannot lower than 2!")
-        val chatMode = packet.readVarInt()
+        val chatMode = byteBuf.readVarInt()
         this.chatMode=chatMode
         Preconditions.checkArgument(!(chatMode < 0 || chatMode > 2), "ChatMode cannot lower than 0 or higher than 2!")
-        chatColor = packet.readBoolean() // ChatColor. Ignored
-        displaySkinParts=packet.readUnsignedByte() // Displayed Skin Parts. Ignored
-        val mainHand = packet.readVarInt()
+        chatColor = byteBuf.readBoolean() // ChatColor. Ignored
+        displaySkinParts=byteBuf.readUnsignedByte() // Displayed Skin Parts. Ignored
+        val mainHand = byteBuf.readVarInt()
         this.mainHand=mainHand
         Preconditions.checkArgument(!(mainHand > 1 || mainHand < 0), "MainHand only can be 0 or 1!")
-        enableTextFiltering=packet.readBoolean()
-        allowServerListings=packet.readBoolean()
+        enableTextFiltering=byteBuf.readBoolean()
+        allowServerListings=byteBuf.readBoolean()
     }
 
     override fun toString(): String {

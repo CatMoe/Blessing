@@ -28,9 +28,9 @@ class PacketSetExperience : LimboS2CPacket() {
     var level = 0
     var totalExp = 0
 
-    override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeFloat(expBar)
-        listOf(level, totalExp).forEach { packet.writeVarInt(it) }
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        byteBuf.writeFloat(expBar)
+        listOf(level, totalExp).forEach { byteBuf.writeVarInt(it) }
     }
 
     override fun toString(): String {

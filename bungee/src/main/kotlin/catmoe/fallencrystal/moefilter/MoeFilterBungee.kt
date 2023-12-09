@@ -54,9 +54,7 @@ class MoeFilterBungee : Plugin(), PlatformLoader {
         EventManager.callEvent(PluginUnloadEvent())
     }
 
-    override fun onLoad() {
-        MessageUtil.logInfo("[MoeFilter] Using MoeFilter API")
-    }
+    override fun onLoad() = MessageUtil.logInfo("[MoeFilter] Using MoeFilter API")
 
     companion object {
         lateinit var instance: MoeFilterBungee

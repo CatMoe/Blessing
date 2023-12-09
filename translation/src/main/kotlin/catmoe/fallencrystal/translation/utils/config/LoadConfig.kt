@@ -147,6 +147,9 @@ class LoadConfig {
                     list=["127.0.0.1"]
                 }
                 
+                # 是否启用netty自带的内存泄露检测器?
+                netty-memory-leak-detector=false
+                
                 # 提醒
                 notifications {
                     # discord webhook.
@@ -588,7 +591,7 @@ class LoadConfig {
         
                 # 内置的反代理. (自动从网站上抓取代理并将其放置在缓存中)
                 internal {
-                    enabled=true
+                    enabled=false
                     # 启用调试 (大量垃圾邮件警告!)
                     debug=false
                     # 调度器任务设置
@@ -758,6 +761,53 @@ class LoadConfig {
                         min=3
                         # 如果玩家通过检查的速度比此规定的时间慢 则他们将会被踢出服务器(秒)
                         max=20
+                    }
+                }
+                
+                chat {
+                    # 当玩家还未完成检查时发送的消息
+                    checking {
+                        # 是否发送
+                        send=true
+                        # 重复发送间隔 以毫秒为单位
+                        schedule=2500
+                        title {
+                            send=false
+                            title="<aqua>Moe<white>Filter"
+                            subtitle="<white>Checking.."
+                            fade-in=10
+                            stay=60
+                            fade-out=20
+                        }
+                        chat {
+                            send=false
+                            message="<aqua>Moe<white>Filter <gray>» <white>Checking your client. Please wait.."
+                        }
+                        action-bar {
+                            send=true
+                            message="<aqua>Moe<white>Filter <gray>» <white>Checking your client. Please wait.."
+                        }
+                    }
+                    check-passed {
+                        send=true
+                        # 通过检查后应该在多少秒后将玩家踢出虚拟服务器 (毫秒)
+                        delay-kick=3000
+                        title {
+                            send=false
+                            title="<aqua>Moe<white>Filter"
+                            subtitle="<green>Please rejoin server."
+                            fade-in=10
+                            stay=60
+                            fade-out=20
+                        }
+                        chat {
+                            send=false
+                            message="<aqua>Moe<white>Filter <gray>» <green>Check passed. Please rejoin server."
+                        }
+                        action-bar {
+                            send=true
+                            message="<aqua>Moe<white>Filter <gray>» <green>Check passed. Please rejoin server."
+                        }
                     }
                 }
                 

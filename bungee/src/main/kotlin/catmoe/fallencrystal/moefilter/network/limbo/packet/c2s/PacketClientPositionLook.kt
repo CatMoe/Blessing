@@ -27,16 +27,16 @@ import io.netty.channel.Channel
 class PacketClientPositionLook : LimboC2SPacket() {
     var loc : LimboLocation? = null
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        val x = packet.readDouble()
-        val y = packet.readDouble()
-        if (version == Version.V1_7_6) packet.readDouble() // Head y. Deprecated
-        val z = packet.readDouble()
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        val x = byteBuf.readDouble()
+        val y = byteBuf.readDouble()
+        if (version == Version.V1_7_6) byteBuf.readDouble() // Head y. Deprecated
+        val z = byteBuf.readDouble()
         loc = LimboLocation(
             x, y, z,
-            packet.readFloat(),
-            packet.readFloat(),
-            packet.readBoolean()
+            byteBuf.readFloat(),
+            byteBuf.readFloat(),
+            byteBuf.readBoolean()
         )
     }
 

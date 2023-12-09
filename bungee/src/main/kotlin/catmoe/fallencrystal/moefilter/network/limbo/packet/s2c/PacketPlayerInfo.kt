@@ -28,35 +28,35 @@ class PacketPlayerInfo(
     var uuid: UUID = UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray(StandardCharsets.UTF_8))
 ) : LimboS2CPacket() {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_8)) {
-            packet.writeString(username)
-            packet.writeBoolean(true) // online
-            packet.writeShort(0)
+            byteBuf.writeString(username)
+            byteBuf.writeBoolean(true) // online
+            byteBuf.writeShort(0)
         } else {
             if (version.moreOrEqual(Version.V1_19_3)) {
                 val actions = EnumSet.noneOf(Action::class.java)
                 actions.add(Action.ADD_PLAYER)
                 actions.add(Action.UPDATE_LISTED)
                 actions.add(Action.UPDATE_GAMEMODE)
-                packet.writeEnumSet(actions, Action::class.java)
-                packet.writeVarInt(1) // Array length (1 element)
-                packet.writeUuid(uuid) // entity uuid
-                packet.writeString(username) // name
-                packet.writeVarInt(0)
-                packet.writeBoolean(true)
-                packet.writeVarInt(gameMode)
+                byteBuf.writeEnumSet(actions, Action::class.java)
+                byteBuf.writeVarInt(1) // Array length (1 element)
+                byteBuf.writeUuid(uuid) // entity uuid
+                byteBuf.writeString(username) // name
+                byteBuf.writeVarInt(0)
+                byteBuf.writeBoolean(true)
+                byteBuf.writeVarInt(gameMode)
                 return
             }
-            packet.writeVarInt(0)
-            packet.writeVarInt(1)
-            packet.writeUuid(uuid)
-            packet.writeString(username)
-            packet.writeVarInt(0)
-            packet.writeVarInt(gameMode)
-            packet.writeVarInt(60)
-            packet.writeBoolean(false)
-            if (version.moreOrEqual(Version.V1_19)) packet.writeBoolean(false)
+            byteBuf.writeVarInt(0)
+            byteBuf.writeVarInt(1)
+            byteBuf.writeUuid(uuid)
+            byteBuf.writeString(username)
+            byteBuf.writeVarInt(0)
+            byteBuf.writeVarInt(gameMode)
+            byteBuf.writeVarInt(60)
+            byteBuf.writeBoolean(false)
+            if (version.moreOrEqual(Version.V1_19)) byteBuf.writeBoolean(false)
         }
     }
 

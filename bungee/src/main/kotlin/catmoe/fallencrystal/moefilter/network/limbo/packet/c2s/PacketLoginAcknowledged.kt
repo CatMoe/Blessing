@@ -29,7 +29,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class PacketLoginAcknowledged : LimboC2SPacket() {
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         // This packet does not have any field.
     }
 

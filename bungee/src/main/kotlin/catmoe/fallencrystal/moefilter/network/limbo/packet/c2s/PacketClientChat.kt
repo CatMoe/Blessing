@@ -41,33 +41,33 @@ class PacketClientChat : LimboC2SPacket() {
     private var seenMessages: SeenMessage? = null
     @Suppress("MemberVisibilityCanBePrivate") var decodeChatInfo = false
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.less(Version.V1_19)) {
-            message=packet.readString()
+            message=byteBuf.readString()
             if (message.length > 256) throw InvalidPacketException("Message length cannot longer than 256")
         } else {
             /* I hate a chat report, tbh. */
-            message=packet.readString()
+            message=byteBuf.readString()
             if (message.length > 256) throw InvalidPacketException("Message length cannot longer than 256")
             if (!decodeChatInfo) return
-            timestamp=packet.readLong()
-            salt=packet.readLong()
+            timestamp=byteBuf.readLong()
+            salt=byteBuf.readLong()
             if (version.moreOrEqual(Version.V1_19_3)) {
-                if (packet.readBoolean()) {
+                if (byteBuf.readBoolean()) {
                     signature=ByteArray(256)
-                    packet.readBytes(signature!!)
+                    byteBuf.readBytes(signature!!)
                 }
-            } else signature=packet.readBytesArray()
+            } else signature=byteBuf.readBytesArray()
             if (version.less(Version.V1_19_3)) {
-                signedPreview=packet.readBoolean()
+                signedPreview=byteBuf.readBoolean()
                 if (version.moreOrEqual(Version.V1_19_1)) {
                     val chain = ChatChain()
-                    chain.decode(packet, channel, version)
+                    chain.decode(byteBuf, channel, version)
                     this.chain=chain
                 }
             } else {
                 val sm = SeenMessage()
-                sm.decode(packet, channel, version)
+                sm.decode(byteBuf, channel, version)
                 this.seenMessages=sm
             }
         }
@@ -79,9 +79,9 @@ class PacketClientChat : LimboC2SPacket() {
     class SeenMessage : LimboC2SPacket() {
         var offset = -1
         var acknowledged: BitSet? = null
-        override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-            offset=packet.readVarInt()
-            acknowledged=packet.readFixedBitSet(20)
+        override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+            offset=byteBuf.readVarInt()
+            acknowledged=byteBuf.readFixedBitSet(20)
         }
     }
     class ChainLink(val sender: UUID, val signature: ByteArray)
@@ -90,12 +90,12 @@ class PacketClientChat : LimboC2SPacket() {
     class ChatChain : LimboC2SPacket() {
         val seen: MutableCollection<ChainLink> = ArrayList()
         val received: MutableCollection<ChainLink> = ArrayList()
-        override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+        override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
             seen.clear()
-            seen.addAll(readLinks(packet))
-            if (packet.readBoolean()) {
+            seen.addAll(readLinks(byteBuf))
+            if (byteBuf.readBoolean()) {
                 received.clear()
-                received.addAll(readLinks(packet))
+                received.addAll(readLinks(byteBuf))
             }
         }
 

@@ -15,19 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet
+package catmoe.fallencrystal.moefilter.network.limbo.util
 
-import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.translation.event.TranslationEvent
 import catmoe.fallencrystal.translation.utils.version.Version
-import io.netty.channel.Channel
+import java.net.InetAddress
 
-interface LimboPacket {
-    fun encode(byteBuf: ByteMessage, version: Version?)
-
-    fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?)
-
-    fun handle(handler: LimboHandler) {
-        // Ignored by default
-    }
-}
+class LimboCheckPassedEvent(
+    val version: Version,
+    val username: String,
+    val address: InetAddress,
+    val handler: LimboHandler
+): TranslationEvent()

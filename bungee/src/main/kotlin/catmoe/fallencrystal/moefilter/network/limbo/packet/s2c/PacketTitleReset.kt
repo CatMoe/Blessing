@@ -15,19 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.packet
+package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
-import io.netty.channel.Channel
 
-interface LimboPacket {
-    fun encode(byteBuf: ByteMessage, version: Version?)
-
-    fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?)
-
-    fun handle(handler: LimboHandler) {
-        // Ignored by default
+class PacketTitleReset(
+    var reset: Boolean = true // What if it's false?
+) : LimboS2CPacket() {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        byteBuf.writeBoolean(reset)
     }
 }

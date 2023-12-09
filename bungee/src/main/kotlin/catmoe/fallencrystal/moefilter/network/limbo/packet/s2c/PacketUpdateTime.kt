@@ -22,16 +22,16 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketUpdateTime : LimboS2CPacket() {
-
-    var age: Long = 1
+class PacketUpdateTime(
+    var age: Long = 1,
     var time: Long = 23700
+) : LimboS2CPacket() {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
-        listOf(age, time).forEach { packet.writeLong(it) }
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        //listOf(age, time).forEach { packet.writeLong(it) }
+        byteBuf.writeLong(age)
+        byteBuf.writeLong(time)
     }
 
-    override fun toString(): String {
-        return "PacketUpdateTime(age=$age, time=$time)"
-    }
+    override fun toString() = "PacketUpdateTime(age=$age, time=$time)"
 }

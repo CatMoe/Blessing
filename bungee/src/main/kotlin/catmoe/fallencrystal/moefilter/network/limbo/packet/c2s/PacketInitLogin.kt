@@ -32,8 +32,8 @@ class PacketInitLogin : LimboC2SPacket() {
 
     var username = ""
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        username = packet.readString(packet.readVarInt())
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        username = byteBuf.readString(byteBuf.readVarInt())
         if (username == "") throw InvalidUsernameException("Username is empty!")
         //if (version!!.less(Version.V1_20_2) && !packet.readBoolean()) return
         //packet.readUuid()

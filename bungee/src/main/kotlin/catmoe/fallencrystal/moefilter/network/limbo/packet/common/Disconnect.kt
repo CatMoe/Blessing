@@ -24,7 +24,7 @@ import io.netty.channel.Channel
 
 // This is fake packet. To announce who disconnected.
 class Disconnect : LimboPacket {
-    override fun encode(packet: ByteMessage, version: Version?) { throw UnsupportedOperationException() }
+    override fun encode(byteBuf: ByteMessage, version: Version?) { throw UnsupportedOperationException() }
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) { throw UnsupportedOperationException() }
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) { throw UnsupportedOperationException() }
 }

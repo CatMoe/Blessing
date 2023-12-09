@@ -40,24 +40,24 @@ class PacketTransaction(
 ) : LimboPacket {
 
     @Suppress("DEPRECATION")
-    override fun encode(packet: ByteMessage, version: Version?) {
-        if (version!!.moreOrEqual(Version.V1_17)) packet.writeInt(id)
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        if (version!!.moreOrEqual(Version.V1_17)) byteBuf.writeInt(id)
         else {
-            packet.writeByte(windowId.toInt())
-            packet.writeShort(id)
-            packet.writeBoolean(accepted)
+            byteBuf.writeByte(windowId.toInt())
+            byteBuf.writeShort(id)
+            byteBuf.writeBoolean(accepted)
         }
     }
 
     @Suppress("DEPRECATION")
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         if (version!!.moreOrEqual(Version.V1_17)) {
-            id = packet.readInt()
+            id = byteBuf.readInt()
             accepted=true
         } else {
-            windowId=packet.readByte()
-            id=packet.readShort().toInt()
-            accepted=packet.readBoolean()
+            windowId=byteBuf.readByte()
+            id=byteBuf.readShort().toInt()
+            accepted=byteBuf.readBoolean()
         }
     }
 

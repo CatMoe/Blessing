@@ -27,7 +27,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.geoip.CountryMode
 import catmoe.fallencrystal.moefilter.common.geoip.DownloadDatabase
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
-import catmoe.fallencrystal.moefilter.common.state.AttackCounterListener
+import catmoe.fallencrystal.moefilter.common.state.AttackInfoListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.AttackLoggerFilter
@@ -36,6 +36,7 @@ import catmoe.fallencrystal.moefilter.network.InitializerInjector
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboMessageHandler
 import catmoe.fallencrystal.moefilter.network.limbo.util.BungeeSwitcher
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -49,6 +50,7 @@ import catmoe.fallencrystal.translation.event.annotations.HandlerPriority
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.system.CPUMonitor
 import com.typesafe.config.ConfigException
+import io.netty.util.ResourceLeakDetector
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.protocol.packet.Kick
@@ -61,6 +63,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         private set
 
     var geoIPLoader: DownloadDatabase? = null
+
+    private val listeners = mutableListOf<EventListener>()
 
     private val scheduler = Scheduler(plugin)
 
@@ -101,7 +105,6 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             return
         }
         scheduler.runAsync {
-            EventManager.register(this)
             try {
 
                 // check they init method to get more information
@@ -116,9 +119,11 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
                 Firewall.load()
                 if (mode == HANDLE) {
                     LimboLoader.initLimbo()
-                    // EventManager.registerListener(plugin, BungeeSwitcher)
                     EventManager.register(BungeeSwitcher)
+                    listeners.add(BungeeSwitcher)
                 }
+                if (LocalConfig.getConfig().getBoolean("netty-memory-leak-detector"))
+                    ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED)
             } catch (configException: ConfigException) {
                 configIssue.forEach { MessageUtil.logError(it) }
                 configException.localizedMessage
@@ -140,6 +145,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
             ex.printStackTrace()
         }
         Firewall.shutdown()
+        /*
         for (listener in listOf(
             this,
             BungeeSwitcher,
@@ -148,6 +154,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         )) {
             EventManager.unregister(listener)
         }
+         */
+        for (listener in listeners) EventManager.unregister(listener)
         MessageUtil.logInfo("[MoeFilter] MoeFilter are unloaded.")
     }
 
@@ -172,8 +180,17 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
     }
 
     private fun registerListener() {
+        /*
         EventManager.register(ReloadConfig)
         EventManager.register(AttackCounterListener())
+        EventManager.register(LimboMessageHandler)
+         */
+        listeners.addAll(listOf(
+            this, ReloadConfig, AttackInfoListener(), LimboMessageHandler
+        ))
+
+        for (listener in listeners) EventManager.register(listener)
+
         EventManager.callEvent(PluginReloadEvent(null))
 
         pluginManager.registerListener(plugin, BungeeEvent())

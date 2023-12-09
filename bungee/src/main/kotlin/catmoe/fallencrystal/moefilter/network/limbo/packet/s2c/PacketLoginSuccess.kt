@@ -27,12 +27,12 @@ class PacketLoginSuccess(
     var uuid: UUID? = null,
     var username: String = ""
 ) : LimboS2CPacket() {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         val uuid = this.uuid ?: UUID.randomUUID()
-        if (version!!.moreOrEqual(Version.V1_16)) packet.writeUuid(uuid)
-        else packet.writeString(uuid.toString())
-        packet.writeString(username)
-        if (version.moreOrEqual(Version.V1_19)) packet.writeVarInt(0)
+        if (version!!.moreOrEqual(Version.V1_16)) byteBuf.writeUuid(uuid)
+        else byteBuf.writeString(uuid.toString())
+        byteBuf.writeString(username)
+        if (version.moreOrEqual(Version.V1_19)) byteBuf.writeVarInt(0)
     }
 
     override fun toString(): String { return "PacketLoginSuccess(uuid=$uuid, username=$username)" }

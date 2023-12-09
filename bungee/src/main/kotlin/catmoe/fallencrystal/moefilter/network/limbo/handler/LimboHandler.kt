@@ -133,6 +133,7 @@ class LimboHandler(
         if (LimboLoader.platformSummon) sendTestPlatform(LimboLoader.platformHeight, LimboLoader.platformBlock)
         writePacket(LimboLoader.testChatPacket)
         writePacket(POS_AND_LOOK)
+        LimboMessageHandler.MessageSendHolder.create(this)
         channel.flush()
     }
 

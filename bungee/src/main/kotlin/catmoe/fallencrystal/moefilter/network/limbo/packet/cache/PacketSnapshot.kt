@@ -45,10 +45,10 @@ class PacketSnapshot(val wrappedPacket: LimboPacket) : LimboS2CPacket() {
         }
     }
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         val mapped = mappings[version]
         val message = versionMessages[mapped] ?: throw IllegalArgumentException("No mappings for version $version")
-        packet.writeBytes(message)
+        byteBuf.writeBytes(message)
     }
 
     companion object {

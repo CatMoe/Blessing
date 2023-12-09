@@ -39,21 +39,21 @@ class PacketPluginMessage(
 
     var isBrand = false
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         //listOf(this.channel, this.message).forEach { packet.writeString(it) }
-        packet.writeString(channel)
+        byteBuf.writeString(channel)
         isBrand = isBrand(this.channel)
         val data = this.data
-        if (message.isNotEmpty()) packet.writeString(message) else if (data != null) packet.writeBytes(data)
+        if (message.isNotEmpty()) byteBuf.writeString(message) else if (data != null) byteBuf.writeBytes(data)
     }
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        this.channel = packet.readString()
-        Preconditions.checkArgument(packet.readableBytes() < 32767, "Payload is too large")
-        this.data=ByteArray(packet.readableBytes())
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        this.channel = byteBuf.readString()
+        Preconditions.checkArgument(byteBuf.readableBytes() < 32767, "Payload is too large")
+        this.data=ByteArray(byteBuf.readableBytes())
         if (version?.moreOrEqual(Version.V1_8) == true && isBrand(this.channel)) {
             isBrand=true
-            this.message=decodeBrand(packet)
+            this.message=decodeBrand(byteBuf)
         }
     }
 

@@ -26,7 +26,7 @@ import io.netty.channel.Channel
 
 class PacketStatusRequest : LimboC2SPacket() {
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         // This packet is no any field to read.
     }
 

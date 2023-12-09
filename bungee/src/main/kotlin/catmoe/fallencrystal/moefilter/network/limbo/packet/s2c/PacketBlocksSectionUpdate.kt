@@ -31,31 +31,31 @@ class PacketBlocksSectionUpdate(
     var sectionZ: Int = 0
 ) : LimboS2CPacket() {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         if (version!!.less(Version.V1_16_2)) {
-            packet.writeInt(sectionX)
-            packet.writeInt(sectionZ)
-            packet.writeVarInt(blocks.size)
+            byteBuf.writeInt(sectionX)
+            byteBuf.writeInt(sectionZ)
+            byteBuf.writeVarInt(blocks.size)
             for (block in blocks) {
                 val position = (block.x - (sectionX shl 4)) shl 12 or ((block.z - (sectionZ shl 4)) shl 8) or block.y
                 val id = block.block.getId(version)
                 val writeId = if (version.moreOrEqual(Version.V1_13)) id else id shl 4
                 LimboLoader.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, writeId=$writeId")
-                packet.writeShort(position)
-                packet.writeVarInt(writeId)
+                byteBuf.writeShort(position)
+                byteBuf.writeVarInt(writeId)
             }
         } else {
             val chunkY = (blocks.firstOrNull()?.y ?: 1) shr 4
             var chunk = (0 or (sectionX and 0x3FFFFF shl 42)).toLong()
-            packet.writeLong((sectionZ.toLong() and 0x3FFFFFL shl 20).let { chunk = chunk or it; chunk } or (chunkY.toLong() and 0xFFFFFL))
-            if (version.less(Version.V1_20)) packet.writeBoolean(true) // Suppress light updates. But removed on 1.20
-            packet.writeVarInt(blocks.size)
+            byteBuf.writeLong((sectionZ.toLong() and 0x3FFFFFL shl 20).let { chunk = chunk or it; chunk } or (chunkY.toLong() and 0xFFFFFL))
+            if (version.less(Version.V1_20)) byteBuf.writeBoolean(true) // Suppress light updates. But removed on 1.20
+            byteBuf.writeVarInt(blocks.size)
             for (block in blocks) {
                 val id = block.block.getId(version)
                 val position = (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4)).toShort()
                 val value = id.toLong() shl 12 or position.toLong()
                 LimboLoader.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, value=$value")
-                packet.writeVarLong(value)
+                byteBuf.writeVarLong(value)
             }
         }
     }

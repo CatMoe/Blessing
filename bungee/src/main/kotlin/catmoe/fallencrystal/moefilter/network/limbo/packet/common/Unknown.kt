@@ -23,10 +23,10 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class Unknown(val id: Int) : LimboPacket {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         // Do not need it.
     }
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         // Do not need it.
     }
 }

@@ -27,9 +27,9 @@ class PacketGameEvent(
     var subId: Float = 0F // 0 = Default
 ) : LimboS2CPacket() {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeByte(events.ordinal)
-        packet.writeFloat(subId)
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        byteBuf.writeByte(events.ordinal)
+        byteBuf.writeFloat(subId)
     }
 
     // https://wiki.vg/Protocol#Game_Event

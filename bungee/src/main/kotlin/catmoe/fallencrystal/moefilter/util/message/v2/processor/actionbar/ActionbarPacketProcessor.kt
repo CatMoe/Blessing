@@ -79,12 +79,12 @@ class ActionbarPacketProcessor : AbstractMessageProcessor() {
         var p = packet as MessageActionbarPacket
         val version = Version.of(connection.version)
         if (!p.supportChecker(version.number)) p = process(p.originalMessage, listOf(version.number)) as MessageActionbarPacket
-        if (version.moreOrEqual(V1_19)) { connection.writePacket(p.v119!!); return }
-        if (version.moreOrEqual(V1_17)) { connection.writePacket(p.v117!!); return }
-        if (version.moreOrEqual(V1_16)) { connection.writePacket(p.v116!!); return }
-        if (version.more(V1_10)) { connection.writePacket(p.v111!!); return }
-        if (version.moreOrEqual(V1_7_6)) { connection.writePacket(p.v110!!); return }
-        throw IllegalStateException("Need send protocol ${version.number} but not available packets for this version.")
+        when {
+            version.moreOrEqual(V1_19) -> connection.writePacket(p.v119!!)
+            version.moreOrEqual(V1_17) -> connection.writePacket(p.v117!!)
+            version.moreOrEqual(V1_16) -> connection.writePacket(p.v116!!)
+            else -> connection.writePacket(p.v110!!)
+        }
     }
 
     private fun get119(serializer: String, need: Boolean): SystemChat? {

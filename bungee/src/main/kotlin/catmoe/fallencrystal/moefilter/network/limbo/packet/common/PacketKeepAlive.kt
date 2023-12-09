@@ -26,15 +26,15 @@ class PacketKeepAlive(
     var id: Long = 9876
 ) : LimboPacket {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
-        if (version!!.moreOrEqual(Version.V1_12_2)) { packet.writeLong(id)
-        } else if (version.moreOrEqual(Version.V1_8)) { packet.writeVarInt(id.toInt())
-        } else { packet.writeInt(id.toInt()) }
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        if (version!!.moreOrEqual(Version.V1_12_2)) { byteBuf.writeLong(id)
+        } else if (version.moreOrEqual(Version.V1_8)) { byteBuf.writeVarInt(id.toInt())
+        } else { byteBuf.writeInt(id.toInt()) }
     }
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        id = if (version!!.moreOrEqual(Version.V1_12_2)) packet.readLong()
-        else if (version.moreOrEqual(Version.V1_8)) packet.readVarInt().toLong()
-        else packet.readInt().toLong()
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        id = if (version!!.moreOrEqual(Version.V1_12_2)) byteBuf.readLong()
+        else if (version.moreOrEqual(Version.V1_8)) byteBuf.readVarInt().toLong()
+        else byteBuf.readInt().toLong()
     }
 }

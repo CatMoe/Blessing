@@ -20,25 +20,20 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 
 @Suppress("unused")
 class PacketDisconnect(
-    var message: NbtMessage = EMPTY
+    var message: NbtMessage = NbtMessage.EMPTY
 ) : LimboS2CPacket() {
 
     fun setMessage(message: String) { this.message = NbtMessage.create(message) }
     fun setMessage(baseComponent: BaseComponent) { this.message = NbtMessage.create(baseComponent) }
     fun setMessage(component: Component) { this.message = NbtMessage.create(component) }
-    override fun encode(packet: ByteMessage, version: Version?) =
-        this.message.write(packet, version)
+    override fun encode(byteBuf: ByteMessage, version: Version?) =
+        this.message.write(byteBuf, version)
 
     override fun toString() = "PacketDisconnect(message=$message)"
-
-    companion object {
-        private val EMPTY = NbtMessage.create(ComponentUtil.parse("null"))
-    }
 }

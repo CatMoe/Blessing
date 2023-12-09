@@ -29,11 +29,11 @@ class PacketPluginResponse : LimboC2SPacket() {
     var successful: Boolean? = null
     var data: ByteMessage? = null
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        messageId = packet.readVarInt()
-        successful = packet.readBoolean()
-        val rb = packet.readableBytes()
-        if (rb > 0) { ByteMessage(packet.readBytes(rb)) }
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        messageId = byteBuf.readVarInt()
+        successful = byteBuf.readBoolean()
+        val rb = byteBuf.readableBytes()
+        if (rb > 0) { ByteMessage(byteBuf.readBytes(rb)) }
     }
 
     override fun toString(): String { return "PacketPluginResponse(messageId=$messageId, successful=$successful, data=$data)" }

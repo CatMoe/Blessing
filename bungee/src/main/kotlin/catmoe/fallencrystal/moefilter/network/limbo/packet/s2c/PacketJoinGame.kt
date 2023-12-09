@@ -55,10 +55,10 @@ class PacketJoinGame(
     var isFlat: Boolean = true,
 ) : LimboS2CPacket() {
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         when (LimboLoader.dimLoaderMode) {
-            ADVENTURE -> encodeAdventure(packet, version!!)
-            LLBIT -> encodeLLBIT(packet, version!!)
+            ADVENTURE -> encodeAdventure(byteBuf, version!!)
+            LLBIT -> encodeLLBIT(byteBuf, version!!)
         }
     }
 

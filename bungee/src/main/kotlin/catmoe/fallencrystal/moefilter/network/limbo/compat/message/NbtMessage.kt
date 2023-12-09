@@ -28,6 +28,10 @@ import net.md_5.bungee.chat.ComponentSerializer
 import java.util.*
 
 data class NbtMessage(var json: String, var tag: BinaryTag) {
+
+    val isEmpty get() = json == "{}"
+    val isNotEmpty get() = !isEmpty
+
     fun write(byteBuf: ByteMessage, version: Version?) =
         if (version?.moreOrEqual(Version.V1_20_3) == true)
             byteBuf.writeNamelessCompoundTag(tag)
@@ -35,6 +39,9 @@ data class NbtMessage(var json: String, var tag: BinaryTag) {
             byteBuf.writeString(json)
 
     companion object {
+
+        val EMPTY = create(ComponentUtil.parse(""))
+
         fun create(json: String): NbtMessage {
             val compoundBinaryTag = fromJson(JsonParser.parseString(json))
             return NbtMessage(json, compoundBinaryTag)

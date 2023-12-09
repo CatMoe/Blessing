@@ -22,7 +22,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ExplicitPacket(val id: Int, val byteArray: ByteArray, val description: String): LimboS2CPacket() {
-    override fun encode(packet: ByteMessage, version: Version?) { packet.writeBytes(byteArray) }
+    override fun encode(byteBuf: ByteMessage, version: Version?) { byteBuf.writeBytes(byteArray) }
 
     override fun toString(): String {
         return "ExplicitPacket(id=$id, description=$description)"

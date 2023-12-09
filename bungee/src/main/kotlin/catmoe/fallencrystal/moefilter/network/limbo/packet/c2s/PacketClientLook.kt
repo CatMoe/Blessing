@@ -28,11 +28,11 @@ import io.netty.channel.Channel
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketClientLook(var lastLook: LimboLocation? = null) : LimboC2SPacket() {
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
         lastLook = LimboLocation(
             0.0, 0.0, 0.0,
-            packet.readFloat(), packet.readFloat(),
-            packet.readBoolean()
+            byteBuf.readFloat(), byteBuf.readFloat(),
+            byteBuf.readBoolean()
         )
     }
 

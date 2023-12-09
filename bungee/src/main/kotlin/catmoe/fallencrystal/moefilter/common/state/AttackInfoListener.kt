@@ -38,7 +38,7 @@ import com.typesafe.config.Config
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 
-class AttackCounterListener : EventListener {
+class AttackInfoListener : EventListener {
     private var inAttack = false
 
     @EventHandler(UnderAttackEvent::class, priority = HandlerPriority.LOWEST)

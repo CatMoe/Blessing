@@ -15,10 +15,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.event
+package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
-import catmoe.fallencrystal.translation.event.TranslationEvent
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.network.limbo.util.LimboMessage.Title.TitleTime
 import catmoe.fallencrystal.translation.utils.version.Version
-import java.net.InetAddress
 
-class LimboCheckPassedEvent(val version: Version, val username: String, val address: InetAddress): TranslationEvent()
+class PacketTitleTime(
+    var time: TitleTime = TitleTime()
+) : LimboS2CPacket() {
+
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        byteBuf.writeInt(time.fadeIn)
+        byteBuf.writeInt(time.stay)
+        byteBuf.writeInt(time.fadeOut)
+    }
+
+}

@@ -27,22 +27,22 @@ import catmoe.fallencrystal.translation.utils.version.Version
 class PacketBlockUpdate(
     var block: BlockPosition? = null
 ) : LimboS2CPacket() {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         val block = this.block!!
         if (version!!.moreOrEqual(Version.V1_8)) {
-            packet.writeLong(
+            byteBuf.writeLong(
                 (if (version.more(Version.V1_13_2))
                     ((block.x and 0x3FFFFFF shl 38) or (block.z and 0x3FFFFFF shl 12) or (block.y and 0xFFF))
                 else
                     (block.x and 0x3FFFFFF shl 38 or (block.y and 0xFFF shl 26) or (block.z and 0x3FFFFFF))).toLong()
             )
-            packet.writeVarInt(block.block.getId(version))
+            byteBuf.writeVarInt(block.block.getId(version))
         } else {
-            packet.writeInt(block.x)
-            packet.writeByte(block.y)
-            packet.writeInt(block.z)
-            packet.writeVarInt(block.block.getId(version))
-            packet.writeByte(0)
+            byteBuf.writeInt(block.x)
+            byteBuf.writeByte(block.y)
+            byteBuf.writeInt(block.z)
+            byteBuf.writeVarInt(block.block.getId(version))
+            byteBuf.writeByte(0)
         }
     }
 

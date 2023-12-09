@@ -23,7 +23,7 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.channel.Channel
 
 class PacketTeleportConfirm(var teleportId: Int? = null) : LimboC2SPacket() {
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        teleportId=packet.readVarInt()
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        teleportId=byteBuf.readVarInt()
     }
 }

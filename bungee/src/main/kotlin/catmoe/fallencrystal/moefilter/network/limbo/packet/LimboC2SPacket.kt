@@ -22,7 +22,7 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketOper
 import catmoe.fallencrystal.translation.utils.version.Version
 
 abstract class LimboC2SPacket : LimboPacket {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         throw InvalidPacketOperation("encode does not work with C2S packet")
     }
 }

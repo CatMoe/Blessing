@@ -35,15 +35,15 @@ class PacketHandshake : LimboC2SPacket() {
     var host = "localhost"
     var port = 25565
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        this.version = try { Version.of(packet.readVarInt()) } catch (e: IllegalArgumentException) { Version.UNDEFINED }
-        this.host = packet.readString(packet.readVarInt()).replace("FML$".toRegex(), "").replace("\\.$".toRegex(), "")
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        this.version = try { Version.of(byteBuf.readVarInt()) } catch (e: IllegalArgumentException) { Version.UNDEFINED }
+        this.host = byteBuf.readString(byteBuf.readVarInt()).removeSuffix("FML").removeSuffix(".")
         // Legacy的FML客户端会在host后面加上FML标签 所以为253 + 3
         if (host.length >= 256 || host.isEmpty() || host == "0" /* Prevent EndMinecraftPlus ping ——They host is still 0 */)
             throw InvalidHandshakeException("Host length check failed")
-        this.port = packet.readUnsignedShort()
+        this.port = byteBuf.readUnsignedShort()
         if (port <= 0 || port > 65535) throw InvalidHandshakeException("Port must be higher than 0 and lower than 65535 (Non-vanilla?)")
-        val state = packet.readVarInt()
+        val state = byteBuf.readVarInt()
         if (state != 1 && state != 2) throw InvalidHandshakeException("Handshake state cannot lower than 1 or high than 2! (Non-vanilla?)")
         nextState = Protocol.STATE_BY_ID[state] ?: throw InvalidHandshakeException("Cannot found this state!")
     }

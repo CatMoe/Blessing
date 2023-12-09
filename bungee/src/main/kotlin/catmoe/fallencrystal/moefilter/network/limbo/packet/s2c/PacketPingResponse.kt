@@ -35,7 +35,7 @@ class PacketPingResponse : LimboS2CPacket() {
             "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
             "\"description\": [description] }"
 
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         val protocol = if (this.protocol == Version.UNDEFINED) version!! else this.protocol
         val output = if (output != null && output != "") output else {
             this.template
@@ -45,7 +45,7 @@ class PacketPingResponse : LimboS2CPacket() {
                 .replace("[online]", online.toString())
                 .replace("[description]", description)
         }
-        packet.writeString(output)
+        byteBuf.writeString(output)
     }
 
     override fun toString(): String {

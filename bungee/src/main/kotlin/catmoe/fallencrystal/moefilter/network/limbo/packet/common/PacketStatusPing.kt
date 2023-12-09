@@ -28,12 +28,12 @@ class PacketStatusPing : LimboPacket {
 
     private var randomId: Long? = null
 
-    override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeLong(randomId ?: 0)
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
+        byteBuf.writeLong(randomId ?: 0)
     }
 
-    override fun decode(packet: ByteMessage, channel: Channel, version: Version?) {
-        randomId = packet.readLong()
+    override fun decode(byteBuf: ByteMessage, channel: Channel, version: Version?) {
+        randomId = byteBuf.readLong()
     }
 
     override fun handle(handler: LimboHandler) {

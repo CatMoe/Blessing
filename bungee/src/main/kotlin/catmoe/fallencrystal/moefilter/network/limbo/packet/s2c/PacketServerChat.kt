@@ -20,7 +20,6 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
-import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -29,16 +28,16 @@ import java.util.*
 
 class PacketServerChat(
     var type: MessageType = MessageType.CHAT,
-    var message: NbtMessage = EMPTY,
+    var message: NbtMessage = NbtMessage.EMPTY,
     var sender: UUID = UUID(0, 0) // empty
 ) : LimboS2CPacket() {
-    override fun encode(packet: ByteMessage, version: Version?) {
+    override fun encode(byteBuf: ByteMessage, version: Version?) {
         if (version!!.moreOrEqual(Version.V1_19)) {
-            message.write(packet, version)
+            message.write(byteBuf, version)
             if (version.moreOrEqual(Version.V1_19_1))
-                packet.writeBoolean(type == MessageType.ACTION_BAR)
+                byteBuf.writeBoolean(type == MessageType.ACTION_BAR)
             else
-                packet.writeVarInt(
+                byteBuf.writeVarInt(
                     if (type == MessageType.ACTION_BAR)
                         MessageType.ACTION_BAR.ordinal
                     else
@@ -46,14 +45,14 @@ class PacketServerChat(
                 )
         } else {
             if (version.lessOrEqual(Version.V1_10) && type == MessageType.ACTION_BAR) {
-                packet.writeString(
+                byteBuf.writeString(
                     ComponentSerializer.toString(
                         TextComponent(BaseComponent.toLegacyText(ComponentSerializer.deserialize(message.json)))
                     )
                 )
-            } else packet.writeString(message.json)
-            packet.writeByte(type.ordinal)
-            if (version.moreOrEqual(Version.V1_16)) packet.writeUuid(sender)
+            } else byteBuf.writeString(message.json)
+            byteBuf.writeByte(type.ordinal)
+            if (version.moreOrEqual(Version.V1_16)) byteBuf.writeUuid(sender)
         }
     }
 
@@ -64,8 +63,4 @@ class PacketServerChat(
     }
 
     override fun toString() = "PacketServerChat(type=$type, message=$message, sender=$sender)"
-
-    companion object {
-        private val EMPTY = NbtMessage.create(ComponentUtil.parse("null"))
-    }
 }
