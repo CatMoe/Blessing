@@ -28,25 +28,25 @@ class PacketGameEvent(
 ) : LimboS2CPacket() {
 
     override fun encode(packet: ByteMessage, version: Version?) {
-        packet.writeByte(events.id)
+        packet.writeByte(events.ordinal)
         packet.writeFloat(subId)
     }
 
     // https://wiki.vg/Protocol#Game_Event
-    enum class Events(val id: Int) {
-        NO_RESPAWN_BLOCK_AVAILABLE(0),
-        BEGIN_RAINING(1),
-        END_RAINING(2),
-        CHANGE_GAME_MODE(3),
-        WIN_GAME(4),
-        DEMO_EVENT(5),
-        ARROW_HIT_PLAYER(6),
-        RAIN_LEVEL_CHANGE(7),
-        THUNDER_LEVEL_CHANGE(8),
-        PLAY_PUFFER_FISH_STING_SOUND(9),
-        PLAY_ELDER_GUARDIAN_APPEARANCE(10),
-        ENABLE_RESPAWN_SCREEN(11),
-        LIMIT_CRAFTING(12),
-        START_WAITING_LEVEL_CHUNKS(13);
+    enum class Events {
+        NO_RESPAWN_BLOCK_AVAILABLE,
+        BEGIN_RAINING,
+        END_RAINING,
+        CHANGE_GAME_MODE,
+        WIN_GAME,
+        DEMO_EVENT,
+        ARROW_HIT_PLAYER,
+        RAIN_LEVEL_CHANGE,
+        THUNDER_LEVEL_CHANGE,
+        PLAY_PUFFER_FISH_STING_SOUND,
+        PLAY_ELDER_GUARDIAN_APPEARANCE,
+        ENABLE_RESPAWN_SCREEN,
+        LIMIT_CRAFTING,
+        START_WAITING_LEVEL_CHUNKS;
     }
 }

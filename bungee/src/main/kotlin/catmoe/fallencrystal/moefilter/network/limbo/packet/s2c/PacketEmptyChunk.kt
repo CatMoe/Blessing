@@ -87,5 +87,5 @@ class PacketEmptyChunk(
     }
 
 
-    override fun toString(): String { return "PacketEmptyChunk(TargetX=$x, TargetZ=$z)" }
+    override fun toString() = "PacketEmptyChunk(TargetX=$x, TargetZ=$z)"
 }

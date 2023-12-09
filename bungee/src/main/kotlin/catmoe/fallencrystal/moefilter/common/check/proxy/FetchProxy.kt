@@ -20,8 +20,8 @@ package catmoe.fallencrystal.moefilter.common.check.proxy
 import catmoe.fallencrystal.moefilter.MoeFilterBungee
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResultType
-import catmoe.fallencrystal.moefilter.util.plugin.ClientHelper
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
+import catmoe.fallencrystal.moefilter.util.plugin.ClientHelper
 import catmoe.fallencrystal.moefilter.util.plugin.util.Scheduler
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import okhttp3.OkHttpClient
@@ -39,7 +39,7 @@ class FetchProxy {
     private var config = LocalConfig.getProxy()
     private var proxies = config.getStringList("internal.lists")
     private var debug = config.getBoolean("internal.debug")
-    private val updateDelay = config.getInt("internal.schedule.update-delay").toLong()
+    private val updateDelay = config.getLong("internal.schedule.update-delay")
     private var count = 0
     private val scheduler = Scheduler(plugin)
     private var isAlreadyStopped = AtomicBoolean(false)

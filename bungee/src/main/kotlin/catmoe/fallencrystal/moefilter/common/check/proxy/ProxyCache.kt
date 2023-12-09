@@ -18,12 +18,16 @@
 package catmoe.fallencrystal.moefilter.common.check.proxy
 
 import catmoe.fallencrystal.moefilter.common.check.proxy.type.ProxyResult
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
 import com.github.benmanes.caffeine.cache.Caffeine
 import java.net.InetAddress
+import java.util.concurrent.TimeUnit
 
 object ProxyCache : Reloadable {
-    val cache = Caffeine.newBuilder().build<InetAddress, ProxyResult>()
+    val cache = Caffeine.newBuilder()
+        .expireAfterWrite(LocalConfig.getProxy().getLong("internal.schedule.update-delay"), TimeUnit.HOURS)
+        .build<InetAddress, ProxyResult>()
     private val whitelistedAddress = listOf("127.0.0.1")
 
     private val fetchProxy = FetchProxy()

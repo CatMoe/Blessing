@@ -58,11 +58,10 @@ object PacketCache {
         packetCache.put(PLUGIN_MESSAGE, PacketSnapshot.of(pm))
         pm.channel="MC|Brand"
         packetCache.put(PLUGIN_MESSAGE_LEGACY, PacketSnapshot.of(pm))
-        packetCache.put(REGISTRY_DATA, PacketSnapshot.of(RegistryData()))
 
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
-            packetCache.put(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}"), PacketSnapshot.of(PacketEmptyChunk(x, z)))
+            packetCache.put(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}"), PacketSnapshot.of(PacketEmptyChunk(x shr 4, z shr 4)))
         }}
 
     }

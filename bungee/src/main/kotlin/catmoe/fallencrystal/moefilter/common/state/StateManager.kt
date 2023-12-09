@@ -61,8 +61,11 @@ object StateManager {
                 BlockType.values().forEach {
                     if ((ConnectionStatistics.sessionBlocked.getIfPresent(it) ?: 0) > cps / methodSize) { method.add(it.state) }
                 }
-                lastMethod.clear(); lastMethod.addAll(method)
-                setAttackMethod(method); return
+                if (lastMethod.toSet() != method.toSet()) {
+                    lastMethod.clear()
+                    lastMethod.addAll(method)
+                    setAttackMethod(method); return
+                }
             }
         }
     }
@@ -77,7 +80,7 @@ object StateManager {
                 endedTask = scheduler.repeatScheduler(1, TimeUnit.SECONDS) {
                     fun cancel() {
                         val task = endedTask
-                        if (task != null) { task.cancel(); endedTask=null }
+                        task.let { it?.cancel(); endedTask=null }
                         endedWaiter.set(false)
                         endedCount.set(conf.getInt("wait") + 1)
                     }
