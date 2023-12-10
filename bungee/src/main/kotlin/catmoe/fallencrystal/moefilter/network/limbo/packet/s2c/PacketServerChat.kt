@@ -20,6 +20,7 @@ package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
+import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
 import catmoe.fallencrystal.translation.utils.version.Version
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -45,10 +46,10 @@ class PacketServerChat(
                 )
         } else {
             if (version.lessOrEqual(Version.V1_10) && type == MessageType.ACTION_BAR) {
-                val deserialize = try {
-                    BaseComponent.toLegacyText(ComponentSerializer.deserialize(message.json))
-                } catch (_: NoSuchMethodError) {
+                val deserialize = if (AsyncLoader.isLegacy) {
                     BaseComponent.toLegacyText(*ComponentSerializer.parse(message.json))
+                } else {
+                    BaseComponent.toLegacyText(ComponentSerializer.deserialize(message.json))
                 }
                 byteBuf.writeString(
                     ComponentSerializer.toString(TextComponent(deserialize))
