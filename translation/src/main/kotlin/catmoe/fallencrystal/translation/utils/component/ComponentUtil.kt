@@ -31,7 +31,8 @@ object ComponentUtil {
     private val legacyBuilder = GsonComponentSerializer.builder().downsampleColors().emitLegacyHoverEvent().build()
 
     @Platform(ProxyPlatform.BUNGEE)
-    private fun a(component: Component): net.md_5.bungee.api.chat.BaseComponent { return net.md_5.bungee.api.chat.TextComponent(*net.md_5.bungee.chat.ComponentSerializer.parse(toGson(component))) }
+    private fun a(component: Component): net.md_5.bungee.api.chat.BaseComponent =
+        net.md_5.bungee.api.chat.TextComponent(*net.md_5.bungee.chat.ComponentSerializer.parse(toGson(component)))
 
     fun toBaseComponents(component: Component): net.md_5.bungee.api.chat.BaseComponent? {
         return TranslationLoader.secureAccess(a(component))

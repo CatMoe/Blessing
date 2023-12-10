@@ -45,10 +45,13 @@ class PacketServerChat(
                 )
         } else {
             if (version.lessOrEqual(Version.V1_10) && type == MessageType.ACTION_BAR) {
+                val deserialize = try {
+                    BaseComponent.toLegacyText(ComponentSerializer.deserialize(message.json))
+                } catch (_: NoSuchMethodError) {
+                    BaseComponent.toLegacyText(*ComponentSerializer.parse(message.json))
+                }
                 byteBuf.writeString(
-                    ComponentSerializer.toString(
-                        TextComponent(BaseComponent.toLegacyText(ComponentSerializer.deserialize(message.json)))
-                    )
+                    ComponentSerializer.toString(TextComponent(deserialize))
                 )
             } else byteBuf.writeString(message.json)
             byteBuf.writeByte(type.ordinal)
