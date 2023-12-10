@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboCheckPassedEvent
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboMessage
 import catmoe.fallencrystal.moefilter.network.limbo.util.LimboMessage.Title
@@ -58,9 +59,11 @@ object LimboMessageHandler : Reloadable, EventListener {
             )
         ) else null
         private val chat = if (config.getBoolean("chat.send"))
-            getNbtMessage(config.getString("chat.message")) else null
+            getNbtMessage(config.getStringList("chat.message").joinToString("<reset><newline>"))
+        else null
         private val actionBar = if (config.getBoolean("action-bar.send"))
-            getNbtMessage(config.getString("action-bar.message")) else null
+            getNbtMessage(config.getString("action-bar.message"))
+        else null
 
         fun send(handler: LimboHandler) {
             val util = LimboMessage(handler)
@@ -119,6 +122,8 @@ object LimboMessageHandler : Reloadable, EventListener {
         fun kick() = FastDisconnect.disconnect(handler, DisconnectType.PASSED_CHECK)
         val holder = holderCache.getIfPresent(handler)
         if (checkedMessage != null && holder != null && holder.scheduler != null) {
+            if (config.getBoolean("check-passed.teleport")) handler.writePacket(EnumPacket.POS_AND_LOOK)
+            if (config.getBoolean("check-passed.disable-fall")) handler.writePacket(EnumPacket.PLAYER_ABILITIES)
             holder.handleVerified(checkedMessage)
             Timer().schedule(config.getLong("check-passed.delay-kick")) { kick() }
         } else kick()

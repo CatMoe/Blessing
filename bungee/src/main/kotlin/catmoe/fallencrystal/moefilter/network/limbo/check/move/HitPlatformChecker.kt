@@ -46,7 +46,7 @@ import kotlin.random.Random
     PacketClientPositionLook::class,
     Disconnect::class
 )
-object HitPlatformChecker: LimboChecker {
+object HitPlatformChecker : LimboChecker {
 
     private var config = LocalConfig.getLimbo().getConfig("check.platform-hit")
     private val random = Random

@@ -34,7 +34,5 @@ class PacketPluginRequest(
         byteBuf.writeBytes(data ?: return)
     }
 
-    override fun toString(): String {
-        return "PacketPluginRequest(messageId=$messageId, channel=$channel, data=$data)"
-    }
+    override fun toString() = "PacketPluginRequest(messageId=$messageId, channel=$channel, data=$data)"
 }

@@ -747,7 +747,7 @@ class LoadConfig {
                             min=3
                         }
                         # 支持的方块: STONE (石头), BARRIER (屏障)
-                        block=STONE
+                        block=BARRIER
                     }
                     # 变速检查 (依靠监听移动数据包)
                     timer {
@@ -781,17 +781,23 @@ class LoadConfig {
                         }
                         chat {
                             send=false
-                            message="<aqua>Moe<white>Filter <gray>» <white>Checking your client. Please wait.."
+                            message=[
+                                "<aqua>Moe<white>Filter <gray>» <white>We are checking your client. Please wait.."
+                            ]
                         }
                         action-bar {
                             send=true
-                            message="<aqua>Moe<white>Filter <gray>» <white>Checking your client. Please wait.."
+                            message="<aqua>Moe<white>Filter <gray>» <white>We are checking your client. Please wait.."
                         }
                     }
                     check-passed {
                         send=true
                         # 通过检查后应该在多少秒后将玩家踢出虚拟服务器 (毫秒)
                         delay-kick=3000
+                        # 玩家通过检查后是否传送到配置文件中配置的高度的位置
+                        teleport=true
+                        # 是否让玩家滞空在空中
+                        disable-fall=true
                         title {
                             send=false
                             title="<aqua>Moe<white>Filter"
@@ -802,7 +808,9 @@ class LoadConfig {
                         }
                         chat {
                             send=false
-                            message="<aqua>Moe<white>Filter <gray>» <green>Check passed. Please rejoin server."
+                            message=[
+                                "<aqua>Moe<white>Filter <gray>» <green>Check passed. Please rejoin server."
+                            ]
                         }
                         action-bar {
                             send=true

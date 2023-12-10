@@ -161,7 +161,7 @@ class LimboHandler(
         return PacketCache.packetCache.getIfPresent(enumPacket)
     }
 
-    private fun writePacket(packet: EnumPacket) { writePacket(getCachedPacket(packet)) }
+    fun writePacket(packet: EnumPacket) { writePacket(getCachedPacket(packet)) }
 
     fun writePacket(packet: Any?) { if (channel.isActive && packet != null) channel.write(packet, channel.voidPromise()) }
 
