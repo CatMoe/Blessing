@@ -18,7 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.bungee.initializer
 
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.bungee.handler.ByteBufHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.ByteLimiter
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.util.plugin.AsyncLoader
@@ -50,9 +50,7 @@ object MoeChannelHandler : IPipeline {
         override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
     }
 
-    private val MOEFILTER_HANDLER = ByteBufHandler()
-
-    fun register(pipeline: ChannelPipeline) { pipeline.addFirst(IPipeline.HANDLER, MOEFILTER_HANDLER) }
+    val BYTE_LIMITER = ByteLimiter()
 
     val callInitEvent = LocalConfig.getAntibot().getBoolean("call-connect-event")
     val injectPacketListener = AsyncLoader.instance.mode != WorkingMode.DISABLED

@@ -38,6 +38,8 @@ abstract class MenuBuilder {
     private var title: Component? = null
     private var inv: Inventory? = null
 
+    private val protocolize get() = player?.let { Protocolize.playerProvider().player(it.uniqueId) }
+
      open fun type(type: InventoryType) { this.type=type }
 
     open fun setPlayer(player: ProxiedPlayer) { this.player=player }
@@ -51,20 +53,24 @@ abstract class MenuBuilder {
     open fun build(): Inventory {
         define()
         val inv = Inventory(type)
+        updateItem(inv)
+        this.inv=inv
+        return inv
+    }
+
+    private fun updateItem(inv: Inventory) {
         val titleBaseComponent = if (title != null) { ComponentUtil.toBaseComponents(title!!) ?: TextComponent() } else TextComponent()
         titleBaseComponent.isItalic=false
         inv.title(titleBaseComponent.toLegacyText())
         if (emptyItems.isNotEmpty()) { inv.items() }
         items.keys.forEach { inv.item(it, items[it]) }
-        this.inv=inv
-        return inv
     }
 
     open fun open() {
         val inv = this.inv ?: build()
         inv.onClick { click: InventoryClick -> onClick(click) }
         inv.onClose { close: InventoryClose -> onClose(close) }
-        Protocolize.playerProvider().player(player!!.uniqueId).openInventory(inv)
+        protocolize!!.openInventory(inv)
     }
 
     open fun onClose(close: InventoryClose) {
@@ -75,9 +81,13 @@ abstract class MenuBuilder {
         // Override to listen when clicking inventory
     }
 
-    open fun close() { Protocolize.playerProvider().player(player!!.uniqueId).closeInventory() }
+    open fun close() = protocolize?.closeInventory()
 
-    open fun update() { build(); Protocolize.playerProvider().player(player!!.uniqueId).openInventory(inv) }
+    open fun update() {
+        val inv = this.inv ?: return
+        updateItem(inv)
+        protocolize?.openInventory(inv)
+    }
 
     protected fun setItem(index: Int, item: ItemStack) { items[index]=item }
 

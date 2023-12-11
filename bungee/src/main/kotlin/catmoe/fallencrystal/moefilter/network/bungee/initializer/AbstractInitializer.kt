@@ -22,7 +22,6 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketAntibotHandler
-import catmoe.fallencrystal.moefilter.network.bungee.handler.InboundHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.event.BungeeConnectedEvent
@@ -41,6 +40,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
+import net.md_5.bungee.netty.HandlerBoss
 import net.md_5.bungee.netty.PipelineUtils.*
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
@@ -65,6 +65,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         if (listener.isProxyProtocol) HAProxyManager.handle(ctx)
         val remoteAddress = if (channel.remoteAddress() == null) channel.parent().localAddress() else channel.remoteAddress()
         val inetAddress = (remoteAddress as InetSocketAddress).address
+        pipeline.addFirst(MoeChannelHandler.BYTE_LIMITER)
         ConnectionStatistics.increase(inetAddress)
         if (Firewall.isFirewalled(inetAddress)) { channel.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
         if (Throttler.increase(inetAddress)) { channel.close(); ConnectionStatistics.countBlocked(BlockType.FIREWALL); return }
@@ -91,7 +92,6 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
     }
 
     open fun connectToBungee(ctx: ChannelHandlerContext, pipeline: ChannelPipeline, channel: Channel, listener: ListenerInfo) {
-        MoeChannelHandler.register(pipeline)
         BASE.initChannel(channel)
 
         // MoeFilter: TrafficLimiter
@@ -101,7 +101,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.replace(FRAME_DECODER, FRAME_DECODER, VarIntFrameDecoder())
         // like https://github.com/PaperMC/Waterfall/commit/6702e0f69b2fa32c1046d277ade2107e22ba9134
         pipeline.replace(TIMEOUT_HANDLER, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
-        pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, InboundHandler())
+        pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, HandlerBoss())
 
         // Add PacketListener
         if (MoeChannelHandler.injectPacketListener)
@@ -117,7 +117,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
         // MoeFilter's InitialHandler
-        pipeline[InboundHandler::class.java].setHandler(InitialHandler(bungee, listener))
+        pipeline[HandlerBoss::class.java].setHandler(InitialHandler(bungee, listener))
 
         if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
         if (MoeChannelHandler.callInitEvent) BungeeConnectedEvent(channel, listener).callEvent()

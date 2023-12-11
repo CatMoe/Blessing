@@ -17,7 +17,6 @@
 
 package catmoe.fallencrystal.moefilter.network.bungee.handler
 
-import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher.handle
 import catmoe.fallencrystal.moefilter.network.common.exception.PacketOutOfBoundsException
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandler.Sharable
@@ -25,10 +24,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 
 @Sharable
-class ByteBufHandler : ChannelInboundHandlerAdapter() {
-    @Suppress("OVERRIDE_DEPRECATION")
-    @Throws(Exception::class)
-    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { handle(ctx.channel(), cause) }
+class ByteLimiter : ChannelInboundHandlerAdapter() {
 
     @Throws(Exception::class)
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {

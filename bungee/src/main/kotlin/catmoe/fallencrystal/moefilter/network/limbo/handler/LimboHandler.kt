@@ -98,7 +98,7 @@ class LimboHandler(
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
-    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) { ExceptionCatcher.handle(channel, cause) }
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) = ExceptionCatcher.handle(channel, cause)
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) { if (msg is LimboPacket) msg.handle(this) }
 

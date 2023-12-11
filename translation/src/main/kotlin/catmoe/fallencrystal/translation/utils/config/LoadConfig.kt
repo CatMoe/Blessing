@@ -649,7 +649,8 @@ class LoadConfig {
                 country {
                     # MaxMind Database下载许可key. 建议使用自己的许可证秘钥.
                     # https://dev.maxmind.com/geoip/geolite2-free-geolocation-data#accessing-geolite2-free-geolocation-data
-                    key="LARAgQo3Fw7W9ZMS"
+                    # 不再提供密钥. 如有需要 请自行注册获取密钥或联系我获得支持.
+                    key=""
                     # 模式. WHITELIST(白名单), BLACKLIST(黑名单) 或 DISABLED(禁用)
                     mode=DISABLED
                     # 下载 & 查询超时时间 (ms)

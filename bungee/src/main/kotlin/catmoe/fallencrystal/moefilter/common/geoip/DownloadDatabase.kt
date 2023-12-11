@@ -138,6 +138,7 @@ class DownloadDatabase(folder: File) {
 
 
 
+    @Suppress("DEPRECATION")
     private fun downloadDatabase(database: File, archive: File, url: String) {
         if (!database.exists() || currentTime - database.lastModified() > TimeUnit.DAYS.toMillis(7)) {
             MessageUtil.logInfo("[MoeFilter] [GeoIP] ${database.name} has a update available. Downloading it...")
