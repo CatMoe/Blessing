@@ -21,6 +21,7 @@ import catmoe.fallencrystal.moefilter.common.counter.ConnectionStatistics
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.data.BlockType
+import catmoe.fallencrystal.moefilter.network.bungee.handler.AnotherHandlerBoss
 import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketAntibotHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser.GeyserInitializer
@@ -40,7 +41,6 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.connection.InitialHandler
-import net.md_5.bungee.netty.HandlerBoss
 import net.md_5.bungee.netty.PipelineUtils.*
 import net.md_5.bungee.protocol.*
 import java.net.InetSocketAddress
@@ -101,9 +101,9 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         pipeline.replace(FRAME_DECODER, FRAME_DECODER, VarIntFrameDecoder())
         // like https://github.com/PaperMC/Waterfall/commit/6702e0f69b2fa32c1046d277ade2107e22ba9134
         pipeline.replace(TIMEOUT_HANDLER, TIMEOUT_HANDLER, TimeoutHandler(MoeChannelHandler.dynamicTimeout))
-        pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, HandlerBoss())
 
-        // Add PacketListener
+        // Add PacketListener for antibot.
+        // Must inject before BossHandler (InitialHandler) to prevent call event when canceled.
         if (MoeChannelHandler.injectPacketListener)
             pipeline.addBefore(BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketAntibotHandler(ctx))
 
@@ -116,8 +116,9 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         // MoeFilter -- TND default should be true.
         channel.config().setOption(ChannelOption.TCP_NODELAY, true)
 
-        // MoeFilter's InitialHandler
-        pipeline[HandlerBoss::class.java].setHandler(InitialHandler(bungee, listener))
+        // MoeFilter's HandlerBoss
+        //pipeline[HandlerBoss::class.java].setHandler(InitialHandler(bungee, listener))
+        pipeline.replace(BOSS_HANDLER, BOSS_HANDLER, AnotherHandlerBoss(InitialHandler(bungee, listener)))
 
         if (listener.isProxyProtocol) pipeline.addFirst(HAProxyMessageDecoder())
         if (MoeChannelHandler.callInitEvent) BungeeConnectedEvent(channel, listener).callEvent()

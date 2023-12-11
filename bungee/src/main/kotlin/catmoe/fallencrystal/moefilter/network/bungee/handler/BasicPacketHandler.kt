@@ -31,22 +31,29 @@ import catmoe.fallencrystal.translation.player.PlayerInstance
 import catmoe.fallencrystal.translation.player.bungee.BungeePlayer
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
+import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
 import net.md_5.bungee.protocol.packet.PluginMessage
 
-class BasicPacketHandler(val username: String) : ChannelDuplexHandler() {
+
+@Suppress("CanBeParameter")
+class BasicPacketHandler(val username: String, private val initialHandler: InitialHandler) : ChannelDuplexHandler() {
+
+    private val version = initialHandler.version
 
     override fun write(ctx: ChannelHandlerContext, msg: Any?, promise: ChannelPromise?) {
         if (msg is PluginMessage && LocalConfig.getConfig().getBoolean("f3-brand.enabled")) {
             val pmTag = msg.tag
-            if (pmTag == "MC|Brand" || pmTag == "minecraft:brand") {
+            if (pmTag == "MC|Brand" || pmTag == "minecraft:brand" && version >= Version.V1_8.number) {
                 val backend: String
                 val data = String(msg.data)
                 backend = try { data.split(" <- ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1] } catch (ignore: Exception) { "unknown" }
@@ -68,11 +75,48 @@ class BasicPacketHandler(val username: String) : ChannelDuplexHandler() {
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
+        val channel = ctx.channel()
         run {
+            if (msg is ByteBuf) {
+                val copy = msg.copy()
+                val byteMessage = ByteMessage(copy)
+                try {
+                    // PluginMessage for 1.7. Some BungeeCord just not provide correctly bytes.
+                    if (byteMessage.readVarInt() == 0x17 && version < Version.V1_8.number) {
+                        val player = proxy.getPlayer(username) ?: return@run
+                        val tag = byteMessage.readString()
+                        if (tag != "MC|Brand") return@run
+                        fun readBytes17(): Int {
+                            var low = byteMessage.readUnsignedShort()
+                            var high = 0
+                            if (low and 0x8000 != 0) {
+                                low = low and 0x7FFF
+                                high = byteMessage.readUnsignedByte().toInt()
+                            }
+                            return high and 0xFF shl 15 or low
+                        }
+                        val brandBytes = ByteMessage(byteMessage.readRetainedSlice(readBytes17()))
+                        val brand = brandBytes.readString()
+                        if (brand.isEmpty() || brand.length > 128) { channel.close(); return }
+                        brandBytes.release()
+                        if (BrandCheck.increase(Brand(brand))) {
+                            FastDisconnect.disconnect(channel, DisconnectType.BRAND_NOT_ALLOWED, ServerType.BUNGEE_CORD)
+                            return@run
+                        }
+                        val translatePlayer = PlayerInstance.getPlayer(player.uniqueId) ?: return@run
+                        (translatePlayer.upstream as BungeePlayer).clientBrand=brand
+                        EventManager.callEvent(PlayerPostBrandEvent(translatePlayer, brand))
+                    }
+                } catch (exception: Exception) {
+                    MessageUtil.logWarn("Caught exception when reading brand: ${exception.localizedMessage}")
+                    if (ExceptionCatcher.debug) exception.printStackTrace()
+                } finally {
+                    byteMessage.release()
+                }
+            }
             if (msg is PacketWrapper) {
-                val channel = ctx.channel()
                 val packet = msg.packet
-                if (packet is PluginMessage) {
+                if (packet is PluginMessage && version >= Version.V1_8.number) {
                     val tag = packet.tag
                     if (tag == "MC|Brand" || tag == "minecraft:brand") {
                         try {

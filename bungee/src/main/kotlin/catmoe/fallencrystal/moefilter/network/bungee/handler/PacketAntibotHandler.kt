@@ -107,7 +107,8 @@ class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() 
                             allowUnknown = true
                             val pipeline = channel.pipeline()
                             PlayerChannelRecord.putChannelHandler(ctx, packet.data)
-                            pipeline.replace(IPipeline.PACKET_INTERCEPTOR, IPipeline.PACKET_INTERCEPTOR, BasicPacketHandler(packet.data))
+                            val initialHandler = pipeline[AnotherHandlerBoss::class.java].initialHandler ?: return@run
+                            pipeline.replace(IPipeline.PACKET_INTERCEPTOR, IPipeline.PACKET_INTERCEPTOR, BasicPacketHandler(packet.data, initialHandler))
                         }
                     }
                     else -> if (!allowUnknown) throw InvalidPacketException("Invalid packet order!")
