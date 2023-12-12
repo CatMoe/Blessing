@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.bungee.util.event
+package catmoe.fallencrystal.moefilter.network.bungee.util
 
 import catmoe.fallencrystal.moefilter.api.logger.BCLogType
 import catmoe.fallencrystal.moefilter.api.logger.LoggerManager
@@ -25,7 +25,7 @@ import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.api.event.ClientConnectEvent
 
-class BungeeConnectedEvent(val channel: Channel, val listener: ListenerInfo) {
+class BungeeConnectedCaller(val channel: Channel, val listener: ListenerInfo) {
     private val isWaterfall = LoggerManager.getType() == BCLogType.WATERFALL
     private val bungee = ProxyServer.getInstance()
 

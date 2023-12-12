@@ -17,16 +17,17 @@
 
 package catmoe.fallencrystal.moefilter.common.config
 
-import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.check.brand.BrandCheck
 import catmoe.fallencrystal.moefilter.common.check.misc.DomainCheck
 import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
+import catmoe.fallencrystal.moefilter.common.check.proxy.ProxyCache
 import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.common.geoip.GeoIPManager
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
+import catmoe.fallencrystal.moefilter.network.bungee.util.BrandListener
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
@@ -67,6 +68,7 @@ object ReloadConfig : EventListener {
         LimboListener,
         TrafficManager,
         LoadCommand(),
+        BrandListener
     ))
 
     @EventHandler(PluginReloadEvent::class, priority = HandlerPriority.HIGHEST)

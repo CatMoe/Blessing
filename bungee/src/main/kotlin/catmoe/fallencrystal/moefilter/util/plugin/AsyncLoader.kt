@@ -33,6 +33,7 @@ import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.AttackLoggerFilter
 import catmoe.fallencrystal.moefilter.listener.BungeeEvent
 import catmoe.fallencrystal.moefilter.network.InitializerInjector
+import catmoe.fallencrystal.moefilter.network.bungee.util.BrandListener
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode.*
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
@@ -186,7 +187,7 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
         EventManager.register(LimboMessageHandler)
          */
         listeners.addAll(listOf(
-            this, ReloadConfig, AttackInfoListener(), LimboMessageHandler
+            this, ReloadConfig, AttackInfoListener(), LimboMessageHandler, BrandListener
         ))
 
         for (listener in listeners) EventManager.register(listener)
