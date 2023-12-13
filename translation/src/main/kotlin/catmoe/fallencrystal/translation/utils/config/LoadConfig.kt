@@ -107,6 +107,35 @@ class LoadConfig {
                 # EVENT模式此throttle关闭连接的效率比BungeeCord自带的低
                 throttle-limit=3
                 
+                # 内置数据包监听器
+                # 重新加载后 需要重新进入服务器才可生效.
+                # 除非您知道这些选项是干什么用的 或是被开发者指引打开或关闭指定选项
+                # 否则请不要调整以下设置 保持默认即可 
+                packet-listener {
+                    # 下游 (代理与服务器之间的连接)
+                    downstream {
+                        # 是否注入监听器
+                        inject=false
+                        # 当数据包已在BungeeCord上注册时 是否呼叫此事件
+                        call-known=true
+                        # 当尝试写入或读取字节缓冲区时 是否复制缓冲区并呼叫此事件
+                        call-bytebuffer=true
+                        # 是否为写入呼叫事件
+                        write=true
+                        # 是否为读取呼叫事件
+                        read=true
+                    }
+                    # 上游 (代理与玩家的客户端之间的连接)
+                    # MoeFilter必须为上游注入数据包监听器来防止机器人, 无法切换
+                    # 其余设置于下游没有太多的区别 唯一的区别是上游和下游的区别
+                    upstream {
+                        call-known=true
+                        call-bytebuffer=false
+                        write=true
+                        read=true
+                    }
+                }
+                
                 # 数据包限制器. 如需关闭某项具体的数据包限制, 设置为-1即可
                 # 如果您不知道这些选项是干什么用的, 请在开发人员的指导下调整这些设置. 
                 # 否则, 仅推荐调整apply以决定是否在您的服务器生效数据包限制器.

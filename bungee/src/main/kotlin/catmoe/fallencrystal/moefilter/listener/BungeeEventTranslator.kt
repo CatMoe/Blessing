@@ -18,7 +18,6 @@
 package catmoe.fallencrystal.moefilter.listener
 
 import catmoe.fallencrystal.moefilter.common.state.StateManager
-import catmoe.fallencrystal.moefilter.network.bungee.util.PlayerChannelRecord
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.translation.event.EventManager
 import catmoe.fallencrystal.translation.event.events.player.*
@@ -36,7 +35,7 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 
-class BungeeEvent : Listener {
+object BungeeEventTranslator : Listener {
 
     private val proxy = ProxyServer.getInstance()
 
@@ -83,7 +82,6 @@ class BungeeEvent : Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onDisconnect(event: PlayerDisconnectEvent) {
-        PlayerChannelRecord.invalidateChannel(event.player)
         val player = PlayerInstance.getCachedOrNull(event.player.name) ?: return
         EventManager.callEvent(PlayerLeaveEvent(player))
         PlayerInstance.removeFromList(player)

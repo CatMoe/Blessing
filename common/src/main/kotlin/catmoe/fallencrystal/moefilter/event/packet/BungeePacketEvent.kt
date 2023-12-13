@@ -21,13 +21,13 @@ import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.translation.event.TranslationEvent
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.ByteBuf
-import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.Channel
 import net.md_5.bungee.connection.InitialHandler
 
 data class BungeePacketEvent(
     val id: Int,
     private val buf: ByteBuf,
-    val ctx: ChannelHandlerContext,
+    val channel: Channel,
     val version: Version,
     val initialHandler: InitialHandler,
     val direction: PacketDirection,

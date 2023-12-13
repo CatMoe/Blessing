@@ -66,7 +66,7 @@ object BrandListener : EventListener, Reloadable {
         val tag = packet.tag
         if ((tag == "MC|Brand" && version.less(Version.V1_13) || (tag == "minecraft:brand" && version.moreOrEqual(Version.V1_13)))) {
             val username = event.initialHandler.name
-            val channel = event.ctx.channel()
+            val channel = event.channel
             when (event.action) {
                 PacketAction.READ -> {
                     try {
@@ -125,19 +125,13 @@ object BrandListener : EventListener, Reloadable {
             val tag = byteBuf.readString()
             if (tag != "MC|Brand") return
             val player = PlayerInstance.getPlayer(event.initialHandler.uniqueId) ?: return
-            fun readBytes17(): Int {
-                var low = byteBuf.readUnsignedShort()
-                var high = 0
-                if (low and 0x8000 != 0) {
-                    low = low and 0x7FFF
-                    high = byteBuf.readUnsignedByte().toInt()
-                }
-                return high and 0xFF shl 15 or low
-            }
-            val brandBytes = ByteMessage(byteBuf.readRetainedSlice(readBytes17()))
+            val byteArray = ByteArray(byteBuf.readShort().toInt())
+            byteBuf.readBytes(byteArray)
+            val brandBytes = ByteMessage.create()
+            brandBytes.writeBytes(byteArray)
             val brand = brandBytes.readString()
             brandBytes.release()
-            val channel = event.ctx.channel()
+            val channel = event.channel
             if (brand.isEmpty() || brand.length > 128) { channel.close(); return }
             if (BrandCheck.increase(Brand(brand))) {
                 FastDisconnect.disconnect(channel, DisconnectType.BRAND_NOT_ALLOWED, ServerType.BUNGEE_CORD)

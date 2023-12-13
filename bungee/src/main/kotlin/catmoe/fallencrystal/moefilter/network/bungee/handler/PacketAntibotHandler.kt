@@ -28,7 +28,6 @@ import catmoe.fallencrystal.moefilter.common.check.mixed.MixedCheck
 import catmoe.fallencrystal.moefilter.common.check.name.similarity.SimilarityCheck
 import catmoe.fallencrystal.moefilter.common.check.name.valid.ValidNameCheck
 import catmoe.fallencrystal.moefilter.network.bungee.initializer.IPipeline
-import catmoe.fallencrystal.moefilter.network.bungee.util.PlayerChannelRecord
 import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.ServerType
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeException
@@ -106,9 +105,8 @@ class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() 
                         if (!cancelRead.get()) {
                             allowUnknown = true
                             val pipeline = channel.pipeline()
-                            PlayerChannelRecord.putChannelHandler(ctx, packet.data)
                             val initialHandler = pipeline[AnotherHandlerBoss::class.java].initialHandler ?: return@run
-                            pipeline.replace(IPipeline.PACKET_INTERCEPTOR, IPipeline.PACKET_INTERCEPTOR, BasicPacketHandler(packet.data, initialHandler))
+                            pipeline.replace(IPipeline.PACKET_INTERCEPTOR, IPipeline.PACKET_INTERCEPTOR, BasicPacketHandler(packet.data, initialHandler, ctx))
                         }
                     }
                     else -> if (!allowUnknown) throw InvalidPacketException("Invalid packet order!")

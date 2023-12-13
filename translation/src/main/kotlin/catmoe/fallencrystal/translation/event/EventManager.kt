@@ -38,7 +38,7 @@ object EventManager {
     @Suppress("DEPRECATION")
     fun callEvent(event: TranslationEvent) {
         val method: MutableCollection<Method> = CopyOnWriteArrayList()
-        debug("Trying call handler for event ${event.javaClass.name}")
+        debug("Trying call handler for event $event (${event.javaClass.name})")
         val a = this.method.getIfPresent(event::class)
         if (a == null) {
             debug("No any handler found.")

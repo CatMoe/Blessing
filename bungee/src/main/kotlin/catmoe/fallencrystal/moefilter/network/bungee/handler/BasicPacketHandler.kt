@@ -21,10 +21,13 @@ import catmoe.fallencrystal.moefilter.event.packet.BungeeKnownPacketEvent
 import catmoe.fallencrystal.moefilter.event.packet.BungeePacketEvent
 import catmoe.fallencrystal.moefilter.event.packet.PacketAction
 import catmoe.fallencrystal.moefilter.event.packet.PacketDirection
+import catmoe.fallencrystal.moefilter.network.bungee.util.ChannelRecord
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.translation.event.EventManager
+import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.ByteBuf
+import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
@@ -34,68 +37,99 @@ import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
 
 
-class BasicPacketHandler(val username: String, private val initialHandler: InitialHandler) : ChannelDuplexHandler() {
+class BasicPacketHandler(
+    val username: String,
+    private val initialHandler: InitialHandler,
+    val ctx: ChannelHandlerContext
+) : ChannelDuplexHandler() {
 
     private val version = Version.of(initialHandler.version)
+    private val config = LocalConfig.getConfig().getConfig("packet-listener.upstream")
+    private val callKnown = config.getBoolean("call-known")
+    private val callByteBuf = config.getBoolean("call-bytebuffer")
+    private val callWrite = config.getBoolean("write")
+    private val callRead = config.getBoolean("read")
+
+    val channel: Channel = ctx.channel()
+
+    init {
+        ChannelRecord.putUpstream(initialHandler, ctx.channel())
+    }
 
     override fun write(ctx: ChannelHandlerContext, msg: Any?, promise: ChannelPromise?) {
-        when (msg) {
-            is DefinedPacket -> {
-                val event = BungeeKnownPacketEvent(
-                    msg, ctx, version, initialHandler, PacketDirection.UPSTREAM, PacketAction.WRITE
-                )
-                EventManager.callEvent(event)
-                if (event.isCancelled()) return
-            }
-            is ByteBuf -> {
-                val byteBuf = ByteMessage(msg.copy())
-                val event = BungeePacketEvent(
-                    byteBuf.readVarInt(),
-                    byteBuf,
-                    ctx,
-                    version,
-                    initialHandler,
-                    PacketDirection.UPSTREAM,
-                    PacketAction.WRITE
-                )
-                EventManager.callEvent(event)
-                if (event.isCancelled()) return
+        if (callWrite) {
+            when (msg) {
+                is DefinedPacket -> {
+                    if (callKnown) {
+                        val event = BungeeKnownPacketEvent(
+                            msg, channel, version, initialHandler, PacketDirection.UPSTREAM, PacketAction.WRITE
+                        )
+                        EventManager.callEvent(event)
+                        if (event.isCancelled()) return
+                    }
+                }
+                is ByteBuf -> {
+                    if (callByteBuf) {
+                        val byteBuf = ByteMessage(msg.copy())
+                        val event = BungeePacketEvent(
+                            byteBuf.readVarInt(),
+                            byteBuf,
+                            channel,
+                            version,
+                            initialHandler,
+                            PacketDirection.UPSTREAM,
+                            PacketAction.WRITE
+                        )
+                        EventManager.callEvent(event)
+                        if (event.isCancelled()) return
+                        byteBuf.release()
+                    }
+                }
             }
         }
         super.write(ctx, msg, promise)
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
-        run {
-            if (msg is ByteBuf) {
-                val copy = msg.copy()
-                val byteMessage = ByteMessage(copy)
-                val event = BungeePacketEvent(
-                    byteMessage.readVarInt(),
-                    byteMessage,
-                    ctx, version,
-                    initialHandler,
-                    PacketDirection.UPSTREAM,
-                    PacketAction.READ
-                )
-                EventManager.callEvent(event)
-                byteMessage.release()
-                if (event.isCancelled()) return
-            }
-            if (msg is PacketWrapper) {
-                val packet = msg.packet ?: return@run
-                val event = BungeeKnownPacketEvent(
-                    packet, ctx, version, initialHandler,
-                    PacketDirection.UPSTREAM, PacketAction.READ
-                )
-                EventManager.callEvent(event)
-                if (event.isCancelled()) return
+        if (callRead) {
+            run {
+                when (msg) {
+                    is ByteBuf -> {
+                        if (callByteBuf) {
+                            val copy = msg.copy()
+                            val byteMessage = ByteMessage(copy)
+                            val event = BungeePacketEvent(
+                                byteMessage.readVarInt(),
+                                byteMessage,
+                                channel, version,
+                                initialHandler,
+                                PacketDirection.UPSTREAM,
+                                PacketAction.READ
+                            )
+                            EventManager.callEvent(event)
+                            byteMessage.release()
+                            if (event.isCancelled()) return
+                        }
+                    }
+                    is PacketWrapper -> {
+                        if (callKnown) {
+                            val packet = msg.packet ?: return@run
+                            val event = BungeeKnownPacketEvent(
+                                packet, channel, version, initialHandler,
+                                PacketDirection.UPSTREAM, PacketAction.READ
+                            )
+                            EventManager.callEvent(event)
+                            if (event.isCancelled()) return
+                        }
+                    }
+                }
             }
         }
         super.channelRead(ctx, msg)
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
+        ChannelRecord.invalidate(initialHandler)
         super.channelInactive(ctx)
     }
 

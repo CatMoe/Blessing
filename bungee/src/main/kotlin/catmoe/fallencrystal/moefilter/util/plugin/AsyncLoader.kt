@@ -31,7 +31,8 @@ import catmoe.fallencrystal.moefilter.common.state.AttackInfoListener
 import catmoe.fallencrystal.moefilter.event.PluginReloadEvent
 import catmoe.fallencrystal.moefilter.event.PluginUnloadEvent
 import catmoe.fallencrystal.moefilter.listener.AttackLoggerFilter
-import catmoe.fallencrystal.moefilter.listener.BungeeEvent
+import catmoe.fallencrystal.moefilter.listener.BungeeEventTranslator
+import catmoe.fallencrystal.moefilter.listener.DownstreamPipelineInjector
 import catmoe.fallencrystal.moefilter.network.InitializerInjector
 import catmoe.fallencrystal.moefilter.network.bungee.util.BrandListener
 import catmoe.fallencrystal.moefilter.network.bungee.util.WorkingMode
@@ -194,7 +195,8 @@ class AsyncLoader(val plugin: Plugin, val cLoader: CPlatform) : EventListener {
 
         EventManager.callEvent(PluginReloadEvent(null))
 
-        pluginManager.registerListener(plugin, BungeeEvent())
+        pluginManager.registerListener(plugin, BungeeEventTranslator)
+        pluginManager.registerListener(plugin, DownstreamPipelineInjector)
     }
 
     companion object {

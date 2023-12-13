@@ -35,7 +35,7 @@ class ConnectionUtil(val connection: PendingConnection) {
     private val bungee = BungeeCord.getInstance()
 
     val pipeline: ChannelPipeline? =
-        (try { PlayerChannelRecord.getChannelHandler(bungee.getPlayer(connection.uniqueId))?.pipeline() } catch (npe: NullPointerException) { null } )
+        ChannelRecord.getUpstream(connection as InitialHandler)?.pipeline()
             ?: initChannelWrapper()?.handle?.pipeline()
 
     val version get() = connection.version
