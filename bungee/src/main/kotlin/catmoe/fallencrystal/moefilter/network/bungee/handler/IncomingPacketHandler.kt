@@ -34,26 +34,32 @@ import catmoe.fallencrystal.moefilter.network.common.exception.InvalidHandshakeE
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidPacketException
 import catmoe.fallencrystal.moefilter.network.common.kick.DisconnectType
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
+import catmoe.fallencrystal.moefilter.network.common.motd.CacheMotdManager
+import catmoe.fallencrystal.translation.utils.version.Version
+import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelPromise
+import net.md_5.bungee.connection.InitialHandler
 import net.md_5.bungee.protocol.DefinedPacket
 import net.md_5.bungee.protocol.PacketWrapper
-import net.md_5.bungee.protocol.packet.Handshake
-import net.md_5.bungee.protocol.packet.LoginRequest
-import net.md_5.bungee.protocol.packet.PingPacket
-import net.md_5.bungee.protocol.packet.StatusRequest
+import net.md_5.bungee.protocol.packet.*
 import java.net.InetSocketAddress
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
-class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() {
+class IncomingPacketHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() {
 
     private var handshake: Handshake? = null
     private val cancelRead = AtomicBoolean(false)
     private var allowUnknown = false
     private var nextPacket = NextPacket.HANDSHAKE
-    private val channel = ctx.channel()
-    private val address get() = (channel.remoteAddress() as InetSocketAddress)
+    val channel: Channel = ctx.channel()
+    val address get() = (channel.remoteAddress() as InetSocketAddress)
+
+    private var initialHandler: InitialHandler? = null
+
+    private var handlePing = false
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
         if (msg == null && !allowUnknown) {
@@ -80,17 +86,27 @@ class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() 
                                     ProxyCheck().increase(info) -> kick(DisconnectType.PROXY)
                                 }
                                 if (cancelRead.get()) return@run
-                                nextPacket= NextPacket.LOGIN
+                                nextPacket = NextPacket.LOGIN
                             }
                             else -> throw InvalidHandshakeException("Handshake must be 1 or 2")
                         }
+                        initialHandler=channel.pipeline()[AnotherHandlerBoss::class.java].initialHandler
                     }
                     // Ping
                     is StatusRequest -> {
                         nextPacket.verify(packet)
                         nextPacket=NextPacket.STATUS_PING
+                        val handlePing = CacheMotdManager.handlePing(initialHandler?: return@run, this)
+                        this.handlePing = handlePing
+                        if (handlePing) return
                     }
-                    is PingPacket -> nextPacket.verify(packet)
+                    is PingPacket -> {
+                        nextPacket.verify(packet)
+                        if (handlePing) {
+                            channel.writeAndFlush(packet).addListener { channel.close() }
+                            return
+                        }
+                    }
                     // Join
                     is LoginRequest -> {
                         nextPacket.verify(packet)
@@ -105,8 +121,11 @@ class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() 
                         if (!cancelRead.get()) {
                             allowUnknown = true
                             val pipeline = channel.pipeline()
-                            val initialHandler = pipeline[AnotherHandlerBoss::class.java].initialHandler ?: return@run
-                            pipeline.replace(IPipeline.PACKET_INTERCEPTOR, IPipeline.PACKET_INTERCEPTOR, BasicPacketHandler(packet.data, initialHandler, ctx))
+                            pipeline.replace(
+                                IPipeline.PACKET_INTERCEPTOR,
+                                IPipeline.PACKET_INTERCEPTOR,
+                                BasicPacketHandler(packet.data, initialHandler ?: return, ctx)
+                            )
                         }
                     }
                     else -> if (!allowUnknown) throw InvalidPacketException("Invalid packet order!")
@@ -114,6 +133,16 @@ class PacketAntibotHandler(ctx: ChannelHandlerContext) : ChannelDuplexHandler() 
             }
         }
         if (!cancelRead.get()) super.channelRead(ctx, msg)
+    }
+
+    override fun write(ctx: ChannelHandlerContext?, msg: Any?, promise: ChannelPromise?) {
+        run {
+            if (msg is StatusResponse && !this.handlePing) {
+                val handler = this.initialHandler ?: return@run
+                CacheMotdManager.cachePing(Version.of(handler.version), handler.virtualHost.hostString, msg.response)
+            }
+        }
+        super.write(ctx, msg, promise)
     }
 
     private fun kick(type: DisconnectType) {

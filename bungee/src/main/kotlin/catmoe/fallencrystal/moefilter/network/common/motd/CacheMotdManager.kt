@@ -15,9 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.handler.ping
+package catmoe.fallencrystal.moefilter.network.common.motd
 
 import catmoe.fallencrystal.moefilter.common.state.StateManager
+import catmoe.fallencrystal.moefilter.network.bungee.handler.IncomingPacketHandler
+import catmoe.fallencrystal.moefilter.network.common.ByteMessage
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboHandler
 import catmoe.fallencrystal.moefilter.network.limbo.packet.ExplicitPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
@@ -26,6 +28,7 @@ import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
 import catmoe.fallencrystal.translation.utils.version.Version
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.md_5.bungee.connection.InitialHandler
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.*
@@ -63,7 +66,7 @@ object CacheMotdManager : Reloadable {
         cancelSendIconDuringAttack = conf.getBoolean("cancel-send-icon-during-attack")
         val cacheLifeTime = conf.getLong("max-life-time")
         if (CacheMotdManager.cacheLifeTime != cacheLifeTime) {
-            CacheMotdManager.cacheLifeTime=cacheLifeTime
+            CacheMotdManager.cacheLifeTime =cacheLifeTime
         }
         motdCache = Caffeine.newBuilder()
             .expireAfterWrite(cacheLifeTime, TimeUnit.SECONDS)
@@ -82,38 +85,71 @@ object CacheMotdManager : Reloadable {
 
     fun handlePing(handler: LimboHandler) {
         val version = handler.version!!
-        val host = handler.host?.hostString ?: ""
+        //val host = handler.host?.hostString ?: ""
+        val host = if (useStandardDomain) handler.host?.hostString ?: "" else ""
         if (!checkHost(host))  { handler.channel.close(); return }
-        val i = if (useStandardDomain) host else ""
-        val cache = motdCache.getIfPresent(i)
+        val cache = motdCache.getIfPresent(host)
         val c = if (cache?.get(version) == null) createMap(handler, cache) else cache
         val address = (handler.address as InetSocketAddress).address
-        if (cancelSendIconDuringAttack && StateManager.inAttack.get()) { sendMotd(c, handler, true); return }
+        if (cancelSendIconDuringAttack && StateManager.inAttack.get()) { sendMotd(c[version]!!, handler, true); return }
         if (sendIconOnce) {
             val noIcon = onceIconCache.getIfPresent(address) != null
             if (!noIcon) onceIconCache.put(address, true)
-            sendMotd(c, handler, noIcon)
+            sendMotd(c[version]!!, handler, noIcon)
         }
-        if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(i, c)
+        if (fullCacheInAttack && StateManager.inAttack.get()) motdCache.put(host, c)
     }
 
-    private fun sendMotd(map: MutableMap<Version, CachedMotd>, handler: LimboHandler, noIcon: Boolean) {
-        val p = map[handler.version!!]!!
+    fun cachePing(version: Version, host: String, output: String) {
+        if (checkHost(host)) {
+            val cache = motdCache.getIfPresent(if (useStandardDomain) host else "")
+            if (cache?.get(version) == null) createMap(output, version, host, cache)
+        }
+    }
+
+    fun handlePing(initialHandler: InitialHandler, handler: IncomingPacketHandler): Boolean {
+        val channel = handler.channel
+        val version = Version.of(initialHandler.version)
+        val host = if (useStandardDomain) initialHandler.virtualHost.hostString else ""
+        val cache = motdCache.getIfPresent(host)?.get(version) ?: return false
+        val byteBuf = ByteMessage.create()
+        sendMotd(cache, byteBuf, (cancelSendIconDuringAttack && StateManager.inAttack.get()))
+        if (byteBuf.readableBytes() == 0) {
+            byteBuf.release()
+            return false
+        }
+        channel.writeAndFlush(byteBuf).addListener { if (instantCloseAfterPing) channel.close() }
+        return true
+    }
+
+    private fun sendMotd(motd: CachedMotd, handler: LimboHandler, noIcon: Boolean) {
         // handler.writePacket(if (noIcon) packet.bmNoIcon else packet.bm)
-        val pa = ExplicitPacket(0x00, (if (noIcon) p.bmNoIcon else p.bm), "Cached ping packet (icon: ${!noIcon})")
+        val pa = ExplicitPacket(0x00, (if (noIcon) motd.bytesWithoutIcon else motd.bytes), "Cached ping packet (icon: ${!noIcon})")
         handler.sendPacket(pa)
         if (instantCloseAfterPing) handler.channel.close()
     }
 
-    private fun createMap(handler: LimboHandler, map: MutableMap<Version, CachedMotd>?): MutableMap<Version, CachedMotd> {
+    private fun sendMotd(motd: CachedMotd, byteBuf: ByteMessage, noIcon: Boolean) {
+        byteBuf.writeVarInt(0x00)
+        byteBuf.writeBytes(if (noIcon) motd.bytesWithoutIcon else motd.bytes)
+    }
+
+    private fun createMap(handler: LimboHandler, map: MutableMap<Version, CachedMotd>?) =
+        createMap(
+            handler.fakeHandler!!.handlePing(handler.host!!, handler.version!!).description,
+            handler.version ?: Version.UNDEFINED,
+            handler.host?.hostString ?: "",
+            map
+        )
+
+    private fun createMap(input: String, version: Version, host: String = "", map: MutableMap<Version, CachedMotd>?): MutableMap<Version, CachedMotd> {
         val m = map ?: EnumMap(Version::class.java)
-        val packet = PacketPingResponse()
-        packet.output=handler.fakeHandler!!.handlePing(handler.host!!, handler.version!!).description
-        val i = CachedMotd.process(packet, handler.version!!)
-        m[handler.version!!] = i
-        motdCache.put(if (useStandardDomain) handler.host!!.hostString else "", m)
+        val i = CachedMotd.process(PacketPingResponse(output = input), version)
+        m[version] = i
+        motdCache.put(if (useStandardDomain) host else "", m)
         return m
     }
+
 
     private fun checkHost(host: String): Boolean {
         return if  (!useStandardDomain) true

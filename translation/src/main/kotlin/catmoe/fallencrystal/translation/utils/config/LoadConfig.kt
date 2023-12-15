@@ -82,7 +82,7 @@ class LoadConfig {
                 
                 # Ping选项
                 ping {
-                    # 缓存选项 该选项仅当antibot.conf中的mode为PIPELINE时有效
+                    # 缓存选项
                     cache {
                         # 缓存有效时间. 单位为秒
                         max-life-time=5

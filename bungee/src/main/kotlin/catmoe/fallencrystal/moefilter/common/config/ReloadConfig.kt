@@ -32,7 +32,7 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import catmoe.fallencrystal.moefilter.network.common.kick.FastDisconnect
 import catmoe.fallencrystal.moefilter.network.common.traffic.TrafficManager
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
-import catmoe.fallencrystal.moefilter.network.limbo.handler.ping.CacheMotdManager
+import catmoe.fallencrystal.moefilter.network.common.motd.CacheMotdManager
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.util.message.notification.Notifications
 import catmoe.fallencrystal.moefilter.util.plugin.LoadCommand

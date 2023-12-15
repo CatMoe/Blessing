@@ -22,7 +22,7 @@ import catmoe.fallencrystal.moefilter.common.firewall.Firewall
 import catmoe.fallencrystal.moefilter.common.firewall.Throttler
 import catmoe.fallencrystal.moefilter.data.BlockType
 import catmoe.fallencrystal.moefilter.network.bungee.handler.AnotherHandlerBoss
-import catmoe.fallencrystal.moefilter.network.bungee.handler.PacketAntibotHandler
+import catmoe.fallencrystal.moefilter.network.bungee.handler.IncomingPacketHandler
 import catmoe.fallencrystal.moefilter.network.bungee.handler.TimeoutHandler
 import catmoe.fallencrystal.moefilter.network.bungee.initializer.geyser.GeyserInitializer
 import catmoe.fallencrystal.moefilter.network.bungee.util.BungeeConnectedCaller
@@ -105,7 +105,7 @@ abstract class AbstractInitializer : ChannelInitializer<Channel>(), IPipeline {
         // Add PacketListener for antibot.
         // Must inject before BossHandler (InitialHandler) to prevent call event when canceled.
         if (MoeChannelHandler.injectPacketListener)
-            pipeline.addBefore(BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, PacketAntibotHandler(ctx))
+            pipeline.addBefore(BOSS_HANDLER, IPipeline.PACKET_INTERCEPTOR, IncomingPacketHandler(ctx))
 
         // Init default BungeeCord pipeline
         pipeline.addBefore(FRAME_DECODER, LEGACY_DECODER, LegacyDecoder())

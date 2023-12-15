@@ -15,18 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package catmoe.fallencrystal.moefilter.network.limbo.handler.ping
+package catmoe.fallencrystal.moefilter.network.common.motd
 
-import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.debug
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
+import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader.debug
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketPingResponse
 import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.Unpooled
 
 class CachedMotd(
     val packet: PacketPingResponse,
-    val bm: ByteArray,
-    val bmNoIcon: ByteArray,
+    val bytes: ByteArray,
+    val bytesWithoutIcon: ByteArray,
     val version: Version,
 ) {
     companion object {

@@ -22,15 +22,16 @@ import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketPingResponse : LimboS2CPacket() {
-
-    var protocol = Version.UNDEFINED
-    var brand = "MoeLimbo"
-    var description = "{\"text\": \"§dMoeLimbo\"}"
-    var max = 1
-    var online = 0
+class PacketPingResponse(
+    var protocol: Version = Version.UNDEFINED,
+    var brand: String = "MoeLimbo",
+    var description: String = "{\"text\": \"§dMoeLimbo\"}",
+    var max: Int = 1,
+    var online: Int = 0,
     // Protocol (ServerBrand, Protocol), PlayerInfo (1, 0, List<UUID,String>), Description
     var output: String? = null
+) : LimboS2CPacket() {
+
     private val template = "{ \"version\": { \"name\": \"[brand]\", \"protocol\": [protocol] }, " +
             "\"players\": { \"max\": [max], \"online\": [online], \"sample\": [] }, " +
             "\"description\": [description] }"
