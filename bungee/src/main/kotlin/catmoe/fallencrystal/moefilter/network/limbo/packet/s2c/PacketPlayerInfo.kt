@@ -41,7 +41,7 @@ class PacketPlayerInfo(
                 actions.add(Action.UPDATE_GAMEMODE)
                 byteBuf.writeEnumSet(actions, Action::class.java)
                 byteBuf.writeVarInt(1) // Array length (1 element)
-                byteBuf.writeUuid(uuid) // entity uuid
+                byteBuf.writeUuid(uuid, version) // entity uuid
                 byteBuf.writeString(username) // name
                 byteBuf.writeVarInt(0)
                 byteBuf.writeBoolean(true)
@@ -50,7 +50,7 @@ class PacketPlayerInfo(
             }
             byteBuf.writeVarInt(0)
             byteBuf.writeVarInt(1)
-            byteBuf.writeUuid(uuid)
+            byteBuf.writeUuid(uuid, version)
             byteBuf.writeString(username)
             byteBuf.writeVarInt(0)
             byteBuf.writeVarInt(gameMode)
@@ -70,7 +70,5 @@ class PacketPlayerInfo(
         UPDATE_DISPLAY_NAME
     }
 
-    override fun toString(): String {
-        return "PacketPlayerInfo(gameMode=$gameMode, username=$username, uuid=$uuid)"
-    }
+    override fun toString() = "PacketPlayerInfo(gameMode=$gameMode, username=$username, uuid=$uuid)"
 }

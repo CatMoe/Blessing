@@ -56,7 +56,7 @@ class PacketServerChat(
                 )
             } else byteBuf.writeString(message.json)
             byteBuf.writeByte(type.ordinal)
-            if (version.moreOrEqual(Version.V1_16)) byteBuf.writeUuid(sender)
+            if (version.moreOrEqual(Version.V1_16)) byteBuf.writeUuid(sender, version)
         }
     }
 

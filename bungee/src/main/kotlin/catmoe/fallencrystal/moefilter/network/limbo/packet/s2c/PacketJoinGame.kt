@@ -18,16 +18,6 @@
 package catmoe.fallencrystal.moefilter.network.limbo.packet.s2c
 
 import catmoe.fallencrystal.moefilter.network.common.ByteMessage
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.LLBIT
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_16
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_18_2
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_19
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_19_1
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_1_20
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.codec_Legacy
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_16
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry.defaultDimension1_18_2
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
 import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
@@ -41,10 +31,7 @@ class PacketJoinGame(
     var isHardcore: Boolean = true,
     var gameMode: Int = 2,
     var previousGameMode: Int = -1,
-    var worldName: String = when (LimboLoader.dimLoaderMode) {
-        ADVENTURE -> LimboLoader.dimensionType.adventure.dimensionName
-        LLBIT -> LimboLoader.dimensionType.llbit.dimension.key
-    },
+    var worldName: String = LimboLoader.dimensionType.dimension.key,
     var worldNames: Array<String?> = arrayOf(worldName),
     var hashedSeed: Long = 0,
     var maxPlayers: Int = 1,
@@ -55,12 +42,7 @@ class PacketJoinGame(
     var isFlat: Boolean = true,
 ) : LimboS2CPacket() {
 
-    override fun encode(byteBuf: ByteMessage, version: Version?) {
-        when (LimboLoader.dimLoaderMode) {
-            ADVENTURE -> encodeAdventure(byteBuf, version!!)
-            LLBIT -> encodeLLBIT(byteBuf, version!!)
-        }
-    }
+    override fun encode(byteBuf: ByteMessage, version: Version?) = encodeLLBIT(byteBuf, version!!)
 
     private fun encodeLLBIT(packet: ByteMessage, version: Version) {
         packet.writeInt(entityId)
@@ -108,95 +90,6 @@ class PacketJoinGame(
         if (version.moreOrEqual(V1_19)) {
             packet.writeBoolean(false)
             if (version.moreOrEqual(V1_20)) packet.writeVarInt(0)
-        }
-    }
-
-    private fun encodeAdventure(packet: ByteMessage, version: Version) {
-        packet.writeInt(entityId)
-
-        // Hardcore
-        if (version.moreOrEqual(V1_16_2)) packet.writeBoolean(isHardcore)
-
-        // Game mode
-        if (version == V1_7_6) packet.writeByte(if (gameMode == 3) 1 else gameMode)
-        else if (version.less(V1_20_2)) packet.writeByte(gameMode)
-
-        // Previous game mode & world names
-        if (version.moreOrEqual(V1_16) && version.less(V1_20_2)) packet.writeByte(previousGameMode)
-
-            /*
-            Write world(s) names
-
-            In ByteMessage.kt line 119: (WriteStringsArray)
-            writeVarInt(array.size)
-            array.forEach { writeString(it) }
-             */
-        if (version.moreOrEqual(V1_16)) packet.writeStringsArray(worldNames)
-
-        // Dimension
-        when {
-            version.fromTo(V1_7_6, V1_9) -> packet.writeByte(defaultDimension1_16.dimensionId)
-            version.fromTo(V1_9_1, V1_15_2) -> packet.writeInt(defaultDimension1_16.dimensionId)
-            version.fromTo(V1_16, V1_16_1) -> {
-                packet.writeCompoundTag(codec_Legacy)
-                packet.writeString(defaultDimension1_16.name)
-            }
-            version.fromTo(V1_16_2, V1_18) -> {
-                packet.writeCompoundTag(codec_1_16)
-                packet.writeCompoundTag(defaultDimension1_16.data)
-            }
-            version == V1_18_2 -> {
-                packet.writeCompoundTag(codec_1_18_2)
-                packet.writeCompoundTag(defaultDimension1_18_2.data)
-            }
-            version == V1_19 -> packet.writeCompoundTag(codec_1_19)
-            version.fromTo(V1_19_1, V1_19_3) -> packet.writeCompoundTag(codec_1_19_1)
-            version == V1_19_4 ->  packet.writeCompoundTag(codec_1_20)
-            version == V1_20 -> packet.writeCompoundTag(codec_1_20)
-            else -> {}
-        }
-
-        // World name
-        if (version.moreOrEqual(V1_16) && version.less(V1_20_2)) {
-            if (version.moreOrEqual(V1_19) || version.fromTo(V1_16, V1_16_1)) packet.writeString(worldName) // World type
-            packet.writeString(worldName)
-        }
-
-        // Hashed seed
-        if (version.moreOrEqual(V1_15) && version.less(V1_20_2)) packet.writeLong(hashedSeed)
-
-        // Legacy difficulty & maxPlayers
-        if (version.fromTo(V1_7_6, V1_13_2)) packet.writeByte(0) // Difficulty
-        if (version.moreOrEqual(V1_16_2)) packet.writeVarInt(maxPlayers) else packet.writeByte(maxPlayers)
-
-        // Legacy level type
-        if (version.fromTo(V1_7_6, V1_15_2)) packet.writeString("flat")
-
-        // View distance
-        if (version.moreOrEqual(V1_14)) packet.writeVarInt(viewDistance)
-        if (version.moreOrEqual(V1_18)) packet.writeVarInt(viewDistance) // Simulation Distance
-
-        // reducedDebugInfo && enableRespawnScreen
-        if (version.moreOrEqual(V1_8)) packet.writeBoolean(reducedDebugInfo)
-        if (version.moreOrEqual(V1_15)) packet.writeBoolean(enableRespawnScreen)
-
-        if (version.moreOrEqual(V1_20_2)) { // 1.20.2: doLimitedCrafting
-            packet.writeBoolean(true) // doLimitedCrafting
-            packet.writeString(worldName) // World type
-            packet.writeString(worldName)
-            packet.writeLong(hashedSeed)
-            packet.writeByte(gameMode)
-            packet.writeByte(previousGameMode)
-        }
-
-        // isDebug && isFlat
-        if (version.moreOrEqual(V1_16)) {
-            packet.writeBoolean(isDebug)
-            packet.writeBoolean(isFlat)
-        }
-        if (version.moreOrEqual(V1_19)) {
-            packet.writeBoolean(false) // lastDeathPos
-            if (version.moreOrEqual(V1_20)) packet.writeVarInt(0) // Pearl cooldown
         }
     }
 

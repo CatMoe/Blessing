@@ -711,24 +711,6 @@ class LoadConfig {
                 # 如果您在Ping时出现了一点小错误 请尝试启用此项
                 instant-close-after-ping=false
                 
-                # 如何调整dim-loader(NBT引擎)?
-                # NETHER对于更高版本的Minecraft不可用, 将会在之后尽快修复.
-                # OVERWORLD 使用 LLBIT 最为合适
-                # THE_END 使用 ADVENTURE 最为合适
-                # 
-                # 虽然我可能犯了与NBT引擎无关的错误, 
-                # 但在我完全弄清楚群戏数据之前 这么做应该不会有什么问题..
-                
-                # 加载群戏所使用的NBT引擎.
-                # 可用引擎: ADVENTURE, LLBIT
-                # 如果您不知道这是什么或这么做会导致什么后果, 应该保持默认值!
-                # 追求稳定的环境下应使用推荐值.
-                dim-loader=LLBIT
-                
-                # 维度设置:
-                # OVERWORLD, NETHER, THE_END
-                dimension=OVERWORLD
-                
                 # 玩家在通过Limbo检查后 需要在多少秒内重新连接以加入服务器?
                 bungee-queue=15
                 # 总是检查玩家 如果为false 则无视bungee-queue直接加入服务器

@@ -37,7 +37,7 @@ object StaticDimension {
 
     val cacheDimension = Caffeine.newBuilder().build<Version, Tag>()
 
-    var dim = LimboLoader.dimensionType.llbit
+    var dim = LimboLoader.dimensionType
 
     fun init() {
         Version.entries.forEach { cacheDimension.put(it, dim.dimension.getFullCodec(it)) }

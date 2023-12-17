@@ -29,12 +29,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecke
 import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketOrderCheck
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.CommonDimensionType
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.ADVENTURE
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.DimensionInterface.LLBIT
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionRegistry
-import catmoe.fallencrystal.moefilter.network.limbo.dimension.adventure.DimensionType
+import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
@@ -47,23 +42,14 @@ import catmoe.fallencrystal.translation.utils.config.IgnoreInitReload
 import catmoe.fallencrystal.translation.utils.config.LocalConfig
 import catmoe.fallencrystal.translation.utils.config.Reloadable
 
-@Suppress("EnumValuesSoftDeprecate", "SpellCheckingInspection")
+@Suppress("EnumValuesSoftDeprecate")
 @IgnoreInitReload
 object LimboLoader : Reloadable {
 
     private var limboConfig = LocalConfig.getLimbo()
     val connections: MutableCollection<LimboHandler> = ArrayList()
-    private val rawDimLoaderType = limboConfig.getAnyRef("dim-loader").toString()
     private val dimension = limboConfig.getAnyRef("dimension").toString()
-    val dimensionType = try {
-        CommonDimensionType.valueOf(dimension)
-    } catch (_: IllegalArgumentException) {
-        MessageUtil.logWarn("[MoeLimbo] Unknown dimension $dimension, Fallback to OVERWORLD.")
-        CommonDimensionType.OVERWORLD
-    }
-    var dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
-        MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
-    }
+    val dimensionType = DimensionType.OVERWORLD
     var debug = LocalConfig.getConfig().getBoolean("debug")
 
     // Debug
@@ -112,17 +98,6 @@ object LimboLoader : Reloadable {
         this.connections.removeAll(connections.toSet())
     }
 
-    private fun initDimension() {
-        when (dimLoaderMode) {
-            ADVENTURE -> {
-                val dimension = DimensionType.OVERWORLD
-                DimensionRegistry.defaultDimension1_16 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_16)
-                DimensionRegistry.defaultDimension1_18_2 = DimensionRegistry.getDimension(dimension, DimensionRegistry.codec_1_18_2)
-            }
-            LLBIT -> { StaticDimension.init() }
-        }
-    }
-
     fun debug(log: String) {
         if (debug) MessageUtil.logInfo("[MoeLimbo] $log")
     }
@@ -134,10 +109,7 @@ object LimboLoader : Reloadable {
 
     fun initLimbo() {
         limboConfig = LocalConfig.getLimbo()
-        dimLoaderMode = try { DimensionInterface.valueOf(rawDimLoaderType) } catch (_: IllegalArgumentException) {
-            MessageUtil.logWarn("[MoeLimbo] Unknown type $rawDimLoaderType, Fallback to LLBIT"); LLBIT
-        }
-        initDimension()
+        StaticDimension.init()
         debug = LocalConfig.getConfig().getBoolean("debug")
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         if (!disableCheck) for (c in checker) LimboListener.register(c)
