@@ -34,7 +34,7 @@ class PacketLoginAcknowledged : LimboC2SPacket() {
     }
 
     override fun handle(handler: LimboHandler) {
-        val version = handler.version!!
+        val version = handler.version
         handler.updateVersion(version, Protocol.CONFIGURATION)
         handler.writePacket(EnumPacket.PLUGIN_MESSAGE)
         handler.writePacket(ExplicitPacket(0x05, RegistryData.getCachedRegistry(version), "Cached Registry data."))

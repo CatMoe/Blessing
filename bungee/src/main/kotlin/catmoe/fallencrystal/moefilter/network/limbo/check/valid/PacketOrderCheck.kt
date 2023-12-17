@@ -92,7 +92,7 @@ object PacketOrderCheck : LimboChecker {
             // Join
             is PacketInitLogin -> {
                 verify(packet, NextPacket.INIT_LOGIN)
-                next.put(handler, if (handler.version!!.moreOrEqual(Version.V1_20_2)) NextPacket.LOGIN_ACK else NextPacket.KEEP_ALIVE)
+                next.put(handler, if (handler.version.moreOrEqual(Version.V1_20_2)) NextPacket.LOGIN_ACK else NextPacket.KEEP_ALIVE)
             }
             is PacketLoginAcknowledged -> {
                 verify(packet, NextPacket.LOGIN_ACK)

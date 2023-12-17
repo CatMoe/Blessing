@@ -60,6 +60,7 @@ enum class Protocol(var stateId: Int) {
             serverBound.register({ PacketClientConfiguration() }, map(0x00, min, max))
             clientBound.register({ PacketDisconnect() }, map(0x01, min, max))
             serverBound.register({ PacketPluginMessage() }, map(0x01, min, max))
+            clientBound.register({ PacketPluginMessage() }, map(0x00, min, max))
             serverBound.register({ PacketKeepAlive() }, map(0x03, min, max))
             clientBound.register({ PacketKeepAlive() }, map(0x03, min, max))
             clientBound.register({ PacketFinishConfiguration() }, map(0x02, min, max))

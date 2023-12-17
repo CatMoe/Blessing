@@ -34,7 +34,7 @@ class PacketFinishConfiguration : LimboPacket {
     }
 
     override fun handle(handler: LimboHandler) {
-        handler.updateVersion(handler.version!!, Protocol.PLAY)
+        handler.updateVersion(handler.version, Protocol.PLAY)
         handler.sendPlayPackets()
     }
 }

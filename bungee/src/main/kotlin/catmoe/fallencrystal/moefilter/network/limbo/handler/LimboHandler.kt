@@ -60,7 +60,7 @@ class LimboHandler(
 ) : ChannelInboundHandlerAdapter() {
     val address: SocketAddress = channel.remoteAddress()
     var state: Protocol? = null
-    var version: Version? = null
+    var version: Version = Version.UNDEFINED
     var host: InetSocketAddress? = null
     var profile: LimboProfile = LimboProfile()
     val fakeHandler: LimboCompat? = getFakeProxyHandler()
@@ -111,11 +111,11 @@ class LimboHandler(
     }
 
     fun sendPlayPackets() {
-        val version = this.version!!
+        val version = this.version
         writePacket(JOIN_GAME)
         writePacket(SPAWN_POSITION)
         writePacket(PLAYER_INFO)
-        if (version.moreOrEqual(Version.V1_8) && version.less(Version.V1_20_2))
+        if (version.fromTo(Version.V1_8, Version.V1_20))
             // About ignore 1.20.2, See PacketLoginAcknowledged.handle() method.
             writePacket(if (version.moreOrEqual(Version.V1_13)) PLUGIN_MESSAGE else PLUGIN_MESSAGE_LEGACY)
 
@@ -139,11 +139,10 @@ class LimboHandler(
 
     @Suppress("unused")
     fun sendTestPlatform(y: Int, block: LimboBlock) {
-        val size = 16
-        val offset = 7.5.toInt() shr 4
+        val offset = 0 /* 7.5.toInt() shr 4 */
         val list = mutableListOf<BlockPosition>()
-        for (x in 0 until size) {
-            for (z in 0 until size) list.add(BlockPosition(block, x, y, z))
+        for (x in 0 until 16) {
+            for (z in 0 until 16) list.add(BlockPosition(block, x, y, z))
         }
         writePacket(PacketBlocksSectionUpdate(list, offset, offset))
     }

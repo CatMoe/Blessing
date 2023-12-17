@@ -91,9 +91,9 @@ object CommonJoinCheck : LimboChecker {
         if (cancelledRead) return true
         val inetAddress = (handler.address as InetSocketAddress).address
         when (packet) {
-            is PacketStatusRequest -> MixedCheck.increase(Pinging(inetAddress, handler.version!!.number))
+            is PacketStatusRequest -> MixedCheck.increase(Pinging(inetAddress, handler.version.number))
             is PacketHandshake -> return checkProtocol(packet, handler)
-            is PacketInitLogin -> return checkJoin(Joining(packet.username, inetAddress, handler.version!!.number), handler)
+            is PacketInitLogin -> return checkJoin(Joining(packet.username, inetAddress, handler.version.number), handler)
             is PacketJoinGame -> {
                 onlineAddress.put(inetAddress, true)
                 onlineUser.put(handler.profile.username!!.lowercase(), true)
@@ -131,7 +131,7 @@ object CommonJoinCheck : LimboChecker {
         if (onlineUser.getIfPresent(joining.username.lowercase()) == true || AlreadyOnlineCheck().increase(joining)) {
             kick(handler, ALREADY_ONLINE); return true
         }
-        if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(joining.protocol) || handler.version?.isSupported != true) {
+        if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(joining.protocol) || !handler.version.isSupported) {
             kick(handler, UNSUPPORTED_VERSION); return true
         }
         return false

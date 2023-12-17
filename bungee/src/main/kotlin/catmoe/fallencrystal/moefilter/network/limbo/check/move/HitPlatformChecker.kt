@@ -142,7 +142,7 @@ object HitPlatformChecker : LimboChecker {
         // cancel kick.
         data.getIfPresent(a)?.passed = true
         EventManager.callEvent(LimboCheckPassedEvent(
-            a.version!!,
+            a.version,
             a.profile.username!!,
             (a.address as InetSocketAddress).address, a
         ))

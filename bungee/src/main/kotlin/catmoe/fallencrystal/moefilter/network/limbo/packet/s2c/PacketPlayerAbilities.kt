@@ -23,20 +23,29 @@ import catmoe.fallencrystal.translation.utils.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketPlayerAbilities(
-    var flags: Int? = null,
+    var flags: Int = Flags.DEFAULT.id,
     var flyingSpeed: Float = 0f,
-    var fieldOfView: Float = 0.1f
+    var walkSpeed: Float = 0.1f
 ) : LimboS2CPacket() {
 
+    constructor(
+        flags: Flags,
+        flyingSpeed: Float = 0f,
+        walkSpeed: Float = 0.1f
+    ) : this(flags.id, flyingSpeed, walkSpeed)
+
     override fun encode(byteBuf: ByteMessage, version: Version?) {
-        byteBuf.writeByte(flags ?: 0x02)
+        byteBuf.writeByte(flags)
         //listOf(flyingSpeed, fieldOfView).forEach { packet.writeFloat(it) }
         byteBuf.writeFloat(flyingSpeed)
-        byteBuf.writeFloat(fieldOfView)
+        byteBuf.writeFloat(walkSpeed)
     }
 
-    override fun toString(): String {
-        return "PacketPlayerAbilities(flags=$flags, flyingSpeed=$flyingSpeed, fieldOfView=$fieldOfView)"
+    override fun toString() = "PacketPlayerAbilities(flags=$flags, flyingSpeed=$flyingSpeed, fieldOfView=$walkSpeed)"
+
+    enum class Flags(val id: Int) {
+        DEFAULT(0x00),
+        FLYING(0x02)
     }
 
 }

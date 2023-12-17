@@ -84,7 +84,7 @@ object CacheMotdManager : Reloadable {
     }
 
     fun handlePing(handler: LimboHandler) {
-        val version = handler.version!!
+        val version = handler.version
         //val host = handler.host?.hostString ?: ""
         val host = if (useStandardDomain) handler.host?.hostString ?: "" else ""
         if (!checkHost(host))  { handler.channel.close(); return }
@@ -136,8 +136,8 @@ object CacheMotdManager : Reloadable {
 
     private fun createMap(handler: LimboHandler, map: MutableMap<Version, CachedMotd>?) =
         createMap(
-            handler.fakeHandler!!.handlePing(handler.host!!, handler.version!!).description,
-            handler.version ?: Version.UNDEFINED,
+            handler.fakeHandler!!.handlePing(handler.host!!, handler.version).description,
+            handler.version,
             handler.host?.hostString ?: "",
             map
         )

@@ -33,14 +33,6 @@ import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
-/*
-@Command("limbo")
-@CommandPermission("moefilter.limbo")
-@CommandDescription(DescriptionFrom.STRING, "Lookup MoeLimbo status")
-@CommandUsage([
-    "/moefilter limbo list", "/moefilter limbo kick <Address>", "/moefilter limbo kick -a"
-])
- */
 @MoeCommand(
     name = "limbo",
     permission = "moefilter.limbo",
@@ -64,7 +56,7 @@ class LimboCommand : ICommand {
                         try {
                             val t = listOf(
                                 "<aqua>在线: ${if (it.channel.isActive) "<green>是" else "<red>否"}",
-                                "<aqua>用户名: <yellow>${it.profile.username} <aqua>版本: ${it.version?.name}",
+                                "<aqua>用户名: <yellow>${it.profile.username} <aqua>版本: ${it.version.name}",
                                 "<aqua>From: <yellow>${it.host?.hostName}:${it.host?.port}",
                                 "<aqua>有效握手: ${if (MoeChannelHandler.sentHandshake.getIfPresent(it.channel) == null) "<red>否" else "<green>是"}",
                                 "<aqua>Brand: ${it.brand}",

@@ -49,7 +49,7 @@ object PacketCache {
         packetCache.put(JOIN_GAME, PacketSnapshot.of(join))
         packetCache.put(POS_AND_LOOK, PacketSnapshot.of(PacketServerPositionLook(loc, ThreadLocalRandom.current().nextInt())))
         packetCache.put(SPAWN_POSITION, PacketSnapshot.of(PacketSpawnPosition(loc)))
-        packetCache.put(PLAYER_ABILITIES, PacketSnapshot.of(PacketPlayerAbilities()))
+        packetCache.put(PLAYER_ABILITIES, PacketSnapshot.of(PacketPlayerAbilities(PacketPlayerAbilities.Flags.FLYING)))
         packetCache.put(PLAYER_INFO, PacketSnapshot.of(PacketPlayerInfo(join.gameMode, username, uuid)))
 
         packetCache.put(UPDATE_TIME, PacketSnapshot.of(PacketUpdateTime()))
@@ -61,7 +61,7 @@ object PacketCache {
 
 
         (-1..1).forEach { x -> (-1..1).forEach { z ->
-            packetCache.put(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}"), PacketSnapshot.of(PacketEmptyChunk(x shr 4, z shr 4)))
+            packetCache.put(EnumPacket.valueOf("CHUNK_${x+1}_${z+1}"), PacketSnapshot.of(PacketEmptyChunk(x, z)))
         }}
 
     }

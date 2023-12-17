@@ -18,6 +18,7 @@ package catmoe.fallencrystal.moefilter.network.common
 
 import catmoe.fallencrystal.moefilter.network.common.exception.BitSetTooLargeException
 import catmoe.fallencrystal.moefilter.network.common.exception.InvalidVarIntException
+import catmoe.fallencrystal.translation.utils.version.Version
 import io.netty.buffer.*
 import io.netty.handler.codec.EncoderException
 import io.netty.util.ByteProcessor
@@ -121,6 +122,18 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     fun writeUuid(uuid: UUID) {
         buf.writeLong(uuid.mostSignificantBits)
         buf.writeLong(uuid.leastSignificantBits)
+    }
+
+    fun writeUuid(uuid: UUID, version: Version) {
+        if (version.moreOrEqual(Version.V1_8)) writeUuid(uuid) else {
+            val builder = StringBuilder(32)
+            val digits = "0123456789abcdef"
+            for (shift in 60 downTo 0 step 4) {
+                builder.append(digits[(uuid.mostSignificantBits shr shift).toInt() and 0xF])
+                builder.append(digits[(uuid.leastSignificantBits shr shift).toInt() and 0xF])
+            }
+            writeString(builder.toString())
+        }
     }
 
     fun readStringsArray(): Array<String?> {

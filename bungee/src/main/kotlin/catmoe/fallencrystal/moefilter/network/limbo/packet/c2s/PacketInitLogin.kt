@@ -46,8 +46,8 @@ class PacketInitLogin : LimboC2SPacket() {
         handler.sendPacket(handler.getCachedPacket(EnumPacket.LOGIN_SUCCESS))
         LimboLoader.connections.add(handler)
         if (handler.fakeHandler is FakeInitialHandler) handler.fakeHandler.username=profile.username
-        if (handler.version!!.less(Version.V1_20_2)) {
-            handler.updateVersion(handler.version!!, Protocol.PLAY)
+        if (handler.version.less(Version.V1_20_2)) {
+            handler.updateVersion(handler.version, Protocol.PLAY)
             handler.sendPlayPackets()
         }
     }

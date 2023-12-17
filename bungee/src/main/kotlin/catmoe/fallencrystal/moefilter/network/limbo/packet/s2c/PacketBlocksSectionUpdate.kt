@@ -23,7 +23,6 @@ import catmoe.fallencrystal.moefilter.network.limbo.handler.LimboLoader
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboS2CPacket
 import catmoe.fallencrystal.translation.utils.version.Version
 
-// Refs: https://github.com/jonesdevelopment/sonar/blob/main/sonar-common/src/main/java/xyz/jonesdev/sonar/common/fallback/protocol/packets/play/UpdateSectionBlocks.java
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketBlocksSectionUpdate(
     val blocks: MutableCollection<BlockPosition> = mutableListOf(),
@@ -45,17 +44,22 @@ class PacketBlocksSectionUpdate(
                 byteBuf.writeVarInt(writeId)
             }
         } else {
-            val chunkY = (blocks.firstOrNull()?.y ?: 1) shr 4
-            var chunk = (0 or (sectionX and 0x3FFFFF shl 42)).toLong()
-            byteBuf.writeLong((sectionZ.toLong() and 0x3FFFFFL shl 20).let { chunk = chunk or it; chunk } or (chunkY.toLong() and 0xFFFFFL))
-            if (version.less(Version.V1_20)) byteBuf.writeBoolean(true) // Suppress light updates. But removed on 1.20
-            byteBuf.writeVarInt(blocks.size)
+            val sectionX: Long = (this.sectionX shr 42).toLong()
+            val sectionY: Long = (blocks.first().y shl 44 shr 44).toLong()
+            val sectionZ: Long = (this.sectionZ shl 22 shr 42).toLong()
+            val section = sectionX and 0x3FFFFF shl 42 or (sectionY and 0xFFFFF) or (sectionZ and 0x3FFFFF shl 20)
+            LimboLoader.debug(" SectionUpdate: ")
+            LimboLoader.debug("   x=${this.sectionX}, z=${this.sectionZ}")
+            LimboLoader.debug("   shiftedX=$sectionX, Y=$sectionY, shiftedZ=$sectionZ")
+            byteBuf.writeLong(section)
+            val size = blocks.size
+            byteBuf.writeVarInt(size)
+            LimboLoader.debug("   blocks: $size")
             for (block in blocks) {
                 val id = block.block.getId(version)
-                val position = (block.x - (sectionX shl 4) shl 8 or (block.z - (sectionZ shl 4) shl 4) or block.y - (chunkY shl 4)).toShort()
-                val value = id.toLong() shl 12 or position.toLong()
-                LimboLoader.debug(" SectionUpdate (Block: ${block.x}, ${block.y}, ${block.z}, ${id}): Position=$position, value=$value")
-                byteBuf.writeVarLong(value)
+                val blockPosition = id shl 12 or block.x shl 8 or block.z shl 4 or block.y
+                LimboLoader.debug("   Block: Non-shifted=$id, Position=$blockPosition")
+                byteBuf.writeVarLong(blockPosition.toLong())
             }
         }
     }

@@ -51,7 +51,7 @@ class LimboMessage(val handler: LimboHandler) {
         this.sendMessage(NbtMessage.create(message), flush)
 
     fun sendTitle(title: Title, flush: Boolean = false) {
-        val modern = handler.version?.moreOrEqual(Version.V1_17) == true
+        val modern = handler.version.moreOrEqual(Version.V1_17)
         fun write(packet: LimboS2CPacket) = handler.writePacket(packet)
         if (title.time.isInvalid || (title.title.isEmpty && title.subTitle.isEmpty))
             this.writeResetTitle()
@@ -68,7 +68,7 @@ class LimboMessage(val handler: LimboHandler) {
     }
 
     fun writeResetTitle(flush: Boolean = false) = this.write(
-        if (handler.version?.moreOrEqual(Version.V1_17) == true)
+        if (handler.version.moreOrEqual(Version.V1_17))
             PacketTitle(Action.RESET)
         else
             PacketTitleReset(),
@@ -76,7 +76,7 @@ class LimboMessage(val handler: LimboHandler) {
     )
 
     fun sendActionbar(message: NbtMessage, flush: Boolean = false) {
-        val version = handler.version!!
+        val version = handler.version
         this.write(
             if (version.fromTo(Version.V1_11_1, Version.V1_16_4))
                 PacketTitle(Action.ACTION_BAR, message)

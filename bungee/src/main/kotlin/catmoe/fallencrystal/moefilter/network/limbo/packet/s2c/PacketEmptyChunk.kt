@@ -23,7 +23,6 @@ import catmoe.fallencrystal.translation.utils.version.Version
 import se.llbit.nbt.CompoundTag
 import se.llbit.nbt.LongArrayTag
 import se.llbit.nbt.NamedTag
-import java.util.*
 
 
 class PacketEmptyChunk(
@@ -35,19 +34,12 @@ class PacketEmptyChunk(
         // Chunk pos
         byteBuf.writeInt(x)
         byteBuf.writeInt(z)
-        if (version!!.less(Version.V1_17)) byteBuf.writeBoolean(true)
-        if (version.fromTo(Version.V1_16, Version.V1_16_1)) byteBuf.writeBoolean(true)
-        if (version.less(Version.V1_17)) {
-            if (version.lessOrEqual(Version.V1_8)) byteBuf.writeShort(1) else byteBuf.writeVarInt(0)
-        } else if (version.less(Version.V1_18)) {
-            val bitSet = BitSet()
-            for (it in 0..15) { bitSet[it] = false }
-            val mask = bitSet.toLongArray()
-            byteBuf.writeVarInt(mask.size)
-            mask.forEach { byteBuf.writeLong(it) }
-        }
+        if (version!!.less(Version.V1_17)) {
+            byteBuf.writeBoolean(true)
+            if (version.fromTo(Version.V1_16, Version.V1_16_1)) byteBuf.writeBoolean(true)
+            if (version.moreOrEqual(Version.V1_9)) byteBuf.writeVarInt(0) else byteBuf.writeShort(1)
+        } else if (version.fromTo(Version.V1_17, Version.V1_17_1)) byteBuf.writeVarInt(0)
         if (version.moreOrEqual(Version.V1_14)) {
-            // Height maps << Start
             val tag = CompoundTag()
             tag.add("MOTION_BLOCKING", LongArrayTag(LongArray(if (version.less(Version.V1_18)) 36 else 37)))
             val rootTag = CompoundTag()
@@ -56,9 +48,9 @@ class PacketEmptyChunk(
                 byteBuf.writeNamelessCompoundTag(rootTag)
             else
                 byteBuf.writeCompoundTag(NamedTag("", rootTag))
-            // Height maps >> End
-            if (version.fromTo(Version.V1_15_2, Version.V1_17_1)) {
-                val intRange = 0..1023
+
+            if (version.fromTo(Version.V1_15, Version.V1_17_1)) {
+                val intRange = 0 until 1024
                 if (version.moreOrEqual(Version.V1_16_2)) {
                     byteBuf.writeVarInt(1024)
                     for (i in intRange) byteBuf.writeVarInt(1)
@@ -66,13 +58,17 @@ class PacketEmptyChunk(
             }
         }
         when {
-            version.less(Version.V1_13) -> byteBuf.writeBytesArray(ByteArray((256)))
-            version.less(Version.V1_15) -> byteBuf.writeBytesArray(ByteArray(1024))
-            version.less(Version.V1_18) -> byteBuf.writeVarInt(0)
+            version.fromTo(Version.V1_7_2, Version.V1_7_6) -> {
+                byteBuf.writeInt(0)
+                byteBuf.writeBytes(ByteArray(2))
+            }
+            version.fromTo(Version.V1_8, Version.V1_12_2) -> byteBuf.writeBytesArray(ByteArray(256))
+            version.fromTo(Version.V1_13, Version.V1_14_4) -> byteBuf.writeBytesArray(ByteArray(1024))
+            version.fromTo(Version.V1_15, Version.V1_17_1) -> byteBuf.writeVarInt(0)
             else -> {
                 val sectionData = byteArrayOf(0, 0, 0, 0, 0, 0, 1, 0)
                 byteBuf.writeVarInt(sectionData.size * 16)
-                for (i in 0..15) byteBuf.writeBytes(sectionData)
+                for (i in 0 until 16) byteBuf.writeBytes(sectionData)
             }
         }
         if (version.moreOrEqual(Version.V1_9_4)) byteBuf.writeVarInt(0)
