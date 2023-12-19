@@ -195,12 +195,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.grack</groupId>
-            <artifactId>nanojson</artifactId>
-            <version>1.8</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
@@ -275,19 +269,6 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
             <version>1.20-R0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-protocol</artifactId>
-            <version>1.20-R0.2-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.20-R0.1</version>
-            <type>javadoc</type>
             <scope>provided</scope>
         </dependency>
 

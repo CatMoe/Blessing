@@ -30,7 +30,7 @@ import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
 import catmoe.fallencrystal.moefilter.network.limbo.packet.LimboPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.EnumPacket.*
-import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.LimboPacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketSnapshot
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.Disconnect
 import catmoe.fallencrystal.moefilter.network.limbo.packet.common.PacketKeepAlive
@@ -157,7 +157,7 @@ class LimboHandler(
     }
 
     fun getCachedPacket(enumPacket: EnumPacket): PacketSnapshot? {
-        return PacketCache.packetCache.getIfPresent(enumPacket)
+        return LimboPacketCache.packetCache.getIfPresent(enumPacket)
     }
 
     fun writePacket(packet: EnumPacket) { writePacket(getCachedPacket(packet)) }

@@ -61,14 +61,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     }
 
     fun writeVarInt(value: Int) {
-        /* Old code:
-        var v = value
-        while (true) {
-            if (v and -0x80 == 0) { buf.writeByte(v); return }
-            buf.writeByte(value and 0x7F or 0x80)
-            v = v ushr 7
-        }
-         */
         when {
             (value and -0x80 == 0) -> writeByte(value)
             (value and -0x4000 == 0) -> writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))

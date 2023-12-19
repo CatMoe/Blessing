@@ -40,6 +40,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
+@Suppress("unused")
 @AntiBotChecker(LimboCheckType.HIT_PLATFORM_CHECK)
 @ListenPacket(
     PacketClientPosition::class,

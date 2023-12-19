@@ -25,14 +25,13 @@ import catmoe.fallencrystal.moefilter.network.limbo.check.impl.ChatCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.CommonJoinCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.KeepAliveCheck
 import catmoe.fallencrystal.moefilter.network.limbo.check.impl.TransactionCheck
-import catmoe.fallencrystal.moefilter.network.limbo.check.move.HitPlatformChecker
 import catmoe.fallencrystal.moefilter.network.limbo.check.move.MoveTimer
 import catmoe.fallencrystal.moefilter.network.limbo.check.valid.PacketOrderCheck
 import catmoe.fallencrystal.moefilter.network.limbo.compat.message.NbtMessage
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.DimensionType
 import catmoe.fallencrystal.moefilter.network.limbo.dimension.llbit.StaticDimension
 import catmoe.fallencrystal.moefilter.network.limbo.listener.LimboListener
-import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.PacketCache
+import catmoe.fallencrystal.moefilter.network.limbo.packet.cache.LimboPacketCache
 import catmoe.fallencrystal.moefilter.network.limbo.packet.protocol.Protocol
 import catmoe.fallencrystal.moefilter.network.limbo.packet.s2c.PacketServerChat
 import catmoe.fallencrystal.moefilter.util.message.v2.MessageUtil
@@ -75,7 +74,7 @@ object LimboLoader : Reloadable {
 
     private val checker = listOf(
         CommonJoinCheck,
-        HitPlatformChecker,
+        //HitPlatformChecker,
         MoveTimer,
         KeepAliveCheck,
         PacketOrderCheck,
@@ -113,7 +112,7 @@ object LimboLoader : Reloadable {
         debug = LocalConfig.getConfig().getBoolean("debug")
         Protocol.values().forEach { Protocol.STATE_BY_ID[it.stateId] = it }
         if (!disableCheck) for (c in checker) LimboListener.register(c)
-        PacketCache.initPacket()
+        LimboPacketCache.initPacket()
     }
 
 }

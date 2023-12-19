@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
-object PacketCache {
+object LimboPacketCache {
 
     val packetCache = Caffeine.newBuilder().build<EnumPacket, PacketSnapshot>()
     private val loc = LimboLocation(7.5, LimboLoader.spawnHeight, 7.5, 90f, 10f, false)

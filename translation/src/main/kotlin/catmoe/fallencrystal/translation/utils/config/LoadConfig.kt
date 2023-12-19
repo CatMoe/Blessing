@@ -738,28 +738,14 @@ class LoadConfig {
                 spawn-height=260.0
                 
                 check {
+                    # 由于随之而来的维护成本 平台掉落检查已经临时禁用
+                    
                     # 掉落检查
-                    platform-hit {
-                        # 拥有max和min的配置则是有关随机数的最小值和最大值. 
-                        # 如果想设置一个固定值, 设置相同的值即可.
-                        
-                        # 平台的随机高度
-                        platform-height {
-                            max=255
-                            min=100
-                        }
-                        # 玩家的随机传送高度
-                        spawn-height {
-                            max=280
-                            min=260
-                        }
-                        # 随机重新测试次数
-                        check-round {
-                            max=5
-                            min=3
-                        }
-                        # 支持的方块: STONE (石头), BARRIER (屏障)
-                        block=BARRIER
+                    falling {
+                        # 测试掉落的刻
+                        tick=100
+                        # 允许的不同步传送的移动次数
+                        max-missing-teleport=3
                     }
                     # 变速检查 (依靠监听移动数据包)
                     timer {

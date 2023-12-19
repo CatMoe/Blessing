@@ -18,6 +18,7 @@
 package catmoe.fallencrystal.moefilter.network.common.exception
 
 class InvalidHandshakeException(override val message: String) : RuntimeException(message) {
+
     override fun initCause(cause: Throwable): Throwable { return this }
     override fun fillInStackTrace(): Throwable { return this }
 }
