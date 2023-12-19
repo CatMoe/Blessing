@@ -231,7 +231,7 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <scope>provided</scope>
-            <version>4.14.0</version>
+            <version>4.15.0</version>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
