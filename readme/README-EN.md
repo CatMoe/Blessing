@@ -15,6 +15,7 @@ Can run on almost any fork you like.
 - Don't lock your server when under attacks.
 - Stand-alone virtual server platform for filtering attacks.
 - Packet order check. Prevent spam attacks from non-Minecraft protocols.
+- Cache motd packets to significantly reduce the overhead on large networks.
 - Basic antibot checks like `valid username`, `reconnect`, `GeoIP`, and more...
 > Translation
 - Register commands with ease. async execute, aliases, player-only operations, etc. can be done with annotations.
@@ -47,7 +48,7 @@ Can run on almost any fork you like.
 | HAProxyDetector | ❔       |
 | JH AntiBot      | 🛑      |
 | Protocolize     | ✅       |
-| JPremium        | ☑️      |
+| JPremium        | ✅       |
 | ViaVersion *    | 🛑      |
 | Triton          | ☑️      |
 
