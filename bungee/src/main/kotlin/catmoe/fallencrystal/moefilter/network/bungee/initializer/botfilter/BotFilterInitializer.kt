@@ -23,12 +23,10 @@ import catmoe.fallencrystal.moefilter.network.common.ExceptionCatcher
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
-import lombok.RequiredArgsConstructor
 import net.md_5.bungee.api.config.ListenerInfo
 import net.md_5.bungee.netty.PipelineUtils
 import net.md_5.bungee.protocol.Varint21FrameDecoder
 
-@RequiredArgsConstructor
 class BotFilterInitializer : AbstractInitializer(), IPipeline {
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
