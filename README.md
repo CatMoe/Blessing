@@ -21,6 +21,10 @@
 
 ## About
 
+> ⚠️ This project will be refactored.
+> Most likely, there won't be any follow-up updates. 
+> But still accept any pull requests that try to improve this project.
+
 MoeFilter is an antibot and utility plugin developed specifically for BungeeCord.
 Can run on almost any fork you like.
 (Such as [Waterfall](https://github.com/PaperMC/Waterfall/), etc.)
