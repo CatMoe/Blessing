@@ -17,4 +17,4 @@
 
 package net.miaomoe.blessing.event.event
 
-class TestEvent(override var isCancelled: Boolean = false) : BlessingEvent, Cancellable
+data class TestEvent(override var isCancelled: Boolean = false) : BlessingEvent, Cancellable

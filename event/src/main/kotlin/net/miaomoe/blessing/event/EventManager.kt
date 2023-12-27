@@ -25,6 +25,7 @@ import net.miaomoe.blessing.event.info.ListenerInfo
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KClass
 
+@Suppress("MemberVisibilityCanBePrivate")
 object EventManager {
 
     private val cache = Caffeine
@@ -48,11 +49,13 @@ object EventManager {
         require(!bundle.listener.any { it.info == info }) { "Conflicted ListenerInfo!" }
         bundle.listener.add(data)
         cache.put(event, bundle)
+        sortListener(event)
     }
 
     fun unregister(event: KClass<out BlessingEvent>, info: ListenerInfo) {
         val bundle = cache.getIfPresent(event) ?: return
         bundle.listener.firstOrNull { it.info == info }?.let { bundle.listener.remove(it) }
+        sortListener(event)
     }
 
     fun unregister(event: KClass<out BlessingEvent>, key: Any) {
@@ -72,7 +75,7 @@ object EventManager {
     fun call(event: BlessingEvent) {
         val bundle = cache.getIfPresent(event::class) ?: return
         val isCancelled = if (event is Cancellable) event.isCancelled else false
-        for (listener in bundle.listener) {
+        for (listener in bundle.listener.toList()) {
             val info = listener.info
             if (isCancelled && !info.ignoreCancelled) continue
             fun invoke() {

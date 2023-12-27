@@ -22,14 +22,14 @@ import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
 class ReflectionListenerAdapter(
-    private val owner: KClass<out Any>,
+    private val owner: Any,
     private val method: Method
 ) : ListenerAdapter {
 
     init {
         method.isAccessible=true
         require(method.parameterCount == 1) { "ParameterCount must be 1!" }
-        require(method.parameterTypes[0].isAssignableFrom(BlessingEvent::class.java)) { "Parameter" }
+        require(BlessingEvent::class.java.isAssignableFrom(method.parameterTypes[0])) { "The Parameter must be BlessingEvent!" }
     }
 
     @Retention(AnnotationRetention.RUNTIME)

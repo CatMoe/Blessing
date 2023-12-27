@@ -23,6 +23,10 @@ class Blessing : Plugin() {
     init { instance=this }
 
 
+    override fun onEnable() {
+        // Not impl.
+    }
+
     companion object {
         lateinit var instance: Blessing
     }
