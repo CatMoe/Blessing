@@ -1,8 +1,0 @@
-name: MoeFilter
-version: '0.1.5'
-author: CatMoe
-main: catmoe.fallencrystal.moefilter.MoeFilterBungee
-description: 'A antibot & utils for BungeeCord'
-softDepends:
-  - LuckPerms
-  - Protocolize

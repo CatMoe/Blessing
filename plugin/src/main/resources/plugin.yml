@@ -1,0 +1,7 @@
+name: Blessing
+version: '${project.version}'
+author: CatMoe
+main: net.miaomoe.blessing.Blessing
+description: Recoded of MoeFilter.
+softdepend:
+  - LuckPerms

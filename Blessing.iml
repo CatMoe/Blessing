@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/.idea/sonarlint" />
+    </content>
+  </component>
+  <component name="FacetManager">
+    <facet type="minecraft" name="Minecraft">
+      <configuration>
+        <userChosenTypes>
+          <map>
+            <entry key="BUKKIT" value="false" />
+            <entry key="SPIGOT" value="false" />
+            <entry key="PAPER" value="false" />
+            <entry key="ARCHITECTURY" value="false" />
+            <entry key="FORGE" value="false" />
+            <entry key="FABRIC" value="false" />
+            <entry key="SPONGE" value="false" />
+            <entry key="MIXIN" value="false" />
+            <entry key="MCP" value="false" />
+          </map>
+        </userChosenTypes>
+        <autoDetectTypes>
+          <platformType>WATERFALL</platformType>
+          <platformType>ADVENTURE</platformType>
+        </autoDetectTypes>
+        <projectReimportVersion>1</projectReimportVersion>
+      </configuration>
+    </facet>
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="3d08247b-272d-4563-af08-31419fffc82d" />
+  </component>
+</module>

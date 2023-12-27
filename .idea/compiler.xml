@@ -7,15 +7,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MoeTranslation" />
-        <module name="MoeFilter-velocity" />
-        <module name="MoeFilter-Bungee" />
-        <module name="MoeFilter-common" />
+        <module name="event" />
+        <module name="plugin" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="bungee" target="1.8" />
       <module name="common" target="18" />
+      <module name="MoeFilter-Bungee" target="1.8" />
+      <module name="MoeFilter-common" target="18" />
+      <module name="MoeFilter-velocity" target="11" />
+      <module name="MoeTranslation" target="18" />
+      <module name="server" target="18" />
+      <module name="test" target="18" />
       <module name="translation" target="18" />
       <module name="velocity" target="18" />
     </bytecodeTargetLevel>
