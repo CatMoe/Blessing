@@ -17,9 +17,59 @@
 
 package net.miaomoe.blessing.nbt.dimension
 
-@Suppress("SpellCheckingInspection")
-enum class World {
-    OVERWORLD,
-    NETHER,
-    THE_END
+import net.kyori.adventure.nbt.BinaryTag
+import net.kyori.adventure.nbt.BinaryTagTypes
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.nbt.ListBinaryTag
+import net.miaomoe.blessing.nbt.NbtUtil.put
+import net.miaomoe.blessing.nbt.TagProvider
+import net.miaomoe.blessing.nbt.dimension.Biome.Type.*
+
+@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
+enum class World(val dimension: Dimension) : TagProvider {
+    OVERWORLD(Dimension(
+        "minecraft:overworld", 0, 0,
+        piglinSafe = false, natural = true, ambientLight = 0.0f,
+        infiniburn = "minecraft:infiniburn_overworld",
+        respawnAnchorWorks = false, hasSkylight = true,
+        bedWorks = true, effects = "minecraft:overworld",
+        hasRaids = true, monsterSpawnLightLevel = 0,
+        monsterSpawnBlockLightLimit = 0, logicalHeight = 256,
+        coordinateScale = 1.0f, ultrawarm = false,
+        hasCeiling = false, minY = 0, height = 256,
+        biomes = listOf(PLANINS.biome, SWAMP.biome, SWAMP_HILLS.biome)
+    )),
+    NETHER(Dimension(
+        "minecraft:the_nether", -1, 2,
+        piglinSafe = false, natural = true, ambientLight = 0.0f,
+        infiniburn = "minecraft:infiniburn_nether",
+        respawnAnchorWorks = false, hasSkylight = true,
+        bedWorks = true, effects = "minecraft:the_nether",
+        hasRaids = true, monsterSpawnLightLevel = 0,
+        monsterSpawnBlockLightLimit = 0, logicalHeight = 256,
+        coordinateScale = 1.0f, ultrawarm = false,
+        hasCeiling = false, minY = 0, height = 256,
+        biomes = listOf(NETHER_WASTES.biome)
+    )),
+    THE_END(Dimension(
+        "minecraft:the_end", 1, 3,
+        piglinSafe = false, natural = true, ambientLight = 0.0f,
+        infiniburn = "minecraft:infiniburn_end",
+        respawnAnchorWorks = false, hasSkylight = true,
+        bedWorks = true, effects = "minecraft:the_end",
+        hasRaids = true, monsterSpawnLightLevel = 0,
+        monsterSpawnBlockLightLimit = 0, logicalHeight = 256,
+        coordinateScale = 1.0f, ultrawarm = false,
+        hasCeiling = false, minY = 0, height = 256,
+        biomes = listOf(Biome.Type.THE_END.biome)));
+
+    override fun toTag(version: NbtVersion?): BinaryTag {
+        require(version != null) { "NbtVersion must not be null!" }
+        val biomes = this.dimension.biomes.map { it.toTag(version) }
+        return CompoundBinaryTag
+            .builder()
+            .put("type", "minecraft:worldgen/biome")
+            .put("value", ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, biomes))
+            .build()
+    }
 }

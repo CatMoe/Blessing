@@ -48,4 +48,9 @@ object NbtUtil {
         }
     }
 
+    fun CompoundBinaryTag.Builder.put(key: String, float: Float) = this.put(key, float.toNbt())
+    fun CompoundBinaryTag.Builder.put(key: String, int: Int) = this.put(key, int.toNbt())
+    fun CompoundBinaryTag.Builder.put(key: String, string: String) = this.put(key, string.toNbt())
+    fun CompoundBinaryTag.Builder.put(key: String, double: Double) = this.put(key, double.toNbt())
+    fun CompoundBinaryTag.Builder.put(key: String, boolean: Boolean) = this.put(key, boolean.toNbt())
 }

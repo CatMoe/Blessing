@@ -15,11 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.nbt
+package net.miaomoe.blessing.nbt.dimension
 
-import net.kyori.adventure.nbt.BinaryTag
-import net.miaomoe.blessing.nbt.dimension.NbtVersion
+enum class NbtVersion {
+    LEGACY, // < 1.16.1
+    V1_16_2, // 1.16.2+
+    V1_18_2, // 1.18.2+
+    V1_19, // 1.19+
+    V1_19_1, // 1.19.1+
+    V1_19_4, // 1.19.4+
+    V1_20_2; // 1.20.2+
 
-fun interface TagProvider {
-    fun toTag(version: NbtVersion?): BinaryTag
+    fun moreOrEqual(version: NbtVersion) = this.ordinal >= version.ordinal
 }

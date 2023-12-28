@@ -17,6 +17,12 @@
 
 package net.miaomoe.blessing.nbt.dimension
 
+import net.kyori.adventure.nbt.BinaryTag
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.miaomoe.blessing.nbt.NbtUtil.put
+import net.miaomoe.blessing.nbt.NbtUtil.toNbt
+import net.miaomoe.blessing.nbt.TagProvider
+
 @Suppress("SpellCheckingInspection")
 data class Biome(
     val world: World,
@@ -38,7 +44,45 @@ data class Biome(
     val sound: String,
     val grassColorModifier: String?,
     val foliageColor: Int
-) {
+) : TagProvider {
+
+    override fun toTag(version: NbtVersion?): BinaryTag {
+        require(version != null) { "NbtVersion must not be null!" }
+        val biomeTag = CompoundBinaryTag
+            .builder()
+            .put("name", biome.toNbt())
+            .put("id", id.toNbt())
+        val element = CompoundBinaryTag
+            .builder()
+            .put("precipitation", precipitation)
+        if (version.moreOrEqual(NbtVersion.V1_19_4)) element.put("has_precipitation", (precipitation == "none").toNbt())
+        element
+            .put("depth", depth)
+            .put("temperature", temperature)
+            .put("scale", scale)
+            .put("downfall", downfall)
+            .put("category", category)
+        val effects = CompoundBinaryTag
+            .builder()
+            .put("sky_color", skyColor)
+            .put("water_fog_color", waterColor)
+            .put("fog_color", fogColor)
+            .put("water_color", waterColor)
+        grassColorModifier?.let { effects.put("grass_color_modifier", it) }
+        foliageColor.takeIf { it != Int.MIN_VALUE }?.let { effects.put("foliage_color", it) }
+        effects.put("mood_sound", CompoundBinaryTag
+            .builder()
+            .put("tick_delay", tickDelay)
+            .put("offset", offset)
+            .put("block_search_extent", blockSearchExtent)
+            .put("sound", sound)
+            .build()
+        )
+        element.put("effects", effects.build())
+        biomeTag.put("element", element.build())
+        return biomeTag.build()
+    }
+
     enum class Type(val biome: Biome) {
         PLANINS(Biome(
             World.OVERWORLD,

@@ -19,10 +19,9 @@ package net.miaomoe.blessing.nbt.damage
 
 import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
-import net.kyori.adventure.nbt.FloatBinaryTag
-import net.kyori.adventure.nbt.IntBinaryTag
-import net.kyori.adventure.nbt.StringBinaryTag.stringBinaryTag
+import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.TagProvider
+import net.miaomoe.blessing.nbt.dimension.NbtVersion
 
 data class DamageValues(
     val name: String,
@@ -52,17 +51,17 @@ data class DamageValues(
         THORNS("thorns")
     }
 
-    override fun toTag(): BinaryTag {
+    override fun toTag(version: NbtVersion?): BinaryTag {
         val compound = CompoundBinaryTag.builder()
-            .put("name", stringBinaryTag("minecraft:$name"))
-            .put("id", IntBinaryTag.intBinaryTag(id))
+            .put("name", "minecraft:$name")
+            .put("id", id)
         val element = CompoundBinaryTag.builder()
-        effects?.let { element.put("effects", stringBinaryTag(it.string)) }
+        effects?.let { element.put("effects", it.string) }
         element
-            .put("scaling", stringBinaryTag(scaling.string))
-            .put("exhaustion", FloatBinaryTag.floatBinaryTag(exhaustion))
-            .put("message_id", stringBinaryTag(messageId))
-        deathMessageType?.let { element.put("death_message_type", stringBinaryTag(it.string)) }
+            .put("scaling", scaling.string)
+            .put("exhaustion", exhaustion)
+            .put("message_id", messageId)
+        deathMessageType?.let { element.put("death_message_type", it.string) }
         return compound.put("element", element.build()).build()
     }
 

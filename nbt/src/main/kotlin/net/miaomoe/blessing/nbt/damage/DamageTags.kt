@@ -19,7 +19,7 @@ package net.miaomoe.blessing.nbt.damage
 
 import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
-import net.kyori.adventure.nbt.StringBinaryTag
+import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.damage.DamageTags.Util.copyAndAdd
@@ -27,6 +27,7 @@ import net.miaomoe.blessing.nbt.damage.DamageValues.DeathMessageType.FALL_VARIAN
 import net.miaomoe.blessing.nbt.damage.DamageValues.DeathMessageType.INTENTIONAL_GAME_DESIGN
 import net.miaomoe.blessing.nbt.damage.DamageValues.Effects.*
 import net.miaomoe.blessing.nbt.damage.DamageValues.Scaling.ALWAYS
+import net.miaomoe.blessing.nbt.dimension.NbtVersion
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
@@ -79,6 +80,8 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         DamageValues("generic_kill", 43, 0.0F, ALWAYS, "badRespawnPoint"))
     );
 
+    val tag = this.toTag(null)
+
     internal object Util {
 
         internal fun <T> List<T>.copyAndAdd(vararg new: T): MutableList<T> {
@@ -88,15 +91,19 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         }
     }
 
-    override fun toTag(): BinaryTag {
+    override fun toTag(version: NbtVersion?): BinaryTag {
         val values = CompoundBinaryTag.builder()
-        for (value in this.values) { values.put(value.toTag() as CompoundBinaryTag) }
+        for (value in this.values) { values.put(value.toTag(null) as CompoundBinaryTag) }
         return CompoundBinaryTag
             .builder()
-            .put("type", StringBinaryTag.stringBinaryTag("minecraft:damage_type"))
+            .put("type", "minecraft:damage_type")
             .put("value", values.build())
             .build()
             .toNamed()
+    }
+
+    companion object {
+        fun getFromVersion(version: NbtVersion) = if (version == NbtVersion.V1_19_4) V1_19 else V1_20
     }
 
 }
