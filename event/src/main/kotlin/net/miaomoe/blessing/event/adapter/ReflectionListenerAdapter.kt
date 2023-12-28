@@ -26,6 +26,8 @@ class ReflectionListenerAdapter(
     private val method: Method
 ) : ListenerAdapter {
 
+    constructor(owner: Any, method: String) : this(owner, owner::class.java.getDeclaredMethod(method))
+
     init {
         method.isAccessible=true
         require(method.parameterCount == 1) { "ParameterCount must be 1!" }

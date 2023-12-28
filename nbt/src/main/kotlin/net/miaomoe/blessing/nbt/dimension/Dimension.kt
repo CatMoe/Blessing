@@ -15,10 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.event.event
+package net.miaomoe.blessing.nbt.dimension
 
-import net.miaomoe.blessing.event.EventManager
-
-interface BlessingEvent {
-    fun call(): Unit = EventManager.call(this)
-}
+@Suppress("SpellCheckingInspection")
+data class Dimension(
+    val key: String,
+    val dimensionId: Int,
+    val id: Int,
+    val piglinSafe: Boolean,
+    val natural: Boolean,
+    val ambientLight: Float,
+    val infiniburn: String,
+    val respawnAnchorWorks: Boolean,
+    val hasSkylight: Boolean,
+    val bedWorks: Boolean,
+    val effects: String,
+    val hasRaids: Boolean,
+    val monsterSpawnLightLevel: Int,
+    val monsterSpawnBlockLightLimit: Int,
+    val logicalHeight: Int,
+    val coordinateScale: Float,
+    val ultrawarm: Boolean,
+    val hasCeiling: Boolean,
+    val minY: Int,
+    val height: Int,
+    val biomes: List<Biome>
+)

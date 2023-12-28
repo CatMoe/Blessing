@@ -15,10 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.event.event
+package net.miaomoe.blessing.nbt
 
-import net.miaomoe.blessing.event.EventManager
+import net.kyori.adventure.nbt.BinaryTag
 
-interface BlessingEvent {
-    fun call(): Unit = EventManager.call(this)
+fun interface TagProvider {
+    fun toTag(): BinaryTag
 }

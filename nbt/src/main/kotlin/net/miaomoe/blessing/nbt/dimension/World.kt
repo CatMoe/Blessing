@@ -15,10 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.event.event
+package net.miaomoe.blessing.nbt.dimension
 
-import net.miaomoe.blessing.event.EventManager
-
-interface BlessingEvent {
-    fun call(): Unit = EventManager.call(this)
+@Suppress("SpellCheckingInspection")
+enum class World {
+    OVERWORLD,
+    NETHER,
+    THE_END
 }
