@@ -18,8 +18,9 @@
 package net.miaomoe.blessing.nbt.chat
 
 import com.google.gson.*
-import com.google.gson.internal.LazilyParsedNumber
 import net.kyori.adventure.nbt.*
+import net.miaomoe.blessing.nbt.NbtUtil.toNamed
+import net.miaomoe.blessing.nbt.NbtUtil.toNbt
 
 class MixedComponent(
     val json: String,
@@ -33,18 +34,9 @@ class MixedComponent(
             when (json) {
                 is JsonPrimitive -> {
                     when {
-                        json.isNumber -> return when (val number = json.getAsNumber()) {
-                            is Byte -> ByteBinaryTag.byteBinaryTag(number)
-                            is Short -> ShortBinaryTag.shortBinaryTag(number)
-                            is Int -> IntBinaryTag.intBinaryTag(number)
-                            is Long -> LongBinaryTag.longBinaryTag(number)
-                            is Float -> FloatBinaryTag.floatBinaryTag(number)
-                            is Double -> DoubleBinaryTag.doubleBinaryTag(number)
-                            is LazilyParsedNumber -> IntBinaryTag.intBinaryTag(number.toInt())
-                            else -> throw IllegalArgumentException("Unknown number type: $number")
-                        }
-                        json.isString -> return StringBinaryTag.stringBinaryTag(json.asString)
-                        json.isBoolean -> ByteBinaryTag.byteBinaryTag((if (json.asBoolean) 1 else 0).toByte())
+                        json.isNumber -> return json.asNumber.toNbt()
+                        json.isString -> return json.asString.toNbt()
+                        json.isBoolean -> json.asBoolean.toNbt()
                         else -> throw IllegalArgumentException("Unknown JSON primitive: $json")
                     }
                 }
@@ -76,23 +68,23 @@ class MixedComponent(
                         1 -> {
                             val bytes = ByteArray(jsonArray.size)
                             for (i in bytes.indices) bytes[i] = jsonArray[i].asNumber as Byte
-                            return ByteArrayBinaryTag.byteArrayBinaryTag(*bytes)
+                            return bytes.toNbt()
                         }
 
                         3 -> {
                             val ints = IntArray(jsonArray.size)
                             for (i in ints.indices) ints[i] = jsonArray[i].asNumber as Int
-                            return IntArrayBinaryTag.intArrayBinaryTag(*ints)
+                            return ints.toNbt()
                         }
 
                         4 -> {
                             val longs = LongArray(jsonArray.size)
                             for (i in jsonArray.indices) longs[i] = jsonArray[i].asNumber as Long
-                            return LongArrayBinaryTag.longArrayBinaryTag(*longs)
+                            return longs.toNbt()
                         }
 
                         10 -> tagItems.replaceAll { tag: BinaryTag ->
-                            if (tag.type() == BinaryTagTypes.COMPOUND) tag else CompoundBinaryTag.builder().put("", tag).build()
+                            if (tag.type() == BinaryTagTypes.COMPOUND) tag else tag.toNamed()
                         }
                     }
                     return ListBinaryTag.listBinaryTag(listType, tagItems)

@@ -20,7 +20,9 @@ package net.miaomoe.blessing.nbt.damage
 import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.StringBinaryTag
+import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.TagProvider
+import net.miaomoe.blessing.nbt.damage.DamageTags.Util.copyAndAdd
 import net.miaomoe.blessing.nbt.damage.DamageValues.DeathMessageType.FALL_VARIANTS
 import net.miaomoe.blessing.nbt.damage.DamageValues.DeathMessageType.INTENTIONAL_GAME_DESIGN
 import net.miaomoe.blessing.nbt.damage.DamageValues.Effects.*
@@ -72,15 +74,15 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         DamageValues("wither", 40, 0.0F),
         DamageValues("wither_skull", 41)
     )),
-    V1_20(Util.copyAndAdd(V1_19.values,
+    V1_20(V1_19.values.copyAndAdd(
         DamageValues("outside_border", 42, 0.0F, ALWAYS, "badRespawnPoint"),
-        DamageValues("generic_kill", 43, 0.0F, ALWAYS, "badRespawnPoint")
-    ));
+        DamageValues("generic_kill", 43, 0.0F, ALWAYS, "badRespawnPoint"))
+    );
 
     internal object Util {
 
-        internal fun <T> copyAndAdd(original: List<T>, vararg new: T): MutableList<T> {
-            val copy = original.toMutableList()
+        internal fun <T> List<T>.copyAndAdd(vararg new: T): MutableList<T> {
+            val copy = this.toMutableList()
             copy.addAll(new)
             return copy
         }
@@ -94,6 +96,7 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
             .put("type", StringBinaryTag.stringBinaryTag("minecraft:damage_type"))
             .put("value", values.build())
             .build()
+            .toNamed()
     }
 
 }

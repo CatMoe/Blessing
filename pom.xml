@@ -36,9 +36,9 @@
     </properties>
 
     <modules>
+        <module>nbt</module>
         <module>event</module>
         <module>plugin</module>
-        <module>nbt</module>
     </modules>
 
 </project>
