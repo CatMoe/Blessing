@@ -38,7 +38,7 @@
     </properties>
 
     <build>
-        <finalName>${parent.artifactId}-${project.artifactId}</finalName>
+        <finalName>${project.parent.artifactId}-${project.artifactId}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>event</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

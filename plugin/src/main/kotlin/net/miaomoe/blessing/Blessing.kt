@@ -29,6 +29,7 @@ class Blessing : Plugin() {
 
     companion object {
         lateinit var instance: Blessing
+            private set
     }
 
 }

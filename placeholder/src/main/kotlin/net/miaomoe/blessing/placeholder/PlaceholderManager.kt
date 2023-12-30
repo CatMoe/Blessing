@@ -40,21 +40,23 @@ object PlaceholderManager {
         PlayerPlaceholder.register()
     }
 
-    fun register(expansion: PlaceholderExpansion) {
+    fun <T : PlaceholderExpansion> register(expansion: T, callback: ((T) -> Unit)? = null) {
         val identifier = expansion.identifier().lowercase()
         require(cache.getIfPresent(identifier) == null) { "This identifier is already registered!" }
         cache.put(identifier, expansion)
         list.add(expansion)
+        callback?.invoke(expansion)
     }
 
     fun PlaceholderExpansion.register() = register(this)
 
-    fun unregister(expansion: PlaceholderExpansion) {
+    fun <T : PlaceholderExpansion> unregister(expansion: T, callback: ((T) -> Unit)? = null) {
         val identifier = expansion.identifier()
         cache.invalidate(identifier.lowercase())
         var target: PlaceholderExpansion? = null
         for (registered in list) if (registered.identifier() == identifier) { target=registered; break }
         if (target != null) list.remove(target)
+        callback?.invoke(expansion)
     }
 
     fun PlaceholderExpansion.unregister() = unregister(this)

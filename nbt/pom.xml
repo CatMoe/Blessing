@@ -38,7 +38,7 @@
     </properties>
 
     <build>
-        <finalName>${parent.artifactId}</finalName>
+        <finalName>${project.parent.artifactId}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
