@@ -88,4 +88,9 @@ object EventManager {
             if (info.async) CompletableFuture.runAsync { invoke() } else invoke()
         }
     }
+
+    fun <T : BlessingEvent>call(event: T, callback: ((T) -> Unit)) {
+        this.call(event)
+        callback.invoke(event)
+    }
 }

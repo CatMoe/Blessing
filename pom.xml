@@ -36,8 +36,9 @@
     </properties>
 
     <modules>
-        <module>nbt</module>
         <module>event</module>
+        <module>placeholder</module>
+        <module>nbt</module>
         <module>plugin</module>
     </modules>
 

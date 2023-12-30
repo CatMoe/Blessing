@@ -52,6 +52,9 @@ data class Dimension(
     val height: Int,
     val biomes: List<Biome>
 ) : TagProvider {
+
+    val cachedTag by lazy { NbtVersion.entries.associateWith(::toTag) }
+
     override fun toTag(version: NbtVersion?): BinaryTag {
         require(version != null) { "NbtVersion must not be null!" }
         val attributes = CompoundBinaryTag
