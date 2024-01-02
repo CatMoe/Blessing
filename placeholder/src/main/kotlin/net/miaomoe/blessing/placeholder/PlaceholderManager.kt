@@ -22,6 +22,7 @@ import net.md_5.bungee.api.CommandSender
 import net.miaomoe.blessing.event.EventManager
 import net.miaomoe.blessing.placeholder.event.PlaceholderRequestEvent
 import net.miaomoe.blessing.placeholder.impl.PlayerPlaceholder
+import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -40,23 +41,23 @@ object PlaceholderManager {
         PlayerPlaceholder.register()
     }
 
-    fun <T : PlaceholderExpansion> register(expansion: T, callback: ((T) -> Unit)? = null) {
+    fun <T : PlaceholderExpansion> register(expansion: T, callback: Consumer<T>? = null) {
         val identifier = expansion.identifier().lowercase()
         require(cache.getIfPresent(identifier) == null) { "This identifier is already registered!" }
         cache.put(identifier, expansion)
         list.add(expansion)
-        callback?.invoke(expansion)
+        callback?.accept(expansion)
     }
 
     fun PlaceholderExpansion.register() = register(this)
 
-    fun <T : PlaceholderExpansion> unregister(expansion: T, callback: ((T) -> Unit)? = null) {
+    fun <T : PlaceholderExpansion> unregister(expansion: T, callback: Consumer<T>? = null) {
         val identifier = expansion.identifier()
         cache.invalidate(identifier.lowercase())
         var target: PlaceholderExpansion? = null
         for (registered in list) if (registered.identifier() == identifier) { target=registered; break }
         if (target != null) list.remove(target)
-        callback?.invoke(expansion)
+        callback?.accept(expansion)
     }
 
     fun PlaceholderExpansion.unregister() = unregister(this)

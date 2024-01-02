@@ -18,10 +18,11 @@
 package net.miaomoe.blessing.event.adapter
 
 import net.miaomoe.blessing.event.event.BlessingEvent
+import java.util.function.Consumer
 
-class ConsumerListenerAdapter<T : BlessingEvent>(private val consumer: (T) -> Unit) : ListenerAdapter {
+class ConsumerListenerAdapter<T : BlessingEvent>(private val consumer: Consumer<T>) : ListenerAdapter {
     override fun invoke(event: BlessingEvent) {
         @Suppress("UNCHECKED_CAST")
-        consumer.invoke(event as T)
+        consumer.accept(event as T)
     }
 }
