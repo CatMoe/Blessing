@@ -21,21 +21,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>net.miaomoe</groupId>
+        <groupId>net.miaomoe.blessing</groupId>
         <artifactId>Blessing</artifactId>
         <version>0.0.1</version>
     </parent>
 
     <description>Simple placeholder system for Blessing</description>
 
-    <groupId>net.miaomoe.blessing</groupId>
     <artifactId>placeholder</artifactId>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <build>
         <finalName>${project.parent.artifactId}-${project.artifactId}</finalName>

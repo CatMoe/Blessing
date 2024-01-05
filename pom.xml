@@ -23,7 +23,7 @@
 
     <description>❤ by CatMoe</description>
     
-    <groupId>net.miaomoe</groupId>
+    <groupId>net.miaomoe.blessing</groupId>
     <artifactId>Blessing</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
@@ -39,6 +39,7 @@
         <module>event</module>
         <module>placeholder</module>
         <module>nbt</module>
+        <module>protocol</module>
         <module>plugin</module>
     </modules>
 
