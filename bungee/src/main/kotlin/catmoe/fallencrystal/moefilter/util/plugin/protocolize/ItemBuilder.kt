@@ -18,16 +18,18 @@
 package catmoe.fallencrystal.moefilter.util.plugin.protocolize
 
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
+import dev.simplix.protocolize.api.chat.ChatElement
 import dev.simplix.protocolize.api.item.ItemStack
 import dev.simplix.protocolize.data.ItemType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import net.querz.nbt.tag.CompoundTag
 import net.querz.nbt.tag.IntTag
 import net.querz.nbt.tag.ListTag
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class ItemBuilder(material: ItemType) {
     private val item = ItemStack(material)
     private val enchantments: MutableList<Enchantments> = ArrayList()
@@ -38,19 +40,18 @@ class ItemBuilder(material: ItemType) {
 
     fun amount(amount: Int): ItemBuilder { item.amount(amount.toByte()); return this }
 
+    fun Component.toChatElement(): ChatElement<BaseComponent> =
+        ChatElement.of(ComponentUtil.toBaseComponents(this) ?: TextComponent())
+
     fun name(name: Component): ItemBuilder {
         name.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-        val bc = ComponentUtil.toBaseComponents(name) ?: TextComponent()
-        bc.isItalic=false
-        item.displayName(bc.toLegacyText())
+        item.displayName(name.toChatElement())
         return this
     }
 
     fun lore(lore: Component): ItemBuilder {
         lore.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-        val bc = ComponentUtil.toBaseComponents(lore) ?: TextComponent()
-        bc.isItalic=false
-        item.addToLore(bc.toLegacyText())
+        item.addToLore(lore.toChatElement())
         return this
     }
 

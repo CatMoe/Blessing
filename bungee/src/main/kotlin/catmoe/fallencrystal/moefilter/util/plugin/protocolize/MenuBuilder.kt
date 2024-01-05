@@ -19,6 +19,7 @@ package catmoe.fallencrystal.moefilter.util.plugin.protocolize
 
 import catmoe.fallencrystal.translation.utils.component.ComponentUtil
 import dev.simplix.protocolize.api.Protocolize
+import dev.simplix.protocolize.api.chat.ChatElement
 import dev.simplix.protocolize.api.inventory.Inventory
 import dev.simplix.protocolize.api.inventory.InventoryClick
 import dev.simplix.protocolize.api.inventory.InventoryClose
@@ -59,9 +60,7 @@ abstract class MenuBuilder {
     }
 
     private fun updateItem(inv: Inventory) {
-        val titleBaseComponent = if (title != null) { ComponentUtil.toBaseComponents(title!!) ?: TextComponent() } else TextComponent()
-        titleBaseComponent.isItalic=false
-        inv.title(titleBaseComponent.toLegacyText())
+        inv.title(ChatElement.of(title?.let { ComponentUtil.toBaseComponents(it) } ?: TextComponent()))
         if (emptyItems.isNotEmpty()) { inv.items() }
         items.keys.forEach { inv.item(it, items[it]) }
     }

@@ -14,8 +14,13 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Blessing" target="1.5" />
       <module name="bungee" target="1.8" />
       <module name="common" target="18" />
+      <module name="event" target="1.8" />
+      <module name="nbt" target="1.8" />
+      <module name="placeholder" target="1.8" />
+      <module name="plugin" target="1.8" />
       <module name="translation" target="18" />
       <module name="velocity" target="18" />
     </bytecodeTargetLevel>
