@@ -16,6 +16,7 @@
     <bytecodeTargetLevel>
       <module name="bungee" target="1.8" />
       <module name="common" target="18" />
+      <module name="MoeFilter" target="1.5" />
       <module name="MoeFilter-Bungee" target="1.8" />
       <module name="MoeFilter-common" target="18" />
       <module name="MoeFilter-velocity" target="11" />
