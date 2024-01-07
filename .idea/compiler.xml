@@ -12,7 +12,9 @@
         <module name="placeholder" />
         <module name="event" />
         <module name="plugin" />
+        <module name="config" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="8" />
   </component>
 </project>

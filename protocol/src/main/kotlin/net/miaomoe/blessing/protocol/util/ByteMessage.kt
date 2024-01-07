@@ -54,11 +54,38 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         }
         // Throwing
         buf.readBytes(maxRead)
-        val b = buf.copy().readerIndex(startReaderIndex).toByteMessage()
+        val b = buf.readerIndex(startReaderIndex).toByteMessage()
         val byteArray = b.toByteArray()
-        b.release()
         throw InvalidPacketException("Failed to read VarInt. bytes: $byteArray")
     }
+
+    // Translate from https://github.com/PaperMC/Velocity/blob/07a525be7f90f1f3ccd515f7c196824d12ed0fff/proxy/src/main/java/com/velocitypowered/proxy/protocol/ProtocolUtils.java#L130-L163
+    fun writeVarInt(value: Int) {
+        when {
+            (value and -0x80 == 0) -> writeByte(value)
+            (value and -0x4000 == 0) -> writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
+            (value and -0x200000 == 0) -> writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
+            (value and -0x10000000 == 0) -> writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
+            else -> {
+                writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
+                writeByte(value ushr 28)
+            }
+        }
+    }
+
+    fun readVarLong(): Long {
+        var value = 0L
+        var size = 0
+        var b: Int
+        do {
+            b = readByte().toInt()
+            value = value or ((b and 0x7F).toLong() shl (size++ * 7))
+            require(size <= 10) { "VarLong too long (length must be <= 10)" }
+        } while ((b and 0x80) == 0x80)
+        return value
+    }
+
+    fun writeVarLong(long: Long) = VarLongUtil.writeVarLong(this, long)
 
     @JvmOverloads
     fun readString(length: Int = readVarInt()): String {
@@ -112,19 +139,6 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     fun writeLongArray(array: LongArray) {
         writeVarInt(array.size)
         array.forEach { writeLong(it) }
-    }
-
-    fun writeVarInt(value: Int) {
-        when {
-            (value and -0x80 == 0) -> writeByte(value)
-            (value and -0x4000 == 0) -> writeShort(value and 0x7F or 0x80 shl 8 or (value ushr 7 and 0x7F))
-            (value and -0x200000 == 0) -> writeMedium(value and 0x7F or 0x80 shl 16 or (value ushr 7 and 0x7F or 0x80 shl 8) or (value ushr 14 and 0x7F))
-            (value and -0x10000000 == 0) -> writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F))
-            else -> {
-                writeInt(value and 0x7F or 0x80 shl 24 or (value ushr 7 and 0x7F or 0x80 shl 16) or (value ushr 14 and 0x7F or 0x80 shl 8) or (value ushr 21 and 0x7F or 0x80))
-                writeByte(value ushr 28)
-            }
-        }
     }
 
     // Legacy methods for 1.7

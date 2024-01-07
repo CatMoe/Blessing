@@ -22,6 +22,7 @@ import java.util.*
 
 object UUIDUtil {
     private const val MOJANG_BROKEN_UUID_LENGTH = 32
+    @Suppress("SpellCheckingInspection")
     private const val HEX_DIGITS = "0123456789abcdef"
 
     fun parseLegacyUUID(uuidSequence: CharSequence): UUID {

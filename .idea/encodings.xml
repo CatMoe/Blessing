@@ -7,6 +7,8 @@
     <file url="file://$PROJECT_DIR$/bungee/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/event/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/event/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/nbt/src/main/kotlin" charset="UTF-8" />

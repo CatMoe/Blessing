@@ -58,7 +58,7 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
@@ -108,6 +108,18 @@
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>nbt</artifactId>
             <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.miaomoe.blessing</groupId>
+            <artifactId>protocol</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.miaomoe.blessing</groupId>
+            <artifactId>config</artifactId>
+            <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

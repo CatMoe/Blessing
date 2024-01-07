@@ -29,13 +29,16 @@
     <packaging>pom</packaging>
 
     <properties>
-        <java.version>1.8</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
         <project.version>0.0.1</project.version>
         <kotlin.version>1.9.22</kotlin.version>
     </properties>
 
     <modules>
+        <module>config</module>
         <module>event</module>
         <module>placeholder</module>
         <module>nbt</module>
