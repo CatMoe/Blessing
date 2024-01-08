@@ -33,4 +33,15 @@ data class VersionRange(val min: Version, val max: Version) : Iterable<Version> 
             override fun next() = list[readerIndex++ % list.size]
         }
     }
+
+    companion object {
+        @JvmStatic
+        fun of(min: Version, max: Version) = VersionRange(min, max)
+
+        @JvmStatic
+        fun of(version: Version) = VersionRange(version, version)
+
+        @JvmStatic
+        val allVersion = VersionRange(Version.UNDEFINED, Version.max)
+    }
 }

@@ -54,7 +54,7 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         DamageValues("in_wall", 19, 0.0F),
         DamageValues("indirect_magic", 20, 0.0F),
         DamageValues("lava", 21, effects = BURNING),
-        DamageValues("lightning_bolt", 22,),
+        DamageValues("lightning_bolt", 22),
         DamageValues("magic", 23, 0.0F),
         DamageValues("mob_attack", 24, messageId = "mob"),
         DamageValues("mob_attack_no_aggro", 25, messageId = "mob"),
@@ -80,7 +80,7 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         DamageValues("generic_kill", 43, 0.0F, ALWAYS, "badRespawnPoint"))
     );
 
-    val tag = this.toTag(null)
+    val tag by lazy { this.toTag(null) }
 
     internal object Util {
 

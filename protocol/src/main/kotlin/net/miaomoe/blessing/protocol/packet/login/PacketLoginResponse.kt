@@ -15,8 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.mappings
+@file:Suppress("MemberVisibilityCanBePrivate")
 
-import net.miaomoe.blessing.protocol.version.VersionRange
+package net.miaomoe.blessing.protocol.packet.login
 
-class PacketIdMappings(val packetId: Int, val range: VersionRange)
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
+import java.util.*
+
+class PacketLoginResponse(
+    var name: String = "Blessing",
+    var uuid: UUID = UUID(0, 0)
+) : PacketToClient {
+
+    override fun encode(byteBuf: ByteMessage, version: Version) {
+        byteBuf.writeUUID(uuid, version)
+        byteBuf.writeString(name)
+        if (version.moreOrEqual(Version.V1_19)) byteBuf.writeVarInt(0)
+    }
+
+    override fun toString() = "${this::class.simpleName}(name=$name, uuid=$uuid)"
+
+}

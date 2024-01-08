@@ -15,14 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet
+package net.miaomoe.blessing.protocol.packet.common
 
-import net.miaomoe.blessing.protocol.direction.PacketDirection
-import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
-import net.miaomoe.blessing.protocol.state.ProtocolState
+import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
 
-interface MinecraftPacket {
-    fun encode()
-    fun decode()
-    fun mappings(state: ProtocolState, direction: PacketDirection): ProtocolMappings
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketDisconnect(var message: MixedComponent = MixedComponent.EMPTY) : PacketToClient {
+
+    override fun encode(byteBuf: ByteMessage, version: Version) =
+        byteBuf.writeChat(message, version)
+
 }

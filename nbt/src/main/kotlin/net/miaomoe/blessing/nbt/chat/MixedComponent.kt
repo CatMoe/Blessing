@@ -20,18 +20,24 @@ package net.miaomoe.blessing.nbt.chat
 import com.google.gson.*
 import net.kyori.adventure.nbt.*
 import net.kyori.adventure.nbt.CompoundBinaryTag.Builder
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.NbtUtil.toNbt
 import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.dimension.NbtVersion
 
+@Suppress("MemberVisibilityCanBePrivate")
 class MixedComponent(
     val json: String,
-    val tag: BinaryTag
+    val tag: BinaryTag = serialize(JsonParser.parseString(json))
 ) {
 
-    constructor(json: String) : this(json, serialize(JsonParser.parseString(json)))
+    constructor(component: Component) : this(component.toJson())
+
+    fun toComponent() = GsonComponentSerializer.gson().deserialize(json)
 
     object Registry : TagProvider {
 
@@ -70,6 +76,13 @@ class MixedComponent(
     }
 
     companion object {
+
+        private val miniMessage = MiniMessage.miniMessage()
+
+        val EMPTY = MixedComponent(miniMessage.deserialize(""))
+
+        private fun Component.toJson() = GsonComponentSerializer.gson().serialize(this)
+
         fun serialize(json: JsonElement): BinaryTag {
             when (json) {
                 is JsonPrimitive -> {
@@ -132,5 +145,6 @@ class MixedComponent(
         }
     }
 
+    override fun toString() = "MixedComponent(json=$json, tag=$tag)"
 
 }

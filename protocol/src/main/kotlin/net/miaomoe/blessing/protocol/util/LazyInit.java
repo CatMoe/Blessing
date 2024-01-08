@@ -15,24 +15,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet
+package net.miaomoe.blessing.protocol.util;
 
-import net.miaomoe.blessing.protocol.direction.PacketDirection
-import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
-import net.miaomoe.blessing.protocol.state.ProtocolState
+import org.jetbrains.annotations.NotNull;
 
-interface PacketToClient : MinecraftPacket {
+import java.util.function.Supplier;
 
-    override fun decode() {
-        throw UnsupportedOperationException("Cannot decode for PacketToClient packet!")
+public class LazyInit<T> {
+
+    private final Supplier<T> init;
+    private boolean already = false;
+    private T value = null;
+
+    public LazyInit(@NotNull final Supplier<T> init) {
+        this.init=init;
     }
 
-    override fun mappings(state: ProtocolState, direction: PacketDirection): ProtocolMappings {
-        val required = PacketDirection.TO_CLIENT
-        require(direction == required) { "Cannot get $direction for ${this::class.simpleName}!" }
-        return mappings(state)
+    public T getValue() {
+        final T value = already ? this.value : init.get();
+        this.value=value;
+        already=true;
+        return value;
     }
 
-    fun mappings(state: ProtocolState): ProtocolMappings
-
+    @Override
+    public String toString() {
+        return "LazyInit(alreadyLoaded=" + already + ", value=" + value + ")";
+    }
 }

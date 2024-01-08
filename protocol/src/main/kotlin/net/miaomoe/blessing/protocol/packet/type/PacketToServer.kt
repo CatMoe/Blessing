@@ -15,24 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet
+package net.miaomoe.blessing.protocol.packet.type
 
-import net.miaomoe.blessing.protocol.direction.PacketDirection
-import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
-import net.miaomoe.blessing.protocol.state.ProtocolState
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
 
 interface PacketToServer : MinecraftPacket {
 
-    override fun encode() {
+    override fun encode(byteBuf: ByteMessage, version: Version) {
         throw UnsupportedOperationException("Cannot encode for PacketToServer packet.")
     }
-
-    override fun mappings(state: ProtocolState, direction: PacketDirection): ProtocolMappings {
-        val required = PacketDirection.TO_SERVER
-        require(direction == required) { "Cannot get $direction for ${this::class.simpleName}!" }
-        return mappings(state)
-    }
-
-    fun mappings(state: ProtocolState): ProtocolMappings
 
 }

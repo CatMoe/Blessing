@@ -19,38 +19,29 @@ package net.miaomoe.blessing.protocol.mappings
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.miaomoe.blessing.protocol.packet.type.MinecraftPacket
-import net.miaomoe.blessing.protocol.util.LazyInit
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
-class ProtocolMappings {
-
-    private val registry = Caffeine
+class PacketRegistry(val version: Version) {
+    private val idMappings = Caffeine
         .newBuilder()
-        .build<Version, PacketRegistry>()
+        .build<Int, PacketMapping>()
+    private val classMappings = Caffeine
+        .newBuilder()
+        .build<KClass<out MinecraftPacket>, PacketMapping>()
 
-    fun register(mapping: PacketMapping) {
-        for ((range, packetId) in mapping.list) {
-            for (version in range) {
-                val registry = this.registry.getIfPresent(version) ?: PacketRegistry(version)
-                registry.register(packetId, mapping)
-                this.registry.put(version, registry)
-            }
-        }
+    private fun getException(obj: Any) = NullPointerException("Cannot found packet with $obj! (${version.name})")
+
+    @Throws(NullPointerException::class)
+    fun getPacket(id: Int) = idMappings.getIfPresent(id)?.init?.get() ?: getException(id)
+    @Throws(NullPointerException::class)
+    fun getPacket(clazz: KClass<out MinecraftPacket>) = classMappings.getIfPresent(clazz)?.init?.get() ?: getException(clazz.qualifiedName!!)
+
+    fun register(id: Int, mapping: PacketMapping) {
+        this.idMappings.put(id, mapping)
+        this.classMappings.put(
+            mapping.init.get()::class,
+            mapping
+        )
     }
-
-    @Throws(NullPointerException::class)
-    private fun getRegistryFromVersion(version: Version) = this.registry.getIfPresent(version)
-        ?: throw NullPointerException("Mappings for this version (${version.name}) is null!")
-
-    @Throws(NullPointerException::class)
-    fun getPacket(version: Version, id: Int) = id.let(getRegistryFromVersion(version)::getPacket)
-    @Throws(NullPointerException::class)
-    fun getPacket(version: Version, `class`: KClass<out MinecraftPacket>) = `class`.let(getRegistryFromVersion(version)::getPacket)
-
-    companion object {
-        @JvmStatic
-        fun create() = LazyInit { ProtocolMappings() }
-    }
-
 }

@@ -20,8 +20,10 @@ package net.miaomoe.blessing.protocol.util
 import io.netty.buffer.*
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.*
+import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.exceptions.EncodeTagException
 import net.miaomoe.blessing.protocol.exceptions.InvalidPacketException
+import net.miaomoe.blessing.protocol.version.Version
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -145,14 +147,18 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
 
     fun readUUID() = UUID(readLong(), readLong())
 
-    fun readLegacyUUID() = UUIDUtil.parseLegacyUUID(readString())
-
     fun writeUUID(uuid: UUID) {
         writeLong(uuid.mostSignificantBits)
         writeLong(uuid.leastSignificantBits)
     }
 
-    fun writeLegacyUUID(uuid: UUID) = writeString(UUIDUtil.toLegacyFormat(uuid))
+    fun writeUUID(uuid: UUID, version: Version) {
+        when {
+            version.moreOrEqual(Version.V1_16) -> writeUUID(uuid)
+            version.moreOrEqual(Version.V1_7_6) -> writeString(uuid.toString())
+            else -> writeString(UUIDUtil.toLegacyFormat(uuid))
+        }
+    }
 
     /* NBT */
     fun writeCompoundTagArray(tags: Array<CompoundBinaryTag>) {
@@ -188,6 +194,13 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
         } catch (exception: IOException) {
             throw EncodeTagException(exception)
         }
+    }
+
+    fun writeChat(component: MixedComponent, version: Version) {
+        if (version.moreOrEqual(Version.V1_19_3))
+            writeNamelessTag(component.tag)
+        else
+            writeString(component.json)
     }
 
     /* Delegated methods */

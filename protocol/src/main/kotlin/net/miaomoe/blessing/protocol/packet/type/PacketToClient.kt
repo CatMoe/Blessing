@@ -15,19 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.state
+package net.miaomoe.blessing.protocol.packet.type
 
-@Suppress("MemberVisibilityCanBePrivate")
-enum class ProtocolState(val legacyId: Int, val newId: Int = legacyId) {
-    UNKNOWN(-1),
-    HANDSHAKE(0),
-    STATUS(1),
-    LOGIN(2),
-    CONFIGURATION(-1, 3),
-    PLAY(3, 4);
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
 
-    companion object {
-        private val a = entries.associateBy { it.legacyId }
-        fun of(legacyId: Int) = a[legacyId] ?: UNKNOWN
+interface PacketToClient : MinecraftPacket {
+
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        throw UnsupportedOperationException("Cannot decode for PacketToClient packet!")
     }
+
 }
