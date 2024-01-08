@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
-  <component name="AutoImportedSourceRoots">
-    <option name="directories">
-      <list>
-        <option value="../target/generated-sources/annotations" />
-        <option value="src/main/kotlin" />
-      </list>
-    </option>
-  </component>
   <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="cf2dfdb9-2a6e-4c55-b466-2c720ad8826c" />
+    <option name="uniqueId" value="3be96897-a099-4474-8b0d-09f4b9fb4e54" />
   </component>
 </module>
