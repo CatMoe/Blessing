@@ -23,6 +23,7 @@ import net.miaomoe.blessing.config.annotation.Path;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,11 +33,9 @@ public class BlessingConfig extends AbstractConfig {
         this.version=plugin.getDescription().getVersion();
     }
 
-    public void reload(@NotNull final Blessing plugin) {
+    public void reload(@NotNull final Blessing plugin) throws IOException {
         final File folder = plugin.getDataFolder();
-        if (this.getParsed().isEmpty()) ConfigUtil.PARSER.parse(this);
-        ConfigUtil.WRITER.write(folder, this);
-        ConfigUtil.READER.read(folder, this);
+        ConfigUtil.saveAndRead(folder, "config", this);
         if (!this.version.equals(plugin.getDescription().getVersion())) {
             final Logger logger = plugin.getLogger();
             final String[] logs = {
@@ -50,11 +49,6 @@ public class BlessingConfig extends AbstractConfig {
             for (String log : logs) logger.log(Level.WARNING, log);
         }
     }
-
-    @NotNull
-    @Override
-    public String name() { return "config"; }
-
     @Path(path = "version")
     @Description(description = "Plugin version. (DO NOT EDIT THIS!)")
     public String version;

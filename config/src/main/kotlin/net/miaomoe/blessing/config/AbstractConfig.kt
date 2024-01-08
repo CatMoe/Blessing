@@ -21,5 +21,4 @@ import net.miaomoe.blessing.config.parser.ParsedConfig
 
 abstract class AbstractConfig {
     val parsed = mutableListOf<ParsedConfig>()
-    abstract fun name(): String
 }

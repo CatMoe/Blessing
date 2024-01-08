@@ -21,29 +21,12 @@ package net.miaomoe.blessing.config.writer
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import com.typesafe.config.ConfigValueFactory
-import java.io.File
+import net.miaomoe.blessing.config.AbstractConfig
+import net.miaomoe.blessing.config.parser.DefaultConfigParser
 
-val DefaultConfigWriter = ConfigWriter { folder, config ->
-    if (!folder.exists()) folder.mkdirs()
-    val file = File(folder, "${config.name()}.conf")
-    if (file.exists() || config.parsed.isEmpty()) return@ConfigWriter
-    file.createNewFile()
+val DefaultConfigWriter = ConfigWriter { file, config ->
     val map = mutableMapOf<String, Any>()
-    for (info in config.parsed) {
-        val description = info.description.joinToString("\n")
-        val fixPrefixSpace = !info.path.contains(".")
-        fun getRef(value: Any, description: String) = ConfigValueFactory.fromAnyRef(value,
-            description
-                .takeIf { it.isNotEmpty() }
-                ?.let { if (fixPrefixSpace) "<|$it" else it }
-        )
-        map[info.path] = when (val value = info.value) {
-            is List<*> -> getRef(value.mapNotNull { ConfigValueFactory.fromAnyRef(it) }, description)
-            is Map<*, *> -> continue // Unsupported now.
-            is Enum<*> -> getRef(value.name, description)
-            else -> getRef(value, description)
-        }
-    }
+    Helper.write(map, config)
     val text = ConfigFactory.parseMap(map).root().render(
         ConfigRenderOptions.defaults()
             .setOriginComments(true)
@@ -52,13 +35,47 @@ val DefaultConfigWriter = ConfigWriter { folder, config ->
             .setComments(false)
             .setShowEnvVariableValues(true)
     )
-        .replace(Regex.regex1, "")
-        .replace(Regex.regex2, "# ")
+        .replace(Helper.regex1, "")
+        .replace(Helper.regex2, "# ")
         .removePrefix("\n")
     file.writeText(text)
 }
+internal object Helper {
 
-internal object Regex {
     val regex1 = Regex("""\s*# hardcoded value""")
     val regex2 = Regex("\\h*(# <\\|)")
+
+    fun write(map: MutableMap<String, Any>, config: AbstractConfig, parent: String = "") {
+        for (info in config.parsed)
+            write(map, "$parent${info.path}", info.value, info.description)
+    }
+
+    private fun write(
+        map: MutableMap<String, Any>,
+        path: String,
+        value: Any,
+        description: List<String>,
+        fixPrefixSpace: Boolean = true
+    ) {
+        val prefixFixer = path.let { if (fixPrefixSpace && !path.contains(".")) "<|" else "" }
+        val desc =
+            description
+                .takeIf { it.isNotEmpty() }
+                ?.joinToString("\n$prefixFixer")
+                ?.let { "$prefixFixer$it" }
+        val v: Any = when (value) {
+            is List<*> -> value.mapNotNull { ConfigValueFactory.fromAnyRef(it) }
+            is Enum<*> -> value.name
+            is AbstractConfig -> {
+                val anotherMap = mutableMapOf<String, Any>()
+                DefaultConfigParser.parse(value).forEach {
+                    write(anotherMap, it.path, it.value, it.description, false)
+                }
+                anotherMap
+            }
+            is Map<*, *> -> throw IllegalArgumentException("Please surround with AbstractConfig! At: $path")
+            else -> value
+        }
+        map[path] = ConfigValueFactory.fromAnyRef(v, desc)
+    }
 }

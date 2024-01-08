@@ -17,15 +17,43 @@
 
 package net.miaomoe.blessing.config;
 
+import com.typesafe.config.ConfigFactory;
 import net.miaomoe.blessing.config.parser.ConfigParser;
 import net.miaomoe.blessing.config.parser.DefaultConfigParserKt;
 import net.miaomoe.blessing.config.reader.ConfigReader;
 import net.miaomoe.blessing.config.reader.DefaultConfigReaderKt;
 import net.miaomoe.blessing.config.writer.ConfigWriter;
 import net.miaomoe.blessing.config.writer.DefaultConfigWriterKt;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ConfigUtil {
     public static final ConfigParser PARSER = DefaultConfigParserKt.getDefaultConfigParser();
     public static final ConfigReader READER = DefaultConfigReaderKt.getDefaultConfigReader();
     public static final ConfigWriter WRITER = DefaultConfigWriterKt.getDefaultConfigWriter();
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void saveAndRead(
+            @NotNull final File file,
+            @NotNull final AbstractConfig config
+    ) throws IOException {
+        if (config.getParsed().isEmpty()) PARSER.parse(config);
+        if (!file.exists()) {
+            file.createNewFile();
+            WRITER.write(file, config);
+        }
+        READER.read(ConfigFactory.parseFile(file), config);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void saveAndRead(
+            @NotNull final File folder,
+            @NotNull final String name,
+            @NotNull final AbstractConfig config
+    ) throws IOException {
+        if (!folder.exists()) folder.createNewFile();
+        saveAndRead(new File(folder, name + ".conf"), config);
+    }
 }

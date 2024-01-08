@@ -17,9 +17,9 @@
 
 package net.miaomoe.blessing.config.reader
 
+import com.typesafe.config.Config
 import net.miaomoe.blessing.config.AbstractConfig
-import java.io.File
 
 fun interface ConfigReader {
-    fun read(folder: File, config: AbstractConfig)
+    fun read(original: Config, config: AbstractConfig)
 }

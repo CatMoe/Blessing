@@ -21,5 +21,5 @@ import net.miaomoe.blessing.config.AbstractConfig
 import java.io.File
 
 fun interface ConfigWriter {
-    fun write(folder: File, config: AbstractConfig)
+    fun write(file: File, config: AbstractConfig)
 }

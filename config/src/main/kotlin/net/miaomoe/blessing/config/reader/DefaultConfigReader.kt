@@ -18,26 +18,26 @@
 package net.miaomoe.blessing.config.reader
 
 
-import com.typesafe.config.ConfigFactory
-import java.io.File
+import net.miaomoe.blessing.config.AbstractConfig
+import net.miaomoe.blessing.config.ConfigUtil
 
-val DefaultConfigReader = ConfigReader { folder, config ->
-    val file = File(folder, "${config.name()}.conf")
-    if (!file.exists() || config.parsed.isEmpty()) return@ConfigReader
-    val a = ConfigFactory.parseFile(file)
+val DefaultConfigReader = ConfigReader { original, config ->
     for (field in config.parsed) {
         val path = field.path
-        if (a.hasPath(path)) {
-            val b = field.value
+        if (original.hasPath(path)) {
             try {
                 fun setValue(value: Any) { field.field[field.config]=value }
-                when (b) {
-                    is List<*> -> setValue(a.getAnyRefList(path))
-                    is String -> setValue(a.getString(path))
-                    is Int -> setValue(a.getInt(path))
-                    is Long -> setValue(a.getLong(path))
-                    is Boolean -> setValue(a.getBoolean(path))
-                    is Double -> setValue(a.getDouble(path))
+                when (val value = field.value) {
+                    is List<*> -> setValue(original.getAnyRefList(path))
+                    is String -> setValue(original.getString(path))
+                    is Int -> setValue(original.getInt(path))
+                    is Long -> setValue(original.getLong(path))
+                    is Boolean -> setValue(original.getBoolean(path))
+                    is Double -> setValue(original.getDouble(path))
+                    is AbstractConfig -> {
+                        ConfigUtil.PARSER.parse(value)
+                        ConfigUtil.READER.read(original.getConfig(path), value)
+                    }
                     // Unsupported
                     else -> continue
                 }
