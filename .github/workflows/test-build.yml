@@ -10,7 +10,7 @@ name: Maven CI
 
 on:
   push:
-    branches: [ "stray", "release" ]
+    branches: [ "recoded", "archive" ]
   pull_request:
     branches: [ "stray", "release" ]
 
