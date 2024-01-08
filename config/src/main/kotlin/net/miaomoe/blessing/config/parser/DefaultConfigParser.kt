@@ -26,8 +26,7 @@ val DefaultConfigParser = ConfigParser { config ->
     val clazz = config::class.java
     for (field in clazz.fields) {
         if (!field.isAnnotationPresent(Path::class.java) || Modifier.isFinal(field.modifiers)) continue
-        val path = field.getAnnotation(Path::class.java).path
-        if (path.isEmpty()) continue
+        val path = field.getAnnotation(Path::class.java).path.ifEmpty { field.name.lowercase() }
         val description = if (field.isAnnotationPresent(Description::class.java))
             field.getAnnotation(Description::class.java).description.toList() else listOf()
         list.add(ParsedConfig(config, field, field[config] ?: continue, path, description))

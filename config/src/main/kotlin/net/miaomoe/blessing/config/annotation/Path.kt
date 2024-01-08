@@ -17,4 +17,4 @@
 
 package net.miaomoe.blessing.config.annotation
 
-annotation class Path(val path: String)
+annotation class Path(val path: String = "")
