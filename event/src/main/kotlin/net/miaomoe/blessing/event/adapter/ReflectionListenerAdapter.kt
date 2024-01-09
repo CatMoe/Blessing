@@ -19,7 +19,6 @@ package net.miaomoe.blessing.event.adapter
 
 import net.miaomoe.blessing.event.event.BlessingEvent
 import java.lang.reflect.Method
-import kotlin.reflect.KClass
 
 class ReflectionListenerAdapter(
     private val owner: Any,
@@ -33,10 +32,6 @@ class ReflectionListenerAdapter(
         require(method.parameterCount == 1) { "ParameterCount must be 1!" }
         require(BlessingEvent::class.java.isAssignableFrom(method.parameterTypes[0])) { "The Parameter must be BlessingEvent!" }
     }
-
-    @Retention(AnnotationRetention.RUNTIME)
-    @Target(AnnotationTarget.FUNCTION)
-    annotation class EventHandler(val event: KClass<out BlessingEvent>, val autoRegister: Boolean = true)
 
     override fun invoke(event: BlessingEvent) {
         method.invoke(owner, event)

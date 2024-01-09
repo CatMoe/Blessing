@@ -24,6 +24,7 @@ import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.exceptions.EncodeTagException
 import net.miaomoe.blessing.protocol.exceptions.InvalidPacketException
 import net.miaomoe.blessing.protocol.version.Version
+import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -37,7 +38,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 @Suppress("DEPRECATION", "MemberVisibilityCanBePrivate", "IdentifierGrammar")
-class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
+class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
 
     fun toByteArray(): ByteArray {
         val bytes = ByteArray(buf.readableBytes())
@@ -411,6 +412,10 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf() {
     override fun refCnt() = buf.refCnt()
     override fun release() = buf.release()
     override fun release(decrement: Int) = buf.release(decrement)
+
+    override fun close() {
+        this.release()
+    }
 
     companion object {
         fun create() = ByteMessage(Unpooled.buffer())

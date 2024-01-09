@@ -20,6 +20,8 @@ package net.miaomoe.blessing.config;
 import net.miaomoe.blessing.Blessing;
 import net.miaomoe.blessing.config.annotation.Description;
 import net.miaomoe.blessing.config.annotation.Path;
+import net.miaomoe.blessing.config.hook.ReplaceHook;
+import net.miaomoe.blessing.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -55,5 +57,10 @@ public class BlessingConfig extends AbstractConfig {
 
     @Path(path = "debug")
     @Description(description = "Enable debug log & feature.")
+    @SuppressWarnings("unused")
     public boolean debug;
+
+    static {
+        ReplaceHook.INSTANCE.register((it -> PlaceholderManager.INSTANCE.getPlaceholders(null, it)));
+    }
 }

@@ -20,8 +20,9 @@ package net.miaomoe.blessing.config.writer
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import com.typesafe.config.ConfigValueFactory
+import com.typesafe.config.ConfigValueFactory.fromAnyRef
 import net.miaomoe.blessing.config.AbstractConfig
+import net.miaomoe.blessing.config.hook.ReplaceHook
 import net.miaomoe.blessing.config.parser.DefaultConfigParser
 
 val DefaultConfigWriter = ConfigWriter { file, config ->
@@ -45,9 +46,10 @@ internal object Helper {
     val regex1 = Regex("""\s*# hardcoded value""")
     val regex2 = Regex("\\h*(# <\\|)")
 
-    fun write(map: MutableMap<String, Any>, config: AbstractConfig, parent: String = "") {
+    @JvmOverloads
+    fun write(map: MutableMap<String, Any>, config: AbstractConfig, parent: String = "", fixPrefixSpace: Boolean = true) {
         for (info in config.parsed)
-            write(map, "$parent${info.path}", info.value, info.description)
+            write(map, "$parent${info.path}", info.value, info.description, fixPrefixSpace)
     }
 
     private fun write(
@@ -55,7 +57,7 @@ internal object Helper {
         path: String,
         value: Any,
         description: List<String>,
-        fixPrefixSpace: Boolean = true
+        fixPrefixSpace: Boolean
     ) {
         val prefixFixer = path.let { if (fixPrefixSpace && !path.contains(".")) "<|" else "" }
         val desc =
@@ -63,19 +65,20 @@ internal object Helper {
                 .takeIf { it.isNotEmpty() }
                 ?.joinToString("\n$prefixFixer")
                 ?.let { "$prefixFixer$it" }
+                ?.let(ReplaceHook::replace)
         val v: Any = when (value) {
-            is List<*> -> value.mapNotNull { ConfigValueFactory.fromAnyRef(it) }
+            is List<*> -> value.mapNotNull { fromAnyRef(it) }
             is Enum<*> -> value.name
             is AbstractConfig -> {
-                val anotherMap = mutableMapOf<String, Any>()
-                DefaultConfigParser.parse(value).forEach {
-                    write(anotherMap, it.path, it.value, it.description, false)
-                }
-                anotherMap
+                if (desc?.isNotEmpty() == true)
+                    map[path] = fromAnyRef(mapOf<Any, Any>(), null)
+                value.let(DefaultConfigParser::parse)
+                write(map, value, "$path.", false)
+                return
             }
             is Map<*, *> -> throw IllegalArgumentException("Please surround with AbstractConfig! At: $path")
             else -> value
         }
-        map[path] = ConfigValueFactory.fromAnyRef(v, desc)
+        map[path] = fromAnyRef(v, desc)
     }
 }

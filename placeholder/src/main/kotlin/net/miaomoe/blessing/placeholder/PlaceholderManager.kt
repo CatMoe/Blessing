@@ -38,9 +38,10 @@ object PlaceholderManager {
     fun setLogger(logger: Logger) { this.logger=logger }
 
     init {
-        PlayerPlaceholder.register()
+        PlayerPlaceholder.let(::register)
     }
 
+    @JvmOverloads
     fun <T : PlaceholderExpansion> register(expansion: T, callback: Consumer<T>? = null) {
         val identifier = expansion.identifier().lowercase()
         require(cache.getIfPresent(identifier) == null) { "This identifier is already registered!" }
@@ -49,8 +50,7 @@ object PlaceholderManager {
         callback?.accept(expansion)
     }
 
-    fun PlaceholderExpansion.register() = register(this)
-
+    @JvmOverloads
     fun <T : PlaceholderExpansion> unregister(expansion: T, callback: Consumer<T>? = null) {
         val identifier = expansion.identifier()
         cache.invalidate(identifier.lowercase())
@@ -60,12 +60,11 @@ object PlaceholderManager {
         callback?.accept(expansion)
     }
 
-    fun PlaceholderExpansion.unregister() = unregister(this)
-
     // Set single placeholder (That is, the input is the placeholder that needs to be requested.)
     //
     // If to replace multiple placeholders or aren't sure if the input is necessarily a placeholder.
     // Use the getPlaceholders() method.
+    @JvmOverloads
     fun getSinglePlaceholder(target: CommandSender?, input: String, returnSelfIfNull: Boolean = true): String? {
         val i = input.removeSurrounding("%")
         var result = if (returnSelfIfNull) input else null
@@ -98,6 +97,7 @@ object PlaceholderManager {
     // Replace the values and keys provided in the map.
     // Then replace the captured placeholders with setSinglePlaceholder one by one.
     // And replace "\%" with "%" in the output.
+    @JvmOverloads
     fun getPlaceholders(target: CommandSender?, input: String, replaces: Map<String, String>? = null): String {
         var output = input
         replaces?.takeUnless { replaces.isEmpty() }?.let { for ((key, value) in it) output=output.replace(key, value) }

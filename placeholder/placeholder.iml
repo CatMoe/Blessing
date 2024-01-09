@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
+  <component name="FacetManager">
+    <facet type="minecraft" name="Minecraft">
+      <configuration>
+        <autoDetectTypes>
+          <platformType>WATERFALL</platformType>
+        </autoDetectTypes>
+        <projectReimportVersion>1</projectReimportVersion>
+      </configuration>
+    </facet>
+  </component>
   <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="22a238ba-efd8-4937-b495-1b9173e0d412" />
+    <option name="uniqueId" value="e043f55c-2be1-4878-8010-5e2cabd185c7" />
   </component>
 </module>
