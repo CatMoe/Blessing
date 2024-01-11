@@ -15,16 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet.type
+package net.miaomoe.blessing.protocol.packet.common
 
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-interface MinecraftPacket {
-    fun encode(byteBuf: ByteMessage, version: Version) {
-        // Overwrite it.
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketPluginMessage(
+    var channel: String = "",
+    var data: ByteArray = byteArrayOf()
+) : PacketBidirectional {
+
+    override fun encode(byteBuf: ByteMessage, version: Version) {
+        byteBuf.writeString(channel)
+        byteBuf.writeBytes(data)
     }
-    fun decode(byteBuf: ByteMessage, version: Version) {
-        // Overwrite it.
+
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        channel = byteBuf.readString()
+        require(channel.isNotBlank() && channel.length in 1..128) { "Invalid channel: $channel" }
+        val data = ByteArray(byteBuf.readableBytes())
+        byteBuf.readBytes(data)
+        this.data=data
     }
+
+
 }

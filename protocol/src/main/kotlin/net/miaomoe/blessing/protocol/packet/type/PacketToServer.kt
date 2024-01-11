@@ -20,10 +20,9 @@ package net.miaomoe.blessing.protocol.packet.type
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-interface PacketToServer : MinecraftPacket {
+interface PacketToServer : PacketInterface {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
-        throw UnsupportedOperationException("Cannot encode for PacketToServer packet.")
+    fun decode(byteBuf: ByteMessage, version: Version) {
+        // Overwrite it.
     }
-
 }

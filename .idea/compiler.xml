@@ -10,8 +10,8 @@
         <module name="nbt" />
         <module name="protocol" />
         <module name="placeholder" />
+        <module name="bungee" />
         <module name="event" />
-        <module name="plugin" />
         <module name="config" />
       </profile>
     </annotationProcessing>

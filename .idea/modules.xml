@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Blessing.iml" filepath="$PROJECT_DIR$/Blessing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bungee/bungee.iml" filepath="$PROJECT_DIR$/bungee/bungee.iml" />
       <module fileurl="file://$PROJECT_DIR$/nbt/nbt.iml" filepath="$PROJECT_DIR$/nbt/nbt.iml" />
       <module fileurl="file://$PROJECT_DIR$/placeholder.iml" filepath="$PROJECT_DIR$/placeholder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/plugin/plugin.iml" filepath="$PROJECT_DIR$/plugin/plugin.iml" />
     </modules>
   </component>
 </project>

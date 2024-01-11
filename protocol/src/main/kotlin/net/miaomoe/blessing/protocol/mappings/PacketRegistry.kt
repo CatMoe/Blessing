@@ -18,7 +18,7 @@
 package net.miaomoe.blessing.protocol.mappings
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.miaomoe.blessing.protocol.packet.type.MinecraftPacket
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
@@ -28,14 +28,14 @@ class PacketRegistry(val version: Version) {
         .build<Int, PacketMapping>()
     private val classMappings = Caffeine
         .newBuilder()
-        .build<KClass<out MinecraftPacket>, PacketMapping>()
+        .build<KClass<out Any>, PacketMapping>()
 
     private fun getException(obj: Any) = NullPointerException("Cannot found packet with $obj! (${version.name})")
 
     @Throws(NullPointerException::class)
     fun getPacket(id: Int) = idMappings.getIfPresent(id)?.init?.get() ?: getException(id)
     @Throws(NullPointerException::class)
-    fun getPacket(clazz: KClass<out MinecraftPacket>) = classMappings.getIfPresent(clazz)?.init?.get() ?: getException(clazz.qualifiedName!!)
+    fun getPacket(clazz: KClass<out PacketBidirectional>) = classMappings.getIfPresent(clazz)?.init?.get() ?: getException(clazz.qualifiedName!!)
 
     fun register(id: Int, mapping: PacketMapping) {
         this.idMappings.put(id, mapping)

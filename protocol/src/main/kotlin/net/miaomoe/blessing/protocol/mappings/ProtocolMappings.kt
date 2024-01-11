@@ -18,8 +18,7 @@
 package net.miaomoe.blessing.protocol.mappings
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.miaomoe.blessing.protocol.packet.type.MinecraftPacket
-import net.miaomoe.blessing.protocol.util.LazyInit
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
@@ -46,11 +45,6 @@ class ProtocolMappings {
     @Throws(NullPointerException::class)
     fun getPacket(version: Version, id: Int) = id.let(getRegistryFromVersion(version)::getPacket)
     @Throws(NullPointerException::class)
-    fun getPacket(version: Version, `class`: KClass<out MinecraftPacket>) = `class`.let(getRegistryFromVersion(version)::getPacket)
-
-    companion object {
-        @JvmStatic
-        fun create() = LazyInit { ProtocolMappings() }
-    }
+    fun getPacket(version: Version, `class`: KClass<out PacketBidirectional>) = `class`.let(getRegistryFromVersion(version)::getPacket)
 
 }

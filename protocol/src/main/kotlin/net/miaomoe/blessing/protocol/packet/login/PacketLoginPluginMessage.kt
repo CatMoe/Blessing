@@ -17,7 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.login
 
-import net.miaomoe.blessing.protocol.packet.type.MinecraftPacket
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -27,7 +27,7 @@ class PacketLoginPluginMessage(
     var channel: String = "",
     var isSuccess: Boolean? = null,
     var data: ByteArray = byteArrayOf()
-) : MinecraftPacket {
+) : PacketBidirectional {
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
         byteBuf.writeVarInt(messageId)

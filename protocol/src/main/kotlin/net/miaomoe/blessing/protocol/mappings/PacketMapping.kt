@@ -17,14 +17,15 @@
 
 package net.miaomoe.blessing.protocol.mappings
 
-import net.miaomoe.blessing.protocol.packet.type.MinecraftPacket
+import net.miaomoe.blessing.protocol.packet.type.PacketInterface
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.Supplier
 
-data class PacketMapping(val init: Supplier<out MinecraftPacket>, val list: Map<VersionRange, Int>) {
+data class PacketMapping(val init: Supplier<out PacketInterface>, val list: Map<VersionRange, Int>) {
     companion object {
+
         @JvmStatic
-        fun generate(init: Supplier<out MinecraftPacket>, list: Map<VersionRange, Int>) =
+        fun generate(init: Supplier<out PacketInterface>, list: Map<VersionRange, Int>) =
             PacketMapping(init, list)
 
         @JvmStatic

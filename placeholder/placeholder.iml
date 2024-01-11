@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
+  <component name="AutoImportedSourceRoots">
+    <option name="directories">
+      <list>
+        <option value="../target/generated-sources/annotations" />
+        <option value="src/main/kotlin" />
+      </list>
+    </option>
+  </component>
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
@@ -11,6 +19,6 @@
     </facet>
   </component>
   <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="e043f55c-2be1-4878-8010-5e2cabd185c7" />
+    <option name="uniqueId" value="eedee3d6-a21e-4aac-8525-e0b6b78912d1" />
   </component>
 </module>

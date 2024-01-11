@@ -15,23 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet.status
+package net.miaomoe.blessing.protocol.packet.configuration
 
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.kyori.adventure.nbt.BinaryTag
+import net.miaomoe.blessing.nbt.dimension.NbtVersion
+import net.miaomoe.blessing.nbt.dimension.World
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-@Suppress("MemberVisibilityCanBePrivate")
-class PacketStatusPing(var id: Long = 0L) : PacketBidirectional {
+class PacketRegistryData(
+    var tag: BinaryTag = World.OVERWORLD.dimension.toTag(NbtVersion.V1_20_2)
+) : PacketToClient {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
-        byteBuf.writeLong(id)
-    }
-
-    override fun decode(byteBuf: ByteMessage, version: Version) {
-        id = byteBuf.readLong()
-    }
-
-    override fun toString() = "${this::class.simpleName}(id=$id)"
+    override fun encode(byteBuf: ByteMessage, version: Version) =
+        byteBuf.writeNamelessTag(tag)
 
 }
