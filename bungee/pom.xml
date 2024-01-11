@@ -28,7 +28,7 @@
 
     <description>Loader for Blessing</description>
 
-    <artifactId>plugin</artifactId>
+    <artifactId>bungee</artifactId>
 
     <build>
         <finalName>${project.parent.artifactId}</finalName>

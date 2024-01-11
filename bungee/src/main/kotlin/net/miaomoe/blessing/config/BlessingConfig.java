@@ -51,6 +51,7 @@ public class BlessingConfig extends AbstractConfig {
             for (String log : logs) logger.log(Level.WARNING, log);
         }
     }
+
     @Path(path = "version")
     @Description(description = "Plugin version. (DO NOT EDIT THIS!)")
     public String version;

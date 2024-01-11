@@ -24,7 +24,8 @@ import java.lang.reflect.Modifier
 val DefaultConfigParser = ConfigParser { config ->
     val list = mutableListOf<ParsedConfig>()
     val clazz = config::class.java
-    for (field in clazz.fields) {
+    for (field in clazz.declaredFields) {
+        field.isAccessible=true
         if (!field.isAnnotationPresent(Path::class.java) || Modifier.isFinal(field.modifiers)) continue
         val path = field.getAnnotation(Path::class.java).path.ifEmpty { field.name.lowercase() }
         val description = if (field.isAnnotationPresent(Description::class.java))
