@@ -17,7 +17,7 @@
 
 package net.miaomoe.blessing.config;
 
-import net.miaomoe.blessing.Blessing;
+import net.miaomoe.blessing.BlessingBungee;
 import net.miaomoe.blessing.config.annotation.Description;
 import net.miaomoe.blessing.config.annotation.Path;
 import net.miaomoe.blessing.config.hook.ReplaceHook;
@@ -29,13 +29,13 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BlessingConfig extends AbstractConfig {
+public class BlessingBungeeConfig extends AbstractConfig {
 
-    public BlessingConfig(@NotNull final Blessing plugin) {
+    public BlessingBungeeConfig(@NotNull final BlessingBungee plugin) {
         this.version=plugin.getDescription().getVersion();
     }
 
-    public void reload(@NotNull final Blessing plugin) throws IOException {
+    public void reload(@NotNull final BlessingBungee plugin) throws IOException {
         final File folder = plugin.getDataFolder();
         ConfigUtil.saveAndRead(folder, "config", this);
         if (!this.version.equals(plugin.getDescription().getVersion())) {

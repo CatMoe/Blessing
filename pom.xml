@@ -43,6 +43,7 @@
         <module>placeholder</module>
         <module>nbt</module>
         <module>protocol</module>
+        <module>fallback</module>
         <module>bungee</module>
     </modules>
 

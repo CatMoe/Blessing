@@ -13,6 +13,7 @@
         <module name="placeholder" />
         <module name="event" />
         <module name="config" />
+        <module name="fallback" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">

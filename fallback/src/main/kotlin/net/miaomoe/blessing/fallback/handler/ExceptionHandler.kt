@@ -15,33 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.util;
+package net.miaomoe.blessing.fallback.handler
 
-import org.jetbrains.annotations.NotNull;
+import io.netty.channel.ChannelHandlerContext
 
-import java.util.function.Supplier;
-
-public class LazyInit<T> {
-
-    private final Supplier<T> init;
-    private boolean already = false;
-    private T value = null;
-
-    public LazyInit(@NotNull final Supplier<T> init) {
-        this.init=init;
-    }
-
-    public boolean isAlreadyLoaded() { return already; }
-
-    public T getValue() {
-        final T value = already ? this.value : init.get();
-        this.value=value;
-        already=true;
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "LazyInit(alreadyLoaded=" + already + ", value=" + value + ")";
-    }
+fun interface ExceptionHandler {
+    fun exceptionCaught(ctx: ChannelHandlerContext, exception: Throwable)
 }

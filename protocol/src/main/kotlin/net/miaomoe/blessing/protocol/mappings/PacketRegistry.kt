@@ -17,31 +17,34 @@
 
 package net.miaomoe.blessing.protocol.mappings
 
+import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.miaomoe.blessing.protocol.packet.type.PacketInterface
+import net.miaomoe.blessing.protocol.util.LazyInit
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
+@Suppress("MemberVisibilityCanBePrivate")
 class PacketRegistry(val version: Version) {
-    private val idMappings = Caffeine
-        .newBuilder()
-        .build<Int, PacketMapping>()
-    private val classMappings = Caffeine
-        .newBuilder()
-        .build<KClass<out Any>, PacketMapping>()
+    private val idMappings = create<Int, PacketMapping>()
+    private val classMappings = create<KClass<out PacketInterface>, Int>()
 
-    private fun getException(obj: Any) = NullPointerException("Cannot found packet with $obj! (${version.name})")
+    fun getMapping(id: Int): PacketMapping {
+        require(idMappings.isAlreadyLoaded) { "idMappings is not loaded!" }
+        return idMappings.value.getIfPresent(id) ?: throw NullPointerException("Cannot found mappings for id $id")
+    }
 
-    @Throws(NullPointerException::class)
-    fun getPacket(id: Int) = idMappings.getIfPresent(id)?.init?.get() ?: getException(id)
-    @Throws(NullPointerException::class)
-    fun getPacket(clazz: KClass<out PacketBidirectional>) = classMappings.getIfPresent(clazz)?.init?.get() ?: getException(clazz.qualifiedName!!)
+    fun getId(`class`: KClass<out PacketInterface>): Int {
+        require(classMappings.isAlreadyLoaded) { "classMappings is not loaded!" }
+        return classMappings.value.getIfPresent(`class`) ?: throw NullPointerException("Cannot  found id for class ${`class`.qualifiedName}")
+    }
 
-    fun register(id: Int, mapping: PacketMapping) {
-        this.idMappings.put(id, mapping)
-        this.classMappings.put(
-            mapping.init.get()::class,
-            mapping
-        )
+    fun register(packetId: Int, mapping: PacketMapping) {
+        this.idMappings.value.put(packetId, mapping)
+        this.classMappings.value.put(mapping.init.get()::class, packetId)
+    }
+
+    companion object {
+        fun <K, V>create(): LazyInit<Cache<K, V>> = LazyInit { Caffeine.newBuilder().build() }
     }
 }
