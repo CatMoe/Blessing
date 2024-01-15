@@ -17,12 +17,12 @@
 
 package net.miaomoe.blessing.placeholder.event
 
-import net.md_5.bungee.api.CommandSender
 import net.miaomoe.blessing.event.event.BlessingEvent
 import net.miaomoe.blessing.event.event.Cancellable
+import net.miaomoe.blessing.placeholder.PlaceholderTarget
 
 class PlaceholderRequestEvent(
     override var isCancelled: Boolean = false,
-    val target: CommandSender?,
+    val target: PlaceholderTarget?,
     val input: String
 ) : BlessingEvent, Cancellable

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2023. CatMoe / Blessing Contributors
+ * Copyright (C) 2023-2024. CatMoe / Blessing Contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,4 @@
 
 package net.miaomoe.blessing.placeholder
 
-interface PlaceholderExpansion {
-    fun name(): String
-    fun identifier(): String
-    fun request(target: PlaceholderTarget?, input: String): String?
-}
+interface PlaceholderTarget

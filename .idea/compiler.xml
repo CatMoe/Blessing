@@ -9,12 +9,14 @@
         <outputRelativeToContentRoot value="true" />
         <module name="nbt" />
         <module name="protocol" />
-        <module name="placeholder" />
         <module name="bungee" />
+        <module name="placeholder" />
         <module name="event" />
         <module name="config" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="8" />
+    <bytecodeTargetLevel target="8">
+      <module name="antibot" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

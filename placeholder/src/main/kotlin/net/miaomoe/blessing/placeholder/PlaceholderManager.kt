@@ -18,10 +18,8 @@
 package net.miaomoe.blessing.placeholder
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.md_5.bungee.api.CommandSender
 import net.miaomoe.blessing.event.EventManager
 import net.miaomoe.blessing.placeholder.event.PlaceholderRequestEvent
-import net.miaomoe.blessing.placeholder.impl.PlayerPlaceholder
 import java.util.function.Consumer
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -36,10 +34,6 @@ object PlaceholderManager {
 
     private var logger: Logger? = null
     fun setLogger(logger: Logger) { this.logger=logger }
-
-    init {
-        PlayerPlaceholder.let(::register)
-    }
 
     @JvmOverloads
     fun <T : PlaceholderExpansion> register(expansion: T, callback: Consumer<T>? = null) {
@@ -65,7 +59,7 @@ object PlaceholderManager {
     // If to replace multiple placeholders or aren't sure if the input is necessarily a placeholder.
     // Use the getPlaceholders() method.
     @JvmOverloads
-    fun getSinglePlaceholder(target: CommandSender?, input: String, returnSelfIfNull: Boolean = true): String? {
+    fun getSinglePlaceholder(target: PlaceholderTarget?, input: String, returnSelfIfNull: Boolean = true): String? {
         val i = input.removeSurrounding("%")
         var result = if (returnSelfIfNull) input else null
         run {  // Call the event. If canceled, return result (null)
@@ -85,7 +79,7 @@ object PlaceholderManager {
             } catch (exception: Exception) {
                 logger.let {
                     if (it != null)
-                        it.log(Level.INFO, "A exception occurred when getting placeholder. (Target: ${target?.name}, Input: $i)", exception)
+                        it.log(Level.INFO, "A exception occurred when getting placeholder. (Target: $target, Input: $i)", exception)
                     else
                         exception.printStackTrace()
                 }
@@ -98,7 +92,7 @@ object PlaceholderManager {
     // Then replace the captured placeholders with setSinglePlaceholder one by one.
     // And replace "\%" with "%" in the output.
     @JvmOverloads
-    fun getPlaceholders(target: CommandSender?, input: String, replaces: Map<String, String>? = null): String {
+    fun getPlaceholders(target: PlaceholderTarget?, input: String, replaces: Map<String, String>? = null): String {
         var output = input
         replaces?.takeUnless { replaces.isEmpty() }?.let { for ((key, value) in it) output=output.replace(key, value) }
         for (match in regex.findAll(output)) {
