@@ -53,7 +53,7 @@ public class ConfigUtil {
             @NotNull final String name,
             @NotNull final AbstractConfig config
     ) throws IOException {
-        if (!folder.exists()) folder.createNewFile();
+        if (!folder.exists()) folder.mkdirs();
         saveAndRead(new File(folder, name + ".conf"), config);
     }
 }
