@@ -18,8 +18,10 @@
 package net.miaomoe.blessing.nbt.chat
 
 import net.kyori.adventure.nbt.BinaryTag
+import net.kyori.adventure.nbt.BinaryTagTypes
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag.Builder
+import net.kyori.adventure.nbt.ListBinaryTag
 import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.NbtUtil.singleWithCompound
 import net.miaomoe.blessing.nbt.NbtUtil.toListTag
@@ -80,7 +82,7 @@ object ChatRegistry : TagProvider {
         return CompoundBinaryTag
             .builder()
             .put("translation_key", "chat.type.$key")
-            .put("parameters", parameters.toListTag())
+            .put("parameters", ListBinaryTag.listBinaryTag(BinaryTagTypes.STRING, parameters.map { it.toNbt() }))
             .build()
     }
 }
