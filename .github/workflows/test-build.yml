@@ -12,7 +12,7 @@ on:
   push:
     branches: [ "recoded", "archive" ]
   pull_request:
-    branches: [ "stray", "release" ]
+    branches: [ "recoded", "archive" ]
 
 jobs:
   build:
