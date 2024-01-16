@@ -20,7 +20,6 @@ package net.miaomoe.blessing.nbt.dimension
 import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.miaomoe.blessing.nbt.NbtUtil.put
-import net.miaomoe.blessing.nbt.NbtUtil.toNbt
 import net.miaomoe.blessing.nbt.TagProvider
 
 @Suppress("SpellCheckingInspection")
@@ -50,12 +49,12 @@ data class Biome(
         require(version != null) { "NbtVersion must not be null!" }
         val biomeTag = CompoundBinaryTag
             .builder()
-            .put("name", biome.toNbt())
-            .put("id", id.toNbt())
+            .put("name", biome)
+            .put("id", id)
         val element = CompoundBinaryTag
             .builder()
             .put("precipitation", precipitation)
-        if (version.moreOrEqual(NbtVersion.V1_19_4)) element.put("has_precipitation", (precipitation == "none").toNbt())
+        if (version.moreOrEqual(NbtVersion.V1_19_4)) element.put("has_precipitation", (precipitation == "none"))
         element
             .put("depth", depth)
             .put("temperature", temperature)

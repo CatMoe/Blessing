@@ -53,4 +53,12 @@ object NbtUtil {
     fun CompoundBinaryTag.Builder.put(key: String, string: String) = this.put(key, string.toNbt())
     fun CompoundBinaryTag.Builder.put(key: String, double: Double) = this.put(key, double.toNbt())
     fun CompoundBinaryTag.Builder.put(key: String, boolean: Boolean) = this.put(key, boolean.toNbt())
+
+    fun CompoundBinaryTag.toListTag() = listOf(this).toListTag()
+
+    fun List<CompoundBinaryTag>.toListTag() = ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, this)
+
+    fun List<String>.toListTag() = ListBinaryTag.listBinaryTag(BinaryTagTypes.STRING, this.map { it.toNbt() })
+
+    fun BinaryTag.singleWithCompound(name: String) = CompoundBinaryTag.builder().put(name, this).build()
 }

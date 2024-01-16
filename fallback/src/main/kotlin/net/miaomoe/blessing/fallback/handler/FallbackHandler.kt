@@ -20,15 +20,25 @@ package net.miaomoe.blessing.fallback.handler
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import io.netty.handler.codec.haproxy.HAProxyMessage
 import java.net.InetSocketAddress
 
 @Suppress("MemberVisibilityCanBePrivate", "CanBeParameter")
 class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
 
+    val encoder = FallbackEncoder()
+    val decoder = FallbackDecoder()
+
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
+        private set
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
         // TODO
+        when (msg) {
+            is HAProxyMessage -> {
+                address = InetSocketAddress.createUnresolved(msg.sourceAddress(), msg.sourcePort())
+            }
+        }
         super.channelRead(ctx, msg)
     }
 
