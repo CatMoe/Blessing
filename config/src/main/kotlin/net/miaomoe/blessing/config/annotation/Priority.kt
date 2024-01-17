@@ -15,22 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.config.parser
+package net.miaomoe.blessing.config.annotation
 
-import net.miaomoe.blessing.config.AbstractConfig
-import java.lang.reflect.Field
-import kotlin.reflect.KClass
-
-data class ParsedConfig(
-    val config: AbstractConfig,
-    val field: Field,
-    var value: Any,
-    val path: String,
-    val priority: Double,
-    val description: List<String>
-) {
-    companion object {
-        internal fun <T : Annotation> Field.getAnnotationOrNull(`class`: KClass<T>): T? =
-            `class`.java.let { if (this.isAnnotationPresent(it)) this.getAnnotation(it) else null }
-    }
-}
+annotation class Priority(val priority: Double = 0.0)

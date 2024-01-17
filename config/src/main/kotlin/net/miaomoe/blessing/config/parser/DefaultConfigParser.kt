@@ -19,6 +19,8 @@ package net.miaomoe.blessing.config.parser
 
 import net.miaomoe.blessing.config.annotation.Description
 import net.miaomoe.blessing.config.annotation.Path
+import net.miaomoe.blessing.config.annotation.Priority
+import net.miaomoe.blessing.config.parser.ParsedConfig.Companion.getAnnotationOrNull
 import java.lang.reflect.Modifier
 
 val DefaultConfigParser = ConfigParser { config ->
@@ -26,12 +28,18 @@ val DefaultConfigParser = ConfigParser { config ->
     val clazz = config::class.java
     for (field in clazz.declaredFields) {
         field.isAccessible=true
-        if (!field.isAnnotationPresent(Path::class.java) || Modifier.isFinal(field.modifiers)) continue
-        val path = field.getAnnotation(Path::class.java).path.ifEmpty { field.name.lowercase() }
-        val description = if (field.isAnnotationPresent(Description::class.java))
-            field.getAnnotation(Description::class.java).description.toList() else listOf()
-        list.add(ParsedConfig(config, field, field[config] ?: continue, path, description))
+        val path = field.getAnnotationOrNull(Path::class)
+        if (path == null || Modifier.isFinal(field.modifiers)) continue
+        list.add(ParsedConfig(
+            config,
+            field,
+            field[config] ?: continue,
+            path.path.ifEmpty { field.name.lowercase() },
+            field.getAnnotationOrNull(Priority::class)?.priority ?: 0.0,
+            field.getAnnotationOrNull(Description::class)?.description?.toList() ?: listOf()
+        ))
     }
+    list.sortByDescending { it.priority }
     config.parsed.let {
         it.clear()
         it.addAll(list)
