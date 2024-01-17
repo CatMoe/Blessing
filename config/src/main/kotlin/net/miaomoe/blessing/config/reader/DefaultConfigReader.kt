@@ -38,6 +38,10 @@ val DefaultConfigReader = ConfigReader { original, config ->
                         ConfigUtil.PARSER.parse(value)
                         ConfigUtil.READER.read(original.getConfig(path), value)
                     }
+                    is Enum<*> -> setValue(value::class.java
+                        .getMethod("valueOf", String::class.java)
+                        .invoke(null, original.getAnyRef(path).toString().uppercase())
+                    )
                     // Unsupported
                     else -> continue
                 }
