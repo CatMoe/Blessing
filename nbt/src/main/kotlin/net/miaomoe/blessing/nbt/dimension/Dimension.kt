@@ -52,14 +52,11 @@ data class Dimension(
     val biomes: List<Biome>
 ) : TagProvider {
 
-    val cachedTag by lazy { NbtVersion.entries.associateWith(::toTag) }
+    private val cachedTag by lazy { NbtVersion.entries.associateWith(::toTag) }
+    private val cachedAttributes = NbtVersion.entries.associateWith(::getAttributes)
 
-    override fun toTag(version: NbtVersion?): BinaryTag {
-        require(version != null) { "NbtVersion cannot be null!" }
-        val rootCompound = CompoundBinaryTag.builder()
-        /*
-        attributes
-         */
+    fun getAttributes(version: NbtVersion): CompoundBinaryTag {
+        cachedAttributes[version]?.let { return it }
         val attributes = CompoundBinaryTag
             .builder()
             .put("name", this.key)
@@ -91,9 +88,16 @@ data class Dimension(
             attributes
                 .put("monster_spawn_light_level", this.monsterSpawnLightLevel)
                 .put("monster_spawn_block_light_limit", this.monsterSpawnBlockLightLimit)
+        return attributes.build()
+    }
+
+    override fun toTag(version: NbtVersion?): BinaryTag {
+        require(version != null) { "NbtVersion cannot be null!" }
+        cachedTag[version]?.let { return it }
+        val rootCompound = CompoundBinaryTag.builder()
 
         return if (version == NbtVersion.LEGACY) {
-            rootCompound.put("dimension", attributes.build().toListTag()).build().toNamed()
+            rootCompound.put("dimension", getAttributes(version).toListTag()).build().toNamed()
         } else {
             val dimensionTypeName = "minecraft:dimension_type"
             val biomeTypeName = "minecraft:worldgen/biome"
@@ -104,7 +108,7 @@ data class Dimension(
                     CompoundBinaryTag.builder()
                         .put("name", this.key)
                         .put("id", this.id)
-                        .put("element", attributes.build())
+                        .put("element", getAttributes(version))
                         .build()
                         .toListTag()
                 )
@@ -118,7 +122,7 @@ data class Dimension(
                 .put(dimensionTypeName, dimension)
                 .put(biomeTypeName, biome)
             if (version.moreOrEqual(NbtVersion.V1_19_4)) {
-                val damageTags = if (version == NbtVersion.V1_19_4) DamageTags.V1_19 else DamageTags.V1_20
+                val damageTags = if (version.moreOrEqual(NbtVersion.V1_20)) DamageTags.V1_20 else DamageTags.V1_19
                 rootCompound.put("minecraft:damage_type", damageTags.toTag(version))
             }
             if (version.moreOrEqual(NbtVersion.V1_19)) rootCompound.put("minecraft:chat_type", ChatRegistry.toTag(version))
