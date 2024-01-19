@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler
+package net.miaomoe.blessing.fallback.handler.exception
 
 import io.netty.channel.ChannelHandlerContext
 

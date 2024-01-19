@@ -26,6 +26,7 @@ class PacketLoginRequest(var name: String = "") : PacketToServer {
 
     override fun decode(byteBuf: ByteMessage, version: Version) {
         this.name = byteBuf.readString()
+        require(name.length in 3..16) { "Invalid name length!" }
     }
 
     override fun toString() = "${this::class.simpleName}(name=$name)"

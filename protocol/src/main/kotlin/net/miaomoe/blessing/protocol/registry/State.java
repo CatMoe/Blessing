@@ -37,7 +37,7 @@ import net.miaomoe.blessing.protocol.version.Version;
 import net.miaomoe.blessing.protocol.version.VersionRange;
 
 import static net.miaomoe.blessing.protocol.mappings.PacketMapping.*;
-import static net.miaomoe.blessing.protocol.version.VersionRange.of;
+import static net.miaomoe.blessing.protocol.version.Version.*;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 public enum State {
@@ -67,14 +67,14 @@ public enum State {
             serverbound.register(generate(PacketLoginPluginMessage::new, withAll(0x02)));
             clientbound.register(generate(PacketLoginPluginMessage::new, withAll(0x04)));
             clientbound.register(generate(PacketDisconnect::new, withAll(0x00)));
-            serverbound.register(generate(PacketLoginAcknowledged::new, withSingle(of(Version.V1_20_3, Version.V1_20_4), 0x03)));
+            serverbound.register(generate(PacketLoginAcknowledged::new, withSingle(V1_20_3, V1_20_4, 0x03)));
         }
     },
     CONFIGURATION{
         {
             final ProtocolMappings clientbound = this.clientbound.getValue();
             final ProtocolMappings serverbound = this.serverbound.getValue();
-            final VersionRange range = VersionRange.of(Version.V1_20_3, Version.V1_20_4);
+            final VersionRange range = VersionRange.of(V1_20_3, Version.Companion.getMax());
             serverbound.register(generate(PacketClientConfiguration::new, withSingle(range, 0x00)));
             clientbound.register(generate(PacketDisconnect::new, withSingle(range, 0x01)));
             serverbound.register(generate(PacketPluginMessage::new, withSingle(range, 0x01)));
@@ -88,7 +88,93 @@ public enum State {
             clientbound.register(generate(PacketRegistryData::new, withSingle(range, 0x05)));
         }
     },
-    PLAY;
+    PLAY{
+        {
+            final ProtocolMappings clientbound = this.clientbound.getValue();
+            final ProtocolMappings serverbound = this.serverbound.getValue();
+            clientbound.register(generate(PacketDisconnect::new, builder()
+                    .addMapping(0x40, V1_7_6, V1_8)
+                    .addMapping(0x1A, V1_9, V1_12_2)
+                    .addMapping(0x1B, V1_13, V1_13_2)
+                    .addMapping(0x1A, V1_14, V1_14_4)
+                    .addMapping(0x1B, V1_15, V1_15_2)
+                    .addMapping(0x1A, V1_16, V1_16_1)
+                    .addMapping(0x19, V1_16_2, V1_16_4)
+                    .addMapping(0x1A, V1_17, V1_18_2)
+                    .addMapping(0x17, V1_19)
+                    .addMapping(0x19, V1_19_1)
+                    .addMapping(0x17, V1_19_3)
+                    .addMapping(0x1A, V1_19_4, V1_20)
+                    .addMapping(0x1B, V1_20_2, V1_20_3)
+                    .getMapping()
+            ));
+            serverbound.register(generate(PacketKeepAlive::new, builder()
+                    .addMapping(0x00, V1_7_6, V1_8)
+                    .addMapping(0x0B, V1_9, V1_11)
+                    .addMapping(0x0C, V1_12)
+                    .addMapping(0x0B, V1_12_1, V1_12_2)
+                    .addMapping(0x0E, V1_13, V1_13_2)
+                    .addMapping(0x0F, V1_14, V1_15_2)
+                    .addMapping(0x10, V1_16, V1_16_4)
+                    .addMapping(0x0F, V1_17, V1_18_2)
+                    .addMapping(0x11, V1_19)
+                    .addMapping(0x12, V1_19_1)
+                    .addMapping(0x11, V1_19_3)
+                    .addMapping(0x12, V1_19_4, V1_20)
+                    .addMapping(0x14, V1_20_2)
+                    .addMapping(0x15, V1_20_3)
+                    .getMapping()
+            ));
+            clientbound.register(generate(PacketKeepAlive::new, builder()
+                    .addMapping(0x00, V1_7_6, V1_8)
+                    .addMapping(0x1F, V1_9, V1_12_2)
+                    .addMapping(0x21, V1_13, V1_13_2)
+                    .addMapping(0x20, V1_14, V1_14_4)
+                    .addMapping(0x21, V1_15, V1_15_2)
+                    .addMapping(0x20, V1_16, V1_16_1)
+                    .addMapping(0x1F, V1_16_2, V1_16_4)
+                    .addMapping(0x21, V1_17, V1_18_2)
+                    .addMapping(0x1E, V1_19)
+                    .addMapping(0x20, V1_19_1)
+                    .addMapping(0x1F, V1_19_3)
+                    .addMapping(0x23, V1_19_4, V1_20)
+                    .addMapping(0x24, V1_20_2, V1_20_3)
+                    .getMapping()
+            ));
+            serverbound.register(generate(PacketPluginMessage::new, builder()
+                    .addMapping(0x17, V1_7_6, V1_8)
+                    .addMapping(0x09, V1_9, V1_11_1)
+                    .addMapping(0x0A, V1_12)
+                    .addMapping(0x09, V1_12_1, V1_12_2)
+                    .addMapping(0x0A, V1_13, V1_13_2)
+                    .addMapping(0x0B, V1_14, V1_16_4)
+                    .addMapping(0x0A, V1_17, V1_18_2)
+                    .addMapping(0x0C,  V1_19)
+                    .addMapping(0x0D, V1_19_1)
+                    .addMapping(0x0C, V1_19_3)
+                    .addMapping(0x0D, V1_19_4, V1_20)
+                    .addMapping(0x0F, V1_20_2)
+                    .addMapping(0x10, V1_20_3)
+                    .getMapping()
+            ));
+            clientbound.register(generate(PacketPluginMessage::new, builder()
+                    .addMapping(0x3F, V1_7_6, V1_8)
+                    .addMapping(0x18, V1_9, V1_12_2)
+                    .addMapping(0x19, V1_13, V1_13_2)
+                    .addMapping(0x18, V1_14, V1_14_4)
+                    .addMapping(0x19, V1_15, V1_15_2)
+                    .addMapping(0x18, V1_16, V1_16_1)
+                    .addMapping(0x17, V1_16_2, V1_16_4)
+                    .addMapping(0x18, V1_17, V1_18_2)
+                    .addMapping(0x15, V1_19)
+                    .addMapping(0x16, V1_19_1)
+                    .addMapping(0x15, V1_19_3)
+                    .addMapping(0x17, V1_19_4, V1_20)
+                    .addMapping(0x18, V1_20_2, V1_20_3)
+                    .getMapping()
+            ));
+        }
+    };
 
     public final LazyInit<ProtocolMappings> clientbound = new LazyInit<>(ProtocolMappings::new);
     public final LazyInit<ProtocolMappings> serverbound = new LazyInit<>(ProtocolMappings::new);

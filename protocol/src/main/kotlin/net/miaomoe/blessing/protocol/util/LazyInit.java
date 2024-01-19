@@ -31,7 +31,9 @@ public class LazyInit<T> {
         this.init=init;
     }
 
-    public boolean isAlreadyLoaded() { return already; }
+    public boolean isAlreadyLoaded() {
+        return already;
+    }
 
     public T getValue() {
         final T value = already ? this.value : init.get();

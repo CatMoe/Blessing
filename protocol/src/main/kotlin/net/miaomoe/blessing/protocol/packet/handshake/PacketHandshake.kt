@@ -40,10 +40,10 @@ class PacketHandshake : PacketToServer {
         this.port = byteBuf.readUnsignedShort() // 读取端口
         // 检查端口号范围
         require(port in 1..65535) { "Port must be higher than 0 and lower than 65536" }
-        nextState = when (byteBuf.readVarInt()) {
+        nextState = when (val state = byteBuf.readVarInt()) {
             1 -> State.STATUS // 请求motd
             2 -> State.LOGIN // 登录
-            else -> throw IllegalArgumentException("Handshake state must be 1 or 2!")
+            else -> throw IllegalArgumentException("Handshake state must be 1 or 2! ($state)")
         }
     }
 

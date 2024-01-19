@@ -15,12 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.packet
+package net.miaomoe.blessing.fallback.handler
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
-
-class ExplicitPacket(
-    val id: Int,
-    override val byteArray: ByteArray? = null,
-    val description: String? = null
-) : PacketToClient, ByteArrayHolder
+internal class ValidateHandler(private val handler: FallbackHandler) {
+    var recvStatusRequest = false
+    var recvStatusPing = false
+    var recvLogin = false
+}

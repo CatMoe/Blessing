@@ -155,10 +155,21 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
 
     fun writeUUID(uuid: UUID, version: Version) {
         when {
-            version.moreOrEqual(Version.V1_16) -> writeUUID(uuid)
+            version.moreOrEqual(Version.V1_19) -> writeUUID(uuid)
+            version.moreOrEqual(Version.V1_16) -> writeUUIDIntArray(uuid)
             version.moreOrEqual(Version.V1_7_6) -> writeString(uuid.toString())
             else -> writeString(UUIDUtil.toLegacyFormat(uuid))
         }
+    }
+
+    // Ref: https://github.com/jonesdevelopment/sonar/blob/main/sonar-common/src/main/java/xyz/jonesdev/sonar/common/utility/protocol/ProtocolUtil.java
+    fun writeUUIDIntArray(uuid: UUID) {
+        fun write(value: Long) {
+            writeInt((value ushr 32).toInt())
+            writeInt(value.toInt())
+        }
+        write(uuid.mostSignificantBits)
+        write(uuid.leastSignificantBits)
     }
 
     /* NBT */

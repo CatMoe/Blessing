@@ -18,6 +18,7 @@
 package net.miaomoe.blessing.protocol.mappings
 
 import net.miaomoe.blessing.protocol.packet.type.PacketInterface
+import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.Supplier
 
@@ -36,15 +37,25 @@ data class PacketMapping(val init: Supplier<out PacketInterface>, val list: Map<
 
         @JvmStatic
         fun withSingle(range: VersionRange, id: Int) = mapOf(range to id)
+
+        @JvmStatic
+        fun withSingle(from: Version, to: Version, id: Int) = withSingle(VersionRange.of(from, to), id)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     class BuilderUtil {
         private val map = mutableMapOf<VersionRange, Int>()
 
-        fun addMapping(range: VersionRange, id: Int): BuilderUtil {
+        fun addMapping(id: Int, from: Version, to: Version) =
+            addMapping(id, VersionRange.of(from, to))
+
+        fun addMapping(id: Int, range: VersionRange): BuilderUtil {
             map[range] = id
             return this
         }
+
+        fun addMapping(id: Int, version: Version) =
+            addMapping(id, VersionRange.of(version))
 
         fun getMapping() = map.toMap()
     }

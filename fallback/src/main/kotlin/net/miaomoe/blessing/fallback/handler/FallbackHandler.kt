@@ -17,38 +17,130 @@
 
 package net.miaomoe.blessing.fallback.handler
 
-import io.netty.channel.Channel
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInboundHandlerAdapter
+import io.netty.buffer.ByteBuf
+import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.miaomoe.blessing.fallback.config.FallbackConfig
+import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
+import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
+import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
+import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
+import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
+import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
+import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
+import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.registry.State
+import net.miaomoe.blessing.protocol.util.UUIDUtil
+import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
 
-@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter")
+@Suppress("MemberVisibilityCanBePrivate")
 class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
+
+    private val config = FallbackConfig.INSTANCE
 
     val encoder = FallbackEncoder()
     val decoder = FallbackDecoder()
 
+    val pipeline: ChannelPipeline = channel.pipeline()
+
+    private val validate = if (config.validate) ValidateHandler(this) else null
+
+    var state = State.HANDSHAKE
+        private set
+    var version = Version.UNDEFINED
+        private set
+    var destination: InetSocketAddress? = null
+        private set
+
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
         private set
 
+    var name: String? = null
+        private set
+
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
-        // TODO
         when (msg) {
             is HAProxyMessage -> {
                 address = InetSocketAddress.createUnresolved(msg.sourceAddress(), msg.sourcePort())
+                pipeline.remove(HAProxyMessageDecoder::class.java)
             }
+            is PacketHandshake -> handle(msg)
+            is PacketStatusRequest -> handle(msg)
+            is PacketStatusPing -> handle(msg)
         }
         super.channelRead(ctx, msg)
     }
 
+    private fun updateState(state: State) {
+        encoder.let {
+            it.version = this.version
+            it.mappings = state.clientbound.value
+        }
+        decoder.let {
+            it.version = this.version
+            it.mappings = state.serverbound.value
+        }
+        this.state=state
+    }
+
+    private fun handle(packet: PacketHandshake) {
+        this.version = packet.version
+        this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
+        this.updateState(packet.nextState)
+    }
+
+    private fun handle(packet: PacketLoginRequest) {
+        this.name=packet.name
+        write(PacketLoginResponse(packet.name, UUIDUtil.generateOfflinePlayerUuid(packet.name)))
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun handle(packet: PacketLoginAcknowledged) {
+        updateState(State.CONFIGURATION)
+        write(PacketRegistryData(config.world.toTag(version.toNbtVersion())))
+        write(PacketFinishConfiguration(), true)
+        updateState(State.PLAY)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun handle(packet: PacketStatusRequest) {
+        validate?.let {
+            require(!it.recvStatusRequest) { "Cannot request status twice!" }
+            it.recvStatusRequest=true
+        }
+        // TODO Send response
+    }
+
+    private fun handle(packet: PacketStatusPing) {
+        validate?.let {
+            require(it.recvStatusRequest && !it.recvStatusPing)
+            { "Cannot send twice status ping or skipped status request!" }
+            it.recvStatusPing=true
+        }
+        channel
+            .writeAndFlush(packet, channel.voidPromise())
+            .addListener(ChannelFutureListener.CLOSE)
+    }
+
+    fun flush(): Channel = channel.flush()
+
+    @JvmOverloads
+    fun write(packet: PacketToClient, flush: Boolean = false) {
+        if (flush) channel.writeAndFlush(packet) else channel.write(packet)
+    }
+
+    @JvmOverloads
+    fun write(byteBuf: ByteBuf, flush: Boolean = false) {
+        if (flush) channel.writeAndFlush(byteBuf) else channel.write(byteBuf)
+    }
+
     @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        exceptionHandler?.exceptionCaught(ctx, cause) ?: super.exceptionCaught(ctx, cause)
+        FallbackInitializer.exceptionHandler?.exceptionCaught(ctx, cause) ?: super.exceptionCaught(ctx, cause)
     }
 
-    companion object {
-        var exceptionHandler: ExceptionHandler? = null
-    }
-
+    override fun toString() = "FallbackHandler[${version.name}|${address.address.hostAddress}|${name}]"
 }

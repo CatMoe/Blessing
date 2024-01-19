@@ -24,6 +24,7 @@ enum class NbtVersion {
     V1_19, // 1.19+
     V1_19_1, // 1.19.1+
     V1_19_4, // 1.19.4+
+    V1_20, // 1.20+
     V1_20_2; // 1.20.2+
 
     fun moreOrEqual(version: NbtVersion) = this.ordinal >= version.ordinal

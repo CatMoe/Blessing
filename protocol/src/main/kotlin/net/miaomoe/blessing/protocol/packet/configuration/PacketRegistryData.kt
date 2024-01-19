@@ -18,17 +18,17 @@
 package net.miaomoe.blessing.protocol.packet.configuration
 
 import net.kyori.adventure.nbt.BinaryTag
-import net.miaomoe.blessing.nbt.dimension.NbtVersion
 import net.miaomoe.blessing.nbt.dimension.World
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
+@Suppress("MemberVisibilityCanBePrivate")
 class PacketRegistryData(
-    var tag: BinaryTag = World.OVERWORLD.dimension.toTag(NbtVersion.V1_20_2)
+    var tag: BinaryTag? = null
 ) : PacketToClient {
 
     override fun encode(byteBuf: ByteMessage, version: Version) =
-        byteBuf.writeNamelessTag(tag)
+        byteBuf.writeNamelessTag(tag ?: World.OVERWORLD.toTag(version.toNbtVersion()))
 
 }

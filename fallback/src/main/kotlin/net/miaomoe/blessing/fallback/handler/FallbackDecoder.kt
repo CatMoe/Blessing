@@ -25,14 +25,20 @@ import net.miaomoe.blessing.protocol.packet.type.PacketToServer
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FallbackDecoder(
     var mappings: ProtocolMappings = State.HANDSHAKE.serverbound.value,
-    var version: Version = Version.UNDEFINED
+    var version: Version = Version.UNDEFINED,
+    val allowEmptyBuffer: Boolean = false
 ) : MessageToMessageDecoder<ByteBuf>() {
 
-    override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, p2: MutableList<Any>) {
+    override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, list: MutableList<Any>) {
+        (byteBuf.readableBytes() > 0).ifTrue {
+            require(!allowEmptyBuffer) { "Null byte buffers are not acceptable!" }
+            return
+        }
         val byteMessage = ByteMessage(byteBuf)
         val id = byteMessage.readVarInt()
         val packet = mappings.getMappings(version, id).init.get()

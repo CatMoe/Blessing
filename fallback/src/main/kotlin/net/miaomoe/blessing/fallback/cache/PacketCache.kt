@@ -15,9 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.packet
+package net.miaomoe.blessing.fallback.cache
 
+import net.miaomoe.blessing.fallback.packet.ByteArrayHolder
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
-class PacketCached(val kClass: KClass<out PacketToClient>, val byteArray: ByteArray? = null, val description: String? = null) : PacketToClient
+class PacketCache(
+    val kClass: KClass<out PacketToClient>,
+    override val byteArray: ByteArray? = null,
+    val description: String? = null
+) : PacketToClient, ByteArrayHolder {
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun create(packet: PacketToClient, version: Version, description: String? = null) =
+            PacketCache(packet::class, ByteMessage.create().use { packet.encode(it, version); it.toByteArray() }, description)
+    }
+}

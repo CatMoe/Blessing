@@ -17,10 +17,6 @@
 
 package net.miaomoe.blessing.fallback.packet
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
-
-class ExplicitPacket(
-    val id: Int,
-    override val byteArray: ByteArray? = null,
-    val description: String? = null
-) : PacketToClient, ByteArrayHolder
+interface ByteArrayHolder {
+    val byteArray: ByteArray?
+}
