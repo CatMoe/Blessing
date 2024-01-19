@@ -38,10 +38,21 @@ val DefaultConfigReader = ConfigReader { original, config ->
                         ConfigUtil.PARSER.parse(value)
                         ConfigUtil.READER.read(original.getConfig(path), value)
                     }
-                    is Enum<*> -> setValue(value::class.java
-                        .getMethod("valueOf", String::class.java)
-                        .invoke(null, original.getAnyRef(path).toString().uppercase())
-                    )
+                    is Enum<*> -> {
+                        val configValue = original.getAnyRef(path).toString().uppercase()
+                        value::class.java.let {
+                            try {
+                                setValue(it.getMethod("valueOf", String::class.java).invoke(null, configValue))
+                            } catch (exception: IllegalArgumentException) {
+                                throw IllegalArgumentException(
+                                    "Not found \"$configValue\" enum for ${it.name}. Please check your input (like typo or enum value is non-full uppercase)",
+                                    exception
+                                )
+                            } catch (exception: Exception) {
+                                throw IllegalArgumentException("Failed to invoke ${it.name}#valueOf method", exception)
+                            }
+                        }
+                    }
                     // Unsupported
                     else -> continue
                 }
