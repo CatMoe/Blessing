@@ -29,6 +29,8 @@ import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged;
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginPluginMessage;
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest;
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse;
+import net.miaomoe.blessing.protocol.packet.play.PacketJoinGame;
+import net.miaomoe.blessing.protocol.packet.play.PacketSpawnPosition;
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing;
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest;
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse;
@@ -92,6 +94,38 @@ public enum State {
         {
             final ProtocolMappings clientbound = this.clientbound.getValue();
             final ProtocolMappings serverbound = this.serverbound.getValue();
+            clientbound.register(generate(PacketJoinGame::new, builder()
+                    .addMapping(0x01, V1_7_2, V1_8)
+                    .addMapping(0x23, V1_9, V1_12_2)
+                    .addMapping(0x25, V1_13, V1_14_4)
+                    .addMapping(0x26, V1_15, V1_15_2)
+                    .addMapping(0x25, V1_16, V1_16_1)
+                    .addMapping(0x24, V1_16_2, V1_16_4)
+                    .addMapping(0x26, V1_17, V1_18_2)
+                    .addMapping(0x23, V1_19)
+                    .addMapping(0x25, V1_19_1)
+                    .addMapping(0x24, V1_19_3)
+                    .addMapping(0x28, V1_19_4, V1_20)
+                    .addMapping(0x29, V1_20_2, V1_20_3)
+                    .getMapping()
+            ));
+            clientbound.register(generate(PacketSpawnPosition::new, builder()
+                    .addMapping(0x05, V1_7_2, V1_8)
+                    .addMapping(0x43, V1_9, V1_11_2)
+                    .addMapping(0x45, V1_12)
+                    .addMapping(0x46, V1_12_1, V1_12_2)
+                    .addMapping(0x49, V1_13, V1_13_2)
+                    .addMapping(0x4D, V1_14, V1_14_4)
+                    .addMapping(0x4E, V1_15, V1_15_2)
+                    .addMapping(0x42, V1_16, V1_16_4)
+                    .addMapping(0x4B, V1_17, V1_18_2)
+                    .addMapping(0x4A, V1_19)
+                    .addMapping(0x4D, V1_19_1)
+                    .addMapping(0x4C, V1_19_3)
+                    .addMapping(0x50, V1_19_4, V1_20)
+                    .addMapping(0x52, V1_20_2, V1_20_3)
+                    .getMapping()
+            ));
             clientbound.register(generate(PacketDisconnect::new, builder()
                     .addMapping(0x40, V1_7_6, V1_8)
                     .addMapping(0x1A, V1_9, V1_12_2)
@@ -149,7 +183,7 @@ public enum State {
                     .addMapping(0x0A, V1_13, V1_13_2)
                     .addMapping(0x0B, V1_14, V1_16_4)
                     .addMapping(0x0A, V1_17, V1_18_2)
-                    .addMapping(0x0C,  V1_19)
+                    .addMapping(0x0C, V1_19)
                     .addMapping(0x0D, V1_19_1)
                     .addMapping(0x0C, V1_19_3)
                     .addMapping(0x0D, V1_19_4, V1_20)
