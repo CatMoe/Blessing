@@ -19,16 +19,27 @@ package net.miaomoe.blessing.fallback.handler
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
+@Suppress("MemberVisibilityCanBePrivate")
 object FallbackInitializer : ChannelInitializer<Channel>() {
 
     var haproxy: Boolean = false
 
+    var exceptionHandler: ExceptionHandler? = null
+
+    const val ENCODER = "fallback-encoder"
+    const val DECODER = "fallback-decoder"
+    const val HAPROXY_DECODER = "fallback-haproxy-decoder"
+
     override fun initChannel(channel: Channel) {
         val pipeline = channel.pipeline()
         val handler = FallbackHandler(channel)
-        pipeline.addFirst(handler.decoder)
-        pipeline.addFirst(handler.encoder)
+        haproxy.ifTrue { pipeline.addFirst(HAPROXY_DECODER, HAProxyMessageDecoder(true)) }
+        pipeline.addFirst(DECODER, handler.decoder)
+        pipeline.addFirst(ENCODER, handler.encoder)
         pipeline.addLast(handler)
     }
 }
