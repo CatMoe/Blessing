@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -180,5 +181,10 @@ public class UUIDUtil {
         }
 
         return HEX_VALUES[c];
+    }
+
+    // https://github.com/PaperMC/Velocity/blob/dev/3.0.0/api/src/main/java/com/velocitypowered/api/util/UuidUtils.java#L46-L54
+    public static UUID generateOfflinePlayerUuid(String username) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
     }
 }
