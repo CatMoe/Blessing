@@ -17,6 +17,8 @@
 
 package net.miaomoe.blessing.protocol.version
 
+import net.miaomoe.blessing.nbt.dimension.NbtVersion
+
 @Suppress("MemberVisibilityCanBePrivate")
 enum class Version(val protocolId: Int, val isSupported: Boolean = true, val registerMap: Boolean = true) {
     UNDEFINED(-1, false, false),
@@ -105,11 +107,21 @@ enum class Version(val protocolId: Int, val isSupported: Boolean = true, val reg
     V1_19_4(762),
     V1_20(763),
     @Deprecated("Use V1_20 for this same protocol. (763)")
-    V_1_20_1(763, registerMap = false),
+    V1_20_1(763, registerMap = false),
     V1_20_2(764),
     V1_20_3(765),
     @Deprecated("Use V1_20_3 for this same protocol. (765)")
     V1_20_4(765, registerMap = false);
+
+    fun toNbtVersion() = when {
+        this.moreOrEqual(V1_20_2) -> NbtVersion.V1_20_2
+        this.moreOrEqual(V1_19_4) -> NbtVersion.V1_19_4
+        this.moreOrEqual(V1_19_1) -> NbtVersion.V1_19_1
+        this == V1_19 -> NbtVersion.V1_19
+        this == V1_18_2 -> NbtVersion.V1_18_2
+        this.moreOrEqual(V1_16_2) -> NbtVersion.V1_16_2
+        else -> NbtVersion.LEGACY
+    }
 
     fun more(another: Version) = protocolId >= another.protocolId
     fun moreOrEqual(another: Version) = protocolId >= another.protocolId
