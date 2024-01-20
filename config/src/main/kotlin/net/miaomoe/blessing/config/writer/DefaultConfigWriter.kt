@@ -48,8 +48,7 @@ internal object Helper {
 
     @JvmOverloads
     fun write(map: MutableMap<String, Any>, config: AbstractConfig, parent: String = "", fixPrefixSpace: Boolean = true) {
-        for (info in config.parsed)
-            write(map, "$parent${info.path}", info.value, info.description, fixPrefixSpace)
+        for (info in config.parsed) write(map, "$parent${info.path}", info.value, info.description, fixPrefixSpace)
     }
 
     private fun write(
@@ -70,11 +69,15 @@ internal object Helper {
             is List<*> -> value.mapNotNull { fromAnyRef(it) }
             is Enum<*> -> value.name
             is AbstractConfig -> {
-                if (desc?.isNotEmpty() == true)
-                    map[path] = fromAnyRef(mapOf<Any, Any>(), null)
-                value.let(DefaultConfigParser::parse)
-                write(map, value, "$path.", false)
-                return
+                val parsed = value.let(DefaultConfigParser::parse)
+                if (desc.isNullOrEmpty()) {
+                    write(map, value, "$path.", false)
+                    return
+                } else {
+                    val anotherMap = mutableMapOf<String, Any>()
+                    parsed.forEach { write(anotherMap, it.path, it.value, it.description, false) }
+                    anotherMap
+                }
             }
             is Map<*, *> -> throw IllegalArgumentException("Please surround with AbstractConfig! At: $path")
             else -> value

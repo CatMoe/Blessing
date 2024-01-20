@@ -30,19 +30,21 @@ import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
+import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.UUIDUtil
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
+import java.util.logging.Level
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
 
     private val config = FallbackConfig.INSTANCE
 
-    val encoder = FallbackEncoder()
-    val decoder = FallbackDecoder()
+    val encoder = FallbackEncoder(handler = this)
+    val decoder = FallbackDecoder(handler = this)
 
     val pipeline: ChannelPipeline = channel.pipeline()
 
@@ -60,6 +62,11 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
 
     var name: String? = null
         private set
+
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        debug("has connected")
+        super.channelActive(ctx)
+    }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
         when (msg) {
@@ -112,6 +119,7 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
             it.recvStatusRequest=true
         }
         // TODO Send response
+        write(PacketStatusResponse("{\"version\":{\"name\":\"§dBlessing\",\"protocol\":${version.protocolId} },\"players\":{\"max\":0,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"§dBlessing <3\"}}"), true)
     }
 
     private fun handle(packet: PacketStatusPing) {
@@ -120,9 +128,7 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
             { "Cannot send twice status ping or skipped status request!" }
             it.recvStatusPing=true
         }
-        channel
-            .writeAndFlush(packet, channel.voidPromise())
-            .addListener(ChannelFutureListener.CLOSE)
+        channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
     }
 
     fun flush(): Channel = channel.flush()
@@ -139,8 +145,12 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        FallbackInitializer.exceptionHandler?.exceptionCaught(ctx, cause) ?: super.exceptionCaught(ctx, cause)
+        config.debugLogger?.log(Level.WARNING, "$this - throws exception", cause)
+        FallbackInitializer.exceptionHandler?.exceptionCaught(ctx, cause)
+        channel.close()
     }
+
+    fun debug(message: String) = config.debugLogger?.log(Level.INFO, "$this: $message") ?: Unit // void
 
     override fun toString() = "FallbackHandler[${version.name}|${address.address.hostAddress}|${name}]"
 }

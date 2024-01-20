@@ -22,11 +22,16 @@ import net.miaomoe.blessing.config.annotation.Description;
 import net.miaomoe.blessing.config.annotation.Path;
 import net.miaomoe.blessing.nbt.dimension.World;
 
+import java.util.logging.Logger;
+
 public class FallbackConfig extends AbstractConfig {
 
     public static final FallbackConfig INSTANCE = new FallbackConfig();
 
     private FallbackConfig() {}
+
+    // Settings for logger - not in config.
+    public Logger debugLogger = null;
 
     @Path(path = "validate-order-check")
     @Description(description = {
@@ -46,5 +51,9 @@ public class FallbackConfig extends AbstractConfig {
             "Please switch to another world. Then report the issue."
     })
     public World world = World.OVERWORLD;
+
+    @Path
+    //@Description(description = "")
+    public long timeout = 30000;
 
 }

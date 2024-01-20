@@ -19,6 +19,7 @@ package net.miaomoe.blessing
 
 import net.md_5.bungee.api.plugin.Plugin
 import net.miaomoe.blessing.config.BlessingBungeeConfig
+import net.miaomoe.blessing.util.ReplacedChannelInitializer
 
 class BlessingBungee : Plugin() {
 
@@ -33,7 +34,10 @@ class BlessingBungee : Plugin() {
 
 
     override fun onEnable() {
-        // Not impl.
+        if (config.debug) {
+            ReplacedChannelInitializer.inject()
+            config.fallback.debugLogger=this.logger
+        }
     }
 
     companion object {

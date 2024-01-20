@@ -19,7 +19,7 @@ package net.miaomoe.blessing.protocol.version
 
 @Suppress("MemberVisibilityCanBePrivate")
 data class VersionRange(val min: Version, val max: Version) : Iterable<Version> {
-    private val list = Version.entries.filter { it.registerMap && it.moreOrEqual(min) && it.lessOrEqual(max) }
+    private val list = Version.entries.filter { (min == Version.UNDEFINED || it.registerMap) && it.moreOrEqual(min) && it.lessOrEqual(max) }
     fun inRange(version: Version) = list.contains(version)
     fun toList() = list
     @Deprecated("toIntRange should not be applied to the protocol.", replaceWith = ReplaceWith("toList"))

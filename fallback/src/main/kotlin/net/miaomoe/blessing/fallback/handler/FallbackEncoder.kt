@@ -32,20 +32,25 @@ import net.miaomoe.blessing.protocol.version.Version
 @Suppress("MemberVisibilityCanBePrivate")
 class FallbackEncoder(
     var mappings: ProtocolMappings = State.HANDSHAKE.clientbound.value,
-    var version: Version = Version.UNDEFINED
+    var version: Version = Version.UNDEFINED,
+    var handler: FallbackHandler? = null
 ) : MessageToByteEncoder<PacketToClient>() {
 
     override fun encode(ctx: ChannelHandlerContext, packet: PacketToClient, output: ByteBuf) {
         val byteBuf = ByteMessage(output)
         val id = when (packet) {
-            is PacketCache ->mappings.getId(version, packet.kClass)
+            is PacketCache -> mappings.getId(version, packet.kClass)
             is ExplicitPacket -> packet.id
             else -> mappings.getId(version, packet::class)
         }
+        handler?.debug("[Encoder] Write varint $id for $packet")
         byteBuf.writeVarInt(id)
         when (packet) {
             is ByteArrayHolder -> packet.byteArray?.let(byteBuf::writeBytes)
             else -> packet.encode(byteBuf, version)
         }
+        handler?.debug("[Encoder] Write completed. (${byteBuf.readableBytes()} bytes)")
     }
+
+    override fun toString() = "FallbackEncoder(mappings=$mappings, version=${version.name})"
 }

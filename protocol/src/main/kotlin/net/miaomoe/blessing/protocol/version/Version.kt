@@ -23,54 +23,36 @@ import net.miaomoe.blessing.nbt.dimension.NbtVersion
 enum class Version(val protocolId: Int, val isSupported: Boolean = true, val registerMap: Boolean = true) {
     UNDEFINED(-1, false, false),
     V1_7_2(4, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (4)")
+    @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))
     V1_7_3(4, false, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (4)")
+    @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))
     V1_7_4(4, false, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (4)")
+    @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))
     V1_7_5(4, false, false),
     V1_7_6(5, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (5)")
+    @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))
     V1_7_7(5, false, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (5)")
+    @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))
     V1_7_8(5, false, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (5)")
+    @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))
     V1_7_9(5, false, false),
-    @Deprecated("Use V1_7_2 for this same protocol. (5)")
+    @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))
     V1_7_10(5, false, false),
     V1_8(47),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_1(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_2(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_3(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_4(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_5(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_6(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_7(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_8(47, registerMap = false),
-    @Deprecated("Use V1_8 for this same protocol. (47)")
-    V1_8_9(47, registerMap = false),
     V1_9(107),
     V1_9_1(108),
     V1_9_2(109),
-    @Deprecated("Use V1_9_2 for this same protocol. (109)")
+    @Deprecated("Use V1_9_2 for this same protocol. (109)", replaceWith = ReplaceWith("V1_9_2"))
     V1_9_3(109, registerMap = false),
     V1_9_4(110),
     V1_10(210),
-    @Deprecated("Use V1_10 for this same protocol. (210)")
+    @Deprecated("Use V1_10 for this same protocol. (210)", replaceWith = ReplaceWith("V1_10"))
     V1_10_1(210, registerMap = false),
-    @Deprecated("Use V1_10 for this same protocol. (210)")
+    @Deprecated("Use V1_10 for this same protocol. (210)", replaceWith = ReplaceWith("V1_10"))
     V1_10_2(210, registerMap = false),
     V1_11(315),
     V1_11_1(316),
-    @Deprecated("Use V1_11_1 for this same protocol. (316)")
+    @Deprecated("Use V1_11_1 for this same protocol. (316)", replaceWith = ReplaceWith("V1_11_1"))
     V1_11_2(316, registerMap = false),
     V1_12(335),
     V1_12_1(338),
@@ -91,26 +73,26 @@ enum class Version(val protocolId: Int, val isSupported: Boolean = true, val reg
     V1_16_2(751),
     V1_16_3(753),
     V1_16_4(754),
-    @Deprecated("Use V1_16_4 for this same protocol. (754)")
+    @Deprecated("Use V1_16_4 for this same protocol. (754)", replaceWith = ReplaceWith("V1_16_4"))
     V1_16_5(754, registerMap = false),
     V1_17(755),
     V1_17_1(756),
     V1_18(757),
-    @Deprecated("Use V1_18 for this same protocol. (757)")
+    @Deprecated("Use V1_18 for this same protocol. (757)", replaceWith = ReplaceWith("V1_18"))
     V1_18_1(757, registerMap = false),
     V1_18_2(758),
     V1_19(759),
     V1_19_1(760),
-    @Deprecated("Use V1_19_1 for this same protocol. (760)")
+    @Deprecated("Use V1_19_1 for this same protocol. (760)", replaceWith = ReplaceWith("V1_19_1"))
     V1_19_2(760, registerMap = false),
     V1_19_3(761),
     V1_19_4(762),
     V1_20(763),
-    @Deprecated("Use V1_20 for this same protocol. (763)")
+    @Deprecated("Use V1_20 for this same protocol. (763)", replaceWith = ReplaceWith("V1_20"))
     V1_20_1(763, registerMap = false),
     V1_20_2(764),
     V1_20_3(765),
-    @Deprecated("Use V1_20_3 for this same protocol. (765)")
+    @Deprecated("Use V1_20_3 for this same protocol. (765)", replaceWith = ReplaceWith("V1_20_3"))
     V1_20_4(765, registerMap = false);
 
     fun toNbtVersion() = when {

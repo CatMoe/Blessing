@@ -55,8 +55,10 @@ data class Dimension(
     private val cachedTag by lazy { NbtVersion.entries.associateWith(::toTag) }
     private val cachedAttributes = NbtVersion.entries.associateWith(::getAttributes)
 
+    private fun <T> Map<NbtVersion, T>.tryGetOrNull(version: NbtVersion) = try { this[version] } catch (_: NullPointerException) { null }
+
     fun getAttributes(version: NbtVersion): CompoundBinaryTag {
-        cachedAttributes[version]?.let { return it }
+        cachedAttributes.tryGetOrNull(version)?.let { return it }
         val attributes = CompoundBinaryTag
             .builder()
             .put("name", this.key)
@@ -93,7 +95,7 @@ data class Dimension(
 
     override fun toTag(version: NbtVersion?): BinaryTag {
         require(version != null) { "NbtVersion cannot be null!" }
-        cachedTag[version]?.let { return it }
+        cachedTag.tryGetOrNull(version)?.let { return it }
         val rootCompound = CompoundBinaryTag.builder()
 
         return if (version == NbtVersion.LEGACY) {

@@ -20,10 +20,12 @@ package net.miaomoe.blessing.fallback.handler
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
+import net.miaomoe.blessing.fallback.packet.ExplicitPacket
 import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
 import net.miaomoe.blessing.protocol.packet.type.PacketToServer
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.util.ByteMessage.Companion.toByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
@@ -31,20 +33,38 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 class FallbackDecoder(
     var mappings: ProtocolMappings = State.HANDSHAKE.serverbound.value,
     var version: Version = Version.UNDEFINED,
-    val allowEmptyBuffer: Boolean = false
+    val throwWhenEmptyBuffer: Boolean = true,
+    val checkRemainBytes: Boolean = false,
+    val handler: FallbackHandler? = null
 ) : MessageToMessageDecoder<ByteBuf>() {
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, list: MutableList<Any>) {
-        (byteBuf.readableBytes() > 0).ifTrue {
-            require(!allowEmptyBuffer) { "Null byte buffers are not acceptable!" }
+        val unreadReadable = byteBuf.readableBytes()
+        handler?.debug("[Decoder] Processing ByteBuf with $unreadReadable bytes.")
+        (unreadReadable == 0).ifTrue {
+            require(throwWhenEmptyBuffer) { "Null byte buffers are not acceptable!" }
             return
         }
         val byteMessage = ByteMessage(byteBuf)
         val id = byteMessage.readVarInt()
-        val packet = mappings.getMappings(version, id).init.get()
-        require(packet is PacketToServer) { "Getting packet from mappings with id ${"0x%02X".format(id)}. But decoder got a non PacketToServer packet." }
-        packet.decode(byteMessage, version)
-        ctx.fireChannelRead(packet)
+        val formatId = "0x%02X".format(id)
+        handler?.debug("[Decoder] Handling packet with id $formatId")
+        try {
+            val packet = mappings.getMappings(version, id).init.get()
+            require(packet is PacketToServer) { "Getting packet from mappings with id $formatId. But got a non PacketToServer packet. ($packet)" }
+            packet.decode(byteMessage, version)
+            byteBuf.readableBytes().let {
+                val isZero = it == 0
+                handler?.debug("[Decoder] Decoded with ${packet::class.qualifiedName} ($packet) ${if (!isZero) "($it byte remaining)" else "" }")
+                checkRemainBytes.ifTrue { require(isZero) { "checkRemainBytes is true. But found $it remaining bytes not decoded." } }
+            }
+            ctx.fireChannelRead(packet)
+        } catch (exception: NullPointerException) {
+            handler?.debug("[Decoder] A NullPointerException has thrown when getting packet. (${exception.localizedMessage}) That will be converted to ExplicitPacket.")
+            ctx.fireChannelRead(ExplicitPacket(id, byteBuf.toByteMessage().toByteArray(), "A packet with a unknown id."))
+        }
     }
+
+    override fun toString() = "FallbackDecoder(mappings=$mappings, version=${version.name}, throwWhenEmptyBuffer=$throwWhenEmptyBuffer, checkRemainBytes=$checkRemainBytes)"
 
 }

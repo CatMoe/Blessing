@@ -20,8 +20,13 @@ package net.miaomoe.blessing.fallback.handler
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
+import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
+import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
+import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+import java.util.concurrent.TimeUnit
 
 @Suppress("MemberVisibilityCanBePrivate")
 object FallbackInitializer : ChannelInitializer<Channel>() {
@@ -30,16 +35,27 @@ object FallbackInitializer : ChannelInitializer<Channel>() {
 
     var exceptionHandler: ExceptionHandler? = null
 
+    const val HANDLER = "fallback-handler"
+    const val LENGTH_ENCODER = "fallback-length-encoder"
+    const val FRAME_DECODER = "fallback-frame-decoder"
     const val ENCODER = "fallback-encoder"
     const val DECODER = "fallback-decoder"
     const val HAPROXY_DECODER = "fallback-haproxy-decoder"
+    const val TIMEOUT_HANDLER = "fallback-timeout"
 
-    override fun initChannel(channel: Channel) {
+    public override fun initChannel(channel: Channel) {
         val pipeline = channel.pipeline()
         val handler = FallbackHandler(channel)
+        pipeline.addLast(FRAME_DECODER, VarintFrameDecoder())
+        pipeline.addLast(LENGTH_ENCODER, VarintLengthEncoder())
+        pipeline.addLast(DECODER, handler.decoder)
+        pipeline.addLast(ENCODER, handler.encoder)
+        pipeline.addLast(HANDLER, handler)
         haproxy.ifTrue { pipeline.addFirst(HAPROXY_DECODER, HAProxyMessageDecoder(true)) }
-        pipeline.addFirst(DECODER, handler.decoder)
-        pipeline.addFirst(ENCODER, handler.encoder)
-        pipeline.addLast(handler)
+        pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(FallbackConfig.INSTANCE.timeout, TimeUnit.MILLISECONDS))
+        FallbackConfig.INSTANCE.debugLogger?.let { _ ->
+            handler.debug("Initialization complete. Handlers: ")
+            pipeline.forEach { handler.debug(" ${it.key} - ${it.value}") }
+        }
     }
 }

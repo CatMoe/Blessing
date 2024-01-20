@@ -15,12 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.packet
+package net.miaomoe.blessing.protocol.exceptions
 
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import io.netty.handler.codec.DecoderException
 
-class ExplicitPacket(
-    val id: Int,
-    override val byteArray: ByteArray? = null,
-    val description: String? = null
-) : PacketBidirectional, ByteArrayHolder
+class DecoderException(override val message: String) : DecoderException(message)

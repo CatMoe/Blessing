@@ -33,10 +33,10 @@ class PacketHandshake : PacketToServer {
     override fun decode(byteBuf: ByteMessage, version: Version) {
         this.version = Version.of(byteBuf.readVarInt()) // 版本号
         this.host = byteBuf.readString() // 读取域名 (作为字符串)
-            /* Legacy FML */.removeSuffix("FML")
-            /* SRV解析后缀 */.removeSuffix(".")
+            .removeSuffix(".")
+            .removeSuffix("FML")
         // 检查域名是否有效
-        require(host.contains(".") && host.length in 4..253) { "Invalid hostname!" }
+        require(host.length in 4..253) { "Invalid hostname!" }
         this.port = byteBuf.readUnsignedShort() // 读取端口
         // 检查端口号范围
         require(port in 1..65535) { "Port must be higher than 0 and lower than 65536" }

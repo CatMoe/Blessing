@@ -36,7 +36,7 @@ class PacketRegistry(val version: Version) {
 
     fun getId(`class`: KClass<out PacketInterface>): Int {
         require(classMappings.isAlreadyLoaded) { "classMappings is not loaded!" }
-        return classMappings.value.getIfPresent(`class`) ?: throw NullPointerException("Cannot  found id for class ${`class`.qualifiedName}")
+        return classMappings.value.getIfPresent(`class`) ?: throw NullPointerException("Cannot found id for class ${`class`.qualifiedName}")
     }
 
     fun register(packetId: Int, mapping: PacketMapping) {

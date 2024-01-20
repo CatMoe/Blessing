@@ -21,8 +21,8 @@ import io.netty.buffer.*
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.*
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.exceptions.DecoderException
 import net.miaomoe.blessing.protocol.exceptions.EncodeTagException
-import net.miaomoe.blessing.protocol.exceptions.InvalidPacketException
 import net.miaomoe.blessing.protocol.version.Version
 import java.io.Closeable
 import java.io.IOException
@@ -36,6 +36,7 @@ import java.nio.channels.ScatteringByteChannel
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.math.min
 
 @Suppress("DEPRECATION", "MemberVisibilityCanBePrivate", "IdentifierGrammar")
 class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
@@ -48,18 +49,17 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
 
     fun readVarInt(): Int {
         var i = 0
-        val startReaderIndex  = this.readerIndex()
-        val maxRead = 5.coerceAtMost(buf.readableBytes())
+        val maxRead = min(5.0, buf.readableBytes().toDouble()).toInt()
         for (j in 0 until maxRead) {
             val k = buf.readByte().toInt()
             i = i or (k and 0x7F shl j * 7)
-            if (k and 0x80 != 128) { return i }
+            if (k and 0x80 != 128) {
+                return i
+            }
         }
         // Throwing
         buf.readBytes(maxRead)
-        val b = buf.readerIndex(startReaderIndex).toByteMessage()
-        val byteArray = b.toByteArray()
-        throw InvalidPacketException("Failed to read VarInt. bytes: $byteArray")
+        throw DecoderException("Failed to read Varint.")
     }
 
     // Translate from https://github.com/PaperMC/Velocity/blob/07a525be7f90f1f3ccd515f7c196824d12ed0fff/proxy/src/main/java/com/velocitypowered/proxy/protocol/ProtocolUtils.java#L130-L163

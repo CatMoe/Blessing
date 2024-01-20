@@ -24,7 +24,6 @@ import net.miaomoe.blessing.nbt.TagProvider
 
 @Suppress("SpellCheckingInspection")
 data class Biome(
-    val world: World,
     val biome: String,
     val id: Int,
     val precipitation: String,
@@ -84,7 +83,6 @@ data class Biome(
 
     enum class Type(val biome: Biome) {
         PLANINS(Biome(
-            World.OVERWORLD,
             "minecraft:plains",
             1,
             "rain",
@@ -105,7 +103,6 @@ data class Biome(
             Int.MIN_VALUE
         )),
         SWAMP(Biome(
-            World.OVERWORLD,
             "minecraft:swamp",
             6,
             "rain",
@@ -126,7 +123,6 @@ data class Biome(
             6975545
         )),
         SWAMP_HILLS(Biome(
-            World.OVERWORLD,
             "minecraft:swamp_hills",
             134,
             "rain",
@@ -147,7 +143,6 @@ data class Biome(
             6975545
         )),
         NETHER_WASTES(Biome(
-            World.NETHER,
             "minecraft:nether_wastes",
             8,
             "none",
@@ -168,7 +163,6 @@ data class Biome(
             6975545
         )),
         THE_END(Biome(
-            World.THE_END,
             "minecraft:the_end",
             9,
             "none",

@@ -15,12 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.packet
+package net.miaomoe.blessing.protocol.handlers
 
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import io.netty.channel.ChannelHandlerContext
+import io.netty.handler.timeout.IdleStateEvent
+import io.netty.handler.timeout.IdleStateHandler
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+import java.util.concurrent.TimeUnit
 
-class ExplicitPacket(
-    val id: Int,
-    override val byteArray: ByteArray? = null,
-    val description: String? = null
-) : PacketBidirectional, ByteArrayHolder
+class TimeoutHandler(timeout: Long, unit: TimeUnit) : IdleStateHandler(timeout, 0L, 0L, unit) {
+    private var knownDisconnect = false
+    override fun channelIdle(ctx: ChannelHandlerContext, evt: IdleStateEvent) {
+        super.channelIdle(ctx, evt)
+        if (!knownDisconnect) {
+            ctx.channel().isActive.ifTrue { ctx.close() }
+            knownDisconnect=true
+        }
+    }
+
+}
