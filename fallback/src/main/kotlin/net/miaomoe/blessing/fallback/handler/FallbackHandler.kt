@@ -21,9 +21,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.miaomoe.blessing.fallback.cache.CachedPackets
+import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
-import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
@@ -102,14 +103,15 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
     private fun handle(packet: PacketLoginRequest) {
         this.name=packet.name
         write(PacketLoginResponse(packet.name, UUIDUtil.generateOfflinePlayerUuid(packet.name)))
+        if (version.less(Version.V1_20_2)) spawn()
     }
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketLoginAcknowledged) {
         updateState(State.CONFIGURATION)
-        write(PacketRegistryData(config.world.toTag(version.toNbtVersion())))
+        write(CachedPackets.REGISTRY_DATA.group)
         write(PacketFinishConfiguration(), true)
-        updateState(State.PLAY)
+        spawn()
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -131,6 +133,11 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
         channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
     }
 
+    private fun spawn() {
+        updateState(State.PLAY)
+        // TODO spawn player
+    }
+
     fun flush(): Channel = channel.flush()
 
     @JvmOverloads
@@ -141,6 +148,11 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
     @JvmOverloads
     fun write(byteBuf: ByteBuf, flush: Boolean = false) {
         if (flush) channel.writeAndFlush(byteBuf) else channel.write(byteBuf)
+    }
+
+    @JvmOverloads
+    fun write(group: PacketCacheGroup, flush: Boolean = false) {
+        write(group.getIfCached(version)!!, flush)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

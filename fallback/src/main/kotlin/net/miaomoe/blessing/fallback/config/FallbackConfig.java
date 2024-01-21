@@ -53,7 +53,9 @@ public class FallbackConfig extends AbstractConfig {
     public World world = World.OVERWORLD;
 
     @Path
-    //@Description(description = "")
+    @Description(description =
+            "Disconnects when the connection is idle for more than a few milliseconds"
+    )
     public long timeout = 30000;
 
 }

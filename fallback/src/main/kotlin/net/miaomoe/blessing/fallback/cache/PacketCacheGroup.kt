@@ -27,8 +27,13 @@ import net.miaomoe.blessing.protocol.version.VersionRange
 class PacketCacheGroup(
     val packet: PacketToClient,
     val description: String? = null,
-    val shared: Boolean = false
+    val copySame: Boolean = false,
+    initVersions: VersionRange? = null
 ) {
+
+    init {
+        initVersions?.let(::cache)
+    }
 
     private val map = LazyInit<MutableMap<Version, PacketCache>> { mutableMapOf() }
     private val cached = LazyInit<List<PacketCache>> { mutableListOf() }
@@ -57,7 +62,7 @@ class PacketCacheGroup(
             packet.encode(it, version)
             it.toByteArray()
         }.takeUnless { it.isEmpty() }
-        val cached = if (shared) {
+        val cached = if (copySame) {
             map.value.let {
                 it.values.firstOrNull { cache -> bytes?.contentEquals(cache.byteArray) ?: (cache.byteArray == null) }
                     ?: PacketCache(packet::class, bytes, description)
