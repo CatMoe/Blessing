@@ -20,14 +20,18 @@ import io.netty.channel.*
 import net.miaomoe.blessing.BlessingBungee
 import net.miaomoe.blessing.fallback.handler.FallbackInitializer
 import sun.misc.Unsafe
+import java.lang.reflect.Method
 import java.util.logging.Level
 
 @Suppress("MemberVisibilityCanBePrivate")
-object ReplacedChannelInitializer : ChannelInitializer<Channel>() {
+object BlessingChannelInitializer : ChannelInitializer<Channel>() {
 
     private val plugin = BlessingBungee.instance
 
     val writeMarker = WriteBufferWaterMark(1 shl 20, 1 shl 21)
+
+    private lateinit var originalInstance: ChannelInitializer<*>
+    private lateinit var originalMethod: Method
 
     // Test fallback?
     override fun initChannel(channel: Channel) {
@@ -39,13 +43,25 @@ object ReplacedChannelInitializer : ChannelInitializer<Channel>() {
         FallbackInitializer.initChannel(channel)
     }
 
+    fun handleOriginal(channel: Channel) {
+        originalMethod.invoke(originalInstance, channel)
+    }
+
     fun inject() {
         val pipelineUtils = Class.forName("net.md_5.bungee.netty.PipelineUtils")
         val childField = pipelineUtils.getDeclaredField("SERVER_CHILD")
-        val name = childField[null]::class.java.name
-        plugin.logger.log(Level.INFO, name)
-        require(name == "net.md_5.bungee.netty.PipelineUtils\$1")
-        { "Unsupported modified detected. Please delete another plugin about network (e.x. antibot)" }
+        val original = childField[null] as ChannelInitializer<*>
+        val clazz = original::class.java
+        clazz.name.let {
+            plugin.logger.log(Level.INFO, it)
+            require(it == "net.md_5.bungee.netty.PipelineUtils\$1")
+            { "Unsupported modified detected. Please delete another plugin about network (e.x. antibot)" }
+        }
+        this.originalInstance = original
+        clazz.getDeclaredMethod("initChannel", Channel::class.java).let {
+            it.isAccessible=true
+            this.originalMethod = it
+        }
         childField.isAccessible=true
         val unsafe = Unsafe::class.java.getDeclaredField("theUnsafe").let {
             it.isAccessible=true
