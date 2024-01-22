@@ -13,6 +13,35 @@
 
 ---
 
+# 开始
+
+### 在开始之前 请确保您已经准备好了...
+
+该模块需要以下依赖项:
+  - nbt模块
+  - `net.kyori`
+    - `adventure-text-minimessage`: `4.15.0`
+    - `adventure-nbt`: `4.15.0`
+  - `org.jetbrains.kotlin`
+    - `kotlin-test`: `1.9.22`
+    - `kotlin-stdlib-jdk8`: `1.9.22`
+    - `kotlin-jps-plugin`: `1.9.22`
+  - `io.netty:netty-all`: `4.1.106.Final`
+  - `com.github.ben-manes.caffeine:caffeine`: `2.9.3`
+
+要了解更多的依赖项信息 请查看
+[该模块的pom.xml](https://github.com/CatMoe/Blessing/blob/recoded/protocol/pom.xml)
+
+### ⚠️ 不要随意注册非游戏内数据包!
+
+该库是用于Minecraft: Java Edition的协议的编码和解码的. 
+随意注册非Minecraft数据包可能会导致不可预测的后果.
+
+甚至是在不同的平台上 可能有另一个相同的模块正在工作..  
+除非您知道您在做什么 否则仅注册香草中包含的数据包.
+
+---
+
 # 状态选择:
 
 Minecraft协议中有不同的状态 不同的状态对应着不同的数据包. 
@@ -194,6 +223,8 @@ class CustomPacket implements PacketBidirectional {
 }
 ```
 
+---
+
 # 注册数据包
 
 如果您实现了一个数据包且想要应用它 那么注册无疑是重要的一步.
@@ -230,3 +261,5 @@ class RegisterCustomPacket() {
 > - PacketMapping.withAll(packetId): 对所有版本注册数据包id
 > - PacketMapping.withSingle(versionRange, packetId): 对指定的一个范围的客户端版本注册数据包id
 > - PacketMapping.withSingle(fromVersion, toVersion, packetId): 与第二个方法相同 但是会自动完成VersionRange的创建
+
+---

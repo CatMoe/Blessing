@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Blessing.iml" filepath="$PROJECT_DIR$/Blessing.iml" />
       <module fileurl="file://$PROJECT_DIR$/bungee/bungee.iml" filepath="$PROJECT_DIR$/bungee/bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fallback/fallback.iml" filepath="$PROJECT_DIR$/fallback/fallback.iml" />
       <module fileurl="file://$PROJECT_DIR$/nbt/nbt.iml" filepath="$PROJECT_DIR$/nbt/nbt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/protocol/protocol.iml" filepath="$PROJECT_DIR$/protocol/protocol.iml" />
     </modules>
   </component>
 </project>
