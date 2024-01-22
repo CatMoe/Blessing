@@ -29,7 +29,7 @@ enum class Version(val protocolId: Int, val isSupported: Boolean = true, val reg
     V1_7_4(4, false, false),
     @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))
     V1_7_5(4, false, false),
-    V1_7_6(5, false),
+    V1_7_6(5, true),
     @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))
     V1_7_7(5, false, false),
     @Deprecated("Use V1_7_2 for this same protocol. (5)", replaceWith = ReplaceWith("V1_7_6"))

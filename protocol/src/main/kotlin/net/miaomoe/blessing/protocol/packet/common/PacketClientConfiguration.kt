@@ -15,18 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.packet.configuration
+package net.miaomoe.blessing.protocol.packet.common
 
 import net.miaomoe.blessing.protocol.packet.type.PacketToServer
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
-import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketClientConfiguration : PacketToServer {
 
     var rawLocale: String? = null
-    var locale: Locale? = null
     var viewDistance: Byte? = null
     var chatMode: Int? = null
     var chatColor: Boolean? = null
@@ -35,24 +33,29 @@ class PacketClientConfiguration : PacketToServer {
     var enableTextFiltering: Boolean? = null
     var allowServerListings: Boolean? = null
 
+    var difficulty: Byte? = null
+
     override fun decode(byteBuf: ByteMessage, version: Version) {
         val rawLocale = byteBuf.readString()
         this.rawLocale = rawLocale
-        val a = rawLocale.split("_")
-        locale = Locale(a[0], a[1])
         val viewDistance = byteBuf.readByte()
         this.viewDistance = viewDistance
         require(viewDistance > 2) { "View distance cannot lower than 2!" }
         val chatMode = byteBuf.readVarInt()
         this.chatMode=chatMode
         require(chatMode in 0..2) { "chatMode must be in 0-2!" }
-        chatColor = byteBuf.readBoolean() // ChatColor. Ignored
-        displaySkinParts=byteBuf.readUnsignedByte() // Displayed Skin Parts. Ignored
-        val mainHand = byteBuf.readVarInt()
-        this.mainHand=mainHand
-        require(mainHand in 0..1) { "mainHand must be 0 or 1!" }
-        enableTextFiltering=byteBuf.readBoolean()
-        allowServerListings=byteBuf.readBoolean()
+        chatColor = byteBuf.readBoolean()
+
+        if (version.lessOrEqual(Version.V1_7_6)) difficulty= byteBuf.readByte()
+
+        displaySkinParts=byteBuf.readUnsignedByte()
+        if (version.moreOrEqual(Version.V1_9)) {
+            val mainHand = byteBuf.readVarInt()
+            this.mainHand=mainHand
+            require(mainHand in 0..1) { "mainHand must be 0 or 1!" }
+            if (version.moreOrEqual(Version.V1_17)) enableTextFiltering=byteBuf.readBoolean()
+            if (version.moreOrEqual(Version.V1_18)) allowServerListings=byteBuf.readBoolean()
+        }
     }
 
     override fun toString(): String {

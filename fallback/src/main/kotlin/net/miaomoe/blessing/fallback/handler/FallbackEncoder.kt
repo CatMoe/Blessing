@@ -43,7 +43,7 @@ class FallbackEncoder(
             is ExplicitPacket -> packet.id
             else -> mappings.getId(version, packet::class)
         }
-        handler?.debug("[Encoder] Write varint $id for $packet")
+        handler?.debug("[Encoder] Write varint ${"0x%02X".format(id)} for $packet")
         byteBuf.writeVarInt(id)
         when (packet) {
             is ByteArrayHolder -> packet.byteArray?.let(byteBuf::writeBytes)

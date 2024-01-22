@@ -15,14 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.util
+package net.miaomoe.blessing.protocol.packet.play
 
-data class Position(
-    val x: Double,
-    val y: Double,
-    val z: Double
-) {
-    companion object {
-        val zero = Position(0.0, 0.0, 0.0)
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
+
+class PacketGameEvent(
+    var type: Int = 0,
+    var value: Float = 0f,
+) : PacketToClient {
+    override fun encode(byteBuf: ByteMessage, version: Version) {
+        byteBuf.writeByte(type)
+        byteBuf.writeFloat(value)
     }
 }

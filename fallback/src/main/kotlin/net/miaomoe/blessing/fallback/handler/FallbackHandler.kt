@@ -69,6 +69,11 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
         super.channelActive(ctx)
     }
 
+    override fun channelInactive(ctx: ChannelHandlerContext) {
+        debug("has disconnected")
+        super.channelInactive(ctx)
+    }
+
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
         when (msg) {
             is HAProxyMessage -> {

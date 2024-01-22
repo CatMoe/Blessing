@@ -17,34 +17,36 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
-import net.miaomoe.blessing.protocol.util.Position
-import net.miaomoe.blessing.protocol.util.PositionUtil
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketSpawnPosition(
-    var position: Position = Position.zero
-) : PacketToClient {
+class PacketTransaction(
+    var windowId: Int = 0,
+    var id: Int = 0,
+    var accepted: Boolean = true
+) : PacketBidirectional {
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
-        if (version.moreOrEqual(Version.V1_8)) {
-            val value = if (version.moreOrEqual(Version.V1_14))
-                PositionUtil.getModernSpawnPosition(position)
-            else
-                PositionUtil.getLegacySpawnPosition(position)
-            byteBuf.writeLong(value.toLong())
-            if (version.moreOrEqual(Version.V1_17)) byteBuf.writeFloat(0f)
-        } else { // 1.7
-            position.let {
-                byteBuf.writeInt(it.x.toInt())
-                byteBuf.writeInt(it.y.toInt())
-                byteBuf.writeInt(it.z.toInt())
-            }
+        if (version.moreOrEqual(Version.V1_17))
+            byteBuf.writeInt(id)
+        else {
+            byteBuf.writeByte(windowId)
+            byteBuf.writeShort(id)
+            byteBuf.writeBoolean(accepted)
         }
     }
 
-    override fun toString() = "PacketSpawnPosition(position=$position)"
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        if (version.moreOrEqual(Version.V1_17)) {
+            id = byteBuf.readInt()
+            accepted=true
+        } else {
+            windowId = byteBuf.readByte().toInt()
+            id = byteBuf.readShort().toInt()
+            accepted = byteBuf.readBoolean()
+        }
+    }
 
 }

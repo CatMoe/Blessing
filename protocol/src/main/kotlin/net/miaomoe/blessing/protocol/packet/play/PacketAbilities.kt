@@ -15,14 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.util
+package net.miaomoe.blessing.protocol.packet.play
 
-data class Position(
-    val x: Double,
-    val y: Double,
-    val z: Double
-) {
-    companion object {
-        val zero = Position(0.0, 0.0, 0.0)
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
+
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketAbilities(
+    var flags: Int = 0,
+    var flySpeed: Float = 0f,
+    var walkSpeed: Float = flySpeed
+) : PacketBidirectional {
+
+    override fun encode(byteBuf: ByteMessage, version: Version) {
+        byteBuf.writeByte(flags)
+        byteBuf.writeFloat(flySpeed)
+        byteBuf.writeFloat(walkSpeed)
     }
+
 }

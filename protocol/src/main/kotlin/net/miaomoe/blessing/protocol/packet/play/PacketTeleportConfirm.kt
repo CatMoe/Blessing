@@ -15,14 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.util
+package net.miaomoe.blessing.protocol.packet.play
 
-data class Position(
-    val x: Double,
-    val y: Double,
-    val z: Double
-) {
-    companion object {
-        val zero = Position(0.0, 0.0, 0.0)
+import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
+
+@Suppress("MemberVisibilityCanBePrivate")
+class PacketTeleportConfirm(var teleportId: Int? = null) : PacketToServer {
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        teleportId = byteBuf.readVarInt()
     }
 }

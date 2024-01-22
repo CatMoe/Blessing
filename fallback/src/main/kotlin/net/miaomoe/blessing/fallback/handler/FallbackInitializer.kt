@@ -19,19 +19,15 @@ package net.miaomoe.blessing.fallback.handler
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
-import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
 import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.util.concurrent.TimeUnit
 
 @Suppress("MemberVisibilityCanBePrivate")
 object FallbackInitializer : ChannelInitializer<Channel>() {
-
-    var haproxy: Boolean = false
 
     var exceptionHandler: ExceptionHandler? = null
 
@@ -51,7 +47,6 @@ object FallbackInitializer : ChannelInitializer<Channel>() {
         pipeline.addLast(DECODER, handler.decoder)
         pipeline.addLast(ENCODER, handler.encoder)
         pipeline.addLast(HANDLER, handler)
-        haproxy.ifTrue { pipeline.addFirst(HAPROXY_DECODER, HAProxyMessageDecoder(true)) }
         pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(FallbackConfig.INSTANCE.timeout, TimeUnit.MILLISECONDS))
         FallbackConfig.INSTANCE.debugLogger?.let { _ ->
             handler.debug("Initialization complete. Handlers: ")

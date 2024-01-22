@@ -18,8 +18,11 @@
 package net.miaomoe.blessing.protocol.mappings
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import net.miaomoe.blessing.protocol.packet.type.PacketInterface
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.version.Version
+import net.miaomoe.blessing.protocol.version.VersionRange
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -38,6 +41,9 @@ class ProtocolMappings() {
             }
         }
     }
+
+    fun register(init: Supplier<out PacketInterface>, list: Map<VersionRange, Int>)
+    = this.register(PacketMapping.generate(init, list))
 
     @Throws(NullPointerException::class)
     private fun getRegistryFromVersion(version: Version) = this.registry.getIfPresent(version)
