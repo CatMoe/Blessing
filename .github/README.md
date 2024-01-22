@@ -1,6 +1,6 @@
 # Blessing
 
-Recoding of MoeFilter. Utility and anti-bot (soon) based on BungeeCord.
+Recoding of MoeFilter. Utility and anti-bot (soon) for Minecraft: Java Edition.
 
 That being said. Most utility modules (such as config and event) are cross-platform. 
 All you need to do is compile the dependencies required for the module together.
