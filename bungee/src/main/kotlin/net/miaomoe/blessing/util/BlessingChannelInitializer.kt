@@ -19,8 +19,10 @@ package net.miaomoe.blessing.util
 import io.netty.channel.*
 import net.miaomoe.blessing.BlessingBungee
 import net.miaomoe.blessing.fallback.handler.FallbackInitializer
+import net.miaomoe.blessing.protocol.registry.State
 import sun.misc.Unsafe
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import java.util.logging.Level
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -28,7 +30,11 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
 
     private val plugin = BlessingBungee.instance
 
+    private val state = State.entries // init
+
     val writeMarker = WriteBufferWaterMark(1 shl 20, 1 shl 21)
+
+    val fallbackInitializer = FallbackInitializer(BlessingBungee.config.fallback)
 
     private lateinit var originalInstance: ChannelInitializer<*>
     private lateinit var originalMethod: Method
@@ -40,7 +46,7 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
             it.setOption(ChannelOption.TCP_NODELAY, true)
             it.setWriteBufferWaterMark(writeMarker)
         }
-        FallbackInitializer.initChannel(channel)
+        fallbackInitializer.initChannel(channel)
     }
 
     fun handleOriginal(channel: Channel) {
@@ -63,10 +69,13 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
             this.originalMethod = it
         }
         childField.isAccessible=true
-        val unsafe = Unsafe::class.java.getDeclaredField("theUnsafe").let {
-            it.isAccessible=true
-            it[null] as Unsafe
-        }
-        unsafe.putObject(unsafe.staticFieldBase(childField), unsafe.staticFieldOffset(childField), this)
+        if (Modifier.isFinal(childField.modifiers)) {
+            val unsafe = Unsafe::class.java.getDeclaredField("theUnsafe").let {
+                it.isAccessible=true
+                it[null] as Unsafe
+            }
+            unsafe.putObject(unsafe.staticFieldBase(childField), unsafe.staticFieldOffset(childField), this)
+        } else
+            childField[null] = this
     }
 }

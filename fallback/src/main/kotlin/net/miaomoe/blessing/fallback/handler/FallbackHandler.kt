@@ -21,28 +21,28 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
-import net.miaomoe.blessing.fallback.cache.CachedPackets
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
-import net.miaomoe.blessing.fallback.config.FallbackConfig
+import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
-import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
-import net.miaomoe.blessing.protocol.util.UUIDUtil
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
 import java.util.logging.Level
 
 @Suppress("MemberVisibilityCanBePrivate")
-class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
+class FallbackHandler(
+    val initializer: FallbackInitializer,
+    val channel: Channel
+) : ChannelInboundHandlerAdapter() {
 
-    private val config = FallbackConfig.INSTANCE
+    private val config = initializer.config
 
     val encoder = FallbackEncoder(handler = this)
     val decoder = FallbackDecoder(handler = this)
@@ -107,14 +107,14 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
 
     private fun handle(packet: PacketLoginRequest) {
         this.name=packet.name
-        write(PacketLoginResponse(packet.name, UUIDUtil.generateOfflinePlayerUuid(packet.name)))
+        write(PacketsToCache.LOGIN_RESPONSE)
         if (version.less(Version.V1_20_2)) spawn()
     }
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketLoginAcknowledged) {
         updateState(State.CONFIGURATION)
-        write(CachedPackets.REGISTRY_DATA.group)
+        write(PacketsToCache.REGISTRY_DATA)
         write(PacketFinishConfiguration(), true)
         spawn()
     }
@@ -156,6 +156,12 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
     }
 
     @JvmOverloads
+    fun write(enum: PacketsToCache, flush: Boolean = false) {
+        initializer.cache[enum]?.let { this.write(it.getNonNull(version), flush) }
+        ?: throw NullPointerException("Cached group for ${enum.name} is null!")
+    }
+
+    @JvmOverloads
     fun write(group: PacketCacheGroup, flush: Boolean = false) {
         write(group.getIfCached(version)!!, flush)
     }
@@ -163,7 +169,7 @@ class FallbackHandler(val channel: Channel) : ChannelInboundHandlerAdapter() {
     @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         config.debugLogger?.log(Level.WARNING, "$this - throws exception", cause)
-        FallbackInitializer.exceptionHandler?.exceptionCaught(ctx, cause)
+        initializer.exceptionHandler?.exceptionCaught(ctx, cause)
         channel.close()
     }
 

@@ -68,7 +68,7 @@ public class BlessingBungeeConfig extends AbstractConfig {
     @Path
     @Description(description = "fallback (virtual server) settings.")
     @SuppressWarnings("unused")
-    public FallbackConfig fallback = FallbackConfig.INSTANCE;
+    public FallbackConfig fallback = new FallbackConfig();
 
     static {
         ReplaceHook.INSTANCE.register((it -> PlaceholderManager.INSTANCE.getPlaceholders(null, it)));

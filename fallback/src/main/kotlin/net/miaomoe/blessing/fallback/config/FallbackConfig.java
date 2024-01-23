@@ -26,12 +26,21 @@ import java.util.logging.Logger;
 
 public class FallbackConfig extends AbstractConfig {
 
-    public static final FallbackConfig INSTANCE = new FallbackConfig();
-
-    private FallbackConfig() {}
-
     // Settings for logger - not in config.
     public Logger debugLogger = null;
+
+    @Path
+    @Description(description = {
+            "What brand should be provided to the client?",
+            "It can be view in f3 in the client.",
+            "",
+            "MiniMessage is supported. But only can use legacy color."
+    })
+    public String brand = "Blessing";
+
+    @Path(path = "player-name")
+    @Description(description = "What should be the name of the player joining the fallback?")
+    public String playerName = "Blessing";
 
     @Path(path = "validate-order-check")
     @Description(description = {
