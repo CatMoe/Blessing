@@ -44,8 +44,11 @@ val DefaultConfigReader = ConfigReader { original, config ->
                             try {
                                 setValue(it.getMethod("valueOf", String::class.java).invoke(null, configValue))
                             } catch (exception: IllegalArgumentException) {
+                                @Suppress("SpellCheckingInspection")
                                 throw IllegalArgumentException(
-                                    "Not found \"$configValue\" enum for ${it.name}. Please check your input (like typo or enum value is non-full uppercase)",
+                                    "Not found \"$configValue\" enum for ${it.name}. " +
+                                    "Please check your input (like typo or enum value is non-full uppercase). " +
+                                    "Available enums: ${(it.getMethod("vaules").invoke(null) as Array<*>).joinToString(", ")}",
                                     exception
                                 )
                             } catch (exception: Exception) {
