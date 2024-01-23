@@ -21,12 +21,13 @@ package net.miaomoe.blessing.protocol.packet.login
 
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.util.UUIDUtil
 import net.miaomoe.blessing.protocol.version.Version
 import java.util.*
 
 class PacketLoginResponse(
     var name: String = "Blessing",
-    var uuid: UUID = UUID(0, 0)
+    var uuid: UUID = UUIDUtil.generateOfflinePlayerUuid(name)
 ) : PacketToClient {
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
