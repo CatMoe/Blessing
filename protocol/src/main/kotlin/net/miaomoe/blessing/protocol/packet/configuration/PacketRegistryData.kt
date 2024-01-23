@@ -28,7 +28,13 @@ class PacketRegistryData(
     var tag: BinaryTag? = null
 ) : PacketToClient {
 
+    private var world: World = World.OVERWORLD
+
+    constructor(world: World) : this(null) {
+        this.world=world
+    }
+
     override fun encode(byteBuf: ByteMessage, version: Version) =
-        byteBuf.writeNamelessTag(tag ?: World.OVERWORLD.toTag(version.toNbtVersion()))
+        byteBuf.writeNamelessTag(tag ?: world.toTag(version.toNbtVersion()))
 
 }
