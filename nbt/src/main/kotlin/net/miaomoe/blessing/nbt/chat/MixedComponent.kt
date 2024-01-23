@@ -19,15 +19,11 @@ package net.miaomoe.blessing.nbt.chat
 
 import com.google.gson.*
 import net.kyori.adventure.nbt.*
-import net.kyori.adventure.nbt.CompoundBinaryTag.Builder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.NbtUtil.toNbt
-import net.miaomoe.blessing.nbt.TagProvider
-import net.miaomoe.blessing.nbt.dimension.NbtVersion
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MixedComponent(
@@ -38,42 +34,6 @@ class MixedComponent(
     constructor(component: Component) : this(component.toJson())
 
     fun toComponent() = GsonComponentSerializer.gson().deserialize(json)
-
-    object Registry : TagProvider {
-
-        override fun toTag(version: NbtVersion?): BinaryTag {
-            require(version != null) { "NbtVersion must not be null!" }
-            val element = CompoundBinaryTag.builder()
-            CompoundBinaryTag.builder().let {
-                val tag = if (version.moreOrEqual(NbtVersion.V1_19_1)) addChatInfo(it, "chat.type.system") else it
-                element.put("chat", tag.build())
-            }
-            CompoundBinaryTag.builder().let {
-                val tag = if (version.moreOrEqual(NbtVersion.V1_19_1))
-                    addChatInfo(it, "chat.type.system.narrate")
-                else it.put("priority", "system")
-                element.put("narration", tag.build())
-            }
-            return CompoundBinaryTag
-                .builder()
-                .put("type", "minecraft:chat_type")
-                .put("value", CompoundBinaryTag.builder()
-                    .put("name", "minecraft:system")
-                    .put("id", 1)
-                    .put("element", element.build())
-                    .build()
-                )
-                .build()
-        }
-
-        private fun addChatInfo(builder: Builder, key: String): Builder {
-            return builder
-                .put("style", CompoundBinaryTag.empty())
-                .put("translation_key", key)
-                .put("parameters", ListBinaryTag.listBinaryTag(BinaryTagTypes.STRING, listOf("sender".toNbt(), "content".toNbt())))
-        }
-
-    }
 
     companion object {
 
