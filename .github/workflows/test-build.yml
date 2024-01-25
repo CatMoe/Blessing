@@ -29,4 +29,13 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-
+    - name: Copy JARs to Temporary Directory
+      run: |
+        mkdir temp_directory
+        find . -name 'target' -type d -exec sh -c 'cp -r {}/Blessing*.jar temp_directory/' \;
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: specific-jar-artifacts
+        path: temp_directory/
+          
