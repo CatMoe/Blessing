@@ -44,12 +44,15 @@ import java.util.concurrent.TimeUnit
 class FallbackInitializer @JvmOverloads constructor(
     val config: FallbackConfig = FallbackConfig(),
     var exceptionHandler: ExceptionHandler? = null,
-    var motdHandler: MotdHandler = DefaultMotdHandler
+    var motdHandler: MotdHandler = DefaultMotdHandler,
+    initCachedPacket: Boolean = true
 ) : ChannelInitializer<Channel>() {
 
     val cache = HashMap<PacketsToCache, PacketCacheGroup>()
 
-
+    init {
+        if (initCachedPacket) this.refreshCache()
+    }
 
     fun refreshCache() {
         cache[PacketsToCache.REGISTRY_DATA] = PacketCacheGroup(
