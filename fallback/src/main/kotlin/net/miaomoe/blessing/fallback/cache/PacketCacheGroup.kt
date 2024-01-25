@@ -24,21 +24,21 @@ import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketCacheGroup(
+class PacketCacheGroup @JvmOverloads constructor(
     val packet: PacketToClient,
     val description: String? = null,
     val copySame: Boolean = false,
     initVersions: VersionRange? = null
 ) {
 
+    private val map = LazyInit<MutableMap<Version, PacketCache>> { mutableMapOf() }
+    private val cached = LazyInit<List<PacketCache>> { mutableListOf() }
+
     init {
         initVersions?.let(::cache)
     }
 
-    private val map = LazyInit<MutableMap<Version, PacketCache>> { mutableMapOf() }
-    private val cached = LazyInit<List<PacketCache>> { mutableListOf() }
-
-    private val mapOrNull get() = map.takeIf { it.isAlreadyLoaded }?.value
+    private val mapOrNull get() = map.valueDirectly
 
 
     fun invalidateAt(version: Version) {
@@ -62,8 +62,9 @@ class PacketCacheGroup(
             packet.encode(it, version)
             it.toByteArray()
         }.takeUnless { it.isEmpty() }
-        val cached = if (copySame) {
-            map.value.let {
+        val mapOrNull = this.mapOrNull
+        val cached = if (copySame && mapOrNull != null) {
+            mapOrNull.let {
                 it.values.firstOrNull { cache -> bytes?.contentEquals(cache.byteArray) ?: (cache.byteArray == null) }
                     ?: PacketCache(packet::class, bytes, description)
             }

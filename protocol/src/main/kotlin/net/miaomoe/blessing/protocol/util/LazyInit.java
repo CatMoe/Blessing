@@ -18,9 +18,15 @@
 package net.miaomoe.blessing.protocol.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
+/**
+ * A lazy util. When a target is needed, caches and returns the specified object.
+ * @param <T>
+ * @author FallenCrystal
+ */
 public class LazyInit<T> {
 
     private final Supplier<T> init;
@@ -31,14 +37,31 @@ public class LazyInit<T> {
         this.init=init;
     }
 
+    /**
+     * Whether the init.get() method has been used.
+     * @return boolean
+     */
     public boolean isAlreadyLoaded() {
         return already;
     }
 
+    /**
+     * Get the value.
+     * If not loaded, Will use init.get() first.
+     * @return T
+     */
     public T getValue() {
         final T value = already ? this.value : init.get();
         this.value=value;
         already=true;
+        return value;
+    }
+
+    /**
+     * Get value directly and ignoring loaded.
+     * @return T
+     */
+    public @Nullable T getValueDirectly() {
         return value;
     }
 
