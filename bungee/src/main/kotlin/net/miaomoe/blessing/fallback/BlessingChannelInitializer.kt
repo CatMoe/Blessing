@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.miaomoe.blessing.util
+package net.miaomoe.blessing.fallback
 
 import io.netty.channel.*
 import net.miaomoe.blessing.BlessingBungee
@@ -34,7 +34,11 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
 
     val writeMarker = WriteBufferWaterMark(1 shl 20, 1 shl 21)
 
-    val fallbackInitializer = FallbackInitializer(BlessingBungee.config.fallback, initCachedPacket = true)
+    val fallbackInitializer = FallbackInitializer(
+        BlessingBungee.config.fallback,
+        motdHandler = BungeeMotdAdapter,
+        initCachedPacket = true
+    )
 
     private lateinit var originalInstance: ChannelInitializer<*>
     private lateinit var originalMethod: Method
@@ -63,10 +67,10 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
             require(it == "net.md_5.bungee.netty.PipelineUtils\$1")
             { "Unsupported modified detected. Please delete another plugin about network (e.x. antibot)" }
         }
-        this.originalInstance = original
+        originalInstance = original
         clazz.getDeclaredMethod("initChannel", Channel::class.java).let {
             it.isAccessible=true
-            this.originalMethod = it
+            originalMethod = it
         }
         childField.isAccessible=true
         if (Modifier.isFinal(childField.modifiers)) {

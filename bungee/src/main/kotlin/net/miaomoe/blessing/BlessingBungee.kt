@@ -19,7 +19,7 @@ package net.miaomoe.blessing
 
 import net.md_5.bungee.api.plugin.Plugin
 import net.miaomoe.blessing.config.BlessingBungeeConfig
-import net.miaomoe.blessing.util.BlessingChannelInitializer
+import net.miaomoe.blessing.fallback.BlessingChannelInitializer
 
 class BlessingBungee : Plugin() {
 
