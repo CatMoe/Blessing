@@ -19,8 +19,6 @@ package net.miaomoe.blessing.fallback.handler
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.miaomoe.blessing.fallback.cache.PacketCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
@@ -28,6 +26,8 @@ import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
 import net.miaomoe.blessing.fallback.handler.motd.DefaultMotdHandler
 import net.miaomoe.blessing.fallback.handler.motd.MotdHandler
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
 import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
@@ -66,7 +66,7 @@ class FallbackInitializer @JvmOverloads constructor(
             PacketPluginMessage(), "Cached PluginMessage (brand)", true
         ).let {
             val byteArray = ByteMessage.create().use { byteBuf ->
-                byteBuf.writeString(LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(config.brand)))
+                byteBuf.writeString(config.brand.toComponent().toLegacyText())
                 byteBuf.toByteArray()
             }
             val legacy = PacketPluginMessage("MC|Brand", byteArray)

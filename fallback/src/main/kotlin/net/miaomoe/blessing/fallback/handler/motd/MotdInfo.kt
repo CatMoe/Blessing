@@ -24,8 +24,8 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toJsonElement
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.version.Version
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -57,7 +57,7 @@ data class MotdInfo @JvmOverloads constructor(
     ) : this(
         version,
         players,
-        gsonComponent.serializeToTree(description),
+        description.toJsonElement(),
         favicon
     )
 
@@ -73,7 +73,7 @@ data class MotdInfo @JvmOverloads constructor(
         constructor(
             name: Component,
             version: Int
-        ) : this(legacyComponent.serialize(name), version)
+        ) : this(name.toLegacyText(), version)
 
         constructor(
             name: Component,
@@ -91,7 +91,7 @@ data class MotdInfo @JvmOverloads constructor(
         val uuid: UUID = UUID(0, 0),
         val name: String
     ) {
-        constructor(uuid: UUID, name: Component) : this(uuid, legacyComponent.serialize(name))
+        constructor(uuid: UUID, name: Component) : this(uuid, name.toLegacyText())
         constructor(name: Component) : this(UUID(0, 0), name)
     }
 
@@ -165,8 +165,6 @@ data class MotdInfo @JvmOverloads constructor(
 
     companion object {
         val gson = Gson()
-        private val gsonComponent = GsonComponentSerializer.gson()
-        private val legacyComponent = LegacyComponentSerializer.legacySection()
     }
 
 }

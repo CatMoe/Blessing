@@ -15,14 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.fallback.util
 
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
-val DefaultMotdHandler = MotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo("Blessing", fallback.version),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
+object ComponentUtil {
+
+    val legacy = LegacyComponentSerializer.legacySection()
+    val gson = GsonComponentSerializer.gson()
+    val miniMessage = MiniMessage.miniMessage()
+
+    fun Component.toLegacyText() = legacy.serialize(this)
+
+    fun Component.toJsonElement() = gson.serializeToTree(this)
+
+    fun String.toComponent() = miniMessage.deserialize(this)
+
 }
