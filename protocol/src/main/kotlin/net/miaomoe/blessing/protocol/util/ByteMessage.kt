@@ -91,8 +91,10 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
     fun writeVarLong(long: Long) = VarLongUtil.writeVarLong(this, long)
 
     @JvmOverloads
-    fun readString(length: Int = readVarInt()): String {
+    fun readString(length: Int = readVarInt(), limit: Int = -1): String {
+        require(this.isReadable(length)) { "Out of range! Required $length but readable bytes length is ${readableBytes()}." }
         val str = buf.toString(buf.readerIndex(), length, StandardCharsets.UTF_8)
+        require(limit == -1 || str.length <= limit) { "String out of range! limit is $limit but received ${str.length}." }
         buf.skipBytes(length)
         return str
     }

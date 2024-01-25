@@ -25,7 +25,7 @@ import net.miaomoe.blessing.protocol.version.Version
 class PacketLoginRequest(var name: String = "") : PacketToServer {
 
     override fun decode(byteBuf: ByteMessage, version: Version) {
-        this.name = byteBuf.readString()
+        this.name = byteBuf.readString(limit = 16)
         require(name.length in 3..16) { "Invalid name length!" }
     }
 

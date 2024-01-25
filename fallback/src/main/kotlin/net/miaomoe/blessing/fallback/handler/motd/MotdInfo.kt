@@ -18,6 +18,7 @@
 package net.miaomoe.blessing.fallback.handler.motd
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -129,7 +130,7 @@ data class MotdInfo @JvmOverloads constructor(
 
         companion object {
 
-            private val adapter = FaviconTypeAdapter()
+            val adapter = FaviconTypeAdapter()
 
             @JvmStatic
             private fun toEncodeString(image: BufferedImage): String {
@@ -144,9 +145,6 @@ data class MotdInfo @JvmOverloads constructor(
                 { "Encoded favicon too large!" }
                 return encoded
             }
-
-            @JvmStatic
-            fun getFaviconTypeAdapter() = adapter
         }
     }
 
@@ -173,7 +171,9 @@ data class MotdInfo @JvmOverloads constructor(
     fun toJson(): String = gson.toJson(this)
 
     companion object {
-        val gson = Gson()
+        val gson: Gson = GsonBuilder()
+            .registerTypeAdapter(Favicon::class.java, Favicon.adapter)
+            .create()
     }
 
 }
