@@ -17,16 +17,10 @@
 
 package net.miaomoe.blessing.nbt.dimension
 
-import net.kyori.adventure.nbt.BinaryTag
-import net.kyori.adventure.nbt.BinaryTagTypes
-import net.kyori.adventure.nbt.CompoundBinaryTag
-import net.kyori.adventure.nbt.ListBinaryTag
-import net.miaomoe.blessing.nbt.NbtUtil.put
-import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.dimension.Biome.Type.*
 
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
-enum class World(val dimension: Dimension) : TagProvider {
+enum class World(val dimension: Dimension) {
     OVERWORLD(Dimension(
         "minecraft:overworld", 0, 0,
         piglinSafe = false, natural = true, ambientLight = 0.0f,
@@ -62,14 +56,4 @@ enum class World(val dimension: Dimension) : TagProvider {
         coordinateScale = 1.0f, ultrawarm = false,
         hasCeiling = false, minY = 0, height = 256,
         biomes = listOf(Biome.Type.THE_END.biome)));
-
-    override fun toTag(version: NbtVersion?): BinaryTag {
-        require(version != null) { "NbtVersion must not be null!" }
-        val biomes = this.dimension.biomes.map { it.toTag(version) }
-        return CompoundBinaryTag
-            .builder()
-            .put("type", "minecraft:worldgen/biome")
-            .put("value", ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, biomes))
-            .build()
-    }
 }

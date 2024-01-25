@@ -23,6 +23,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
+import net.miaomoe.blessing.protocol.packet.common.PacketKeepAlive
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
@@ -83,6 +84,8 @@ class FallbackHandler(
             is PacketHandshake -> handle(msg)
             is PacketStatusRequest -> handle(msg)
             is PacketStatusPing -> handle(msg)
+            is PacketLoginRequest -> handle(msg)
+            is PacketLoginAcknowledged -> handle(msg)
         }
         super.channelRead(ctx, msg)
     }
@@ -107,7 +110,7 @@ class FallbackHandler(
 
     private fun handle(packet: PacketLoginRequest) {
         this.name=packet.name
-        write(PacketsToCache.LOGIN_RESPONSE)
+        write(PacketsToCache.LOGIN_RESPONSE, true)
         if (version.less(Version.V1_20_2)) spawn()
     }
 
@@ -115,6 +118,7 @@ class FallbackHandler(
     private fun handle(packet: PacketLoginAcknowledged) {
         updateState(State.CONFIGURATION)
         write(PacketsToCache.REGISTRY_DATA)
+        write(PacketsToCache.PLUGIN_MESSAGE)
         write(PacketFinishConfiguration(), true)
         spawn()
     }
@@ -140,7 +144,11 @@ class FallbackHandler(
 
     private fun spawn() {
         updateState(State.PLAY)
-        // TODO spawn player
+        write(PacketsToCache.JOIN_GAME)
+        if (version.moreOrEqual(Version.V1_19_3)) write(PacketsToCache.SPAWN_POSITION)
+        if (version.less(Version.V1_20_3)) write(PacketsToCache.PLUGIN_MESSAGE)
+        write(PacketsToCache.JOIN_POSITION)
+        write(PacketKeepAlive(), true)
     }
 
     fun flush(): Channel = channel.flush()
@@ -157,13 +165,13 @@ class FallbackHandler(
 
     @JvmOverloads
     fun write(enum: PacketsToCache, flush: Boolean = false) {
-        initializer.cache[enum]?.let { this.write(it.getNonNull(version), flush) }
+        initializer.cache[enum]?.let { this.write(it, flush) }
         ?: throw NullPointerException("Cached group for ${enum.name} is null!")
     }
 
     @JvmOverloads
     fun write(group: PacketCacheGroup, flush: Boolean = false) {
-        write(group.getIfCached(version)!!, flush)
+        group.getIfCached(version)?.let { write(it, flush) }
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

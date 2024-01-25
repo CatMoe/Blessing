@@ -35,4 +35,6 @@ class PacketPosition(
         onGround = byteBuf.readBoolean()
     }
 
+    override fun toString() = "PacketPosition(position=$position, onGround=$onGround)"
+
 }

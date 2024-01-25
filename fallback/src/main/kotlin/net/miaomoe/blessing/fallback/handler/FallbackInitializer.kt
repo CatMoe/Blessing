@@ -28,6 +28,7 @@ import net.miaomoe.blessing.fallback.handler.motd.DefaultFallbackMotdHandler
 import net.miaomoe.blessing.fallback.handler.motd.FallbackMotdHandler
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.nbt.dimension.World
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
 import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
@@ -35,7 +36,10 @@ import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
 import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
 import net.miaomoe.blessing.protocol.packet.play.PacketJoinGame
+import net.miaomoe.blessing.protocol.packet.play.PacketPositionLook
+import net.miaomoe.blessing.protocol.packet.play.PacketSpawnPosition
 import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.util.Position
 import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.concurrent.TimeUnit
@@ -61,7 +65,7 @@ class FallbackInitializer @JvmOverloads constructor(
             VersionRange.of(Version.V1_20_3)
         )
         cache[PacketsToCache.JOIN_GAME] = PacketCacheGroup(
-            PacketJoinGame(world = config.world),
+            PacketJoinGame(dimension = World.OVERWORLD.dimension),
             "Cached PacketJoinGame", true,
             VersionRange(Version.V1_7_6, Version.V1_20_3)
         )
@@ -74,13 +78,26 @@ class FallbackInitializer @JvmOverloads constructor(
             }
             val legacy = PacketPluginMessage("MC|Brand", byteArray)
             val modern = PacketPluginMessage("minecraft:brand", byteArray)
-            it.setAt(VersionRange(Version.V1_8, Version.V1_12_2), PacketCache.create(legacy, Version.V1_8))
-            it.setAt(VersionRange(Version.V1_13, Version.V1_20_3), PacketCache.create(modern, Version.V1_13))
+            it.setAt(VersionRange(Version.V1_8, Version.V1_12_2), PacketCache.create(legacy, Version.V1_8, it.description))
+            it.setAt(VersionRange(Version.V1_13, Version.V1_20_3), PacketCache.create(modern, Version.V1_13, it.description))
             it
         }
         cache[PacketsToCache.LOGIN_RESPONSE] = PacketCacheGroup(
             PacketLoginResponse(config.playerName),
             "Cached LoginResponse",
+            true,
+            VersionRange(Version.V1_7_6, Version.V1_20_3)
+        )
+        val position = Position(7.5, 100.0, 7.5)
+        cache[PacketsToCache.SPAWN_POSITION] = PacketCacheGroup(
+            PacketSpawnPosition(position),
+            "Cached SpawnPosition",
+            true,
+            VersionRange(Version.V1_7_6, Version.V1_20_3)
+        )
+        cache[PacketsToCache.JOIN_POSITION] = PacketCacheGroup(
+            PacketPositionLook(position, 180f, 90f, false, 7890),
+            "Cached Teleport for joining",
             true,
             VersionRange(Version.V1_7_6, Version.V1_20_3)
         )

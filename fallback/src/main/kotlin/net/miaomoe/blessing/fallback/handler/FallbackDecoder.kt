@@ -55,7 +55,7 @@ class FallbackDecoder(
             packet.decode(byteMessage, version)
             byteBuf.readableBytes().let {
                 val isZero = it == 0
-                handler?.debug("[Decoder] Decoded with ${packet::class.qualifiedName} ($packet) ${if (!isZero) "($it byte remaining)" else "" }")
+                handler?.debug("[Decoder] Decoded with $packet ${if (!isZero) "($it bytes remaining)" else "" }")
                 checkRemainBytes.ifTrue { require(isZero) { "checkRemainBytes is true. But found $it remaining bytes not decoded." } }
             }
             ctx.fireChannelRead(packet)

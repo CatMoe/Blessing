@@ -40,5 +40,7 @@ class PacketPluginMessage(
         this.data=data
     }
 
+    override fun toString() = "PacketPluginMessage(channel=$channel, data=${data.contentToString()})"
+
 
 }

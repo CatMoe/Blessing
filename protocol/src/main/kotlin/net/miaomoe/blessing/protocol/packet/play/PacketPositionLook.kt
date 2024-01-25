@@ -55,4 +55,6 @@ class PacketPositionLook(
         }
     }
 
+    override fun toString() = "PacketPositionLook(position=$position, yaw=$yaw, pitch=$pitch, onGround=$onGround${if (teleportId == 0) "" else ", teleportId=$teleportId"})"
+
 }

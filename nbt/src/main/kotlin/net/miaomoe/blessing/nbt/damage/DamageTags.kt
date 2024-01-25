@@ -80,8 +80,6 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
         DamageValues("generic_kill", 43, 0.0F, ALWAYS, "badRespawnPoint"))
     );
 
-    val tag by lazy { this.toTag(null) }
-
     internal object Util {
 
         internal fun <T> List<T>.copyAndAdd(vararg new: T): MutableList<T> {

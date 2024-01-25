@@ -52,5 +52,10 @@ class FallbackEncoder(
         handler?.debug("[Encoder] Write completed. (${byteBuf.readableBytes()} bytes)")
     }
 
+    override fun flush(ctx: ChannelHandlerContext?) {
+        handler?.debug("[Encoder] Output flushed.")
+        super.flush(ctx)
+    }
+
     override fun toString() = "FallbackEncoder(mappings=$mappings, version=${version.name})"
 }

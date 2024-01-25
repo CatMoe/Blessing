@@ -64,10 +64,8 @@ class PacketCacheGroup @JvmOverloads constructor(
         }.takeUnless { it.isEmpty() }
         val mapOrNull = this.mapOrNull
         val cached = if (copySame && mapOrNull != null) {
-            mapOrNull.let {
-                it.values.firstOrNull { cache -> bytes?.contentEquals(cache.byteArray) ?: (cache.byteArray == null) }
-                    ?: PacketCache(packet::class, bytes, description)
-            }
+            mapOrNull.values.firstOrNull { cache -> bytes?.contentEquals(cache.byteArray) ?: (cache.byteArray == null) }
+            ?: PacketCache(packet::class, bytes, description)
         } else PacketCache(packet::class, bytes, description)
         map.value[version] = cached
         return cached

@@ -18,6 +18,7 @@
 package net.miaomoe.blessing.protocol.packet.configuration
 
 import net.kyori.adventure.nbt.BinaryTag
+import net.miaomoe.blessing.nbt.dimension.Dimension
 import net.miaomoe.blessing.nbt.dimension.World
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
@@ -28,13 +29,15 @@ class PacketRegistryData(
     var tag: BinaryTag? = null
 ) : PacketToClient {
 
-    private var world: World = World.OVERWORLD
+    private var dimension: Dimension = World.OVERWORLD.dimension
 
-    constructor(world: World) : this(null) {
-        this.world=world
+    constructor(world: World) : this(world.dimension)
+
+    constructor(dimension: Dimension) : this(null) {
+        this.dimension=dimension
     }
 
     override fun encode(byteBuf: ByteMessage, version: Version) =
-        byteBuf.writeNamelessTag(tag ?: world.toTag(version.toNbtVersion()))
+        byteBuf.writeNamelessTag(tag ?: dimension.toTag(version.toNbtVersion()))
 
 }

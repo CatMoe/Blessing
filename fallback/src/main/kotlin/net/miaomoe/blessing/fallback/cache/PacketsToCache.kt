@@ -21,5 +21,7 @@ enum class PacketsToCache {
     REGISTRY_DATA,
     JOIN_GAME,
     PLUGIN_MESSAGE,
-    LOGIN_RESPONSE
+    LOGIN_RESPONSE,
+    SPAWN_POSITION,
+    JOIN_POSITION,
 }

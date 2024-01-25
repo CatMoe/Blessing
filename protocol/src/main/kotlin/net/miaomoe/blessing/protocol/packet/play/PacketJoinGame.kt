@@ -18,7 +18,6 @@
 package net.miaomoe.blessing.protocol.packet.play
 
 import net.kyori.adventure.nbt.CompoundBinaryTag
-import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.dimension.Dimension
 import net.miaomoe.blessing.nbt.dimension.NbtVersion
 import net.miaomoe.blessing.nbt.dimension.World
@@ -36,8 +35,7 @@ class PacketJoinGame(
     var reducedDebugInfo: Boolean = false,
     var showRespawnScreen: Boolean = false,
     var limitedCrafting: Boolean = true,
-    var world: World = World.OVERWORLD,
-    var dimension: Dimension = world.dimension,
+    var dimension: Dimension = World.OVERWORLD.dimension,
     var levelName: String = dimension.key,
     var levelNames: Array<String?> = arrayOf(levelName)
 ) : PacketToClient {
@@ -85,8 +83,11 @@ class PacketJoinGame(
         byteBuf.writeByte(-1)
         byteBuf.writeStringsArray(levelNames)
         val nbtVersion = if (v1162) NbtVersion.V1_16_2 else NbtVersion.LEGACY
-        byteBuf.writeCompoundTag(world.toTag(nbtVersion) as CompoundBinaryTag)
-        if (v1162) byteBuf.writeCompoundTag(dimension.getAttributes(nbtVersion).toNamed())
+        byteBuf.writeCompoundTag(dimension.toTag(nbtVersion) as CompoundBinaryTag)
+        if (v1162)
+            byteBuf.writeCompoundTag(dimension.getAttributes(nbtVersion))
+        else
+            byteBuf.writeString(dimension.key)
         byteBuf.writeString(levelName)
         byteBuf.writeLong(hashedSeed)
         if (v1162) byteBuf.writeVarInt(0) else byteBuf.writeByte(0) // max players
@@ -103,7 +104,7 @@ class PacketJoinGame(
         byteBuf.writeByte(-1)
         byteBuf.writeStringsArray(levelNames)
         val nbtVersion = if (v1182) NbtVersion.V1_18_2 else NbtVersion.V1_16_2
-        byteBuf.writeCompoundTag(world.toTag(nbtVersion) as CompoundBinaryTag)
+        byteBuf.writeCompoundTag(dimension.toTag(nbtVersion) as CompoundBinaryTag)
         byteBuf.writeCompoundTag(dimension.getAttributes(nbtVersion))
         byteBuf.writeString(levelName)
         byteBuf.writeLong(hashedSeed)
@@ -121,7 +122,7 @@ class PacketJoinGame(
         byteBuf.writeByte(gameMode)
         byteBuf.writeByte(-1)
         byteBuf.writeStringsArray(levelNames)
-        byteBuf.writeCompoundTag(world.toTag(nbtVersion) as CompoundBinaryTag)
+        byteBuf.writeCompoundTag(dimension.toTag(nbtVersion) as CompoundBinaryTag)
         byteBuf.writeString(levelName) // world type
         byteBuf.writeString(levelName)
         byteBuf.writeLong(hashedSeed)

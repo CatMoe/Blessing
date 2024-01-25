@@ -34,4 +34,6 @@ class PacketCache(
         fun create(packet: PacketToClient, version: Version, description: String? = null) =
             PacketCache(packet::class, ByteMessage.create().use { packet.encode(it, version); it.toByteArray() }, description)
     }
+
+    override fun toString() = "PacketCache(class=${kClass.qualifiedName}, byteArray=${byteArray.contentToString()}, description=$description)"
 }

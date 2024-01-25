@@ -21,7 +21,6 @@ import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.miaomoe.blessing.nbt.NbtUtil.put
 import net.miaomoe.blessing.nbt.NbtUtil.toListTag
-import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.NbtUtil.toNbt
 import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.chat.ChatRegistry
@@ -52,13 +51,7 @@ data class Dimension(
     val biomes: List<Biome>
 ) : TagProvider {
 
-    private val cachedTag by lazy { NbtVersion.entries.associateWith(::toTag) }
-    private val cachedAttributes = NbtVersion.entries.associateWith(::getAttributes)
-
-    private fun <T> Map<NbtVersion, T>.tryGetOrNull(version: NbtVersion) = try { this[version] } catch (_: NullPointerException) { null }
-
     fun getAttributes(version: NbtVersion): CompoundBinaryTag {
-        cachedAttributes.tryGetOrNull(version)?.let { return it }
         val attributes = CompoundBinaryTag
             .builder()
             .put("name", this.key)
@@ -75,7 +68,7 @@ data class Dimension(
             .put("piglin_safe", this.piglinSafe)
             .put("infiniburn", if (version.moreOrEqual(NbtVersion.V1_18_2)) "#${this.infiniburn}" else this.infiniburn)
             .put("logical_height", this.logicalHeight)
-        if (version == NbtVersion.LEGACY) {
+        if (version.moreOrEqual(NbtVersion.V1_16_2)) {
             attributes
                 .remove("name")
                 .remove("fixed_time")
@@ -95,11 +88,10 @@ data class Dimension(
 
     override fun toTag(version: NbtVersion?): BinaryTag {
         require(version != null) { "NbtVersion cannot be null!" }
-        cachedTag.tryGetOrNull(version)?.let { return it }
         val rootCompound = CompoundBinaryTag.builder()
 
         return if (version == NbtVersion.LEGACY) {
-            rootCompound.put("dimension", getAttributes(version).toListTag()).build().toNamed()
+            rootCompound.put("dimension", getAttributes(version).toListTag()).build()
         } else {
             val dimensionTypeName = "minecraft:dimension_type"
             val biomeTypeName = "minecraft:worldgen/biome"
@@ -128,7 +120,7 @@ data class Dimension(
                 rootCompound.put("minecraft:damage_type", damageTags.toTag(version))
             }
             if (version.moreOrEqual(NbtVersion.V1_19)) rootCompound.put("minecraft:chat_type", ChatRegistry.toTag(version))
-            rootCompound.build().let { if (version.moreOrEqual(NbtVersion.V1_20_2)) it else it.toNamed() }
+            rootCompound.build()
         }
     }
 }

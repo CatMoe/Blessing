@@ -284,7 +284,7 @@ public enum State {
                     .addMapping(0x17, V1_20_3)
                     .getMapping()
             );
-            clientbound.register(PacketPosition::new, builder()
+            clientbound.register(PacketPositionLook::new, builder()
                     .addMapping(0x08, V1_7_2, V1_8)
                     .addMapping(0x2E, V1_9, V1_12)
                     .addMapping(0x2F, V1_12_1, V1_12_2)
