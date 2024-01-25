@@ -26,6 +26,8 @@ import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
+import net.miaomoe.blessing.fallback.handler.motd.DefaultMotdHandler
+import net.miaomoe.blessing.fallback.handler.motd.MotdHandler
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
 import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
@@ -39,11 +41,15 @@ import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.concurrent.TimeUnit
 
 @Suppress("MemberVisibilityCanBePrivate")
-class FallbackInitializer(val config: FallbackConfig) : ChannelInitializer<Channel>() {
-
-    var exceptionHandler: ExceptionHandler? = null
+class FallbackInitializer @JvmOverloads constructor(
+    val config: FallbackConfig = FallbackConfig(),
+    var exceptionHandler: ExceptionHandler? = null,
+    var motdHandler: MotdHandler = DefaultMotdHandler
+) : ChannelInitializer<Channel>() {
 
     val cache = HashMap<PacketsToCache, PacketCacheGroup>()
+
+
 
     fun refreshCache() {
         cache[PacketsToCache.REGISTRY_DATA] = PacketCacheGroup(

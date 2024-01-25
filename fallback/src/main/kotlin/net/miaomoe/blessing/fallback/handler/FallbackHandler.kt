@@ -21,8 +21,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
+import net.miaomoe.blessing.fallback.handler.motd.MotdInfo
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
@@ -126,7 +128,11 @@ class FallbackHandler(
             it.recvStatusRequest=true
         }
         // TODO Send response
-        write(PacketStatusResponse("{\"version\":{\"name\":\"§dBlessing\",\"protocol\":${version.protocolId} },\"players\":{\"max\":0,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"§dBlessing <3\"}}"), true)
+        write(PacketStatusResponse(MotdInfo(
+            MotdInfo.VersionInfo("Blessing", version),
+            MotdInfo.PlayerInfo(0, 0),
+            MiniMessage.miniMessage().deserialize("<light_purple>Blessing <3")
+        ).toJson()), true)
     }
 
     private fun handle(packet: PacketStatusPing) {
