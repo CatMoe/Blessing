@@ -19,7 +19,7 @@ package net.miaomoe.blessing.fallback.handler.motd
 
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
 
-val DefaultMotdHandler = MotdHandler { fallback ->
+val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
     MotdInfo(
         MotdInfo.VersionInfo("Blessing", fallback.version),
         MotdInfo.PlayerInfo(0, 0),

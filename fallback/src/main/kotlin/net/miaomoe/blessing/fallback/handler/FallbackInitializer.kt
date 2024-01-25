@@ -24,8 +24,8 @@ import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.fallback.config.FallbackConfig
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler
-import net.miaomoe.blessing.fallback.handler.motd.DefaultMotdHandler
-import net.miaomoe.blessing.fallback.handler.motd.MotdHandler
+import net.miaomoe.blessing.fallback.handler.motd.DefaultFallbackMotdHandler
+import net.miaomoe.blessing.fallback.handler.motd.FallbackMotdHandler
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit
 class FallbackInitializer @JvmOverloads constructor(
     val config: FallbackConfig = FallbackConfig(),
     var exceptionHandler: ExceptionHandler? = null,
-    var motdHandler: MotdHandler = DefaultMotdHandler,
+    var motdHandler: FallbackMotdHandler = DefaultFallbackMotdHandler,
     initCachedPacket: Boolean = true
 ) : ChannelInitializer<Channel>() {
 

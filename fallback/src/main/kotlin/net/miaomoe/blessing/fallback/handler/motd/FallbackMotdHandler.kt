@@ -19,6 +19,6 @@ package net.miaomoe.blessing.fallback.handler.motd
 
 import net.miaomoe.blessing.fallback.handler.FallbackHandler
 
-fun interface MotdHandler {
+fun interface FallbackMotdHandler {
     fun handle(handler: FallbackHandler) : MotdInfo
 }

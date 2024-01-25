@@ -54,11 +54,20 @@ data class MotdInfo @JvmOverloads constructor(
         players: PlayerInfo?,
         description: Component,
         favicon: Favicon?
-    ) : this(
+    ) : this(version, players, description, favicon, null)
+
+    constructor(
+        version: VersionInfo,
+        players: PlayerInfo?,
+        description: Component,
+        favicon: Favicon?,
+        modinfo: ModInfo?
+    ) : this (
         version,
         players,
         description.toJsonElement(),
-        favicon
+        favicon,
+        modinfo
     )
 
     data class VersionInfo(

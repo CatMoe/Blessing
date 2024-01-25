@@ -21,7 +21,9 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.miaomoe.blessing.nbt.chat.MixedComponent
 
+@Suppress("MemberVisibilityCanBePrivate")
 object ComponentUtil {
 
     val legacy = LegacyComponentSerializer.legacySection()
@@ -31,6 +33,8 @@ object ComponentUtil {
     fun Component.toLegacyText() = legacy.serialize(this)
 
     fun Component.toJsonElement() = gson.serializeToTree(this)
+
+    fun Component.toMixedComponent() = MixedComponent(this)
 
     fun String.toComponent() = miniMessage.deserialize(this)
 
