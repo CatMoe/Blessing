@@ -10,6 +10,7 @@
         <module name="nbt" />
         <module name="protocol" />
         <module name="bungee" />
+        <module name="plugin" />
         <module name="placeholder" />
         <module name="event" />
         <module name="config" />

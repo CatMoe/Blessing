@@ -15,9 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.config;
+package net.miaomoe.blessing.bungee.config;
 
-import net.miaomoe.blessing.BlessingBungee;
+import net.miaomoe.blessing.bungee.BlessingBungee;
+import net.miaomoe.blessing.config.AbstractConfig;
+import net.miaomoe.blessing.config.ConfigUtil;
 import net.miaomoe.blessing.config.annotation.Description;
 import net.miaomoe.blessing.config.annotation.Path;
 import net.miaomoe.blessing.config.annotation.Priority;

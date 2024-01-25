@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2023-2023. CatMoe / Blessing Contributors
+  ~ Copyright (C) 2023-2024. CatMoe / Blessing Contributors
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -26,14 +26,21 @@
         <version>0.0.1</version>
     </parent>
 
-    <description>Loader for Blessing</description>
+    <packaging>jar</packaging>
 
-    <artifactId>bungee</artifactId>
+    <description>Final packaging for plugin.</description>
+
+    <artifactId>plugin</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <build>
-        <finalName>${project.parent.artifactId}-${project.artifactId}</finalName>
+        <finalName>${project.parent.artifactId}</finalName>
         <defaultGoal>clean package</defaultGoal>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -51,34 +58,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>1.8</jvmTarget>
-                </configuration>
-            </plugin>
         </plugins>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -92,90 +75,94 @@
     </repositories>
 
     <dependencies>
+        <!-- Plugin module impl -->
+        <dependency>
+            <groupId>net.miaomoe.blessing</groupId>
+            <artifactId>bungee</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>event</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>placeholder</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>nbt</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>protocol</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>fallback</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
             <artifactId>config</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
             <version>4.15.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-nbt</artifactId>
             <version>4.15.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <!-- Including gson & legacy serializer. -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bungeecord</artifactId>
             <version>4.3.2</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.9.3</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
+            <!--suppress KotlinMavenPluginPhase -->
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-jps-plugin</artifactId>
             <version>${kotlin.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall-api</artifactId>
-            <version>1.20-R0.2-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>

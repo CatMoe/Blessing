@@ -15,17 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing
+package net.miaomoe.blessing.bungee
 
 import net.md_5.bungee.api.plugin.Plugin
-import net.miaomoe.blessing.config.BlessingBungeeConfig
-import net.miaomoe.blessing.fallback.BlessingChannelInitializer
+import net.miaomoe.blessing.bungee.config.BlessingBungeeConfig
+import net.miaomoe.blessing.bungee.fallback.BlessingChannelInitializer
 
 class BlessingBungee : Plugin() {
 
     init {
-        instance=this
-        config= BlessingBungeeConfig(this)
+        instance =this
+        config = BlessingBungeeConfig(this)
     }
 
     override fun onLoad() {

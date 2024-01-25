@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package net.miaomoe.blessing.fallback
+package net.miaomoe.blessing.bungee.fallback
 
 import io.netty.channel.*
-import net.miaomoe.blessing.BlessingBungee
+import net.miaomoe.blessing.bungee.BlessingBungee
 import net.miaomoe.blessing.fallback.handler.FallbackInitializer
 import net.miaomoe.blessing.protocol.registry.State
 import sun.misc.Unsafe

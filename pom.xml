@@ -45,6 +45,7 @@
         <module>protocol</module>
         <module>fallback</module>
         <module>bungee</module>
+        <module>plugin</module>
     </modules>
 
 </project>
