@@ -32,10 +32,11 @@ jobs:
     - name: Copy JARs to Temporary Directory
       run: |
         mkdir temp_directory
+        cp -r .github/artifacts/readme.txt temp_directory/
         find . -name 'target' -type d -exec sh -c 'cp -r {}/Blessing*.jar temp_directory/' \;
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: specific-jar-artifacts
+        name: Blessing
         path: temp_directory/
           
