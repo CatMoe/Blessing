@@ -40,7 +40,7 @@ class FallbackDecoder(
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, list: MutableList<Any>) {
         val unreadReadable = byteBuf.readableBytes()
-        handler?.debug("[Decoder] Processing ByteBuf with $unreadReadable bytes.")
+        handler?.debug { "[Decoder] Processing ByteBuf with $unreadReadable bytes." }
         (unreadReadable == 0).ifTrue {
             require(throwWhenEmptyBuffer) { "Null byte buffers are not acceptable!" }
             return
@@ -48,19 +48,19 @@ class FallbackDecoder(
         val byteMessage = ByteMessage(byteBuf)
         val id = byteMessage.readVarInt()
         val formatId = "0x%02X".format(id)
-        handler?.debug("[Decoder] Handling packet with id $formatId")
+        handler?.debug { "[Decoder] Handling packet with id $formatId" }
         try {
             val packet = mappings.getMappings(version, id).init.get()
             require(packet is PacketToServer) { "Getting packet from mappings with id $formatId. But got a non PacketToServer packet. ($packet)" }
             packet.decode(byteMessage, version)
             byteBuf.readableBytes().let {
                 val isZero = it == 0
-                handler?.debug("[Decoder] Decoded with $packet ${if (!isZero) "($it bytes remaining)" else "" }")
+                handler?.debug { "[Decoder] Decoded with $packet ${if (!isZero) "($it bytes remaining)" else "" }" }
                 checkRemainBytes.ifTrue { require(isZero) { "checkRemainBytes is true. But found $it remaining bytes not decoded." } }
             }
             ctx.fireChannelRead(packet)
         } catch (exception: NullPointerException) {
-            handler?.debug("[Decoder] A NullPointerException has thrown when getting packet. (${exception.localizedMessage}) That will be converted to ExplicitPacket.")
+            handler?.debug { "[Decoder] A NullPointerException has thrown when getting packet. (${exception.localizedMessage}) That will be converted to ExplicitPacket." }
             ctx.fireChannelRead(ExplicitPacket(id, byteBuf.toByteMessage().toByteArray(), "A packet with a unknown id."))
         }
     }

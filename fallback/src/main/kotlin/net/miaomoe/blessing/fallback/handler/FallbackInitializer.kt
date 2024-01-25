@@ -113,8 +113,8 @@ class FallbackInitializer @JvmOverloads constructor(
         pipeline.addLast(HANDLER, handler)
         pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(config.timeout, TimeUnit.MILLISECONDS))
         config.debugLogger?.let { _ ->
-            handler.debug("Initialization complete. Handlers: ")
-            pipeline.forEach { handler.debug(" ${it.key} - ${it.value}") }
+            handler.debug { "Initialization complete. Handlers: " }
+            pipeline.forEach { handler.debug { " ${it.key} - ${it.value}" } }
         }
     }
 

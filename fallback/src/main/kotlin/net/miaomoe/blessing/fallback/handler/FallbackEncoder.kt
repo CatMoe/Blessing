@@ -43,17 +43,17 @@ class FallbackEncoder(
             is ExplicitPacket -> packet.id
             else -> mappings.getId(version, packet::class)
         }
-        handler?.debug("[Encoder] Write varint ${"0x%02X".format(id)} for $packet")
+        handler?.debug { "[Encoder] Write varint ${"0x%02X".format(id)} for $packet" }
         byteBuf.writeVarInt(id)
         when (packet) {
             is ByteArrayHolder -> packet.byteArray?.let(byteBuf::writeBytes)
             else -> packet.encode(byteBuf, version)
         }
-        handler?.debug("[Encoder] Write completed. (${byteBuf.readableBytes()} bytes)")
+        handler?.debug { "[Encoder] Write completed. (${byteBuf.readableBytes()} bytes)" }
     }
 
     override fun flush(ctx: ChannelHandlerContext?) {
-        handler?.debug("[Encoder] Output flushed.")
+        handler?.debug { "[Encoder] Output flushed." }
         super.flush(ctx)
     }
 

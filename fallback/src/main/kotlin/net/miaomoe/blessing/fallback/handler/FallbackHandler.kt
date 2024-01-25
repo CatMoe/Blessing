@@ -35,6 +35,7 @@ import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
+import java.util.function.Supplier
 import java.util.logging.Level
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -66,12 +67,12 @@ class FallbackHandler(
         private set
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        debug("has connected")
+        debug { "has connected" }
         super.channelActive(ctx)
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        debug("has disconnected")
+        debug { "has disconnected" }
         super.channelInactive(ctx)
     }
 
@@ -181,7 +182,20 @@ class FallbackHandler(
         channel.close()
     }
 
-    fun debug(message: String) = config.debugLogger?.log(Level.INFO, "$this: $message") ?: Unit // void
+    @Deprecated(
+        "Use supplier to print debug message. Avoid performance issues when don't need them.",
+        replaceWith = ReplaceWith("debug"),
+        level = DeprecationLevel.ERROR // Can cause huge performance issues. Stopping using this method now.
+    )
+    fun debug(message: String) = this.debug { message } // void
 
-    override fun toString() = "FallbackHandler[${version.name}|${address.address.hostAddress}|${name}]"
+    fun debug(message: Supplier<String>) {
+        config.debugLogger?.log(Level.INFO, "$this: ${message.get()}")
+    }
+
+    override fun toString() = "FallbackHandler[State=${this.state.name}|${address.address.hostAddress}" + when (this.state) {
+        State.HANDSHAKE -> ""
+        State.STATUS, State.LOGIN -> "|${version.name}(${version.protocolId})|${destination?.let { "${it.hostString}:${it.port}" }}"
+        State.PLAY, State.CONFIGURATION -> "|${version.name}(${version.protocolId})|$name"
+    } + "]"
 }
