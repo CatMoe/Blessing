@@ -34,7 +34,7 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
 
     val writeMarker = WriteBufferWaterMark(1 shl 20, 1 shl 21)
 
-    val fallbackInitializer = FallbackInitializer(BlessingBungee.config.fallback)
+    val fallbackInitializer = FallbackInitializer(BlessingBungee.config.fallback, initCachedPacket = true)
 
     private lateinit var originalInstance: ChannelInitializer<*>
     private lateinit var originalMethod: Method

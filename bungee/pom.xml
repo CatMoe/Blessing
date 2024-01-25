@@ -140,6 +140,7 @@
             <version>4.15.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Including gson & legacy serializer. -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bungeecord</artifactId>
