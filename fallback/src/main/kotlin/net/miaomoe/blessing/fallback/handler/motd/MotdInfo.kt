@@ -42,33 +42,14 @@ data class MotdInfo @JvmOverloads constructor(
     val modinfo: ModInfo? = null
 ) {
 
-    constructor(
+    @JvmOverloads constructor(
         version: VersionInfo,
         players: PlayerInfo?,
-        description: Component
+        description: Component,
+        favicon: Favicon? = null,
+        modinfo: ModInfo? = null
     ) : this(
-        version, players, description, null
-    )
-
-    constructor(
-        version: VersionInfo,
-        players: PlayerInfo?,
-        description: Component,
-        favicon: Favicon?
-    ) : this(version, players, description, favicon, null)
-
-    constructor(
-        version: VersionInfo,
-        players: PlayerInfo?,
-        description: Component,
-        favicon: Favicon?,
-        modinfo: ModInfo?
-    ) : this (
-        version,
-        players,
-        description.toJsonElement(),
-        favicon,
-        modinfo
+        version, players, description.toJsonElement(), favicon, modinfo
     )
 
     data class VersionInfo(
