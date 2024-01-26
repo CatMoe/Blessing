@@ -21,8 +21,12 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import net.kyori.adventure.text.Component
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
+import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.packet.common.PacketDisconnect
 import net.miaomoe.blessing.protocol.packet.common.PacketKeepAlive
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
@@ -59,7 +63,6 @@ class FallbackHandler(
         private set
     var destination: InetSocketAddress? = null
         private set
-
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
         private set
 
@@ -104,7 +107,12 @@ class FallbackHandler(
     }
 
     private fun handle(packet: PacketHandshake) {
-        this.version = packet.version
+        val version = packet.version
+        this.version = version
+        if ((version == Version.UNDEFINED || !version.isSupported) && packet.nextState == State.LOGIN) {
+            disconnect("<red>Unsupported client version.".toComponent())
+            return
+        }
         this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
         this.updateState(packet.nextState)
     }
@@ -155,6 +163,14 @@ class FallbackHandler(
         write(PacketsToCache.JOIN_POSITION)
         write(PacketKeepAlive(), true)
     }
+
+    fun disconnect(reason: MixedComponent) {
+        channel
+            .writeAndFlush(PacketDisconnect(reason, this.state == State.LOGIN))
+            .addListener(ChannelFutureListener.CLOSE)
+    }
+
+    fun disconnect(reason: Component) = disconnect(MixedComponent(reason))
 
     fun flush(): Channel = channel.flush()
 
