@@ -66,6 +66,8 @@ class FallbackHandler(
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
         private set
 
+    var markDisconnect = false
+
     var name: String? = null
         private set
 
@@ -77,19 +79,22 @@ class FallbackHandler(
     override fun channelInactive(ctx: ChannelHandlerContext) {
         debug { "has disconnected" }
         super.channelInactive(ctx)
+        markDisconnect=true
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any?) {
-        when (msg) {
-            is HAProxyMessage -> {
-                address = InetSocketAddress.createUnresolved(msg.sourceAddress(), msg.sourcePort())
-                pipeline.remove(HAProxyMessageDecoder::class.java)
+        if (!markDisconnect) {
+            when (msg) {
+                is HAProxyMessage -> {
+                    address = InetSocketAddress.createUnresolved(msg.sourceAddress(), msg.sourcePort())
+                    pipeline.remove(HAProxyMessageDecoder::class.java)
+                }
+                is PacketHandshake -> handle(msg)
+                is PacketStatusRequest -> handle(msg)
+                is PacketStatusPing -> handle(msg)
+                is PacketLoginRequest -> handle(msg)
+                is PacketLoginAcknowledged -> handle(msg)
             }
-            is PacketHandshake -> handle(msg)
-            is PacketStatusRequest -> handle(msg)
-            is PacketStatusPing -> handle(msg)
-            is PacketLoginRequest -> handle(msg)
-            is PacketLoginAcknowledged -> handle(msg)
         }
         super.channelRead(ctx, msg)
     }
@@ -168,6 +173,7 @@ class FallbackHandler(
         channel
             .writeAndFlush(PacketDisconnect(reason, this.state == State.LOGIN))
             .addListener(ChannelFutureListener.CLOSE)
+        markDisconnect=true
     }
 
     fun disconnect(reason: Component) = disconnect(MixedComponent(reason))
