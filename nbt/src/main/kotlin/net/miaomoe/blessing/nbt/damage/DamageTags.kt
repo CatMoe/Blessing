@@ -20,7 +20,7 @@ package net.miaomoe.blessing.nbt.damage
 import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.miaomoe.blessing.nbt.NbtUtil.put
-import net.miaomoe.blessing.nbt.NbtUtil.toNamed
+import net.miaomoe.blessing.nbt.NbtUtil.toListTag
 import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.damage.DamageTags.Util.copyAndAdd
 import net.miaomoe.blessing.nbt.damage.DamageValues.DeathMessageType.FALL_VARIANTS
@@ -90,14 +90,16 @@ enum class DamageTags(val values: MutableList<DamageValues>) : TagProvider {
     }
 
     override fun toTag(version: NbtVersion?): BinaryTag {
+        /*
         val values = CompoundBinaryTag.builder()
         for (value in this.values) { values.put(value.toTag(null) as CompoundBinaryTag) }
+         */
         return CompoundBinaryTag
             .builder()
             .put("type", "minecraft:damage_type")
-            .put("value", values.build())
+            //.put("value", values.build())
+            .put("value", this.values.map { it.toTag(null) as CompoundBinaryTag }.toListTag())
             .build()
-            .toNamed()
     }
 
     companion object {
