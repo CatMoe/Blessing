@@ -22,16 +22,41 @@ import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketAbilities(
+class PacketAbilities @JvmOverloads constructor(
     var flags: Int = 0,
     var flySpeed: Float = 0f,
-    var walkSpeed: Float = flySpeed
+    var viewModifier: Float = flySpeed
 ) : PacketBidirectional {
+
+    @JvmOverloads constructor(
+        flagList: List<FlagsValue>,
+        flySpeed: Float = 0f,
+        viewModifier: Float = flySpeed
+    ) : this(0, flySpeed, viewModifier) {
+        flagList
+            .distinctBy { it.flags }
+            .forEach {
+                val flag = it.flags.mask
+                flags = if (it.value) flags or flag else flags and flag.inv()
+            }
+    }
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
         byteBuf.writeByte(flags)
         byteBuf.writeFloat(flySpeed)
-        byteBuf.writeFloat(walkSpeed)
+        byteBuf.writeFloat(viewModifier)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        this.flags = byteBuf.readByte().toInt()
+    }
+
+    data class FlagsValue(val flags: Flags, val value: Boolean)
+    enum class Flags(val mask: Int) {
+        INVULNERABLE(0x01),
+        FLYING(0x02),
+        ALLOW_FLYING(0x04),
+        INSTANT_BREAK(0x08)
     }
 
 }
