@@ -62,12 +62,12 @@ class FallbackInitializer @JvmOverloads constructor(
         cache[PacketsToCache.REGISTRY_DATA] = PacketCacheGroup(
             PacketRegistryData(config.world),
             "Cached PacketRegistryData", true,
-            VersionRange.of(Version.V1_20_3)
+            VersionRange.of(Version.V1_20_2, Version.max)
         )
         cache[PacketsToCache.JOIN_GAME] = PacketCacheGroup(
             PacketJoinGame(dimension = World.OVERWORLD.dimension),
             "Cached PacketJoinGame", true,
-            VersionRange(Version.V1_7_6, Version.V1_20_3)
+            VersionRange(Version.V1_7_6, Version.max)
         )
         cache[PacketsToCache.PLUGIN_MESSAGE] = PacketCacheGroup(
             PacketPluginMessage(), "Cached PluginMessage (brand)", true
@@ -86,20 +86,20 @@ class FallbackInitializer @JvmOverloads constructor(
             PacketLoginResponse(config.playerName),
             "Cached LoginResponse",
             true,
-            VersionRange(Version.V1_7_6, Version.V1_20_3)
+            VersionRange(Version.V1_7_6, Version.max)
         )
         val position = Position(7.5, 100.0, 7.5)
         cache[PacketsToCache.SPAWN_POSITION] = PacketCacheGroup(
             PacketSpawnPosition(position),
             "Cached SpawnPosition",
             true,
-            VersionRange(Version.V1_7_6, Version.V1_20_3)
+            VersionRange(Version.V1_7_6, Version.max)
         )
         cache[PacketsToCache.JOIN_POSITION] = PacketCacheGroup(
             PacketPositionLook(position, 180f, 90f, false, 7890),
             "Cached Teleport for joining",
             true,
-            VersionRange(Version.V1_7_6, Version.V1_20_3)
+            VersionRange(Version.V1_7_6, Version.max)
         )
     }
 

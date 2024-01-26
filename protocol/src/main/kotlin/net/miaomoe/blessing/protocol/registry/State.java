@@ -69,14 +69,14 @@ public enum State {
             serverbound.register(PacketLoginPluginMessage::new, withAll(0x02));
             clientbound.register(PacketLoginPluginMessage::new, withAll(0x04));
             clientbound.register(PacketDisconnect::new, withAll(0x00));
-            serverbound.register(PacketLoginAcknowledged::new, withSingle(V1_20_3, V1_20_4, 0x03));
+            serverbound.register(PacketLoginAcknowledged::new, withSingle(V1_20_2, V1_20_4, 0x03));
         }
     },
     CONFIGURATION{
         {
             final ProtocolMappings clientbound = this.clientbound.getValue();
             final ProtocolMappings serverbound = this.serverbound.getValue();
-            final VersionRange range = VersionRange.of(V1_20_3, Version.Companion.getMax());
+            final VersionRange range = VersionRange.of(V1_20_2, Version.Companion.getMax());
             serverbound.register(PacketClientConfiguration::new, withSingle(range, 0x00));
             clientbound.register(PacketDisconnect::new, withSingle(range, 0x01));
             serverbound.register(PacketPluginMessage::new, withSingle(range, 0x01));
