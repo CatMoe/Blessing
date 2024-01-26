@@ -48,14 +48,14 @@ class FallbackHandler(
     val channel: Channel
 ) : ChannelInboundHandlerAdapter() {
 
-    private val config = initializer.config
+    private val settings = initializer.settings
 
     val encoder = FallbackEncoder(handler = this)
     val decoder = FallbackDecoder(handler = this)
 
     val pipeline: ChannelPipeline = channel.pipeline()
 
-    private val validate = if (config.validate) ValidateHandler(this) else null
+    private val validate = if (settings.isValidate) ValidateHandler(this) else null
 
     var state = State.HANDSHAKE
         private set
@@ -148,7 +148,7 @@ class FallbackHandler(
             it.recvStatusRequest=true
         }
         // TODO Send response
-        write(PacketStatusResponse(initializer.motdHandler.handle(this).toJson()), true)
+        write(PacketStatusResponse(settings.motdHandler.handle(this).toJson()), true)
     }
 
     private fun handle(packet: PacketStatusPing) {
@@ -192,8 +192,9 @@ class FallbackHandler(
 
     @JvmOverloads
     fun write(enum: PacketsToCache, flush: Boolean = false) {
-        initializer.cache[enum]?.let { this.write(it, flush) }
-        ?: throw NullPointerException("Cached group for ${enum.name} is null!")
+        if (settings.isUseCache) {
+            initializer.cache[enum]?.let { this.write(it, flush) } ?: throw NullPointerException("Cached group for ${enum.name} is null!")
+        } else { enum.packet.apply(settings, this.version)?.let { this.write(it, flush) } }
     }
 
     @JvmOverloads
@@ -203,9 +204,8 @@ class FallbackHandler(
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        config.debugLogger?.log(Level.WARNING, "$this - throws exception", cause)
-        initializer.exceptionHandler?.exceptionCaught(ctx, cause)
-        channel.close()
+        settings.debugLogger?.log(Level.WARNING, "$this - throws exception", cause)
+        settings.exceptionHandler?.exceptionCaught(ctx, cause) ?: channel.close() // Unit
     }
 
     @Deprecated(
@@ -213,10 +213,10 @@ class FallbackHandler(
         replaceWith = ReplaceWith("debug"),
         level = DeprecationLevel.ERROR // Can cause huge performance issues. Stopping using this method now.
     )
-    fun debug(message: String) = this.debug { message } // void
+    fun debug(message: String) = this.debug { message }
 
     fun debug(message: Supplier<String>) {
-        config.debugLogger?.log(Level.INFO, "$this: ${message.get()}")
+        settings.debugLogger?.log(Level.INFO, "$this: ${message.get()}")
     }
 
     override fun toString() = "FallbackHandler[State=${this.state.name}|${address.address.hostAddress}" + when (this.state) {

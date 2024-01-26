@@ -36,7 +36,6 @@ class BlessingBungee : Plugin() {
     override fun onEnable() {
         if (config.debug) {
             BlessingChannelInitializer.inject()
-            config.fallback.debugLogger=this.logger
         }
     }
 

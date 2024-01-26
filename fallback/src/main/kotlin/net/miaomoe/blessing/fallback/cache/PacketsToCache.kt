@@ -17,11 +17,57 @@
 
 package net.miaomoe.blessing.fallback.cache
 
-enum class PacketsToCache {
-    REGISTRY_DATA,
-    JOIN_GAME,
-    PLUGIN_MESSAGE,
-    LOGIN_RESPONSE,
-    SPAWN_POSITION,
-    JOIN_POSITION,
+import net.miaomoe.blessing.fallback.config.FallbackSettings
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
+import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
+import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
+import net.miaomoe.blessing.protocol.packet.play.PacketJoinGame
+import net.miaomoe.blessing.protocol.packet.play.PacketPositionLook
+import net.miaomoe.blessing.protocol.packet.play.PacketSpawnPosition
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
+import net.miaomoe.blessing.protocol.version.VersionRange
+import java.util.function.BiFunction
+
+enum class PacketsToCache(
+    val packet: BiFunction<FallbackSettings, Version, PacketToClient?>,
+    val description: String? = null,
+    val version: VersionRange = VersionRange(Version.V1_7_6, Version.max)
+) {
+    REGISTRY_DATA({ settings, version ->
+        if (version.moreOrEqual(net.miaomoe.blessing.protocol.version.Version.V1_20_2))
+            PacketRegistryData(settings.world)
+        else null
+    }, "Cached PacketRegistryData", VersionRange(Version.V1_20_2, Version.max)),
+    JOIN_GAME({ settings, _ -> PacketJoinGame(dimension = settings.world.dimension) }, "Cached PacketJoinGame"),
+    PLUGIN_MESSAGE({ settings, version ->
+        PacketPluginMessage(
+            if (version.moreOrEqual(net.miaomoe.blessing.protocol.version.Version.V1_13_2)) "minecraft:brand" else "MC|Brand",
+            ByteMessage.create().use { byteBuf ->
+                byteBuf.writeString(settings.brand.toComponent().toLegacyText())
+                byteBuf.toByteArray()
+            }
+        )
+    }, "Cached PluginMessage (brand)"),
+    LOGIN_RESPONSE({ settings, _ -> PacketLoginResponse(settings.playerName) }, "Cached LoginResponse"),
+    SPAWN_POSITION({ settings, _ -> PacketSpawnPosition(settings.spawnPosition) }, "Cached SpawnPosition"),
+    JOIN_POSITION({ settings, _ -> PacketPositionLook(settings.joinPosition, settings.teleportId) }, "Cached Teleport for joining");
+
+    fun getCacheGroup(settings: FallbackSettings): PacketCacheGroup? {
+        val lastPacket = packet.apply(settings, this.version.max) ?: return null
+        val group = PacketCacheGroup(lastPacket, copySame = true)
+        for (version in this.version) {
+            val packet = this.packet.apply(settings, version) ?: continue
+            val encoded = ByteMessage.create().use {
+                packet.encode(it, version)
+                it.toByteArray()
+            }
+            val cache = PacketCache(packet::class, encoded, this.description)
+            group.setAt(version, cache)
+        }
+        return group
+    }
 }

@@ -24,7 +24,6 @@ import net.miaomoe.blessing.config.annotation.Description;
 import net.miaomoe.blessing.config.annotation.Path;
 import net.miaomoe.blessing.config.annotation.Priority;
 import net.miaomoe.blessing.config.hook.ReplaceHook;
-import net.miaomoe.blessing.fallback.config.FallbackConfig;
 import net.miaomoe.blessing.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,11 +65,6 @@ public class BlessingBungeeConfig extends AbstractConfig {
     @Description(description = "Enable debug log & feature.")
     @SuppressWarnings("unused")
     public boolean debug;
-
-    @Path
-    @Description(description = "fallback (virtual server) settings.")
-    @SuppressWarnings("unused")
-    public FallbackConfig fallback = new FallbackConfig();
 
     static {
         ReplaceHook.INSTANCE.register((it -> PlaceholderManager.INSTANCE.getPlaceholders(null, it)));
