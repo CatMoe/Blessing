@@ -23,9 +23,12 @@ import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketDisconnect(var message: MixedComponent = MixedComponent.EMPTY) : PacketToClient {
+class PacketDisconnect(
+    var message: MixedComponent = MixedComponent.EMPTY,
+    var forceJson: Boolean = false
+) : PacketToClient {
 
     override fun encode(byteBuf: ByteMessage, version: Version) =
-        byteBuf.writeChat(message, version)
+        byteBuf.writeChat(message, if (forceJson) Version.UNDEFINED else version)
 
 }
