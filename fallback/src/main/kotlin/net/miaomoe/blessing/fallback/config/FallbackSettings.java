@@ -18,14 +18,10 @@
 package net.miaomoe.blessing.fallback.config;
 
 import io.netty.channel.Channel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup;
 import net.miaomoe.blessing.fallback.cache.PacketsToCache;
 import net.miaomoe.blessing.fallback.handler.FallbackHandler;
+import net.miaomoe.blessing.fallback.handler.FallbackInitializer;
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler;
 import net.miaomoe.blessing.fallback.handler.motd.DefaultMotdHandlerKt;
 import net.miaomoe.blessing.fallback.handler.motd.FallbackMotdHandler;
@@ -46,11 +42,7 @@ import java.util.logging.Logger;
  * Settings for fallback.
  * @author FallenCrystal
  */
-@Getter
-@Setter
-@ToString
-@Accessors(makeFinal = true, chain = true)
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class FallbackSettings {
 
     private FallbackSettings() {
@@ -66,9 +58,17 @@ public class FallbackSettings {
     }
 
     /**
+     * Create a FallbackInitializer from this settings
+     * @return A new FallbackInitializer but holding this settings
+     */
+    public @NotNull FallbackInitializer buildInitializer() {
+        return new FallbackInitializer(this);
+    }
+
+    /**
      * What world should be used for send dimension?
      */
-    private @NonNull @NotNull World world = World.OVERWORLD;
+    private @NotNull World world = World.OVERWORLD;
 
     /**
      * What brand should be provided to the client?
@@ -98,7 +98,7 @@ public class FallbackSettings {
     /**
      * What handler should be used when you need to send a motd to get what you want to return?
      */
-    private @NonNull @NotNull FallbackMotdHandler motdHandler = DefaultMotdHandlerKt.getDefaultFallbackMotdHandler();
+    private @NotNull FallbackMotdHandler motdHandler = DefaultMotdHandlerKt.getDefaultFallbackMotdHandler();
 
     /**
      * What handler should we have to handle when an exception occurs?
@@ -117,14 +117,15 @@ public class FallbackSettings {
     private @Nullable Logger debugLogger;
 
     /**
-     * SpawnPosition for fallback.
+     * SpawnPosition to send to client.
+     * Although it is very likely that the client does not need this position.
      */
     private @NotNull Position spawnPosition = new Position(7.5, 100, 7.5);
 
     /**
      * Position, Yaw and Pitch when joining teleporting.
      */
-    private @NotNull PlayerPosition joinPosition = new PlayerPosition(spawnPosition, 180f, 90f, false);
+    private @NotNull PlayerPosition joinPosition = new PlayerPosition(spawnPosition, 180f, 0f, false);
 
     /**
      * What teleportId should be use for teleport?
@@ -139,8 +140,7 @@ public class FallbackSettings {
 
     /**
      * Should we cache packets?
-     *
-     * @param useCache use cache or create packet when writing
+     * @param useCache use cache or create packet when writing (default is true)
      * @return FallbackSettings
      * @deprecated Unless used for debugging purposes. Otherwise, not using caching is not supported.
      */
@@ -150,16 +150,16 @@ public class FallbackSettings {
         return this;
     }
 
+    /**
+     * A map of save some PacketCacheGroup.
+     */
     private final @NotNull Map<PacketsToCache, PacketCacheGroup> cacheMap = new EnumMap<>(PacketsToCache.class);
 
     public final @NotNull Map<PacketsToCache, PacketCacheGroup> getCacheMap() {
         return cacheMap;
     }
 
-    // Delombok
-
-    public final @NonNull
-    @NotNull World getWorld() {
+    public final @NotNull World getWorld() {
         return this.world;
     }
 
@@ -179,8 +179,7 @@ public class FallbackSettings {
         return this.timeout;
     }
 
-    public final @NonNull
-    @NotNull FallbackMotdHandler getMotdHandler() {
+    public final @NotNull FallbackMotdHandler getMotdHandler() {
         return this.motdHandler;
     }
 
@@ -212,61 +211,129 @@ public class FallbackSettings {
         return this.useCache;
     }
 
-    public final FallbackSettings setWorld(@NonNull @NotNull World world) {
+    /**
+     * Settings for World (default=World.OVERWORLD)
+     * @param world What world should be used for send dimension?
+     * @return FallbackSettings for chain setters.
+     */
+    public final FallbackSettings setWorld(@NotNull World world) {
         this.world = world;
         return this;
     }
 
+    /**
+     * Settings for brand (default=Blessing)
+     * It can be view in f3 in the client.
+     * MiniMessage is supported.
+     * But only can use legacy color.
+     * @param brand What brand should be provided to the client?
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setBrand(String brand) {
         this.brand = brand;
         return this;
     }
 
-    public final FallbackSettings setPlayerName(String playerName) {
-        this.playerName = playerName;
+    /**
+     * Settings for playerName (default=Blessing)
+     * @param name What should be the name of the player joining the fallback?
+     * @return FallbackSettings for chain setters.
+     */
+    public final FallbackSettings setPlayerName(String name) {
+        this.playerName = name;
         return this;
     }
 
+    /**
+     * Check whether each packet is sent in order (When not playing)
+     * This is very useful to prevent exploit and debug unexpected exception.
+     * If accidentally get disconnected by verifying.
+     * Can trying disable this check and try again.
+     * @param validate enable or disable validate (default=true)
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setValidate(boolean validate) {
         this.validate = validate;
         return this;
     }
 
+    /**
+     * Settings for timeout (default=30000L)
+     * @param timeout Disconnect when the connection is idle for more than a few milliseconds.
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setTimeout(long timeout) {
         this.timeout = timeout;
         return this;
     }
 
-    public final FallbackSettings setMotdHandler(@NonNull @NotNull FallbackMotdHandler motdHandler) {
+    /**
+     * What handler should be used when you need to send a motd to get what you want to return?
+     * @param motdHandler custom FallbackMotdHandler
+     * @return FallbackSettings for chain setters.
+     */
+    public final FallbackSettings setMotdHandler(@NotNull FallbackMotdHandler motdHandler) {
         this.motdHandler = motdHandler;
         return this;
     }
 
+    /**
+     * What handler should we have to handle when an exception occurs?
+     * @param exceptionHandler custom handler. If set to null. Fallback server will disconnect client.
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
         return this;
     }
 
+    /**
+     * Call when FallbackInitializer#initChannel(Channel) triggered.
+     * @param initListener custom listener
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setInitListener(@Nullable BiConsumer<FallbackHandler, Channel> initListener) {
         this.initListener = initListener;
         return this;
     }
 
+    /**
+     * Logger for print debug message.
+     * @param debugLogger logger to debug. set null to disabling debug feature.
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setDebugLogger(@Nullable Logger debugLogger) {
         this.debugLogger = debugLogger;
         return this;
     }
 
+    /**
+     * SpawnPosition for client.
+     * Although it is very likely that the client does not need this position.
+     * @param spawnPosition SpawnPosition to send to client (default=Position(x=7.5 y=100 z=7.5))
+     * @return FallbackSettings for chain setters.
+     */
     public final FallbackSettings setSpawnPosition(@NotNull Position spawnPosition) {
         this.spawnPosition = spawnPosition;
         return this;
     }
 
+    /**
+     * Position, Yaw and Pitch when joining teleporting.
+     * Default Position: x 7.5, y 100, z 7.5, yaw 180, pitch 0
+     * @param joinPosition position sent to client when joining.
+     * @return FallbackSettings for chain setters
+     */
     public final FallbackSettings setJoinPosition(@NotNull PlayerPosition joinPosition) {
         this.joinPosition = joinPosition;
         return this;
     }
 
+    /**
+     * What teleportId should be use for teleporting? (1.9+ clients)
+     * @param teleportId for sent to client when teleporting (with joinPosition)
+     * @return FallbackSettings for chain setters
+     */
     public final FallbackSettings setTeleportId(int teleportId) {
         this.teleportId = teleportId;
         return this;
