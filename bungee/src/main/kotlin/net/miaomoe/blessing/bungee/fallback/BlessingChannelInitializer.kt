@@ -19,7 +19,6 @@ package net.miaomoe.blessing.bungee.fallback
 import io.netty.channel.*
 import net.miaomoe.blessing.bungee.BlessingBungee
 import net.miaomoe.blessing.fallback.config.FallbackSettings
-import net.miaomoe.blessing.fallback.handler.FallbackInitializer
 import net.miaomoe.blessing.protocol.registry.State
 import sun.misc.Unsafe
 import java.lang.reflect.Method
@@ -36,10 +35,14 @@ object BlessingChannelInitializer : ChannelInitializer<Channel>() {
 
     val writeMarker = WriteBufferWaterMark(1 shl 20, 1 shl 21)
 
-    val fallbackInitializer = FallbackInitializer(FallbackSettings
+    val fallbackInitializer = FallbackSettings
         .create()
-        .setDebugLogger(if (config.debug) plugin.logger else null)
-    )
+        .setDebugLogger(plugin.logger)
+        .setMotdHandler(BungeeMotdAdapter)
+        .setBrand("Blessing")
+        .setPlayerName("Blessing")
+        .setTimeout(10000)
+        .buildInitializer()
 
     private lateinit var originalInstance: ChannelInitializer<*>
     private lateinit var originalMethod: Method
