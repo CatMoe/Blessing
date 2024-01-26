@@ -115,8 +115,8 @@ enum class Version(val protocolId: Int, val isSupported: Boolean = true, val reg
         val maps = entries
             .filter { it.registerMap }
             .associateBy { it.protocolId }
-        var min = entries.first { it != UNDEFINED && it.isSupported }
-        var max = entries.last()
+        val min = entries.first { it != UNDEFINED && it.isSupported }
+        val max = entries.last { it.registerMap }
         fun of(protocolId: Int) = maps[protocolId] ?: UNDEFINED
     }
 }
