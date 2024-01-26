@@ -109,12 +109,12 @@ class FallbackHandler(
     private fun handle(packet: PacketHandshake) {
         val version = packet.version
         this.version = version
+        this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
+        this.updateState(packet.nextState)
         if ((version == Version.UNDEFINED || !version.isSupported) && packet.nextState == State.LOGIN) {
             disconnect("<red>Unsupported client version.".toComponent())
             return
         }
-        this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
-        this.updateState(packet.nextState)
     }
 
     private fun handle(packet: PacketLoginRequest) {
