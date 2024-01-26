@@ -110,6 +110,10 @@ class FallbackHandler(
     }
 
     private fun handle(packet: PacketLoginRequest) {
+        validate?.let {
+            require(!it.recvLogin) { "Duplicated PacketLoginRequest!" }
+            it.recvLogin=true
+        }
         this.name=packet.name
         write(PacketsToCache.LOGIN_RESPONSE, true)
         if (version.less(Version.V1_20_2)) spawn()
