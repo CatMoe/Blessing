@@ -53,7 +53,7 @@ class FallbackHandler(
     val channel: Channel
 ) : ChannelInboundHandlerAdapter() {
 
-    private val settings = initializer.settings
+    val settings = initializer.settings
 
     val encoder = FallbackEncoder(handler = this)
     val decoder = FallbackDecoder(handler = this)

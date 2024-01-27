@@ -99,18 +99,6 @@
         </dependency>
         <dependency>
             <groupId>net.miaomoe.blessing</groupId>
-            <artifactId>config</artifactId>
-            <version>0.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.miaomoe.blessing</groupId>
-            <artifactId>event</artifactId>
-            <version>0.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.miaomoe.blessing</groupId>
             <artifactId>nbt</artifactId>
             <version>0.0.1</version>
             <scope>provided</scope>

@@ -74,6 +74,9 @@ public class FallbackSettings {
      * What brand should be provided to the client?
      * It can be view in f3 in the client.
      * MiniMessage is supported. But only can use legacy color.
+     * When you use DefaultMotdHandler.
+     * This brand will also be used to return
+     * the brand of the protocol in Motd.
      */
     private String brand = "Blessing";
 
@@ -236,6 +239,9 @@ public class FallbackSettings {
      * It can be view in f3 in the client.
      * MiniMessage is supported.
      * But only can use legacy color.
+     * When you use DefaultMotdHandler.
+     * This brand will also be used to return
+     * the brand of the protocol in Motd.
      * @param brand What brand should be provided to the client?
      * @return FallbackSettings for chain setters.
      */

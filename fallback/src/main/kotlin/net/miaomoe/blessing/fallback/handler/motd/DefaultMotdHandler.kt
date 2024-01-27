@@ -18,11 +18,15 @@
 package net.miaomoe.blessing.fallback.handler.motd
 
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
+import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.version.Version
 
 val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
     MotdInfo(
-        MotdInfo.VersionInfo("Blessing", fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }),
+        MotdInfo.VersionInfo(
+            fallback.settings.brand.toComponent().toLegacyText(),
+            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
+        ),
         MotdInfo.PlayerInfo(0, 0),
         "<light_purple>Blessing <3".toComponent()
     )
