@@ -32,11 +32,14 @@ import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfigurat
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
+import net.miaomoe.blessing.protocol.packet.play.PacketPosition
+import net.miaomoe.blessing.protocol.packet.play.PacketPositionLook
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
+import net.miaomoe.blessing.protocol.util.PlayerPosition
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
 import java.util.function.Supplier
@@ -56,6 +59,9 @@ class FallbackHandler(
     val pipeline: ChannelPipeline = channel.pipeline()
 
     private val validate = if (settings.isValidate) ValidateHandler(this) else null
+
+    var location: PlayerPosition? = null
+        private set
 
     var state = State.HANDSHAKE
         private set
@@ -94,6 +100,9 @@ class FallbackHandler(
                 is PacketStatusPing -> handle(msg)
                 is PacketLoginRequest -> handle(msg)
                 is PacketLoginAcknowledged -> handle(msg)
+                is PacketPositionLook -> handle(msg)
+                is PacketPosition -> handle(msg)
+                is PacketFinishConfiguration -> handle(msg)
             }
         }
         super.channelRead(ctx, msg)
@@ -138,8 +147,10 @@ class FallbackHandler(
         write(PacketsToCache.REGISTRY_DATA)
         write(PacketsToCache.PLUGIN_MESSAGE)
         write(PacketFinishConfiguration(), true)
-        spawn()
     }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun handle(packet: PacketFinishConfiguration) = spawn()
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketStatusRequest) {
@@ -158,6 +169,15 @@ class FallbackHandler(
             it.recvStatusPing=true
         }
         channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
+    }
+
+    private fun handle(packet: PacketPositionLook) {
+        this.location = packet.position
+    }
+
+    private fun handle(packet: PacketPosition) {
+        val last = this.location
+        this.location = PlayerPosition(packet.position, last?.yaw ?: 0f, last?.pitch ?: 0f, packet.onGround)
     }
 
     private fun spawn() {
