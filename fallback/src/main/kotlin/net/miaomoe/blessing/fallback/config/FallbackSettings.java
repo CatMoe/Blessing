@@ -151,6 +151,12 @@ public class FallbackSettings {
     }
 
     /**
+     * Sent the abilities packet that player will be flying.
+     * But player can't move it self.
+     */
+    private boolean disableFall = true;
+
+    /**
      * A map of save some PacketCacheGroup.
      */
     private final @NotNull Map<PacketsToCache, PacketCacheGroup> cacheMap = new EnumMap<>(PacketsToCache.class);
@@ -209,6 +215,10 @@ public class FallbackSettings {
 
     public final boolean isUseCache() {
         return this.useCache;
+    }
+
+    public final boolean isDisableFall() {
+        return disableFall;
     }
 
     /**
@@ -336,6 +346,17 @@ public class FallbackSettings {
      */
     public final FallbackSettings setTeleportId(int teleportId) {
         this.teleportId = teleportId;
+        return this;
+    }
+
+    /**
+     * Sent the abilities packet that player will be flying.
+     * But player can't move it self.
+     * @param disableFall should be sent that abilities packet?
+     * @return FallbackSettings for chain setters
+     */
+    public final FallbackSettings setDisableFall(boolean disableFall) {
+        this.disableFall = disableFall;
         return this;
     }
 }

@@ -29,16 +29,11 @@ class PacketAbilities @JvmOverloads constructor(
 ) : PacketBidirectional {
 
     @JvmOverloads constructor(
-        flagList: List<FlagsValue>,
+        flagList: List<Flags>,
         flySpeed: Float = 0f,
         viewModifier: Float = flySpeed
     ) : this(0, flySpeed, viewModifier) {
-        flagList
-            .distinctBy { it.flags }
-            .forEach {
-                val flag = it.flags.mask
-                flags = if (it.value) flags or flag else flags and flag.inv()
-            }
+        flagList.distinct().forEach { flags = flags or it.mask }
     }
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
@@ -51,12 +46,22 @@ class PacketAbilities @JvmOverloads constructor(
         this.flags = byteBuf.readByte().toInt()
     }
 
-    data class FlagsValue(val flags: Flags, val value: Boolean)
     enum class Flags(val mask: Int) {
         INVULNERABLE(0x01),
         FLYING(0x02),
         ALLOW_FLYING(0x04),
-        INSTANT_BREAK(0x08)
+        INSTANT_BREAK(0x08);
+
+        companion object {
+            @JvmStatic
+            fun fromFlags(flags: Int): MutableList<Flags> {
+                val decodedFlags = mutableListOf<Flags>()
+                for (flag in Flags.entries) {
+                    if (flags and flag.mask != 0) decodedFlags.add(flag)
+                }
+                return decodedFlags
+            }
+        }
     }
 
 }

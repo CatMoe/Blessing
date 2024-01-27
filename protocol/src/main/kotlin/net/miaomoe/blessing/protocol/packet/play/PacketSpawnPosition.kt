@@ -30,11 +30,8 @@ class PacketSpawnPosition(
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
         if (version.moreOrEqual(Version.V1_8)) {
-            val value = if (version.moreOrEqual(Version.V1_14))
-                PositionUtil.getModernSpawnPosition(position)
-            else
-                PositionUtil.getLegacySpawnPosition(position)
-            byteBuf.writeLong(value.toLong())
+            val value = if (version.lessOrEqual(Version.V1_14)) PositionUtil.getLegacySpawnPosition(position) else PositionUtil.getModernSpawnPosition(position)
+            byteBuf.writeLong(value)
             if (version.moreOrEqual(Version.V1_17)) byteBuf.writeFloat(0f)
         } else { // 1.7
             position.let {

@@ -123,7 +123,8 @@ public enum State {
                     .addMapping(0x4D, V1_19_1)
                     .addMapping(0x4C, V1_19_3)
                     .addMapping(0x50, V1_19_4, V1_20)
-                    .addMapping(0x52, V1_20_2, V1_20_3)
+                    .addMapping(0x52, V1_20_2)
+                    .addMapping(0x54, V1_20_3)
                     .getMapping()
             );
             clientbound.register(PacketDisconnect::new, builder()
@@ -316,6 +317,22 @@ public enum State {
                             .addMapping(0x15, V1_19_4, V1_20)
                             .addMapping(0x17, V1_20_2)
                             .addMapping(0x18, V1_20_3)
+                    .getMapping()
+            );
+            clientbound.register(PacketChunk::new, builder()
+                    .addMapping(0x21, V1_7_2, V1_8)
+                    .addMapping(0x20, V1_9, V1_12_2)
+                    .addMapping(0x22, V1_13, V1_13_2)
+                    .addMapping(0x21, V1_14, V1_14_4)
+                    .addMapping(0x22, V1_15, V1_15_2)
+                    .addMapping(0x21, V1_16, V1_16_1)
+                    .addMapping(0x20, V1_16_2, V1_16_4)
+                    .addMapping(0x22, V1_17, V1_18_2)
+                    .addMapping(0x1F, V1_19)
+                    .addMapping(0x21, V1_19_1)
+                    .addMapping(0x20, V1_19_3)
+                    .addMapping(0x24, V1_19_4, V1_20)
+                    .addMapping(0x25, V1_20_2, V1_20_3)
                     .getMapping()
             );
             serverbound.register(PacketTeleportConfirm::new, withSingle(VersionRange.of(V1_9, V1_20_3), 0x00));

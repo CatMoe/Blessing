@@ -166,6 +166,9 @@ class FallbackHandler(
         if (version.moreOrEqual(Version.V1_19_3)) write(PacketsToCache.SPAWN_POSITION)
         if (version.less(Version.V1_20_3)) write(PacketsToCache.PLUGIN_MESSAGE)
         write(PacketsToCache.JOIN_POSITION)
+        if (version.moreOrEqual(Version.V1_20_3)) write(PacketsToCache.GAME_EVENT)
+        write(PacketsToCache.EMPTY_CHUNK)
+        if (settings.isDisableFall) write(PacketsToCache.PLAYER_ABILITIES)
         write(PacketKeepAlive(), true)
     }
 

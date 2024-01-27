@@ -27,8 +27,10 @@ object PositionUtil {
 
     fun getFallGravity(tick: Int) = -((0.98.pow(tick.toDouble()) - 1) * 3.92)
 
-    fun getLegacySpawnPosition(position: Position) = (position.x.toInt() and 0x3FFFFFF shl 38) or (position.y.toInt() and 0xFFF shl 26) or (position.z.toInt() and 0x3FFFFFF)
+    fun getLegacySpawnPosition(position: Position) = (position.x.toLong() and 0x3FFFFFF shl 38) or (position.y.toLong() and 0xFFF shl 26) or (position.z.toLong() and 0x3FFFFFF)
 
-    fun getModernSpawnPosition(position: Position) = (position.x.toInt() and 0x3FFFFFF shl 38) or (position.y.toInt() and 0x3FFFFFF shl 12) or (position.z.toInt() and 0xFFF)
+    fun getModernSpawnPosition(position: Position) = (position.x.toLong() and 0x3FFFFFF shl 38) or (position.y.toLong() and 0x3FFFFFF shl 12) or (position.z.toLong() and 0xFFF)
+
+    fun toChunkOffset(position: Position) = Position((position.x.toInt() shr 4).toDouble(), (-1).toDouble(), (position.z.toInt() shr 4).toDouble())
 
 }
