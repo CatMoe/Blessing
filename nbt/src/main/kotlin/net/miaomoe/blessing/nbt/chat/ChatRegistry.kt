@@ -23,8 +23,8 @@ import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.CompoundBinaryTag.Builder
 import net.kyori.adventure.nbt.ListBinaryTag
 import net.miaomoe.blessing.nbt.NbtUtil.put
-import net.miaomoe.blessing.nbt.NbtUtil.singleWithCompound
 import net.miaomoe.blessing.nbt.NbtUtil.toListTag
+import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.NbtUtil.toNbt
 import net.miaomoe.blessing.nbt.TagProvider
 import net.miaomoe.blessing.nbt.dimension.NbtVersion
@@ -37,7 +37,7 @@ object ChatRegistry : TagProvider {
        val systemElement = if (newer) {
            buildElement("system", defaultParameter)
        } else {
-           buildElement(CompoundBinaryTag.empty(), "system".toNbt().singleWithCompound("priority"))
+           buildElement(CompoundBinaryTag.empty(), "system".toNbt().toNamed("priority"))
        }
         val gameElement = CompoundBinaryTag
             .builder()

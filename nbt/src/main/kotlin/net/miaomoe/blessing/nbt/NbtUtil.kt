@@ -17,8 +17,13 @@
 
 package net.miaomoe.blessing.nbt
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import com.google.gson.internal.LazilyParsedNumber
 import net.kyori.adventure.nbt.*
+import org.jetbrains.annotations.ApiStatus.Experimental
 
 object NbtUtil {
 
@@ -58,5 +63,100 @@ object NbtUtil {
 
     fun List<CompoundBinaryTag>.toListTag() = ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, this)
 
-    fun BinaryTag.singleWithCompound(name: String) = CompoundBinaryTag.builder().put(name, this).build()
+    private fun <T : Number>toJsonArray(iterable: Iterable<T>): JsonArray {
+        val list = iterable.map { it }
+        val jsonArray = JsonArray(list.size)
+        for (element in list) jsonArray.add(JsonPrimitive(element))
+        return jsonArray
+    }
+
+    @Experimental
+    fun deserialize(nbt: BinaryTag): JsonElement = when (nbt) {
+        is ByteBinaryTag -> JsonPrimitive(nbt.byteValue())
+        is ShortBinaryTag -> JsonPrimitive(nbt.shortValue())
+        is IntBinaryTag -> JsonPrimitive(nbt.intValue())
+        is LongBinaryTag -> JsonPrimitive(nbt.longValue())
+        is DoubleBinaryTag -> JsonPrimitive(nbt.doubleValue())
+        is ByteArrayBinaryTag -> toJsonArray(nbt)
+        is IntArrayBinaryTag -> toJsonArray(nbt)
+        is LongArrayBinaryTag -> toJsonArray(nbt)
+        is StringBinaryTag -> JsonPrimitive(nbt.value())
+        is ListBinaryTag -> {
+            val list = JsonArray(nbt.size())
+            for (tag in nbt) {
+                if (tag is CompoundBinaryTag && tag.size() == 1)
+                    list.add(deserialize(tag[""] ?: continue))
+                else
+                    list.add(deserialize(tag))
+            }
+            list
+        }
+        is CompoundBinaryTag -> {
+            val jsonObject = JsonObject()
+            for ((name, tag) in nbt) jsonObject.add(name, deserialize(tag))
+            jsonObject
+        }
+        else -> throw IllegalArgumentException("Unknown nbt type: $nbt")
+    }
+
+    fun serialize(json: JsonElement): BinaryTag {
+        when (json) {
+            is JsonPrimitive -> {
+                when {
+                    json.isNumber -> return json.asNumber.toNbt()
+                    json.isString -> return json.asString.toNbt()
+                    json.isBoolean -> json.asBoolean.toNbt()
+                    else -> throw IllegalArgumentException("Unknown JSON primitive: $json")
+                }
+            }
+
+            is JsonObject -> {
+                val compound = CompoundBinaryTag.builder()
+                for ((key, value) in json.entrySet()) key?.let { compound.put(it, serialize(value)) }
+                return compound.build()
+            }
+
+            is JsonArray -> {
+                val jsonArray = json.asList()
+                if (jsonArray.isEmpty()) return ListBinaryTag.empty()
+                val tagItems: MutableList<BinaryTag> = ArrayList(jsonArray.size)
+                var listType: BinaryTagType<out BinaryTag?>? = null
+                for (jsonEl in jsonArray) {
+                    val tag = serialize(jsonEl)
+                    tagItems.add(tag)
+                    if (listType == null) {
+                        listType = tag.type()
+                    } else if (listType !== tag.type()) {
+                        listType = BinaryTagTypes.COMPOUND
+                    }
+                }
+                require(listType != null) { "listType cannot be null!" }
+                when (listType.id().toInt()) {
+                    1 -> {
+                        val bytes = ByteArray(jsonArray.size)
+                        for (i in bytes.indices) bytes[i] = jsonArray[i].asNumber as Byte
+                        return bytes.toNbt()
+                    }
+
+                    3 -> {
+                        val ints = IntArray(jsonArray.size)
+                        for (i in ints.indices) ints[i] = jsonArray[i].asNumber as Int
+                        return ints.toNbt()
+                    }
+
+                    4 -> {
+                        val longs = LongArray(jsonArray.size)
+                        for (i in jsonArray.indices) longs[i] = jsonArray[i].asNumber as Long
+                        return longs.toNbt()
+                    }
+
+                    10 -> tagItems.replaceAll { tag: BinaryTag ->
+                        if (tag.type() == BinaryTagTypes.COMPOUND) tag else tag.toNamed()
+                    }
+                }
+                return ListBinaryTag.listBinaryTag(listType, tagItems)
+            }
+        }
+        return EndBinaryTag.endBinaryTag()
+    }
 }

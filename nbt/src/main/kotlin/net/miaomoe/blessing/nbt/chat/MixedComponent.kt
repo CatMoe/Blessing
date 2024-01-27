@@ -17,21 +17,24 @@
 
 package net.miaomoe.blessing.nbt.chat
 
-import com.google.gson.*
-import net.kyori.adventure.nbt.*
+import com.google.gson.JsonParser
+import net.kyori.adventure.nbt.BinaryTag
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.miaomoe.blessing.nbt.NbtUtil.toNamed
-import net.miaomoe.blessing.nbt.NbtUtil.toNbt
+import net.miaomoe.blessing.nbt.NbtUtil
+import org.jetbrains.annotations.ApiStatus.Experimental
 
 @Suppress("MemberVisibilityCanBePrivate")
 class MixedComponent(
     val json: String,
-    val tag: BinaryTag = serialize(JsonParser.parseString(json))
+    val tag: BinaryTag = NbtUtil.serialize(JsonParser.parseString(json))
 ) {
 
     constructor(component: Component) : this(component.toJson())
+
+    @Experimental
+    constructor(nbt: BinaryTag) : this(NbtUtil.deserialize(nbt).toString(), nbt)
 
     fun toComponent() = GsonComponentSerializer.gson().deserialize(json)
 
@@ -42,67 +45,6 @@ class MixedComponent(
         val EMPTY = MixedComponent(miniMessage.deserialize(""))
 
         private fun Component.toJson() = GsonComponentSerializer.gson().serialize(this)
-
-        fun serialize(json: JsonElement): BinaryTag {
-            when (json) {
-                is JsonPrimitive -> {
-                    when {
-                        json.isNumber -> return json.asNumber.toNbt()
-                        json.isString -> return json.asString.toNbt()
-                        json.isBoolean -> json.asBoolean.toNbt()
-                        else -> throw IllegalArgumentException("Unknown JSON primitive: $json")
-                    }
-                }
-
-                is JsonObject -> {
-                    val compound = CompoundBinaryTag.builder()
-                    for ((key, value) in json.entrySet()) key?.let { compound.put(it, serialize(value)) }
-                    return compound.build()
-                }
-
-                is JsonArray -> {
-                    val jsonArray = json.asList()
-                    if (jsonArray.isEmpty()) return ListBinaryTag.empty()
-                    val tagItems: MutableList<BinaryTag> = ArrayList(jsonArray.size)
-                    var listType: BinaryTagType<out BinaryTag?>? = null
-                    for (jsonEl in jsonArray) {
-                        val tag = serialize(jsonEl)
-                        tagItems.add(tag)
-                        if (listType == null) {
-                            listType = tag.type()
-                        } else if (listType !== tag.type()) {
-                            listType = BinaryTagTypes.COMPOUND
-                        }
-                    }
-                    require(listType != null) { "listType cannot be null!" }
-                    when (listType.id().toInt()) {
-                        1 -> {
-                            val bytes = ByteArray(jsonArray.size)
-                            for (i in bytes.indices) bytes[i] = jsonArray[i].asNumber as Byte
-                            return bytes.toNbt()
-                        }
-
-                        3 -> {
-                            val ints = IntArray(jsonArray.size)
-                            for (i in ints.indices) ints[i] = jsonArray[i].asNumber as Int
-                            return ints.toNbt()
-                        }
-
-                        4 -> {
-                            val longs = LongArray(jsonArray.size)
-                            for (i in jsonArray.indices) longs[i] = jsonArray[i].asNumber as Long
-                            return longs.toNbt()
-                        }
-
-                        10 -> tagItems.replaceAll { tag: BinaryTag ->
-                            if (tag.type() == BinaryTagTypes.COMPOUND) tag else tag.toNamed()
-                        }
-                    }
-                    return ListBinaryTag.listBinaryTag(listType, tagItems)
-                }
-            }
-            return EndBinaryTag.endBinaryTag()
-        }
     }
 
     override fun toString() = "MixedComponent(json=$json, tag=$tag)"
