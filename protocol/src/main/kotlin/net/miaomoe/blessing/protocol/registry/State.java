@@ -336,7 +336,7 @@ public enum State {
                     .getMapping()
             );
             serverbound.register(PacketTeleportConfirm::new, withSingle(VersionRange.of(V1_9, V1_20_3), 0x00));
-            serverbound.register(PacketGameEvent::new, withSingle(VersionRange.of(V1_20_3), 0x20));
+            clientbound.register(PacketGameEvent::new, withSingle(VersionRange.of(V1_20_3), 0x20));
         }
     };
 

@@ -33,8 +33,8 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 class FallbackDecoder(
     var mappings: ProtocolMappings = State.HANDSHAKE.serverbound.value,
     var version: Version = Version.UNDEFINED,
-    val throwWhenEmptyBuffer: Boolean = true,
-    val checkRemainBytes: Boolean = false,
+    var throwWhenEmptyBuffer: Boolean = true,
+    var checkRemainBytes: Boolean = false,
     val handler: FallbackHandler? = null
 ) : MessageToMessageDecoder<ByteBuf>() {
 
@@ -60,7 +60,7 @@ class FallbackDecoder(
             }
             ctx.fireChannelRead(packet)
         } catch (exception: NullPointerException) {
-            handler?.debug { "[Decoder] A NullPointerException has thrown when getting packet. (${exception.localizedMessage}) That will be converted to ExplicitPacket." }
+            handler?.debug { "[Decoder] Converted to ExplicitPacket caused by: ${exception.localizedMessage}" }
             ctx.fireChannelRead(ExplicitPacket(id, byteBuf.toByteMessage().toByteArray(), "A packet with a unknown id."))
         }
     }

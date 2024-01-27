@@ -21,4 +21,5 @@ internal class ValidateHandler(private val handler: FallbackHandler) {
     var recvStatusRequest = false
     var recvStatusPing = false
     var recvLogin = false
+    var recvBrand = false
 }

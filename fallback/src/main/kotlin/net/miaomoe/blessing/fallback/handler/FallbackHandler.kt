@@ -28,6 +28,7 @@ import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.packet.common.PacketDisconnect
 import net.miaomoe.blessing.protocol.packet.common.PacketKeepAlive
+import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
 import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfiguration
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
@@ -39,6 +40,7 @@ import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
+import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.PlayerPosition
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
@@ -76,6 +78,8 @@ class FallbackHandler(
 
     var name: String? = null
         private set
+    var brand: String? = null
+        private set
 
     override fun channelActive(ctx: ChannelHandlerContext) {
         debug { "has connected" }
@@ -103,6 +107,7 @@ class FallbackHandler(
                 is PacketPositionLook -> handle(msg)
                 is PacketPosition -> handle(msg)
                 is PacketFinishConfiguration -> handle(msg)
+                is PacketPluginMessage -> handle(msg)
             }
         }
         super.channelRead(ctx, msg)
@@ -178,6 +183,23 @@ class FallbackHandler(
     private fun handle(packet: PacketPosition) {
         val last = this.location
         this.location = PlayerPosition(packet.position, last?.yaw ?: 0f, last?.pitch ?: 0f, packet.onGround)
+    }
+
+    private fun handle(packet: PacketPluginMessage) {
+        val channel = packet.channel
+        if (
+            (version.fromTo(Version.V1_8, Version.V1_12_2) && channel == "MC|Brand") ||
+            (version.fromTo(Version.V1_13, Version.max) && channel == "minecraft:brand")
+        ) {
+            this.brand = ByteMessage.create().let {
+                it.writeBytes(packet.data)
+                it.readString()
+            }
+            validate?.let {
+                require(!it.recvBrand) { "Cannot receive brand message twice!" }
+                it.recvBrand = true
+            }
+        }
     }
 
     private fun spawn() {
