@@ -55,8 +55,11 @@ class FallbackHandler(
 
     val settings = initializer.settings
 
-    val encoder = FallbackEncoder(handler = this)
-    val decoder = FallbackDecoder(handler = this)
+    var state = settings.defaultState
+        private set
+
+    val encoder = FallbackEncoder(state.clientbound.value, handler = this)
+    val decoder = FallbackDecoder(state.serverbound.value, handler = this)
 
     val pipeline: ChannelPipeline = channel.pipeline()
 
@@ -65,8 +68,6 @@ class FallbackHandler(
     var location: PlayerPosition? = null
         private set
 
-    var state = State.HANDSHAKE
-        private set
     var version = Version.UNDEFINED
         private set
     var destination: InetSocketAddress? = null
@@ -113,7 +114,7 @@ class FallbackHandler(
         super.channelRead(ctx, msg)
     }
 
-    private fun updateState(state: State) {
+    fun updateState(state: State) {
         encoder.let {
             it.version = this.version
             it.mappings = state.clientbound.value
@@ -129,51 +130,62 @@ class FallbackHandler(
         val version = packet.version
         this.version = version
         this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
-        this.updateState(packet.nextState)
-        if ((version == Version.UNDEFINED || !version.isSupported) && packet.nextState == State.LOGIN) {
-            disconnect("<red>Unsupported client version.".toComponent())
-            return
+        if (settings.isProcessLogic) {
+            this.updateState(packet.nextState)
+            if ((version == Version.UNDEFINED || !version.isSupported) && packet.nextState == State.LOGIN) {
+                disconnect("<red>Unsupported client version.".toComponent())
+                return
+            }
         }
     }
 
     private fun handle(packet: PacketLoginRequest) {
-        validate?.let {
-            require(!it.recvLogin) { "Duplicated PacketLoginRequest!" }
-            it.recvLogin=true
-        }
         this.name=packet.name
-        write(PacketsToCache.LOGIN_RESPONSE, true)
-        if (version.less(Version.V1_20_2)) spawn()
+        if (settings.isProcessLogic) {
+            validate?.let {
+                require(!it.recvLogin) { "Duplicated PacketLoginRequest!" }
+                it.recvLogin=true
+            }
+            write(PacketsToCache.LOGIN_RESPONSE, true)
+            if (version.less(Version.V1_20_2)) spawn()
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketLoginAcknowledged) {
-        updateState(State.CONFIGURATION)
-        write(PacketsToCache.REGISTRY_DATA)
-        write(PacketsToCache.PLUGIN_MESSAGE)
-        write(PacketFinishConfiguration(), true)
+        if (settings.isProcessLogic) {
+            updateState(State.CONFIGURATION)
+            write(PacketsToCache.REGISTRY_DATA)
+            write(PacketsToCache.PLUGIN_MESSAGE)
+            write(PacketFinishConfiguration(), true)
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun handle(packet: PacketFinishConfiguration) = spawn()
+    private fun handle(packet: PacketFinishConfiguration) {
+        if (settings.isProcessLogic) spawn()
+    }
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketStatusRequest) {
-        validate?.let {
-            require(!it.recvStatusRequest) { "Cannot request status twice!" }
-            it.recvStatusRequest=true
+        if (settings.isProcessLogic) {
+            validate?.let {
+                require(!it.recvStatusRequest) { "Cannot request status twice!" }
+                it.recvStatusRequest=true
+            }
+            write(PacketStatusResponse(settings.motdHandler.handle(this).toJson()), true)
         }
-        // TODO Send response
-        write(PacketStatusResponse(settings.motdHandler.handle(this).toJson()), true)
     }
 
     private fun handle(packet: PacketStatusPing) {
-        validate?.let {
-            require(it.recvStatusRequest && !it.recvStatusPing)
-            { "Cannot send twice status ping or skipped status request!" }
-            it.recvStatusPing=true
+        if (settings.isProcessLogic) {
+            validate?.let {
+                require(it.recvStatusRequest && !it.recvStatusPing)
+                { "Cannot send twice status ping or skipped status request!" }
+                it.recvStatusPing=true
+            }
+            channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
         }
-        channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
     }
 
     private fun handle(packet: PacketPositionLook) {

@@ -12,10 +12,10 @@ Fallback服务器模块是一个集合了
 > 它皆在帮助开发人员轻松创建自己的虚拟服务器
 > 以集合到自己的应用程序上.
 
-> ⚠️ 要使用fallback 您必须拥有netty开发经验 
+> ⚠️ 要使用Fallback 您必须拥有netty开发经验 
 > 并基本熟知Minecraft协议的工作原理.
 
-> ✅ 如果你想 你可以在任何地方注入Fallback,
+> ✅ 如果您想 您可以在任何地方注入Fallback,
 > 无论是在什么代理上 甚至是自己搭建Bootstrap启动.
 
 Fallback没有太多东西. 它是一个完全空的服务器
@@ -28,7 +28,7 @@ Fallback没有太多东西. 它是一个完全空的服务器
 # FallbackSettings
 
 [FallbackSettings](https://github.com/CatMoe/Blessing/blob/recoded/fallback/src/main/kotlin/net/miaomoe/blessing/fallback/config/FallbackSettings.java)
-是一个类. 它通过您给予的预设来决定它们要干什么
+是一个类. 它通过您给予的预设来决定fallback要干什么
 
 > 🔧 FallbackSettings拥有一个javadoc 
 > 该文中不一定包含了最新的可以设置的选项
@@ -38,16 +38,16 @@ Fallback没有太多东西. 它是一个完全空的服务器
 > 您可以在监听器中访问
 > [FallbackHandler](https://github.com/CatMoe/Blessing/blob/recoded/fallback/src/main/kotlin/net/miaomoe/blessing/fallback/handler/FallbackHandler.kt)
 > 来获取某些内容 例如玩家所在的位置 它们的客户端标签以及更多.
-> 也可以通过FallbackHandler#write来写入数据包.
+> 也可以通过`FallbackHandler#write`来写入数据包.
 
-> ❔对于自定义收发数据包, 请自己实现处理器. 例如ChannelDuplexHandler.
+> ❔对于自定义收发数据包, 请自己实现处理器. 例如`ChannelDuplexHandler`.
 
 ---
 
 ## 配置fallback
 
 FallbackSettings的构建参数是私有的. 
-但您可以通过静态的create()方法新建一个.
+但您可以通过静态的`create()`方法新建一个.
 
 > ⚠️在某些情况下动态修改设置可能不可用
 > 这是由于数据包已经被缓存造成的.
@@ -204,6 +204,28 @@ fallback应该向客户端发送什么服务端标签.
 是否将玩家滞空于空中? (无法移动)  
 如果只是将玩家放在fallback而不需要处理坐标 
 那么此项可能有用.
+
+### defaultState
+
+Fallback初始化的默认状态 (默认为等待握手)  
+对于处理已经处于非握手状态下的连接可能非常有用
+
+> ⚠️在您没有特殊需求之前 不要滥用此项. 
+> 可能会干涉到[逻辑处理](#processlogic) 
+> 请务必考虑兼容性等等.
+
+### processLogic
+
+是否让fallback自动处理所有必要的逻辑?
+
+例如:  
+当玩家尝试向fallback请求状态时 fallback将从motdHandler中请求并返回motd.  
+当玩家尝试加入fallback时, 如果协议上支持该客户端 
+fallback会自动处理并回应所有(从握手到加入游戏的所需)数据包.
+
+> ⚠️ 如果您需要手动切换fallback状态 请使用 `FallbackHandler#updateState(State)`
+
+> ⚠️ 不要在未完全加入游戏之前干涉逻辑 或者请完全禁用逻辑处理并手动处理所有所需的数据包.
 
 ---
 

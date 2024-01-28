@@ -25,13 +25,12 @@ import net.miaomoe.blessing.fallback.packet.ByteArrayHolder
 import net.miaomoe.blessing.fallback.packet.ExplicitPacket
 import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
-import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FallbackEncoder(
-    var mappings: ProtocolMappings = State.HANDSHAKE.clientbound.value,
+    var mappings: ProtocolMappings,
     var version: Version = Version.UNDEFINED,
     var handler: FallbackHandler? = null
 ) : MessageToByteEncoder<PacketToClient>() {

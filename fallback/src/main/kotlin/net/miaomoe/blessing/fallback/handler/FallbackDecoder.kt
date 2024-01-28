@@ -23,7 +23,6 @@ import io.netty.handler.codec.MessageToMessageDecoder
 import net.miaomoe.blessing.fallback.packet.ExplicitPacket
 import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
 import net.miaomoe.blessing.protocol.packet.type.PacketToServer
-import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.ByteMessage.Companion.toByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -31,7 +30,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 @Suppress("MemberVisibilityCanBePrivate")
 class FallbackDecoder(
-    var mappings: ProtocolMappings = State.HANDSHAKE.serverbound.value,
+    var mappings: ProtocolMappings,
     var version: Version = Version.UNDEFINED,
     var throwWhenEmptyBuffer: Boolean = true,
     var checkRemainBytes: Boolean = false,

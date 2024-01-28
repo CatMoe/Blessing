@@ -26,6 +26,7 @@ import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler;
 import net.miaomoe.blessing.fallback.handler.motd.DefaultMotdHandlerKt;
 import net.miaomoe.blessing.fallback.handler.motd.FallbackMotdHandler;
 import net.miaomoe.blessing.nbt.dimension.World;
+import net.miaomoe.blessing.protocol.registry.State;
 import net.miaomoe.blessing.protocol.util.PlayerPosition;
 import net.miaomoe.blessing.protocol.util.Position;
 import org.jetbrains.annotations.ApiStatus;
@@ -160,6 +161,19 @@ public class FallbackSettings {
     private boolean disableFall = true;
 
     /**
+     * The state used by default.
+     * (Can be used to dynamic switch to fallback)
+     */
+    private @NotNull State defaultState = State.HANDSHAKE;
+
+    /**
+     * Should we let fallback actively handle the logic (to help respond to the client)?
+     * If the problem is caused by the active intervention of the fallback.
+     * You can choose to disable it.
+     */
+    private boolean processLogic = true;
+
+    /**
      * A map of save some PacketCacheGroup.
      */
     private final @NotNull Map<PacketsToCache, PacketCacheGroup> cacheMap = new EnumMap<>(PacketsToCache.class);
@@ -222,6 +236,14 @@ public class FallbackSettings {
 
     public final boolean isDisableFall() {
         return disableFall;
+    }
+
+    public @NotNull State getDefaultState() {
+        return defaultState;
+    }
+
+    public boolean isProcessLogic() {
+        return processLogic;
     }
 
     /**
@@ -363,6 +385,29 @@ public class FallbackSettings {
      */
     public final FallbackSettings setDisableFall(boolean disableFall) {
         this.disableFall = disableFall;
+        return this;
+    }
+
+    /**
+     * Set the default state of fallback.
+     * (Can be used to dynamic switch to fallback)
+     * @param defaultState What default state should we provide?
+     * @return FallbackSettings for chain setters
+     */
+    public final FallbackSettings setDefaultState(@NotNull State defaultState) {
+        this.defaultState = defaultState;
+        return this;
+    }
+
+    /**
+     * Should we let fallback actively handle the logic (to help respond to the client)?
+     * If the problem is caused by the active intervention of the fallback.
+     * You can choose to disable it.
+     * @param processLogic Enables or disables logical processing.
+     * @return FallbackSettings for chain setters
+     */
+    public final FallbackSettings setProcessLogic(boolean processLogic) {
+        this.processLogic = processLogic;
         return this;
     }
 }
