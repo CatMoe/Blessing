@@ -59,7 +59,7 @@ class PacketJoinGame(
 
     private fun write17(byteBuf: ByteMessage, v18: Boolean, v19: Boolean) {
         byteBuf.writeByte(if (gameMode == 3 && !v18) 1 else gameMode) // 1.7 not supported spectator
-        dimension.id.let { if (v19) byteBuf.writeInt(it) else byteBuf.writeByte(it) }
+        dimension.dimensionId.let { if (v19) byteBuf.writeInt(it) else byteBuf.writeByte(it) }
         byteBuf.writeByte(0) // difficulty
         byteBuf.writeByte(0) // max players
         byteBuf.writeString("flat") // level type
@@ -68,7 +68,7 @@ class PacketJoinGame(
 
     private fun write114(byteBuf: ByteMessage, v15: Boolean) {
         byteBuf.writeByte(gameMode)
-        byteBuf.writeInt(dimension.id)
+        byteBuf.writeInt(dimension.dimensionId)
         if (v15) byteBuf.writeLong(hashedSeed)
         byteBuf.writeByte(0) // max players
         byteBuf.writeString("flat")

@@ -30,6 +30,7 @@ import net.miaomoe.blessing.protocol.util.PositionUtil
 import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.BiFunction
+import java.util.logging.Level
 
 enum class PacketsToCache(
     val packet: BiFunction<FallbackSettings, Version, PacketToClient?>,
@@ -37,7 +38,7 @@ enum class PacketsToCache(
     val version: VersionRange = VersionRange(Version.V1_7_6, Version.max)
 ) {
     REGISTRY_DATA({ settings, version ->
-        if (version.moreOrEqual(net.miaomoe.blessing.protocol.version.Version.V1_20_2))
+        if (version.moreOrEqual(Version.V1_20_2))
             PacketRegistryData(settings.world)
         else null
     }, "Cached PacketRegistryData", VersionRange(Version.V1_20_2, Version.max)),
@@ -61,15 +62,18 @@ enum class PacketsToCache(
     fun getCacheGroup(settings: FallbackSettings): PacketCacheGroup? {
         val lastPacket = packet.apply(settings, this.version.max) ?: return null
         val group = PacketCacheGroup(lastPacket, copySame = true)
+        var bytes = 0
         for (version in this.version) {
             val packet = this.packet.apply(settings, version) ?: continue
             val encoded = ByteMessage.create().use {
                 packet.encode(it, version)
+                bytes += it.readableBytes()
                 it.toByteArray()
             }
             val cache = PacketCache(packet::class, encoded, this.description)
             group.setAt(version, cache)
         }
+        settings.debugLogger?.log(Level.INFO, "Finished cached packet for $lastPacket. (With $bytes bytes)")
         return group
     }
 }
