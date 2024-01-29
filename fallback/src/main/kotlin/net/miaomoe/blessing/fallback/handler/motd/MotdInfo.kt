@@ -122,7 +122,7 @@ data class MotdInfo @JvmOverloads constructor(
                     it.toByteArray()
                 }
                 val encoded = "data:image/png;base64,${Base64.getEncoder().encodeToString(imageBytes)}"
-                require(encoded.length > Short.MAX_VALUE)
+                require(encoded.length < Short.MAX_VALUE)
                 { "Encoded favicon too large!" }
                 return encoded
             }
