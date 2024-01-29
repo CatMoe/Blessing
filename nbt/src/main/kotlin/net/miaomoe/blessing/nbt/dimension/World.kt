@@ -43,7 +43,7 @@ enum class World(val dimension: Dimension) {
         monsterSpawnBlockLightLimit = 0, logicalHeight = 256,
         coordinateScale = 1.0f, ultrawarm = false,
         hasCeiling = false, minY = 0, height = 256,
-        biomes = listOf(NETHER_WASTES.biome, PLANINS.biome)
+        biomes = listOf(PLANINS.biome, NETHER_WASTES.biome)
     )),
     THE_END(Dimension(
         "minecraft:the_end", 1, 3,
@@ -55,5 +55,5 @@ enum class World(val dimension: Dimension) {
         monsterSpawnBlockLightLimit = 0, logicalHeight = 256,
         coordinateScale = 1.0f, ultrawarm = false,
         hasCeiling = false, minY = 0, height = 256,
-        biomes = listOf(Biome.Type.THE_END.biome, PLANINS.biome)));
+        biomes = listOf(PLANINS.biome, Biome.Type.THE_END.biome)));
 }

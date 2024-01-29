@@ -19,12 +19,14 @@ package net.miaomoe.blessing.fallback.handler
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
+import net.miaomoe.blessing.fallback.cache.ChunksCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.fallback.config.FallbackSettings
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
 import net.miaomoe.blessing.protocol.handlers.VarintLengthEncoder
+import net.miaomoe.blessing.protocol.util.PositionUtil
 import java.util.concurrent.TimeUnit
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -34,15 +36,20 @@ class FallbackInitializer @JvmOverloads constructor(
 
     val cache: MutableMap<PacketsToCache, PacketCacheGroup> = settings.cacheMap
 
+    var chunksCache: ChunksCache? = null
+
     init {
         if (settings.isUseCache) this.refreshCache()
     }
 
     fun refreshCache() {
+        cache.clear()
         for (enum in PacketsToCache.entries) {
             if (cache.containsKey(enum)) continue
             enum.getCacheGroup(settings)?.let { cache[enum] = it }
         }
+        chunksCache?.caches?.clear()
+        chunksCache = ChunksCache.surround(PositionUtil.toChunkOffset(settings.joinPosition.position), 1)
     }
 
     public override fun initChannel(channel: Channel) {

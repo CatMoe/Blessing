@@ -26,7 +26,6 @@ import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
 import net.miaomoe.blessing.protocol.packet.play.*
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
-import net.miaomoe.blessing.protocol.util.PositionUtil
 import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.BiFunction
@@ -55,7 +54,6 @@ enum class PacketsToCache(
     LOGIN_RESPONSE({ settings, _ -> PacketLoginResponse(settings.playerName) }, "Cached LoginResponse"),
     SPAWN_POSITION({ settings, _ -> PacketSpawnPosition(settings.spawnPosition) }, "Cached SpawnPosition"),
     JOIN_POSITION({ settings, _ -> PacketPositionLook(settings.joinPosition, settings.teleportId) }, "Cached Teleport for joining"),
-    EMPTY_CHUNK(({ settings, _ -> PositionUtil.toChunkOffset(settings.joinPosition.position).let { PacketChunk(it.x.toInt(), it.z.toInt()) } }), "Cached Empty Chunk"),
     PLAYER_ABILITIES(({ settings, _ -> PacketAbilities(if (settings.isDisableFall) 0x02 else 0x00, viewModifier = 0.1f) }), "Cached Player Abilities"),
     GAME_EVENT(({ _, _ -> PacketGameEvent(13) }), "Cached Game Event", VersionRange.of(Version.V1_20_3));
 

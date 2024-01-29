@@ -22,6 +22,7 @@ import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.kyori.adventure.text.Component
+import net.miaomoe.blessing.fallback.cache.ChunksCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
@@ -221,7 +222,9 @@ class FallbackHandler(
         if (version.less(Version.V1_20_3)) write(PacketsToCache.PLUGIN_MESSAGE)
         write(PacketsToCache.JOIN_POSITION)
         if (version.moreOrEqual(Version.V1_20_3)) write(PacketsToCache.GAME_EVENT)
-        write(PacketsToCache.EMPTY_CHUNK)
+        val chunks = initializer.chunksCache ?: ChunksCache.surround(settings.joinPosition.position, 1)
+        chunks.write(this)
+        if (chunks != initializer.chunksCache) chunks.caches.clear()
         if (settings.isDisableFall) write(PacketsToCache.PLAYER_ABILITIES)
         write(PacketKeepAlive(), true)
     }
