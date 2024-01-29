@@ -45,6 +45,7 @@ import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.PlayerPosition
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
+import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import java.util.logging.Level
 
@@ -116,6 +117,7 @@ class FallbackHandler(
     }
 
     fun updateState(state: State) {
+        if (this.state == state) return
         encoder.let {
             it.version = this.version
             it.mappings = state.clientbound.value
@@ -148,7 +150,12 @@ class FallbackHandler(
                 it.recvLogin=true
             }
             write(PacketsToCache.LOGIN_RESPONSE, true)
-            if (version.less(Version.V1_20_2)) spawn()
+            if (version.less(Version.V1_20_2)) {
+                if (version.less(Version.V1_8)) {
+                    updateState(State.PLAY)
+                    channel.eventLoop().schedule(::spawn, 100, TimeUnit.MILLISECONDS)
+                } else spawn()
+            }
         }
     }
 
@@ -219,7 +226,7 @@ class FallbackHandler(
         updateState(State.PLAY)
         write(PacketsToCache.JOIN_GAME)
         if (version.moreOrEqual(Version.V1_19_3)) write(PacketsToCache.SPAWN_POSITION)
-        if (version.less(Version.V1_20_3)) write(PacketsToCache.PLUGIN_MESSAGE)
+        if (version.less(Version.V1_20_2)) write(PacketsToCache.PLUGIN_MESSAGE)
         write(PacketsToCache.JOIN_POSITION)
         if (version.moreOrEqual(Version.V1_20_3)) write(PacketsToCache.GAME_EVENT)
         val chunks = initializer.chunksCache ?: ChunksCache.surround(settings.joinPosition.position, 1)

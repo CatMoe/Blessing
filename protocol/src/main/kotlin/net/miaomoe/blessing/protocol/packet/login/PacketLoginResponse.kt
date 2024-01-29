@@ -31,7 +31,19 @@ class PacketLoginResponse(
 ) : PacketToClient {
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
-        byteBuf.writeUUID(uuid, version)
+        when {
+            version.moreOrEqual(Version.V1_19) -> byteBuf.writeUUID(uuid)
+            version.moreOrEqual(Version.V1_16) -> {
+                fun write(value: Long) {
+                    byteBuf.writeInt((value ushr 32).toInt())
+                    byteBuf.writeInt(value.toInt())
+                }
+                write(uuid.mostSignificantBits)
+                write(uuid.leastSignificantBits)
+            }
+            version.moreOrEqual(Version.V1_7_6) -> byteBuf.writeString(uuid.toString())
+            else -> byteBuf.writeString(UUIDUtil.toLegacyFormat(uuid))
+        }
         byteBuf.writeString(name)
         if (version.moreOrEqual(Version.V1_19)) byteBuf.writeVarInt(0)
     }

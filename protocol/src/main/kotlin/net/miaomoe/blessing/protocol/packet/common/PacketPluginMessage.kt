@@ -29,15 +29,26 @@ class PacketPluginMessage(
 
     override fun encode(byteBuf: ByteMessage, version: Version) {
         byteBuf.writeString(channel)
-        byteBuf.writeBytes(data)
+        if (version.moreOrEqual(Version.V1_8))
+            byteBuf.writeBytes(data)
+        else {
+            val data = this.data
+            require(data.size < Short.MAX_VALUE) { "Plugin message data is larger than 1.7 clients can accept!" }
+            byteBuf.writeShort(data.size)
+            byteBuf.writeBytes(data)
+        }
     }
 
     override fun decode(byteBuf: ByteMessage, version: Version) {
         channel = byteBuf.readString()
         require(channel.isNotBlank() && channel.length in 1..128) { "Invalid channel: $channel" }
-        val data = ByteArray(byteBuf.readableBytes())
-        byteBuf.readBytes(data)
-        this.data=data
+        if (version.moreOrEqual(Version.V1_8)) {
+            val data = ByteArray(byteBuf.readableBytes())
+            byteBuf.readBytes(data)
+            this.data=data
+        } else {
+            this.data = byteBuf.readBytesArray(byteBuf.readShort().toInt())
+        }
     }
 
     override fun toString() = "PacketPluginMessage(channel=$channel, data=${data.contentToString()})"
