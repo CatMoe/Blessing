@@ -128,7 +128,7 @@ public enum State {
                     .getMapping()
             );
             clientbound.register(PacketDisconnect::new, builder()
-                    .addMapping(0x40, V1_7_6, V1_8)
+                    .addMapping(0x40, V1_7_2, V1_8)
                     .addMapping(0x1A, V1_9, V1_12_2)
                     .addMapping(0x1B, V1_13, V1_13_2)
                     .addMapping(0x1A, V1_14, V1_14_4)
@@ -144,7 +144,7 @@ public enum State {
                     .getMapping()
             );
             serverbound.register(PacketKeepAlive::new, builder()
-                    .addMapping(0x00, V1_7_6, V1_8)
+                    .addMapping(0x00, V1_7_2, V1_8)
                     .addMapping(0x0B, V1_9, V1_11)
                     .addMapping(0x0C, V1_12)
                     .addMapping(0x0B, V1_12_1, V1_12_2)
@@ -161,7 +161,7 @@ public enum State {
                     .getMapping()
             );
             clientbound.register(PacketKeepAlive::new, builder()
-                    .addMapping(0x00, V1_7_6, V1_8)
+                    .addMapping(0x00, V1_7_2, V1_8)
                     .addMapping(0x1F, V1_9, V1_12_2)
                     .addMapping(0x21, V1_13, V1_13_2)
                     .addMapping(0x20, V1_14, V1_14_4)
@@ -177,7 +177,7 @@ public enum State {
                     .getMapping()
             );
             serverbound.register(PacketPluginMessage::new, builder()
-                    .addMapping(0x17, V1_7_6, V1_8)
+                    .addMapping(0x17, V1_7_2, V1_8)
                     .addMapping(0x09, V1_9, V1_11_1)
                     .addMapping(0x0A, V1_12)
                     .addMapping(0x09, V1_12_1, V1_12_2)
@@ -193,7 +193,7 @@ public enum State {
                     .getMapping()
             );
             clientbound.register(PacketPluginMessage::new, builder()
-                    .addMapping(0x3F, V1_7_6, V1_8)
+                    .addMapping(0x3F, V1_7_2, V1_8)
                     .addMapping(0x18, V1_9, V1_12_2)
                     .addMapping(0x19, V1_13, V1_13_2)
                     .addMapping(0x18, V1_14, V1_14_4)

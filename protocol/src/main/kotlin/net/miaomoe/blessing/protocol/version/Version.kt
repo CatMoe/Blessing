@@ -22,7 +22,7 @@ import net.miaomoe.blessing.nbt.dimension.NbtVersion
 @Suppress("MemberVisibilityCanBePrivate")
 enum class Version(val protocolId: Int, val isSupported: Boolean = true, val registerMap: Boolean = true) {
     UNDEFINED(-1, false, false),
-    V1_7_2(4, false),
+    V1_7_2(4),
     @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))
     V1_7_3(4, false, false),
     @Deprecated("Use V1_7_2 for this same protocol. (4)", replaceWith = ReplaceWith("V1_7_2"))

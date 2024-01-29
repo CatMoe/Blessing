@@ -34,7 +34,7 @@ import java.util.logging.Level
 enum class PacketsToCache(
     val packet: BiFunction<FallbackSettings, Version, PacketToClient?>,
     val description: String? = null,
-    val version: VersionRange = VersionRange(Version.V1_7_6, Version.max)
+    val version: VersionRange = VersionRange(Version.V1_7_2, Version.max)
 ) {
     REGISTRY_DATA({ settings, version ->
         if (version.moreOrEqual(Version.V1_20_2))
