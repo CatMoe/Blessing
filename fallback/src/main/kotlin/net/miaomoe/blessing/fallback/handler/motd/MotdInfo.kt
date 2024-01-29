@@ -79,7 +79,7 @@ data class MotdInfo @JvmOverloads constructor(
     )
 
     data class Sample @JvmOverloads constructor(
-        val uuid: UUID = UUID(0, 0),
+        val id: UUID = UUID(0, 0),
         val name: String
     ) {
         constructor(uuid: UUID, name: Component) : this(uuid, name.toLegacyText())
