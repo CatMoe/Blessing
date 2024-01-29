@@ -60,6 +60,7 @@ class FallbackInitializer @JvmOverloads constructor(
         pipeline.addLast(DECODER, handler.decoder)
         pipeline.addLast(ENCODER, handler.encoder)
         pipeline.addLast(HANDLER, handler)
+        if (settings.isAliveScheduler) pipeline.addLast(KEEP_ALIVE_SCHEDULER, KeepAliveScheduler(handler, settings.aliveDelay))
         pipeline.addFirst(TIMEOUT_HANDLER, TimeoutHandler(settings.timeout, TimeUnit.MILLISECONDS))
         settings.initListener?.accept(handler, channel)
         settings.debugLogger?.let { _ ->
@@ -76,5 +77,6 @@ class FallbackInitializer @JvmOverloads constructor(
         const val DECODER = "fallback-decoder"
         const val HAPROXY_DECODER = "fallback-haproxy-decoder"
         const val TIMEOUT_HANDLER = "fallback-timeout"
+        const val KEEP_ALIVE_SCHEDULER = "fallback-keep-alive"
     }
 }

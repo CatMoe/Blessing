@@ -174,6 +174,16 @@ public class FallbackSettings {
     private boolean processLogic = true;
 
     /**
+     * Should we send KeepAlive on a scheduled basis?
+     */
+    private boolean aliveScheduler = true;
+
+    /**
+     * The interval at which the KeepAlive is sent repeatedly.
+     */
+    private long aliveDelay = 5000;
+
+    /**
      * A map of save some PacketCacheGroup.
      */
     private final @NotNull Map<PacketsToCache, PacketCacheGroup> cacheMap = new EnumMap<>(PacketsToCache.class);
@@ -246,12 +256,20 @@ public class FallbackSettings {
         return processLogic;
     }
 
+    public boolean isAliveScheduler() {
+        return aliveScheduler;
+    }
+
+    public long getAliveDelay() {
+        return aliveDelay;
+    }
+
     /**
      * Settings for World (default=World.OVERWORLD)
      * @param world What world should be used for send dimension?
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setWorld(@NotNull World world) {
+    public final @NotNull FallbackSettings setWorld(@NotNull World world) {
         this.world = world;
         return this;
     }
@@ -267,7 +285,7 @@ public class FallbackSettings {
      * @param brand What brand should be provided to the client?
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setBrand(String brand) {
+    public final @NotNull FallbackSettings setBrand(String brand) {
         this.brand = brand;
         return this;
     }
@@ -277,7 +295,7 @@ public class FallbackSettings {
      * @param name What should be the name of the player joining the fallback?
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setPlayerName(String name) {
+    public final @NotNull FallbackSettings setPlayerName(String name) {
         this.playerName = name;
         return this;
     }
@@ -290,7 +308,7 @@ public class FallbackSettings {
      * @param validate enable or disable validate (default=true)
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setValidate(boolean validate) {
+    public final @NotNull FallbackSettings setValidate(boolean validate) {
         this.validate = validate;
         return this;
     }
@@ -300,7 +318,7 @@ public class FallbackSettings {
      * @param timeout Disconnect when the connection is idle for more than a few milliseconds.
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setTimeout(long timeout) {
+    public final @NotNull FallbackSettings setTimeout(long timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -310,7 +328,7 @@ public class FallbackSettings {
      * @param motdHandler custom FallbackMotdHandler
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setMotdHandler(@NotNull FallbackMotdHandler motdHandler) {
+    public final @NotNull FallbackSettings setMotdHandler(@NotNull FallbackMotdHandler motdHandler) {
         this.motdHandler = motdHandler;
         return this;
     }
@@ -320,7 +338,7 @@ public class FallbackSettings {
      * @param exceptionHandler custom handler. If set to null. Fallback server will disconnect client.
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
+    public final @NotNull FallbackSettings setExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
         return this;
     }
@@ -330,7 +348,7 @@ public class FallbackSettings {
      * @param initListener custom listener
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setInitListener(@Nullable BiConsumer<FallbackHandler, Channel> initListener) {
+    public final @NotNull FallbackSettings setInitListener(@Nullable BiConsumer<FallbackHandler, Channel> initListener) {
         this.initListener = initListener;
         return this;
     }
@@ -340,7 +358,7 @@ public class FallbackSettings {
      * @param debugLogger logger to debug. set null to disabling debug feature.
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setDebugLogger(@Nullable Logger debugLogger) {
+    public final @NotNull FallbackSettings setDebugLogger(@Nullable Logger debugLogger) {
         this.debugLogger = debugLogger;
         return this;
     }
@@ -351,7 +369,7 @@ public class FallbackSettings {
      * @param spawnPosition SpawnPosition to send to client (default=Position(x=7.5 y=100 z=7.5))
      * @return FallbackSettings for chain setters.
      */
-    public final FallbackSettings setSpawnPosition(@NotNull Position spawnPosition) {
+    public final @NotNull FallbackSettings setSpawnPosition(@NotNull Position spawnPosition) {
         this.spawnPosition = spawnPosition;
         return this;
     }
@@ -362,7 +380,7 @@ public class FallbackSettings {
      * @param joinPosition position sent to client when joining.
      * @return FallbackSettings for chain setters
      */
-    public final FallbackSettings setJoinPosition(@NotNull PlayerPosition joinPosition) {
+    public final @NotNull FallbackSettings setJoinPosition(@NotNull PlayerPosition joinPosition) {
         this.joinPosition = joinPosition;
         return this;
     }
@@ -372,7 +390,7 @@ public class FallbackSettings {
      * @param teleportId for sent to client when teleporting (with joinPosition)
      * @return FallbackSettings for chain setters
      */
-    public final FallbackSettings setTeleportId(int teleportId) {
+    public final @NotNull FallbackSettings setTeleportId(int teleportId) {
         this.teleportId = teleportId;
         return this;
     }
@@ -383,7 +401,7 @@ public class FallbackSettings {
      * @param disableFall should be sent that abilities packet?
      * @return FallbackSettings for chain setters
      */
-    public final FallbackSettings setDisableFall(boolean disableFall) {
+    public final @NotNull FallbackSettings setDisableFall(boolean disableFall) {
         this.disableFall = disableFall;
         return this;
     }
@@ -394,7 +412,7 @@ public class FallbackSettings {
      * @param defaultState What default state should we provide?
      * @return FallbackSettings for chain setters
      */
-    public final FallbackSettings setDefaultState(@NotNull State defaultState) {
+    public final @NotNull FallbackSettings setDefaultState(@NotNull State defaultState) {
         this.defaultState = defaultState;
         return this;
     }
@@ -406,8 +424,28 @@ public class FallbackSettings {
      * @param processLogic Enables or disables logical processing.
      * @return FallbackSettings for chain setters
      */
-    public final FallbackSettings setProcessLogic(boolean processLogic) {
+    public final @NotNull FallbackSettings setProcessLogic(boolean processLogic) {
         this.processLogic = processLogic;
+        return this;
+    }
+
+    /**
+     * Should we send KeepAlive on a scheduled basis?
+     * @param aliveScheduler Enable KeepAliveScheduler? (default=true)
+     * @return FallbackSettings for chain setters
+     */
+    public final @NotNull FallbackSettings setAliveScheduler(boolean aliveScheduler) {
+        this.aliveScheduler = aliveScheduler;
+        return this;
+    }
+
+    /**
+     * The interval at which the KeepAlive is sent repeatedly.
+     * @param aliveDelay Specify the interval (The unit is milliseconds. default=5000L)
+     * @return FallbackSettings for chain setters
+     */
+    public final @NotNull FallbackSettings setAliveDelay(long aliveDelay) {
+        this.aliveDelay = aliveDelay;
         return this;
     }
 }
