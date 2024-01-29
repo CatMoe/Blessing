@@ -105,7 +105,7 @@ enum class Version(val protocolId: Int, val isSupported: Boolean = true, val reg
         else -> NbtVersion.LEGACY
     }
 
-    fun more(another: Version) = protocolId >= another.protocolId
+    fun more(another: Version) = protocolId > another.protocolId
     fun moreOrEqual(another: Version) = protocolId >= another.protocolId
     fun less(another: Version) = protocolId < another.protocolId
     fun lessOrEqual(another: Version) = protocolId <= another.protocolId
