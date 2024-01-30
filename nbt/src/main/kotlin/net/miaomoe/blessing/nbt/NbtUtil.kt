@@ -23,9 +23,30 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.google.gson.internal.LazilyParsedNumber
 import net.kyori.adventure.nbt.*
+import net.miaomoe.blessing.nbt.exception.DecodeTagException
+import net.miaomoe.blessing.nbt.exception.EncodeTagException
 import org.jetbrains.annotations.ApiStatus.Experimental
+import java.io.DataInputStream
+import java.io.DataOutput
+import java.io.InputStream
 
 object NbtUtil {
+
+    val idMaps = mapOf(
+        0 to BinaryTagTypes.END,
+        1 to BinaryTagTypes.BYTE,
+        2 to BinaryTagTypes.SHORT,
+        3 to BinaryTagTypes.INT,
+        4 to BinaryTagTypes.LONG,
+        5 to BinaryTagTypes.FLOAT,
+        6 to BinaryTagTypes.DOUBLE,
+        7 to BinaryTagTypes.BYTE_ARRAY,
+        8 to BinaryTagTypes.STRING,
+        9 to BinaryTagTypes.LIST,
+        10 to BinaryTagTypes.COMPOUND,
+        11 to BinaryTagTypes.INT_ARRAY,
+        12 to BinaryTagTypes.LONG_ARRAY
+    )
 
     fun BinaryTag.toNamed(name: String = "") = CompoundBinaryTag.builder().put(name, this).build()
     fun String.toNbt() = StringBinaryTag.stringBinaryTag(this)
@@ -73,7 +94,47 @@ object NbtUtil {
     private inline fun <reified T : Number> List<JsonElement>.toArray(converter: (JsonElement) -> T)
     = Array(size) { index -> converter.invoke(this[index]) }
 
+    private inline fun <T, reified R : Throwable> sneakyThrows(
+        throws: (Throwable) -> R, task: () -> T
+    ) : T {
+        try {
+            return task.invoke()
+        } catch (exception: Exception) {
+            throw (exception as? R) ?: throws.invoke(exception)
+        }
+    }
 
+    fun readCompoundTag(stream: InputStream): CompoundBinaryTag
+    = sneakyThrows(DecodeTagException::create) { BinaryTagIO.reader().read(stream) }
+
+    fun readNamelessTag(stream: DataInputStream): BinaryTag 
+    = sneakyThrows(DecodeTagException::create) {
+        val id = stream.readByte().toInt()
+        val tag = idMaps[id] 
+        ?: throw DecodeTagException("Unknown nbt for type: $id")
+        tag.read(stream)
+    }
+
+    fun writeCompoundTag(tag: CompoundBinaryTag, stream: DataOutput)
+    = sneakyThrows(EncodeTagException::create) { BinaryTagIO.writer().write(tag, stream) }
+
+    fun writeNamelessTag(tag: BinaryTag, stream: DataOutput) {
+        sneakyThrows(EncodeTagException::create) {
+            stream.writeByte(tag.type().id().toInt())
+            when (tag) {
+                is CompoundBinaryTag -> tag.type().write(tag, stream)
+                is ByteBinaryTag -> tag.type().write(tag, stream)
+                is ShortBinaryTag -> tag.type().write(tag, stream)
+                is IntBinaryTag -> tag.type().write(tag, stream)
+                is LongBinaryTag -> tag.type().write(tag, stream)
+                is DoubleBinaryTag -> tag.type().write(tag, stream)
+                is StringBinaryTag -> tag.type().write(tag, stream)
+                is ListBinaryTag -> tag.type().write(tag, stream)
+                is EndBinaryTag -> tag.type().write(tag, stream)
+                else -> throw EncodeTagException("Unknown tag type: $tag")
+            }
+        }
+    }
 
     @Experimental
     fun deserialize(nbt: BinaryTag): JsonElement = when (nbt) {

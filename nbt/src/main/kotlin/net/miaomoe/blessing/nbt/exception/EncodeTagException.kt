@@ -15,8 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.protocol.exceptions
+package net.miaomoe.blessing.nbt.exception
 
-import java.io.IOException
+class EncodeTagException(
+    override val cause: Throwable,
+    override val message: String? = null
+) : TagException(cause, message ?: "Failed to encode nbt tag.") {
 
-class EncodeTagException(override val cause: IOException) : RuntimeException("Failed to encode nbt tag.", cause)
+    constructor(message: String): this(IllegalArgumentException(message))
+
+    companion object {
+        @JvmStatic
+        fun create(exception: Throwable) = EncodeTagException(exception)
+    }
+
+}

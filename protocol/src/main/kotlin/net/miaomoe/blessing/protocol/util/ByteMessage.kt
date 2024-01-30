@@ -20,14 +20,11 @@ package net.miaomoe.blessing.protocol.util
 import io.netty.buffer.*
 import io.netty.util.ByteProcessor
 import net.kyori.adventure.nbt.*
+import net.miaomoe.blessing.nbt.NbtUtil
 import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.exceptions.DecoderException
-import net.miaomoe.blessing.protocol.exceptions.EncodeTagException
 import net.miaomoe.blessing.protocol.version.Version
-import java.io.Closeable
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
@@ -156,40 +153,22 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
     }
 
     /* NBT */
-    fun writeCompoundTagArray(tags: Array<CompoundBinaryTag>) {
-        writeVarInt(tags.size)
-        for (tag in tags) writeCompoundTag(tag)
+
+    fun writeCompoundTag(tag: CompoundBinaryTag)
+    = ByteBufOutputStream(this).use {
+            stream -> NbtUtil.writeCompoundTag(tag, stream)
     }
 
-    fun writeCompoundTag(tag: CompoundBinaryTag) {
-        try {
-            ByteBufOutputStream(this).use { BinaryTagIO.writer().write(tag, it as OutputStream) }
-        } catch (exception: IOException) {
-            throw EncodeTagException(exception)
-        }
+    fun writeNamelessTag(binaryTag: BinaryTag)
+    = ByteBufOutputStream(this).use {
+        stream -> NbtUtil.writeNamelessTag(binaryTag, stream)
     }
 
-    fun writeNamelessTag(binaryTag: BinaryTag) {
-        try {
-            ByteBufOutputStream(this).use {
-                it.writeByte(binaryTag.type().id().toInt())
-                when (binaryTag) {
-                    is CompoundBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is ByteBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is ShortBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is IntBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is LongBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is DoubleBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is StringBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is ListBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    is EndBinaryTag -> binaryTag.type().write(binaryTag, it)
-                    else -> throw IOException("Unknown tag type: $binaryTag")
-                }
-            }
-        } catch (exception: IOException) {
-            throw EncodeTagException(exception)
-        }
-    }
+    fun readCompoundTag()
+    = DataInputStream(ByteBufInputStream(this)).use(NbtUtil::readCompoundTag)
+
+    fun readNamelessTag()
+    = DataInputStream(ByteBufInputStream(this)).use(NbtUtil::readNamelessTag)
 
     fun writeChat(component: MixedComponent, version: Version) {
         if (version.moreOrEqual(Version.V1_19_3))
