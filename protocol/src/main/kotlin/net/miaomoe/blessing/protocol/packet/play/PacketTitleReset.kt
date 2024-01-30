@@ -15,19 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
-import net.miaomoe.blessing.protocol.version.Version
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
-}
+class PacketTitleReset : PacketToClient

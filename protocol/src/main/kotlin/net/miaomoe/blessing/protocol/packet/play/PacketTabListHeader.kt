@@ -15,27 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.util
+package net.miaomoe.blessing.protocol.packet.play
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-object ComponentUtil {
+class PacketTabListHeader(
+    var header: MixedComponent = MixedComponent.EMPTY,
+    var footer: MixedComponent = MixedComponent.EMPTY
+) : PacketToClient {
 
-    val legacy = LegacyComponentSerializer.legacySection()
-    val gson = GsonComponentSerializer.gson()
-    val miniMessage = MiniMessage.miniMessage()
+    constructor(
+        header: Component,
+        footer: Component
+    ) : this(MixedComponent(header), MixedComponent(footer))
 
-    fun Component.toLegacyText() = legacy.serialize(this)
-
-    fun Component.toJsonElement() = gson.serializeToTree(this)
-
-    fun Component.toMixedComponent() = MixedComponent(this)
-
-    fun String.toComponent() = miniMessage.deserialize(this)
+    override fun encode(byteBuf: ByteMessage, version: Version) {
+        byteBuf.writeChat(header, version)
+        byteBuf.writeChat(footer, version)
+    }
 
 }

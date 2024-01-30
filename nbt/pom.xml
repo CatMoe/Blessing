@@ -31,7 +31,7 @@
     <artifactId>nbt</artifactId>
 
     <build>
-        <finalName>${project.parent.artifactId}</finalName>
+        <finalName>${project.parent.artifactId}-${project.artifactId}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>

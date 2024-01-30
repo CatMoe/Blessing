@@ -25,8 +25,9 @@ import net.kyori.adventure.text.Component
 import net.miaomoe.blessing.fallback.cache.ChunksCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.message.TitleAction
+import net.miaomoe.blessing.protocol.message.TitleTime
 import net.miaomoe.blessing.protocol.packet.common.PacketDisconnect
 import net.miaomoe.blessing.protocol.packet.common.PacketKeepAlive
 import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
@@ -34,14 +35,14 @@ import net.miaomoe.blessing.protocol.packet.configuration.PacketFinishConfigurat
 import net.miaomoe.blessing.protocol.packet.handshake.PacketHandshake
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginAcknowledged
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginRequest
-import net.miaomoe.blessing.protocol.packet.play.PacketPosition
-import net.miaomoe.blessing.protocol.packet.play.PacketPositionLook
+import net.miaomoe.blessing.protocol.packet.play.*
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.protocol.util.PlayerPosition
 import net.miaomoe.blessing.protocol.version.Version
 import java.net.InetSocketAddress
@@ -73,9 +74,7 @@ class FallbackHandler(
     var version = Version.UNDEFINED
         private set
     var destination: InetSocketAddress? = null
-        private set
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
-        private set
 
     var markDisconnect = false
 
@@ -109,6 +108,7 @@ class FallbackHandler(
                 is PacketLoginAcknowledged -> handle(msg)
                 is PacketPositionLook -> handle(msg)
                 is PacketPosition -> handle(msg)
+                is PacketOnGround -> handle(msg)
                 is PacketFinishConfiguration -> handle(msg)
                 is PacketPluginMessage -> handle(msg)
             }
@@ -201,8 +201,11 @@ class FallbackHandler(
     }
 
     private fun handle(packet: PacketPosition) {
-        val last = this.location
-        this.location = PlayerPosition(packet.position, last?.yaw ?: 0f, last?.pitch ?: 0f, packet.onGround)
+        this.location = this.location?.copy(packet.position)
+    }
+
+    private fun handle(packet: PacketOnGround) {
+        this.location = this.location?.copy(onGround = packet.onGround)
     }
 
     private fun handle(packet: PacketPluginMessage) {
@@ -244,6 +247,67 @@ class FallbackHandler(
     }
 
     fun disconnect(reason: Component) = disconnect(MixedComponent(reason))
+
+    @JvmOverloads
+    fun sendMessage(component: MixedComponent, flush: Boolean = true) {
+        require(state == State.PLAY) { "Only can send chat when state is State.PLAY!" }
+        this.write(PacketServerChat(component), flush)
+    }
+
+    @JvmOverloads
+    fun sendMessage(component: Component, flush: Boolean = true)
+    = this.sendMessage(MixedComponent(component), flush)
+
+    @JvmOverloads
+    fun sendActionbar(component: MixedComponent, flush: Boolean = true) {
+        require(state == State.PLAY) { "Only can send actionbar when state is State.PLAY!" }
+        if (version.fromTo(Version.V1_11_1, Version.V1_16_4))
+            write(PacketLegacyTitle(TitleAction.ACTION_BAR, component), flush)
+        else
+            write(PacketServerChat(component, PacketServerChat.Type.ACTION_BAR), flush)
+    }
+
+    @JvmOverloads
+    fun sendActionbar(component: Component, flush: Boolean = true)
+    = this.sendActionbar(MixedComponent(component), flush)
+
+    @JvmOverloads
+    fun <T> writeTitle(action: TitleAction<T>, value: T, flush: Boolean = false) {
+        require(state == State.PLAY) { "Only can send title when state is State.PLAY!" }
+        require(!(action is TitleAction.NullTitleAction || action == TitleAction.ACTION_BAR))
+        { "Wrong action! Use sendActionbar to send actionbar. Use resetTitle to reset the title." }
+        if (version.less(Version.V1_17)) {
+            write(PacketLegacyTitle(action, value as Any), flush)
+        } else {
+            write(
+                when (action.id) {
+                    0 -> PacketTitle(value as MixedComponent)
+                    1 -> PacketSubTitle(value as MixedComponent)
+                    3 -> PacketTitleTimes(value as TitleTime)
+                    else -> throw IllegalArgumentException("Unsupported or unknown action id ${action.id}!")
+                },
+                flush
+            )
+        }
+    }
+
+    @JvmOverloads
+    fun resetTitle(flush: Boolean = true) {
+        require(state == State.PLAY) { "Only can reset title when state is State.PLAY!" }
+        if (version.moreOrEqual(Version.V1_17))
+            write(PacketTitleReset(), flush)
+        else
+            PacketLegacyTitle(TitleAction.RESET, flush)
+    }
+
+    @JvmOverloads
+    fun clearTitle(flush: Boolean = true) {
+        require(state == State.PLAY) { "Only can clear title when state is State.PLAY!" }
+        writeTitle(TitleAction.TITLE, MixedComponent.EMPTY, false)
+        writeTitle(TitleAction.SUBTITLE, MixedComponent.EMPTY, false)
+        writeTitle(TitleAction.TIMES, TitleTime.zero, flush)
+    }
+
 
     fun flush(): Channel = channel.flush()
 

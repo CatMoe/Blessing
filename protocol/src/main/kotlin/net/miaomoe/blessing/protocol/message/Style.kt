@@ -15,19 +15,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.message
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
-import net.miaomoe.blessing.protocol.version.Version
+import net.miaomoe.blessing.protocol.util.ByteMessage
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
+data class Style(var color: Color, var dividers: Dividers) {
+
+    fun write(byteBuf: ByteMessage) {
+        byteBuf.writeVarInt(color.ordinal)
+        byteBuf.writeVarInt(dividers.ordinal)
+    }
+
+    enum class Color {
+        PINK,
+        BLUE,
+        RED,
+        GREEN,
+        YELLOW,
+        PURPLE,
+        WHITE
+    }
+
+    enum class Dividers {
+        SOLID,
+        DASHES_6,
+        DASHES_10,
+        DASHES_12,
+        DASHES_20
+    }
+
 }

@@ -216,7 +216,7 @@ Fallback初始化的默认状态 (默认为等待握手)
 
 ### processLogic
 
-是否让fallback自动处理所有必要的逻辑?
+是否让fallback自动处理所有必要的逻辑? (默认为true)
 
 例如:  
 当玩家尝试向fallback请求状态时 fallback将从motdHandler中请求并返回motd.  
@@ -226,6 +226,21 @@ fallback会自动处理并回应所有(从握手到加入游戏的所需)数据�
 > ⚠️ 如果您需要手动切换fallback状态 请使用 `FallbackHandler#updateState(State)`
 
 > ⚠️ 不要在未完全加入游戏之前干涉逻辑 或者请完全禁用逻辑处理并手动处理所有所需的数据包.
+
+### aliveScheduler
+
+是否启用定时发送心跳数据包 (默认为true)
+
+启用后. 
+fallback将在发送第一次心跳包之后以固定频率继续发送心跳包
+直到断开连接.
+
+> ⚠️ 当当前状态不允许发送KeepAlive数据包时 这也会被打断
+
+### aliveDelay
+
+我们应该以什么频率发送心跳数据包? (当aliveScheduler为true时)  
+默认频率为5秒 (也就是5000毫秒)
 
 ---
 

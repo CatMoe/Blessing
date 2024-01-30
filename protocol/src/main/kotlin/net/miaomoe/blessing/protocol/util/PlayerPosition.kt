@@ -17,7 +17,22 @@
 
 package net.miaomoe.blessing.protocol.util
 
-data class PlayerPosition(val position: Position, val yaw: Float, val pitch: Float, val onGround: Boolean) {
+data class PlayerPosition(
+    val position: Position,
+    val yaw: Float,
+    val pitch: Float,
+    val onGround: Boolean
+) {
+
+    @JvmOverloads
+    fun copy(position: Position? = null, yaw: Float? = null, pitch: Float? = null, onGround: Boolean? = null) =
+        PlayerPosition(
+            position ?: this.position,
+            yaw ?: this.yaw,
+            pitch ?: this.pitch,
+            onGround ?: this.onGround
+        )
+
     companion object {
         val zero = PlayerPosition(Position.zero, 0f, 0f, false)
     }

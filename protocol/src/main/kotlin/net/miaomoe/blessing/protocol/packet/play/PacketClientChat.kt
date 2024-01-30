@@ -15,19 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
+import java.util.*
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
+class PacketClientChat(var message: String? = null) : PacketToServer {
+
+    override fun decode(byteBuf: ByteMessage, version: Version) {
+        message = byteBuf.readString(limit = 256)
+        // TODO chat reports
+    }
+
+    data class SeenMessage(var offset: Int = -1, var acknowledged: BitSet? = null)
+    class ChainLink(val sender: UUID, val signature: ByteArray)
+    data class ChatChain(
+        val seen: MutableList<ChainLink> = mutableListOf(),
+        val received: MutableList<ChainLink> = mutableListOf()
     )
+
 }

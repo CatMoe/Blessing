@@ -15,19 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.message
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
-import net.miaomoe.blessing.protocol.version.Version
+enum class BossBarFlags(val mask: Int) {
+    DARKEN_SKY(1),
+    DRAGON_BAR(2),
+    CREATE_FOG(4);
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
+    companion object {
+        fun toFlags(list: List<BossBarFlags>): Int {
+            var flags = 0
+            list.distinct().forEach { flags = flags or it.mask }
+            return flags
+        }
+
+        fun fromFlag(id: Int): List<BossBarFlags> {
+            val decodedFlags = mutableListOf<BossBarFlags>()
+            for (flag in entries) {
+                if (id and flag.mask != 0) decodedFlags.add(flag)
+            }
+            return decodedFlags
+        }
+    }
 }

@@ -15,19 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.message.TitleAction
+import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
+class PacketTitle(
+    var title: MixedComponent = MixedComponent.EMPTY
+) : PacketToClient {
+    override fun encode(byteBuf: ByteMessage, version: Version)
+    = TitleAction.TITLE.write(title, byteBuf, version)
 }

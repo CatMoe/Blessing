@@ -32,6 +32,7 @@ import java.io.InputStream
 
 object NbtUtil {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     val idMaps = mapOf(
         0 to BinaryTagTypes.END,
         1 to BinaryTagTypes.BYTE,
@@ -94,20 +95,20 @@ object NbtUtil {
     private inline fun <reified T : Number> List<JsonElement>.toArray(converter: (JsonElement) -> T)
     = Array(size) { index -> converter.invoke(this[index]) }
 
-    private inline fun <T, reified R : Throwable> sneakyThrows(
-        throws: (Throwable) -> R, task: () -> T
-    ) : T {
+    private inline fun <R, reified T : Throwable> sneakyThrows(
+        throws: (Throwable) -> T, task: () -> R
+    ) : R {
         try {
             return task.invoke()
         } catch (exception: Exception) {
-            throw (exception as? R) ?: throws.invoke(exception)
+            throw (exception as? T) ?: throws.invoke(exception)
         }
     }
 
     fun readCompoundTag(stream: InputStream): CompoundBinaryTag
     = sneakyThrows(DecodeTagException::create) { BinaryTagIO.reader().read(stream) }
 
-    fun readNamelessTag(stream: DataInputStream): BinaryTag 
+    fun readNamelessTag(stream: DataInputStream): BinaryTag
     = sneakyThrows(DecodeTagException::create) {
         val id = stream.readByte().toInt()
         val tag = idMaps[id] 

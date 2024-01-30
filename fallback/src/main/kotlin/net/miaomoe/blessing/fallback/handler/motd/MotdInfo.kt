@@ -25,8 +25,8 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import net.kyori.adventure.text.Component
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toJsonElement
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toJsonElement
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.version.Version
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream

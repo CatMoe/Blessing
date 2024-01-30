@@ -31,7 +31,7 @@ class PacketPositionLook(
 
     override fun decode(byteBuf: ByteMessage, version: Version) {
         val x = byteBuf.readDouble()
-        if (version.lessOrEqual(Version.V1_7_6)) byteBuf.readDouble() // Head y-axis
+        if (version.less(Version.V1_8)) byteBuf.readDouble() // Head y-axis for 1.7
         position = PlayerPosition(
             Position(x, byteBuf.readDouble(), byteBuf.readDouble()),
             byteBuf.readFloat(),

@@ -15,19 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.fallback.handler.motd
+package net.miaomoe.blessing.protocol.message
 
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
-import net.miaomoe.blessing.protocol.version.Version
+import net.kyori.adventure.title.Title.Times
+import java.time.Duration
 
-val DefaultFallbackMotdHandler = FallbackMotdHandler { fallback ->
-    MotdInfo(
-        MotdInfo.VersionInfo(
-            fallback.settings.brand.toComponent().toLegacyText(),
-            fallback.version.let { if (it.isSupported) it else Version.UNDEFINED }
-        ),
-        MotdInfo.PlayerInfo(0, 0),
-        "<light_purple>Blessing <3".toComponent()
-    )
+data class TitleTime(var fadeIn: Int, var stay: Int, var fadeOut: Int) {
+
+    companion object {
+
+        val zero = TitleTime(0, 0, 0)
+
+        private fun millsToTick(mills: Int) = mills.let { if (it >= 50) it / 50 else 0 }
+        private fun durationToTick(duration: Duration) = millsToTick(duration.toMillis().toInt())
+
+        @JvmStatic
+        fun fromAdventure(times: Times)
+        = TitleTime(
+            durationToTick(times.fadeIn()),
+            durationToTick(times.stay()),
+            durationToTick(times.fadeOut())
+        )
+    }
+
 }

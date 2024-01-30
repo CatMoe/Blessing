@@ -18,8 +18,8 @@
 package net.miaomoe.blessing.fallback.cache
 
 import net.miaomoe.blessing.fallback.config.FallbackSettings
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toComponent
-import net.miaomoe.blessing.fallback.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
 import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse

@@ -22,6 +22,14 @@ data class Position(
     val y: Double,
     val z: Double
 ) {
+
+    @JvmOverloads
+    fun copy(
+        x: Double? = null,
+        y: Double? = null,
+        z: Double? = null
+    ) = Position(x ?: this.x, y ?: this.y, z ?: this.z)
+
     companion object {
         val zero = Position(0.0, 0.0, 0.0)
     }

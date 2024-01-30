@@ -171,11 +171,14 @@ class ByteMessage(private val buf: ByteBuf) : ByteBuf(), Closeable {
     = DataInputStream(ByteBufInputStream(this)).use(NbtUtil::readNamelessTag)
 
     fun writeChat(component: MixedComponent, version: Version) {
-        if (version.moreOrEqual(Version.V1_19_3))
+        if (version.moreOrEqual(Version.V1_20_2))
             writeNamelessTag(component.tag)
         else
             writeString(component.json)
     }
+
+    fun readChat(version: Version)
+    = if (version.moreOrEqual(Version.V1_20_2)) MixedComponent(this.readNamelessTag()) else MixedComponent(this.readString())
 
     /* Delegated methods */
     override fun capacity() = buf.capacity()
