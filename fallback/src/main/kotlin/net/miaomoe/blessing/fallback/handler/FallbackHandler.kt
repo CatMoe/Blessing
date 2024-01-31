@@ -234,6 +234,7 @@ class FallbackHandler(
         chunks.write(this)
         if (chunks != initializer.chunksCache) chunks.caches.clear()
         if (settings.isDisableFall) write(PacketsToCache.PLAYER_ABILITIES)
+        sendMessage("<aqua> <b>Test</b> <i>Test</i> <u>Test</u> <obf>Test</obf>".toComponent(), false)
         write(PacketKeepAlive(), true)
     }
 

@@ -30,6 +30,7 @@ import java.io.DataInputStream
 import java.io.DataOutput
 import java.io.InputStream
 
+
 object NbtUtil {
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -111,7 +112,7 @@ object NbtUtil {
     fun readNamelessTag(stream: DataInputStream): BinaryTag
     = sneakyThrows(DecodeTagException::create) {
         val id = stream.readByte().toInt()
-        val tag = idMaps[id] 
+        val tag = idMaps[id]
         ?: throw DecodeTagException("Unknown nbt for type: $id")
         tag.read(stream)
     }
@@ -169,44 +170,35 @@ object NbtUtil {
     fun serialize(json: JsonElement): BinaryTag {
         when (json) {
             is JsonPrimitive -> {
-                when {
-                    json.isNumber -> return json.asNumber.toNbt()
-                    json.isString -> return json.asString.toNbt()
+                return when {
+                    json.isNumber -> json.asNumber.toNbt()
+                    json.isString -> json.asString.toNbt()
                     json.isBoolean -> json.asBoolean.toNbt()
                     else -> throw IllegalArgumentException("Unknown JSON primitive: $json")
                 }
             }
-
             is JsonObject -> {
                 val compound = CompoundBinaryTag.builder()
-                for ((key, value) in json.entrySet()) key?.let { compound.put(it, serialize(value)) }
+                for ((key, value) in json.entrySet()) compound.put(key, serialize(value))
                 return compound.build()
             }
-
             is JsonArray -> {
-                val jsonList = json.asList()
-                if (jsonList.isEmpty()) return ListBinaryTag.empty()
-                val tagItems: MutableList<BinaryTag> = ArrayList(jsonList.size)
-                var listType: BinaryTagType<out BinaryTag?>? = null
-                for (jsonEl in jsonList) {
-                    val tag = serialize(jsonEl)
-                    tagItems.add(tag)
-                    if (listType == null) {
-                        listType = tag.type()
-                    } else if (listType !== tag.type()) {
-                        listType = BinaryTagTypes.COMPOUND
-                    }
+                val jsonArray = json.asList()
+                if (jsonArray.isEmpty()) return ListBinaryTag.empty()
+                val items: MutableList<BinaryTag> = ArrayList(jsonArray.size)
+                var listType: BinaryTagType<out BinaryTag>? = null
+                for (element in jsonArray) {
+                    val tag = serialize(element)
+                    items.add(tag)
+                    if (listType == null) { listType = tag.type() } else if (listType !== tag.type()) { listType = BinaryTagTypes.COMPOUND }
                 }
-                require(listType != null) { "listType cannot be null!" }
-                when (listType.id().toInt()) {
-                    1 -> jsonList.toArray(JsonElement::getAsByte).toByteArray().toNbt()
-                    3 -> jsonList.toArray(JsonElement::getAsInt).toIntArray().toNbt()
-                    4 -> jsonList.toArray(JsonElement::getAsLong).toLongArray().toNbt()
-                    10 -> tagItems.replaceAll { tag: BinaryTag ->
-                        if (tag.type() == BinaryTagTypes.COMPOUND) tag else tag.toNamed()
-                    }
+                when (listType!!.id().toInt()) {
+                    1 -> return jsonArray.toArray(JsonElement::getAsByte).toByteArray().toNbt()
+                    3 -> return jsonArray.toArray(JsonElement::getAsInt).toIntArray().toNbt()
+                    4 -> return jsonArray.toArray(JsonElement::getAsLong).toLongArray().toNbt()
+                    10 -> items.replaceAll { tag: BinaryTag -> if (tag.type() === BinaryTagTypes.COMPOUND) tag else tag.toNamed() }
                 }
-                return ListBinaryTag.listBinaryTag(listType, tagItems)
+                return ListBinaryTag.listBinaryTag(listType, items)
             }
         }
         return EndBinaryTag.endBinaryTag()
