@@ -177,28 +177,25 @@ object NbtUtil {
                     else -> throw IllegalArgumentException("Unknown JSON primitive: $json")
                 }
             }
-            is JsonObject -> {
-                val compound = CompoundBinaryTag.builder()
-                for ((key, value) in json.entrySet()) compound.put(key, serialize(value))
-                return compound.build()
-            }
+            is JsonObject -> CompoundBinaryTag.builder().let { json.entrySet().forEach { map -> it.put(map.key, serialize(map.value)) }; it }.build()
             is JsonArray -> {
-                val jsonArray = json.asList()
-                if (jsonArray.isEmpty()) return ListBinaryTag.empty()
+                val jsonArray = json.asList().takeUnless { it.isEmpty() } ?: return ListBinaryTag.empty()
                 val items: MutableList<BinaryTag> = ArrayList(jsonArray.size)
                 var listType: BinaryTagType<out BinaryTag>? = null
                 for (element in jsonArray) {
-                    val tag = serialize(element)
-                    items.add(tag)
-                    if (listType == null) { listType = tag.type() } else if (listType !== tag.type()) { listType = BinaryTagTypes.COMPOUND }
+                    serialize(element).let { tag -> items.add(tag)
+                        listType = listType?.let { type -> if (type !== tag.type()) BinaryTagTypes.COMPOUND else type } ?: tag.type()
+                    }
                 }
-                when (listType!!.id().toInt()) {
-                    1 -> return jsonArray.toArray(JsonElement::getAsByte).toByteArray().toNbt()
-                    3 -> return jsonArray.toArray(JsonElement::getAsInt).toIntArray().toNbt()
-                    4 -> return jsonArray.toArray(JsonElement::getAsLong).toLongArray().toNbt()
-                    10 -> items.replaceAll { tag: BinaryTag -> if (tag.type() === BinaryTagTypes.COMPOUND) tag else tag.toNamed() }
-                }
-                return ListBinaryTag.listBinaryTag(listType, items)
+                listType?.let { type ->
+                    when (type.id().toInt()) {
+                        1 -> return jsonArray.toArray(JsonElement::getAsByte).toByteArray().toNbt()
+                        3 -> return jsonArray.toArray(JsonElement::getAsInt).toIntArray().toNbt()
+                        4 -> return jsonArray.toArray(JsonElement::getAsLong).toLongArray().toNbt()
+                        10 -> items.replaceAll { tag: BinaryTag -> if (tag.type() === BinaryTagTypes.COMPOUND) tag else tag.toNamed() }
+                    }
+                    return ListBinaryTag.listBinaryTag(type, items)
+                } ?: throw NullPointerException("listType cannot be null!")
             }
         }
         return EndBinaryTag.endBinaryTag()
