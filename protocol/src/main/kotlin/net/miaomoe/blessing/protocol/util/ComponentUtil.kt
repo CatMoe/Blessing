@@ -53,10 +53,13 @@ object ComponentUtil {
 
     fun String.toComponent(legacy: Boolean) = this.toComponent().let { if (legacy) it.toLegacyComponent() else it }
 
-    fun String.toMixedComponent() = this.toComponent().toMixedComponent()
+    @JvmOverloads
+    fun String.toMixedComponent(legacy: Boolean = false) = this.toComponent(legacy).toMixedComponent()
 
-    fun List<String>.toComponent() = this.joinToString("<reset><newline>").toComponent()
+    @JvmOverloads
+    fun List<String>.toComponent(legacy: Boolean = false) = this.joinToString("<reset><newline>").toComponent(legacy)
 
-    fun List<String>.toMixedComponent() = this.toComponent().toMixedComponent()
+    @JvmOverloads
+    fun List<String>.toMixedComponent(legacy: Boolean = false) = this.toComponent(legacy).toMixedComponent()
 
 }
