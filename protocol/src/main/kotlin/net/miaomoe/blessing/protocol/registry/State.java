@@ -351,7 +351,7 @@ public enum State {
                     .addMapping(0x69, V1_20_3, V1_20_3)
                     .getMapping()
             );
-            serverbound.register(PacketServerChat::new, builder()
+            serverbound.register(PacketClientChat::new, builder()
                     .addMapping(0x01, V1_7_2, V1_8)
                     .addMapping(0x02, V1_9, V1_11_1)
                     .addMapping(0x03, V1_12)
