@@ -26,6 +26,7 @@ import net.miaomoe.blessing.fallback.cache.ChunksCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
 import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.message.Title
 import net.miaomoe.blessing.protocol.message.TitleAction
 import net.miaomoe.blessing.protocol.message.TitleTime
 import net.miaomoe.blessing.protocol.packet.common.PacketDisconnect
@@ -69,10 +70,7 @@ class FallbackHandler(
     private val validate = if (settings.isValidate) ValidateHandler(this) else null
 
     var location: PlayerPosition? = null
-        private set
-
     var version = Version.UNDEFINED
-        private set
     var destination: InetSocketAddress? = null
     var address: InetSocketAddress = channel.remoteAddress() as InetSocketAddress
 
@@ -225,7 +223,7 @@ class FallbackHandler(
         }
     }
 
-    private fun spawn() {
+    fun spawn() {
         updateState(State.PLAY)
         write(PacketsToCache.JOIN_GAME)
         if (version.moreOrEqual(Version.V1_19_3)) write(PacketsToCache.SPAWN_POSITION)
@@ -240,6 +238,8 @@ class FallbackHandler(
     }
 
     fun disconnect(reason: MixedComponent) {
+        require(state != State.HANDSHAKE && state != State.STATUS)
+        { "Only can send disconnect message when connection try to joining!" }
         channel
             .writeAndFlush(PacketDisconnect(reason, this.state == State.LOGIN))
             .addListener(ChannelFutureListener.CLOSE)
@@ -270,6 +270,13 @@ class FallbackHandler(
     @JvmOverloads
     fun sendActionbar(component: Component, flush: Boolean = true)
     = this.sendActionbar(MixedComponent(component), flush)
+
+    @JvmOverloads
+    fun writeTitle(title: Title, flush: Boolean = true) {
+        writeTitle(TitleAction.TITLE, title.title)
+        writeTitle(TitleAction.SUBTITLE, title.subTitle)
+        writeTitle(TitleAction.TIMES, title.times, flush)
+    }
 
     @JvmOverloads
     fun <T> writeTitle(action: TitleAction<T>, value: T, flush: Boolean = false) {

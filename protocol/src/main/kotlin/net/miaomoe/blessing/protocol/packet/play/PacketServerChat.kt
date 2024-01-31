@@ -20,7 +20,7 @@ package net.miaomoe.blessing.protocol.packet.play
 import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.util.ByteMessage
-import net.miaomoe.blessing.protocol.util.ComponentUtil
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponentFromJson
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
 import net.miaomoe.blessing.protocol.version.Version
 import java.util.*
@@ -35,7 +35,7 @@ class PacketServerChat(
     override fun encode(byteBuf: ByteMessage, version: Version) {
         val isActionbar = type == Type.ACTION_BAR
         if (version.lessOrEqual(Version.V1_10) && isActionbar) {
-            byteBuf.writeString(ComponentUtil.gson.deserialize(message.json).toLegacyText())
+            byteBuf.writeString(message.toComponentFromJson().toLegacyText())
         } else byteBuf.writeChat(message, version)
         when {
             version.moreOrEqual(Version.V1_19_1) -> byteBuf.writeBoolean(isActionbar)

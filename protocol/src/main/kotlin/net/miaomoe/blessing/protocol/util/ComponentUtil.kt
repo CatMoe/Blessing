@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.util
 
+import com.google.gson.JsonElement
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -32,10 +33,30 @@ object ComponentUtil {
 
     fun Component.toLegacyText() = legacy.serialize(this)
 
+    fun Component.toLegacyComponent() = legacy.deserialize(this.toLegacyText())
+
+    fun String.fromLegacyText() = legacy.deserialize(this)
+
     fun Component.toJsonElement() = gson.serializeToTree(this)
+
+    fun Component.toJson() = gson.serialize(this)
+
+    fun String.fromJson() = gson.deserialize(this)
+
+    fun JsonElement.fromJsonElement() = gson.deserializeFromTree(this)
 
     fun Component.toMixedComponent() = MixedComponent(this)
 
+    fun MixedComponent.toComponentFromJson() = this.json.fromJson()
+
     fun String.toComponent() = miniMessage.deserialize(this)
+
+    fun String.toComponent(legacy: Boolean) = this.toComponent().let { if (legacy) it.toLegacyComponent() else it }
+
+    fun String.toMixedComponent() = this.toComponent().toMixedComponent()
+
+    fun List<String>.toComponent() = this.joinToString("<reset><newline>").toComponent()
+
+    fun List<String>.toMixedComponent() = this.toComponent().toMixedComponent()
 
 }
