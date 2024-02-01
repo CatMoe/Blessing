@@ -18,8 +18,13 @@
 package net.miaomoe.blessing.config.reader
 
 
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigException
 import net.miaomoe.blessing.config.AbstractConfig
 import net.miaomoe.blessing.config.ConfigUtil
+import net.miaomoe.blessing.config.annotation.Relocated
+import net.miaomoe.blessing.config.parser.DefaultConfigParser
+import java.lang.reflect.InvocationTargetException
 
 val DefaultConfigReader = ConfigReader { original, config ->
     for (field in config.parsed) {
@@ -28,22 +33,43 @@ val DefaultConfigReader = ConfigReader { original, config ->
             try {
                 fun setValue(value: Any) { field.field[field.config]=value }
                 when (val value = field.value) {
-                    is List<*> -> setValue(original.getAnyRefList(path))
+                    is List<*> -> {
+                        run {
+                            val list = try { original.getConfigList(path) } catch (exception: ConfigException) { null }
+                            if (list.isNullOrEmpty()) {
+                                setValue(original.getAnyRefList(path))
+                                return@run
+                            }
+                            require(field.field.isAnnotationPresent(Relocated::class.java))
+                            { "The target class must be specified using @Relocated. At: $path" }
+                            val target = try {
+                                field.field.getAnnotation(Relocated::class.java).target.java.getDeclaredConstructor()
+                            } catch (exception: Exception) {
+                                throw IllegalArgumentException("Target must be have a empty constructor!", exception)
+                            }
+                            target.isAccessible=true
+                            val newList = mutableListOf<Any>()
+                            for (it in list) {
+                                val newConfig = target.newInstance() as AbstractConfig
+                                newConfig.let(DefaultConfigParser::parse)
+                                ConfigUtil.READER.read(it, newConfig)
+                                newList.add(newConfig)
+                            }
+                            setValue(newList)
+                        }
+                    }
                     is String -> setValue(original.getString(path))
                     is Int -> setValue(original.getInt(path))
                     is Long -> setValue(original.getLong(path))
                     is Boolean -> setValue(original.getBoolean(path))
                     is Double -> setValue(original.getDouble(path))
-                    is AbstractConfig -> {
-                        ConfigUtil.PARSER.parse(value)
-                        ConfigUtil.READER.read(original.getConfig(path), value)
-                    }
+                    is AbstractConfig -> ReaderUtil.parseAndRead(original, path, value)
                     is Enum<*> -> {
                         val configValue = original.getAnyRef(path).toString().uppercase()
                         value::class.java.let {
                             try {
                                 setValue(it.getMethod("valueOf", String::class.java).invoke(null, configValue))
-                            } catch (exception: IllegalArgumentException) {
+                            } catch (exception: InvocationTargetException) {
                                 @Suppress("SpellCheckingInspection")
                                 throw IllegalArgumentException(
                                     "Not found \"$configValue\" enum for ${it.name}. " +
@@ -64,5 +90,12 @@ val DefaultConfigReader = ConfigReader { original, config ->
                 continue
             }
         }
+    }
+}
+
+internal object ReaderUtil {
+    fun parseAndRead(original: Config, path: String, config: AbstractConfig) {
+        ConfigUtil.PARSER.parse(config)
+        ConfigUtil.READER.read(original.getConfig(path), config)
     }
 }

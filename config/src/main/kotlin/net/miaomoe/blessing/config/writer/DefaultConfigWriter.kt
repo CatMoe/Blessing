@@ -66,7 +66,21 @@ internal object Helper {
                 ?.let { "$prefixFixer$it" }
                 ?.let(ReplaceHook::replace)
         val v: Any = when (value) {
-            is List<*> -> value.mapNotNull { fromAnyRef(it) }
+            is List<*> -> {
+                val values = mutableListOf<MutableMap<String, Any>>()
+                for (it in value) {
+                    it as? AbstractConfig ?: continue
+                    val valuesMap = mutableMapOf<String, Any>()
+                    it
+                        .let(DefaultConfigParser::parse)
+                        .forEach { write(valuesMap, it.path, it.value, it.description, false) }
+                    values.add(valuesMap)
+                }
+                if (values.isNotEmpty()) {
+                    map[path] = values
+                    return
+                } else value.mapNotNull { fromAnyRef(it) }
+            }
             is Enum<*> -> value.name
             is AbstractConfig -> {
                 val parsed = value.let(DefaultConfigParser::parse)
