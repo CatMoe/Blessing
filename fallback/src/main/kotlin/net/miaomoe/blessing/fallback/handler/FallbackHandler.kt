@@ -59,6 +59,8 @@ class FallbackHandler(
 
     val settings = initializer.settings
 
+    var processLogic = settings.isProcessLogic
+
     var state = settings.defaultState
         private set
 
@@ -131,7 +133,7 @@ class FallbackHandler(
         val version = packet.version
         this.version = version
         this.destination = InetSocketAddress.createUnresolved(packet.host, packet.port)
-        if (settings.isProcessLogic) {
+        if (processLogic) {
             this.updateState(packet.nextState)
             if ((version == Version.UNDEFINED || !version.isSupported) && packet.nextState == State.LOGIN) {
                 disconnect("<red>Unsupported client version.".toComponent())
@@ -142,7 +144,7 @@ class FallbackHandler(
 
     private fun handle(packet: PacketLoginRequest) {
         this.name=packet.name
-        if (settings.isProcessLogic) {
+        if (processLogic) {
             validate?.let {
                 require(!it.recvLogin) { "Duplicated PacketLoginRequest!" }
                 it.recvLogin=true
@@ -159,7 +161,7 @@ class FallbackHandler(
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketLoginAcknowledged) {
-        if (settings.isProcessLogic) {
+        if (processLogic) {
             updateState(State.CONFIGURATION)
             write(PacketsToCache.REGISTRY_DATA)
             write(PacketsToCache.PLUGIN_MESSAGE)
@@ -169,12 +171,12 @@ class FallbackHandler(
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketFinishConfiguration) {
-        if (settings.isProcessLogic) spawn()
+        if (processLogic) spawn()
     }
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: PacketStatusRequest) {
-        if (settings.isProcessLogic) {
+        if (processLogic) {
             validate?.let {
                 require(!it.recvStatusRequest) { "Cannot request status twice!" }
                 it.recvStatusRequest=true
@@ -184,7 +186,7 @@ class FallbackHandler(
     }
 
     private fun handle(packet: PacketStatusPing) {
-        if (settings.isProcessLogic) {
+        if (processLogic) {
             validate?.let {
                 require(it.recvStatusRequest && !it.recvStatusPing)
                 { "Cannot send twice status ping or skipped status request!" }

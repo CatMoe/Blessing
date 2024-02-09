@@ -54,7 +54,7 @@ public class FallbackSettings {
      *
      * @return FallbackSettings
      */
-    public static FallbackSettings create() {
+    public static @NotNull FallbackSettings create() {
         return new FallbackSettings();
     }
 
@@ -79,7 +79,7 @@ public class FallbackSettings {
      * This brand will also be used to return
      * the brand of the protocol in Motd.
      */
-    private String brand = "Blessing";
+    private @NotNull String brand = "Blessing";
 
     /**
      * What should be the name of the player joining the fallback?
@@ -149,7 +149,7 @@ public class FallbackSettings {
      * @deprecated Unless used for debugging purposes. Otherwise, not using caching is not supported.
      */
     @Deprecated
-    public FallbackSettings setUseCache(final boolean useCache) {
+    public @NotNull FallbackSettings setUseCache(final boolean useCache) {
         this.useCache = useCache;
         return this;
     }
@@ -196,11 +196,11 @@ public class FallbackSettings {
         return this.world;
     }
 
-    public final String getBrand() {
+    public final @NotNull String getBrand() {
         return this.brand;
     }
 
-    public final String getPlayerName() {
+    public final @NotNull String getPlayerName() {
         return this.playerName;
     }
 
