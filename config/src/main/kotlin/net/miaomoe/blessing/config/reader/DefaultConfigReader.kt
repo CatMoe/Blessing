@@ -19,12 +19,12 @@ package net.miaomoe.blessing.config.reader
 
 
 import com.typesafe.config.Config
-import com.typesafe.config.ConfigException
 import net.miaomoe.blessing.config.AbstractConfig
 import net.miaomoe.blessing.config.ConfigUtil
 import net.miaomoe.blessing.config.annotation.Relocated
-import net.miaomoe.blessing.config.parser.DefaultConfigParser
+import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.ParameterizedType
 
 val DefaultConfigReader = ConfigReader { original, config ->
     for (field in config.parsed) {
@@ -34,29 +34,32 @@ val DefaultConfigReader = ConfigReader { original, config ->
                 fun setValue(value: Any) { field.field[field.config]=value }
                 when (val value = field.value) {
                     is List<*> -> {
-                        run {
-                            val list = try { original.getConfigList(path) } catch (exception: ConfigException) { null }
-                            if (list.isNullOrEmpty()) {
-                                setValue(original.getAnyRefList(path))
-                                return@run
-                            }
-                            require(field.field.isAnnotationPresent(Relocated::class.java))
-                            { "The target class must be specified using @Relocated. At: $path" }
-                            val target = try {
-                                field.field.getAnnotation(Relocated::class.java).target.java.getDeclaredConstructor()
+                        val listClass = try {
+                            field.field.getAnnotation(Relocated::class.java)
+                                ?.target?.java
+                                ?: (field.field.genericType as? ParameterizedType)!!
+                                .actualTypeArguments
+                                .takeUnless { it?.size != 1 }!!
+                                .let { it[0] as Class<*> }
+                        } catch (exception: Exception) {
+                            throw IllegalArgumentException("Failed to get list's generic type.", exception)
+                        }
+                        if (AbstractConfig::class.java.isAssignableFrom(listClass)) {
+                            val constructor: Constructor<*>
+                            try {
+                                constructor = listClass.getDeclaredConstructor()
+                                constructor.isAccessible=true
                             } catch (exception: Exception) {
                                 throw IllegalArgumentException("Target must be have a empty constructor!", exception)
                             }
-                            target.isAccessible=true
-                            val newList = mutableListOf<Any>()
-                            for (it in list) {
-                                val newConfig = target.newInstance() as AbstractConfig
-                                newConfig.let(DefaultConfigParser::parse)
-                                ConfigUtil.READER.read(it, newConfig)
-                                newList.add(newConfig)
+                            val configList = mutableListOf<Any>()
+                            for (it in original.getConfigList(path)) {
+                                val subConfig = constructor.newInstance() as AbstractConfig
+                                ReaderUtil.parseAndRead(it, null, subConfig)
+                                configList.add(subConfig)
                             }
-                            setValue(newList)
-                        }
+                            setValue(configList)
+                        } else setValue(original.getAnyRefList(path))
                     }
                     is String -> setValue(original.getString(path))
                     is Int -> setValue(original.getInt(path))
@@ -65,21 +68,20 @@ val DefaultConfigReader = ConfigReader { original, config ->
                     is Double -> setValue(original.getDouble(path))
                     is AbstractConfig -> ReaderUtil.parseAndRead(original, path, value)
                     is Enum<*> -> {
-                        val configValue = original.getAnyRef(path).toString().uppercase()
-                        value::class.java.let {
-                            try {
-                                setValue(it.getMethod("valueOf", String::class.java).invoke(null, configValue))
-                            } catch (exception: InvocationTargetException) {
-                                @Suppress("SpellCheckingInspection")
-                                throw IllegalArgumentException(
-                                    "Not found \"$configValue\" enum for ${it.name}. " +
-                                    "Please check your input (like typo or enum value is non-full uppercase). " +
-                                    "Available enums: ${(it.getMethod("vaules").invoke(null) as Array<*>).joinToString(", ")}",
-                                    exception
-                                )
-                            } catch (exception: Exception) {
-                                throw IllegalArgumentException("Failed to invoke ${it.name}#valueOf method", exception)
-                            }
+                        val clazz = field.field.getAnnotation(Relocated::class.java)?.target?.java ?: value::class.java
+                        val enumName = original.getString(path).uppercase()
+                        try {
+                            clazz.getMethod("valueOf", String::class.java).invoke(null, enumName)
+                        } catch (exception: InvocationTargetException) {
+                            @Suppress("SpellCheckingInspection")
+                            throw IllegalArgumentException(
+                                "Not found \"$enumName\" enum for ${clazz.name}. " +
+                                "Please check your input (like typo or enum value is non-full uppercase). " +
+                                "Available enums: ${(clazz.getMethod("vaules").invoke(null) as Array<*>).joinToString(", ")}",
+                                exception
+                            )
+                        } catch (exception: Exception) {
+                            throw IllegalArgumentException("Failed to invoke ${clazz.name}#valueOf method", exception)
                         }
                     }
                     // Unsupported
@@ -94,8 +96,8 @@ val DefaultConfigReader = ConfigReader { original, config ->
 }
 
 internal object ReaderUtil {
-    fun parseAndRead(original: Config, path: String, config: AbstractConfig) {
+    fun parseAndRead(original: Config, path: String?, config: AbstractConfig) {
         ConfigUtil.PARSER.parse(config)
-        ConfigUtil.READER.read(original.getConfig(path), config)
+        ConfigUtil.READER.read(path?.let { original.getConfig(path) } ?: original, config)
     }
 }

@@ -17,6 +17,4 @@
 
 package net.miaomoe.blessing.config.annotation
 
-import kotlin.reflect.KClass
-
-annotation class Relocated(val target: KClass<*>)
+annotation class EnumCast(val casts: Array<String>)
