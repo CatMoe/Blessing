@@ -17,4 +17,4 @@
 
 package net.miaomoe.blessing.config.annotation
 
-annotation class EnumCast(val casts: Array<String>)
+annotation class EnumCast(val casts: Array<String>, val ignoreCase: Boolean = true)

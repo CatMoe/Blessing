@@ -21,6 +21,7 @@ package net.miaomoe.blessing.config.reader
 import com.typesafe.config.Config
 import net.miaomoe.blessing.config.AbstractConfig
 import net.miaomoe.blessing.config.ConfigUtil
+import net.miaomoe.blessing.config.annotation.EnumCast
 import net.miaomoe.blessing.config.annotation.Relocated
 import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
@@ -69,7 +70,14 @@ val DefaultConfigReader = ConfigReader { original, config ->
                     is AbstractConfig -> ReaderUtil.parseAndRead(original, path, value)
                     is Enum<*> -> {
                         val clazz = field.field.getAnnotation(Relocated::class.java)?.target?.java ?: value::class.java
-                        val enumName = original.getString(path).uppercase()
+                        var enumName = original.getString(path)
+                        field.field.getAnnotation(EnumCast::class.java)?.let { annotation ->
+                            val list = annotation.casts.toList()
+                            if (list.isEmpty()) return@let null
+                            require(list.size % 2 != 0) { "Cast array size must be a multiple of 2" }
+                            for (i in list.indices step 2) if (enumName.contains(list[i], ignoreCase = annotation.ignoreCase)) enumName = list[i + 1]
+                        }
+                        enumName = enumName.uppercase()
                         try {
                             clazz.getMethod("valueOf", String::class.java).invoke(null, enumName)
                         } catch (exception: InvocationTargetException) {
