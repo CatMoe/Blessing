@@ -17,7 +17,8 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.Position
 import net.miaomoe.blessing.protocol.version.Version
@@ -26,13 +27,22 @@ import net.miaomoe.blessing.protocol.version.Version
 class PacketPosition(
     var position: Position = Position.zero,
     var onGround: Boolean = false
-) : PacketToServer {
+) : PacketBidirectional {
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_SERVER
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         val x = byteBuf.readDouble()
         if (version.lessOrEqual(Version.V1_7_6)) byteBuf.readDouble() // head y-axis
         position = Position(x, byteBuf.readDouble(), byteBuf.readDouble())
         onGround = byteBuf.readBoolean()
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeDouble(position.x)
+        if (version.less(Version.V1_8)) byteBuf.writeDouble(position.y + 2)
+        byteBuf.writeDouble(position.y)
+        byteBuf.writeBoolean(onGround)
     }
 
     override fun toString() = "PacketPosition(position=$position, onGround=$onGround)"

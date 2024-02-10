@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -36,14 +37,26 @@ class PacketAbilities @JvmOverloads constructor(
         flagList.distinct().forEach { flags = flags or it.mask }
     }
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
-        byteBuf.writeByte(flags)
-        byteBuf.writeFloat(flySpeed)
-        byteBuf.writeFloat(viewModifier)
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        when (direction) {
+            PacketDirection.TO_CLIENT -> {
+                byteBuf.writeByte(flags)
+                byteBuf.writeFloat(flySpeed)
+                byteBuf.writeFloat(viewModifier)
+            }
+            PacketDirection.TO_SERVER -> byteBuf.writeByte(flags)
+        }
     }
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
-        this.flags = byteBuf.readByte().toInt()
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        when (direction) {
+            PacketDirection.TO_CLIENT -> {
+                this.flags = byteBuf.readByte().toInt()
+                this.flySpeed = byteBuf.readFloat()
+                this.viewModifier = byteBuf.readFloat()
+            }
+            PacketDirection.TO_SERVER -> this.flags = byteBuf.readByte().toInt()
+        }
     }
 
     enum class Flags(val mask: Int) {

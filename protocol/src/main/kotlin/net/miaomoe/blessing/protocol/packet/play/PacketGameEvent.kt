@@ -17,16 +17,25 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 class PacketGameEvent(
     var type: Int = 0,
     var value: Float = 0f,
-) : PacketToClient {
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+) : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeByte(type)
         byteBuf.writeFloat(value)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.type = byteBuf.readInt()
+        this.value = byteBuf.readFloat()
     }
 }

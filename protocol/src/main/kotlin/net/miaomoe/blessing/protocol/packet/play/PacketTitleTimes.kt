@@ -17,15 +17,20 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.message.TitleAction
 import net.miaomoe.blessing.protocol.message.TitleTime
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 class PacketTitleTimes(
     var times: TitleTime = TitleTime.zero
-) : PacketToClient {
-    override fun encode(byteBuf: ByteMessage, version: Version)
+) : PacketBidirectional {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection)
     = TitleAction.TIMES.write(times, byteBuf, version)
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.times = TitleTime(byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt())
+    }
 }

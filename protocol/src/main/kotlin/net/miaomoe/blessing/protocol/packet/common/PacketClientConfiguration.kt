@@ -17,12 +17,15 @@
 
 package net.miaomoe.blessing.protocol.packet.common
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketClientConfiguration : PacketToServer {
+class PacketClientConfiguration : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_SERVER
 
     var rawLocale: String? = null
     var viewDistance: Byte? = null
@@ -35,7 +38,7 @@ class PacketClientConfiguration : PacketToServer {
 
     var difficulty: Byte? = null
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         val rawLocale = byteBuf.readString()
         this.rawLocale = rawLocale
         val viewDistance = byteBuf.readByte()
@@ -55,6 +58,20 @@ class PacketClientConfiguration : PacketToServer {
             require(mainHand in 0..1) { "mainHand must be 0 or 1!" }
             if (version.moreOrEqual(Version.V1_17)) enableTextFiltering=byteBuf.readBoolean()
             if (version.moreOrEqual(Version.V1_18)) allowServerListings=byteBuf.readBoolean()
+        }
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeString(rawLocale)
+        byteBuf.writeByte(viewDistance?.toInt() ?: -1)
+        byteBuf.writeVarInt(chatMode ?: -1)
+        byteBuf.writeBoolean(chatColor ?: false)
+        if (version.lessOrEqual(Version.V1_7_6)) byteBuf.writeByte(difficulty?.toInt() ?: -1)
+        byteBuf.writeShort(displaySkinParts?.toInt() ?: -1)
+        if (version.moreOrEqual(Version.V1_9)) {
+            byteBuf.writeVarInt(mainHand ?: -1)
+            if (version.moreOrEqual(Version.V1_17)) byteBuf.writeBoolean(enableTextFiltering ?: false)
+            if (version.moreOrEqual(Version.V1_18)) byteBuf.writeBoolean(allowServerListings ?: false)
         }
     }
 

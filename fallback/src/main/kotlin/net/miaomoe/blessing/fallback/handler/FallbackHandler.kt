@@ -40,7 +40,7 @@ import net.miaomoe.blessing.protocol.packet.play.*
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusPing
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusRequest
 import net.miaomoe.blessing.protocol.packet.status.PacketStatusResponse
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketToEncode
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
@@ -321,7 +321,7 @@ class FallbackHandler(
     fun flush(): Channel = channel.flush()
 
     @JvmOverloads
-    fun write(packet: PacketToClient, flush: Boolean = false) {
+    fun write(packet: PacketToEncode, flush: Boolean = false) {
         if (flush) channel.writeAndFlush(packet) else channel.write(packet)
     }
 

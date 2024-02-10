@@ -23,8 +23,9 @@ import io.netty.handler.codec.MessageToByteEncoder
 import net.miaomoe.blessing.fallback.cache.PacketCache
 import net.miaomoe.blessing.fallback.packet.ByteArrayHolder
 import net.miaomoe.blessing.fallback.packet.ExplicitPacket
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketToEncode
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -33,9 +34,9 @@ class FallbackEncoder(
     var mappings: ProtocolMappings,
     var version: Version = Version.UNDEFINED,
     var handler: FallbackHandler? = null
-) : MessageToByteEncoder<PacketToClient>() {
+) : MessageToByteEncoder<PacketToEncode>() {
 
-    override fun encode(ctx: ChannelHandlerContext, packet: PacketToClient, output: ByteBuf) {
+    override fun encode(ctx: ChannelHandlerContext, packet: PacketToEncode, output: ByteBuf) {
         val byteBuf = ByteMessage(output)
         val id = when (packet) {
             is PacketCache -> mappings.getId(version, packet.kClass)
@@ -46,7 +47,7 @@ class FallbackEncoder(
         byteBuf.writeVarInt(id)
         when (packet) {
             is ByteArrayHolder -> packet.byteArray?.let(byteBuf::writeBytes)
-            else -> packet.encode(byteBuf, version)
+            else -> packet.encode(byteBuf, version, PacketDirection.TO_CLIENT)
         }
         handler?.debug { "[Encoder] Write completed. (${byteBuf.readableBytes()} bytes)" }
     }

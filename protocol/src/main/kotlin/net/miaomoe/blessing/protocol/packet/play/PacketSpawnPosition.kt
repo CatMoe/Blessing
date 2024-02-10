@@ -17,7 +17,8 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.Position
 import net.miaomoe.blessing.protocol.util.PositionUtil
@@ -26,9 +27,11 @@ import net.miaomoe.blessing.protocol.version.Version
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketSpawnPosition(
     var position: Position = Position.zero
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         if (version.moreOrEqual(Version.V1_8)) {
             val value = if (version.lessOrEqual(Version.V1_14)) PositionUtil.getLegacySpawnPosition(position) else PositionUtil.getModernSpawnPosition(position)
             byteBuf.writeLong(value)
@@ -39,6 +42,23 @@ class PacketSpawnPosition(
                 byteBuf.writeInt(it.y.toInt())
                 byteBuf.writeInt(it.z.toInt())
             }
+        }
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.position = if (version.less(Version.V1_8))
+            Position(
+                byteBuf.readInt().toDouble(),
+                byteBuf.readInt().toDouble(),
+                byteBuf.readInt().toDouble()
+            )
+        else {
+            val value = byteBuf.readLong()
+            Position(
+                (value shr 38 and 0x3FFFFFF).toDouble(),
+                (value shr 26 and 0xFFF).toDouble(),
+                (value and 0x3FFFFFF).toDouble()
+            )
         }
     }
 

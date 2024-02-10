@@ -18,10 +18,11 @@
 package net.miaomoe.blessing.protocol.packet.play
 
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.message.TitleAction
 import net.miaomoe.blessing.protocol.message.TitleAction.*
 import net.miaomoe.blessing.protocol.message.TitleTime
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -29,9 +30,11 @@ import net.miaomoe.blessing.protocol.version.Version
 class PacketLegacyTitle(
     var action: TitleAction<*> = Companion.CLEAR,
     var value: Any = Unit,
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeVarInt(action.id.let { if (version.lessOrEqual(Version.V1_10) && it >= 2) it-1 else it })
         when (val action = this.action) {
             is ComponentAction -> action.write(value as MixedComponent, byteBuf, version)
@@ -39,5 +42,7 @@ class PacketLegacyTitle(
             is NullTitleAction -> {}
         }
     }
+
+    // TODO add method to decode
 
 }

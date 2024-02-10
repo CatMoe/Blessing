@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.common
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -26,7 +27,7 @@ class PacketKeepAlive(
     var id: Int = 7890
 ) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         when {
             version.moreOrEqual(Version.V1_12_2) -> byteBuf.writeLong(id.toLong())
             version.moreOrEqual(Version.V1_8) -> byteBuf.writeVarInt(id)
@@ -34,7 +35,7 @@ class PacketKeepAlive(
         }
     }
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         when {
             version.moreOrEqual(Version.V1_12_2) -> byteBuf.readLong()
             version.moreOrEqual(Version.V1_8) -> byteBuf.readVarInt()

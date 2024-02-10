@@ -18,7 +18,8 @@
 package net.miaomoe.blessing.protocol.packet.common
 
 import net.miaomoe.blessing.nbt.chat.MixedComponent
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -26,9 +27,16 @@ import net.miaomoe.blessing.protocol.version.Version
 class PacketDisconnect(
     var message: MixedComponent = MixedComponent.EMPTY,
     var forceJson: Boolean = false
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) =
-        byteBuf.writeChat(message, if (forceJson) Version.UNDEFINED else version)
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        if (forceJson) byteBuf.writeString(message.json) else byteBuf.writeChat(message, version)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        if (forceJson) MixedComponent(byteBuf.readString()) else byteBuf.readChat(version)
+    }
 
 }

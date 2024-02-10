@@ -17,16 +17,23 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import java.util.*
 
-class PacketClientChat(var message: String? = null) : PacketToServer {
+// TODO chat reports
+class PacketClientChat(var message: String? = null) : PacketBidirectional {
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_SERVER
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         message = byteBuf.readString(limit = 256)
-        // TODO chat reports
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeString(message)
     }
 
     data class SeenMessage(var offset: Int = -1, var acknowledged: BitSet? = null)

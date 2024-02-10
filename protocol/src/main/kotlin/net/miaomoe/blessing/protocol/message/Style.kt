@@ -44,4 +44,13 @@ data class Style(var color: Color, var dividers: Dividers) {
         DASHES_20
     }
 
+    companion object {
+        @JvmStatic
+        fun read(byteBuf: ByteMessage): Style {
+            val color = byteBuf.readVarInt()
+            val dividers = byteBuf.readVarInt()
+            return Style(Color.entries.first { it.ordinal == color }, Dividers.entries.first { it.ordinal == dividers })
+        }
+    }
+
 }

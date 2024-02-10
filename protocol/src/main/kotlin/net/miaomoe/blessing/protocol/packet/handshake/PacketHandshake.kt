@@ -17,20 +17,23 @@
 
 package net.miaomoe.blessing.protocol.packet.handshake
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.registry.State
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketHandshake : PacketToServer {
+class PacketHandshake : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_SERVER
 
     var version: Version = Version.UNDEFINED
     var nextState = State.HANDSHAKE
     var host = "localhost"
     var port = 25565
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         this.version = Version.of(byteBuf.readVarInt()) // 版本号
         this.host = byteBuf.readString() // 读取域名 (作为字符串)
         this.port = byteBuf.readUnsignedShort() // 读取端口
@@ -39,6 +42,13 @@ class PacketHandshake : PacketToServer {
             2 -> State.LOGIN // 登录
             else -> throw IllegalArgumentException("Handshake state must be 1 or 2! ($state)")
         }
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeVarInt(version.protocolId)
+        byteBuf.writeString(host)
+        byteBuf.writeShort(port)
+        byteBuf.writeVarInt(nextState.ordinal)
     }
 
     override fun toString() = "${this::class.simpleName}(version=$version, nextState=$nextState, host=$host, port=$port)"

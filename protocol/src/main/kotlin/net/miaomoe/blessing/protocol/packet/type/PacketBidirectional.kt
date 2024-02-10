@@ -17,4 +17,11 @@
 
 package net.miaomoe.blessing.protocol.packet.type
 
-interface PacketBidirectional : PacketToClient, PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+
+interface PacketBidirectional : PacketToEncode, PacketToDecode {
+
+    val forceDirection: PacketDirection?
+        get() = null
+
+}

@@ -17,13 +17,21 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketTeleportConfirm(var teleportId: Int? = null) : PacketToServer {
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+class PacketTeleportConfirm(var teleportId: Int? = null) : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_SERVER
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         teleportId = byteBuf.readVarInt()
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeVarInt(this.teleportId ?: -1)
     }
 }

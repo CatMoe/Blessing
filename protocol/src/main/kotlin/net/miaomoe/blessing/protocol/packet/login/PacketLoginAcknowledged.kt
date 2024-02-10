@@ -17,6 +17,9 @@
 
 package net.miaomoe.blessing.protocol.packet.login
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 
-class PacketLoginAcknowledged : PacketToServer
+class PacketLoginAcknowledged : PacketBidirectional {
+    override val forceDirection = PacketDirection.TO_SERVER
+}

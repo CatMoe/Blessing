@@ -17,16 +17,23 @@
 
 package net.miaomoe.blessing.protocol.packet.login
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketLoginRequest(var name: String = "") : PacketToServer {
+class PacketLoginRequest(var name: String = "") : PacketBidirectional {
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_SERVER
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         this.name = byteBuf.readString(limit = 16)
         require(name.length in 3..16) { "Invalid name length!" }
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeString(name)
     }
 
     override fun toString() = "${this::class.simpleName}(name=$name)"

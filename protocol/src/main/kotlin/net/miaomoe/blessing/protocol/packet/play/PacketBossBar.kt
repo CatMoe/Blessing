@@ -18,11 +18,12 @@
 package net.miaomoe.blessing.protocol.packet.play
 
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.message.BossBar
 import net.miaomoe.blessing.protocol.message.BossBarAction
 import net.miaomoe.blessing.protocol.message.BossBarFlags
 import net.miaomoe.blessing.protocol.message.Style
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import java.util.*
@@ -32,9 +33,11 @@ class PacketBossBar(
     var uuid: UUID = UUID(0, 0),
     var action: BossBarAction<*> = BossBarAction.REMOVE,
     var value: Any = Unit
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeUUID(uuid)
         byteBuf.writeVarInt(action.id)
         @Suppress("UNCHECKED_CAST")
@@ -50,6 +53,26 @@ class PacketBossBar(
             is BossBarAction.UpdateTitle -> byteBuf.writeChat(value as MixedComponent, version)
             is BossBarAction.UpdateStyle -> (value as Style).write(byteBuf)
             is BossBarAction.UpdateFlags -> byteBuf.writeByte(BossBarFlags.toFlags(value as List<BossBarFlags>))
+        }
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.uuid = byteBuf.readUUID()
+        val actionId = byteBuf.readVarInt()
+        this.action = BossBarAction.entries.firstOrNull { it.id == actionId } ?: throw IllegalArgumentException("Unsupported action id: $actionId")
+        when (action) {
+            is BossBarAction.Add -> {
+                this.value = BossBar(
+                    byteBuf.readChat(version),
+                    byteBuf.readFloat(),
+                    Style.read(byteBuf),
+                    BossBarFlags.fromFlag(byteBuf.readByte().toInt())
+                )
+            }
+            is BossBarAction.UpdateHealth -> this.value = byteBuf.readFloat()
+            is BossBarAction.UpdateTitle -> this.value = byteBuf.readChat(version)
+            is BossBarAction.UpdateStyle -> this.value = Style.read(byteBuf)
+            is BossBarAction.UpdateFlags -> BossBarFlags.fromFlag(byteBuf.readByte().toInt())
         }
     }
 

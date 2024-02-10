@@ -19,7 +19,8 @@
 
 package net.miaomoe.blessing.protocol.packet.login
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.UUIDUtil
 import net.miaomoe.blessing.protocol.version.Version
@@ -28,9 +29,11 @@ import java.util.*
 class PacketLoginResponse(
     var name: String = "Blessing",
     var uuid: UUID = UUIDUtil.generateOfflinePlayerUuid(name)
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         when {
             version.moreOrEqual(Version.V1_19) -> byteBuf.writeUUID(uuid)
             version.moreOrEqual(Version.V1_16) -> {
@@ -46,6 +49,17 @@ class PacketLoginResponse(
         }
         byteBuf.writeString(name)
         if (version.moreOrEqual(Version.V1_19)) byteBuf.writeVarInt(0)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        uuid = when {
+            version.moreOrEqual(Version.V1_19) -> byteBuf.readUUID()
+            version.moreOrEqual(Version.V1_16) -> UUID(0, 0) // Unsupported
+            version.moreOrEqual(Version.V1_7_6) -> UUID.fromString(byteBuf.readString())
+            else -> UUID(0, 0) // Unsupported
+        }
+        this.name = byteBuf.readString()
+        if (version.moreOrEqual(Version.V1_19)) byteBuf.readVarInt() // ?
     }
 
     override fun toString() = "${this::class.simpleName}(name=$name, uuid=$uuid)"

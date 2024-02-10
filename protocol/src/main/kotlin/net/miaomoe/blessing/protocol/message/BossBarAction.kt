@@ -43,6 +43,16 @@ interface BossBarAction<T> {
         val UPDATE_STYLE = object : UpdateStyle() { override val id = 4 }
         @JvmStatic
         val UPDATE_FLAGS = object : UpdateFlags() { override val id = 5 }
+
+        @JvmStatic
+        val entries = mutableListOf(
+            ADD,
+            REMOVE,
+            UPDATE_HEALTH,
+            UPDATE_TITLE,
+            UPDATE_STYLE,
+            UPDATE_FLAGS
+        )
     }
 
 }

@@ -17,15 +17,21 @@
 
 package net.miaomoe.blessing.protocol.packet.status
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PacketStatusResponse(var json: String = "") : PacketToClient {
+class PacketStatusResponse(var json: String = "") : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) =
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeString(json)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        json = byteBuf.readString(limit = -1)
+    }
 
     override fun toString() = "${this::class.simpleName}(json=$json)"
 

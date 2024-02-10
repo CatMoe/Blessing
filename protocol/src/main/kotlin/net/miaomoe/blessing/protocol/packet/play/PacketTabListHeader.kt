@@ -19,7 +19,8 @@ package net.miaomoe.blessing.protocol.packet.play
 
 import net.kyori.adventure.text.Component
 import net.miaomoe.blessing.nbt.chat.MixedComponent
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -27,16 +28,23 @@ import net.miaomoe.blessing.protocol.version.Version
 class PacketTabListHeader(
     var header: MixedComponent = MixedComponent.EMPTY,
     var footer: MixedComponent = MixedComponent.EMPTY
-) : PacketToClient {
+) : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_CLIENT
 
     constructor(
         header: Component,
         footer: Component
     ) : this(MixedComponent(header), MixedComponent(footer))
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeChat(header, version)
         byteBuf.writeChat(footer, version)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.header = byteBuf.readChat(version)
+        this.footer = byteBuf.readChat(version)
     }
 
 }

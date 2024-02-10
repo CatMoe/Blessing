@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.login
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -29,18 +30,34 @@ class PacketLoginPluginMessage(
     var data: ByteArray = byteArrayOf()
 ) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeVarInt(messageId)
-        byteBuf.writeString(channel)
-        byteBuf.writeBytes(data)
+        when (direction) {
+            PacketDirection.TO_CLIENT -> {
+                byteBuf.writeString(channel)
+                byteBuf.writeBytes(data)
+            }
+            PacketDirection.TO_SERVER -> {
+                byteBuf.writeBoolean(isSuccess ?: false)
+                byteBuf.writeBytes(data)
+            }
+        }
     }
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         messageId = byteBuf.readVarInt()
-        isSuccess = byteBuf.readBoolean()
-        if (byteBuf.readableBytes() > 0) {
-            data = ByteArray(byteBuf.readableBytes())
-            byteBuf.readBytes(data)
+        when (direction) {
+            PacketDirection.TO_SERVER -> {
+                isSuccess = byteBuf.readBoolean()
+                if (byteBuf.readableBytes() > 0) {
+                    data = ByteArray(byteBuf.readableBytes())
+                    byteBuf.readBytes(data)
+                }
+            }
+            PacketDirection.TO_CLIENT -> {
+                this.channel = byteBuf.readString()
+                this.data = ByteArray(byteBuf.readableBytes()).let { array -> byteBuf.readBytes(array); array }
+            }
         }
     }
 

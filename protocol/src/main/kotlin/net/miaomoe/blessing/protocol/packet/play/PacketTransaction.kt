@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -28,7 +29,7 @@ class PacketTransaction(
     var accepted: Boolean = true
 ) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         if (version.moreOrEqual(Version.V1_17))
             byteBuf.writeInt(id)
         else {
@@ -38,7 +39,7 @@ class PacketTransaction(
         }
     }
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         if (version.moreOrEqual(Version.V1_17)) {
             id = byteBuf.readInt()
             accepted=true

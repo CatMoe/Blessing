@@ -17,13 +17,13 @@
 
 package net.miaomoe.blessing.protocol.packet.type
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-interface PacketToClient : PacketInterface {
+interface PacketToDecode : PacketInterface {
 
-    fun encode(byteBuf: ByteMessage, version: Version) {
+    fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         // Overwrite it.
     }
-
 }

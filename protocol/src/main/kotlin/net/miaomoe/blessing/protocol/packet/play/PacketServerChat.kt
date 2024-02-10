@@ -18,10 +18,12 @@
 package net.miaomoe.blessing.protocol.packet.play
 
 import net.miaomoe.blessing.nbt.chat.MixedComponent
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponentFromJson
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
+import net.miaomoe.blessing.protocol.util.ComponentUtil.toMixedComponent
 import net.miaomoe.blessing.protocol.version.Version
 import java.util.*
 
@@ -30,9 +32,11 @@ class PacketServerChat(
     var message: MixedComponent = MixedComponent.EMPTY,
     var type: Type = Type.CHAT,
     var sender: UUID = UUID(0, 0)
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         val isActionbar = type == Type.ACTION_BAR
         if (version.lessOrEqual(Version.V1_10) && isActionbar) {
             byteBuf.writeString(message.toComponentFromJson().toLegacyText())
@@ -43,6 +47,24 @@ class PacketServerChat(
             version.moreOrEqual(Version.V1_8) -> byteBuf.writeByte(type.ordinal)
         }
         if (version.fromTo(Version.V1_16, Version.V1_18_2)) byteBuf.writeUUID(sender)
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        if (version.less(Version.V1_20_2)) {
+            val string = byteBuf.readString()
+            val isActionBar = if (version.moreOrEqual(Version.V1_19_1))
+                byteBuf.readBoolean()
+            else when {
+                version.less(Version.V1_8) -> -1
+                version.moreOrEqual(Version.V1_19) -> byteBuf.readVarInt()
+                else -> byteBuf.readByte().toInt()
+            } == 2
+            this.type = if (isActionBar) Type.ACTION_BAR else {
+                if (version.more(Version.V1_18_2)) Type.SYSTEM else Type.CHAT // ?
+            }
+            this.message = if (version.less(Version.V1_11) && isActionBar) string.toMixedComponent(true) else MixedComponent(string)
+        }
+        if (version.fromTo(Version.V1_16, Version.V1_18_2)) this.sender = byteBuf.readUUID()
     }
 
     enum class Type {

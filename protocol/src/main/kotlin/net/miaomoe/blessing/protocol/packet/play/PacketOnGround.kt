@@ -17,14 +17,21 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
-class PacketOnGround(var onGround: Boolean? = null) : PacketToServer {
+class PacketOnGround(var onGround: Boolean? = null) : PacketBidirectional {
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_SERVER
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         onGround = byteBuf.readBoolean()
+    }
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        byteBuf.writeBoolean(onGround ?: false)
     }
 
 }

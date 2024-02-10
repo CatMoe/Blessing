@@ -20,14 +20,17 @@ package net.miaomoe.blessing.protocol.packet.configuration
 import net.kyori.adventure.nbt.BinaryTag
 import net.miaomoe.blessing.nbt.dimension.Dimension
 import net.miaomoe.blessing.nbt.dimension.World
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketRegistryData(
     var tag: BinaryTag? = null
-) : PacketToClient {
+) : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_CLIENT
 
     private var dimension: Dimension = World.OVERWORLD.dimension
 
@@ -37,7 +40,7 @@ class PacketRegistryData(
         this.dimension=dimension
     }
 
-    override fun encode(byteBuf: ByteMessage, version: Version) =
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) =
         byteBuf.writeNamelessTag(tag ?: dimension.toTag(version.toNbtVersion()))
 
 }

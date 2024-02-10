@@ -19,7 +19,8 @@ package net.miaomoe.blessing.protocol.packet.play
 
 import net.miaomoe.blessing.nbt.NbtUtil.toNamed
 import net.miaomoe.blessing.nbt.NbtUtil.toNbt
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.Version.*
@@ -31,9 +32,11 @@ import net.miaomoe.blessing.protocol.version.Version.*
 class PacketChunk(
     var x: Int = 0,
     var z: Int = 0,
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeInt(x)
         byteBuf.writeInt(z)
         if (version.fromTo(V1_17, V1_17_1))
@@ -82,6 +85,11 @@ class PacketChunk(
             else
                 byteBuf.writeBytes(lightBytes)
         }
+    }
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.x = byteBuf.readInt()
+        this.z = byteBuf.readInt()
     }
 
     override fun toString() = "PacketChunk(x=$x, z=$z)"

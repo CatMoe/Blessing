@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.common
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -27,7 +28,7 @@ class PacketPluginMessage(
     var data: ByteArray = byteArrayOf()
 ) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeString(channel)
         if (version.moreOrEqual(Version.V1_8))
             byteBuf.writeBytes(data)
@@ -39,7 +40,7 @@ class PacketPluginMessage(
         }
     }
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         channel = byteBuf.readString()
         require(channel.isNotBlank() && channel.length in 1..128) { "Invalid channel: $channel" }
         if (version.moreOrEqual(Version.V1_8)) {

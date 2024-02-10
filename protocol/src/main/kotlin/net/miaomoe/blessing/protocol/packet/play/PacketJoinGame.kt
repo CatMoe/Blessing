@@ -21,7 +21,8 @@ import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.miaomoe.blessing.nbt.dimension.Dimension
 import net.miaomoe.blessing.nbt.dimension.NbtVersion
 import net.miaomoe.blessing.nbt.dimension.World
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
@@ -38,9 +39,11 @@ class PacketJoinGame(
     var dimension: Dimension = World.OVERWORLD.dimension,
     var levelName: String = dimension.key,
     var levelNames: Array<String?> = arrayOf(levelName)
-) : PacketToClient {
+) : PacketBidirectional {
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         byteBuf.writeInt(entityId)
         when {
             version.fromTo(Version.V1_7_2, Version.V1_13_2) ->

@@ -11,6 +11,8 @@
 
 > ⚠️ 此协议仅面对Minecraft: Java Edition. 包括Blessing也是. 对于Bedrock Edition的协议 请寻找其它项目.
 
+> ⚠️该内容已过期 需要更新. 所有的内容都可能是无效的 或不再适合作为参考.
+
 ---
 
 # 开始
@@ -196,27 +198,39 @@ class Utility {
 
 > 🔧 推荐数据包拥有一个无形参构建参数.
 
+> 🔧 如果需要默认实现 请实现`PacketBidirectional.DefaultImpl`而不是`PacketBidirectional`.
+
 ```java
+
+import net.miaomoe.blessing.protocol.direction.PacketDirection;
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional;
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient;
 import net.miaomoe.blessing.protocol.util.ByteMessage;
 import net.miaomoe.blessing.protocol.version.Version;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 class CustomPacket implements PacketBidirectional {
+
+    @Nullable
+    @Override
+    public PacketDirection getForceDirection() {
+        return null;
+    }
 
     @Override
     public void encode(
             @NotNull ByteMessage byteBuf,
-            @NotNull Version version
+            @NotNull Version version,
+            @NotNull PacketDirection direction
     ) {
         // 什么都不做? 如果该数据包不含有数据 那么确实可以这么做.
     }
 
     @Override
     public void decode(
-            @NotNull ByteMessage byteBuf, 
-            @NotNull Version version
+            @NotNull ByteMessage byteBuf,
+            @NotNull Version version,
+            @NotNull PacketDirection direction
     ) {
         // 依旧是什么都不做
     }

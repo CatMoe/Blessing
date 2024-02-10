@@ -18,21 +18,23 @@
 package net.miaomoe.blessing.fallback.cache
 
 import net.miaomoe.blessing.fallback.packet.ByteArrayHolder
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
 class PacketCache(
-    val kClass: KClass<out PacketToClient>,
+    val kClass: KClass<out PacketBidirectional>,
     override val byteArray: ByteArray? = null,
-    val description: String? = null
-) : PacketToClient, ByteArrayHolder {
+    val description: String? = null,
+    val direction: PacketDirection = PacketDirection.TO_CLIENT
+) : PacketBidirectional, ByteArrayHolder {
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun create(packet: PacketToClient, version: Version, description: String? = null) =
-            PacketCache(packet::class, ByteMessage.create().use { packet.encode(it, version); it.toByteArray() }, description)
+        fun create(packet: PacketBidirectional, version: Version, description: String? = null, direction: PacketDirection = PacketDirection.TO_CLIENT) =
+            PacketCache(packet::class, ByteMessage.create().use { packet.encode(it, version, direction); it.toByteArray() }, description)
     }
 
     override fun toString() = "PacketCache(class=${kClass.qualifiedName}, byteArray=${byteArray.contentToString()}, description=$description)"

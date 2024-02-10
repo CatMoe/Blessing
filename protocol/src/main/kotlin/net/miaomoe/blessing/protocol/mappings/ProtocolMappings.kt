@@ -19,14 +19,13 @@ package net.miaomoe.blessing.protocol.mappings
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.miaomoe.blessing.protocol.packet.type.PacketInterface
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
 import net.miaomoe.blessing.protocol.version.Version
 import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
-class ProtocolMappings() {
+class ProtocolMappings {
 
     private val registry = Caffeine
         .newBuilder()
@@ -52,11 +51,11 @@ class ProtocolMappings() {
     @Throws(NullPointerException::class)
     fun getMappings(version: Version, id: Int) = id.let(getRegistryFromVersion(version)::getMapping)
     @Throws(NullPointerException::class)
-    fun getMappings(version: Version, `class`: KClass<out PacketToClient>): PacketMapping {
+    fun getMappings(version: Version, `class`: KClass<out PacketInterface>): PacketMapping {
         val registry = getRegistryFromVersion(version)
         return registry.getMapping(registry.getId(`class`))
     }
 
-    fun getId(version: Version, `class`: KClass<out PacketToClient>): Int = `class`.let(getRegistryFromVersion(version)::getId)
+    fun getId(version: Version, `class`: KClass<out PacketInterface>): Int = `class`.let(getRegistryFromVersion(version)::getId)
 
 }

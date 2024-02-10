@@ -17,6 +17,9 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.direction.PacketDirection
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 
-class PacketTitleReset : PacketToClient
+class PacketTitleReset : PacketBidirectional {
+    override val forceDirection = PacketDirection.TO_CLIENT
+}

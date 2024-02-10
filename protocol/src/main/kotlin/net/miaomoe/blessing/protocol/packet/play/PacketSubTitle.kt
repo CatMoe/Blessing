@@ -18,14 +18,23 @@
 package net.miaomoe.blessing.protocol.packet.play
 
 import net.miaomoe.blessing.nbt.chat.MixedComponent
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.message.TitleAction
-import net.miaomoe.blessing.protocol.packet.type.PacketToClient
+import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 
+@Suppress("MemberVisibilityCanBePrivate")
 class PacketSubTitle(
     var subTitle: MixedComponent = MixedComponent.EMPTY
-) : PacketToClient {
-    override fun encode(byteBuf: ByteMessage, version: Version)
+) : PacketBidirectional {
+
+    override val forceDirection = PacketDirection.TO_CLIENT
+
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection)
     = TitleAction.SUBTITLE.write(subTitle, byteBuf, version)
+
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
+        this.subTitle = byteBuf.readChat(version)
+    }
 }

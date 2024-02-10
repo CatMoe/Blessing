@@ -17,6 +17,7 @@
 
 package net.miaomoe.blessing.protocol.packet.play
 
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.PlayerPosition
@@ -29,32 +30,31 @@ class PacketPositionLook(
     var teleportId: Int = 0
 ) : PacketBidirectional {
 
-    override fun decode(byteBuf: ByteMessage, version: Version) {
+    override fun decode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         val x = byteBuf.readDouble()
-        if (version.less(Version.V1_8)) byteBuf.readDouble() // Head y-axis for 1.7
+        if (version.less(Version.V1_8) && direction == PacketDirection.TO_SERVER) byteBuf.readDouble() // Head y-axis for 1.7
         position = PlayerPosition(
             Position(x, byteBuf.readDouble(), byteBuf.readDouble()),
             byteBuf.readFloat(),
             byteBuf.readFloat(),
-            byteBuf.readBoolean()
+            if (direction == PacketDirection.TO_SERVER) byteBuf.readBoolean() else false
         )
     }
 
-    override fun encode(byteBuf: ByteMessage, version: Version) {
+    override fun encode(byteBuf: ByteMessage, version: Version, direction: PacketDirection) {
         position.position.let {
             byteBuf.writeDouble(it.x)
+            if (direction == PacketDirection.TO_SERVER) byteBuf.writeDouble(it.y + 2)
             byteBuf.writeDouble(it.y)
             byteBuf.writeDouble(it.z)
         }
         byteBuf.writeFloat(position.yaw)
         byteBuf.writeFloat(position.pitch)
-        if (version.lessOrEqual(Version.V1_8))
-            byteBuf.writeBoolean(position.onGround)
-        else {
+        if (direction == PacketDirection.TO_CLIENT && version.more(Version.V1_8)) {
             byteBuf.writeByte(0x00)
             if (version.moreOrEqual(Version.V1_9)) byteBuf.writeVarInt(teleportId)
             if (version.fromTo(Version.V1_17, Version.V1_19_3)) byteBuf.writeBoolean(true)
-        }
+        } else byteBuf.writeBoolean(position.onGround)
     }
 
     override fun toString() = "PacketPositionLook(position=$position${if (teleportId == 0) "" else ", teleportId=$teleportId"})"

@@ -21,8 +21,9 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
 import net.miaomoe.blessing.fallback.packet.ExplicitPacket
+import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.mappings.ProtocolMappings
-import net.miaomoe.blessing.protocol.packet.type.PacketToServer
+import net.miaomoe.blessing.protocol.packet.type.PacketToDecode
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.ByteMessage.Companion.toByteMessage
 import net.miaomoe.blessing.protocol.version.Version
@@ -50,8 +51,8 @@ class FallbackDecoder(
         handler?.debug { "[Decoder] Handling packet with id $formatId" }
         try {
             val packet = mappings.getMappings(version, id).init.get()
-            require(packet is PacketToServer) { "Getting packet from mappings with id $formatId. But got a non PacketToServer packet. ($packet)" }
-            packet.decode(byteMessage, version)
+            require(packet is PacketToDecode) { "Getting packet from mappings with id $formatId. But got a non PacketToServer packet. ($packet)" }
+            packet.decode(byteMessage, version, PacketDirection.TO_SERVER)
             byteBuf.readableBytes().let {
                 val isZero = it == 0
                 handler?.debug { "[Decoder] Decoded with $packet ${if (!isZero) "($it bytes remaining)" else "" }" }
