@@ -18,7 +18,7 @@
 package net.miaomoe.blessing.fallback.cache
 
 import net.miaomoe.blessing.protocol.direction.PacketDirection
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.miaomoe.blessing.protocol.packet.type.PacketToEncode
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.LazyInit
 import net.miaomoe.blessing.protocol.version.Version
@@ -26,7 +26,7 @@ import net.miaomoe.blessing.protocol.version.VersionRange
 
 @Suppress("MemberVisibilityCanBePrivate")
 class PacketCacheGroup @JvmOverloads constructor(
-    val packet: PacketBidirectional,
+    val packet: PacketToEncode,
     val description: String? = null,
     val copySame: Boolean = false,
     initVersions: VersionRange? = null,

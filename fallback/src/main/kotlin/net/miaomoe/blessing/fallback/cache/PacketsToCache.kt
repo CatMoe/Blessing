@@ -23,7 +23,7 @@ import net.miaomoe.blessing.protocol.packet.common.PacketPluginMessage
 import net.miaomoe.blessing.protocol.packet.configuration.PacketRegistryData
 import net.miaomoe.blessing.protocol.packet.login.PacketLoginResponse
 import net.miaomoe.blessing.protocol.packet.play.*
-import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.miaomoe.blessing.protocol.packet.type.PacketToEncode
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toComponent
 import net.miaomoe.blessing.protocol.util.ComponentUtil.toLegacyText
@@ -33,7 +33,7 @@ import java.util.function.BiFunction
 import java.util.logging.Level
 
 enum class PacketsToCache(
-    val packet: BiFunction<FallbackSettings, Version, PacketBidirectional?>,
+    val packet: BiFunction<FallbackSettings, Version, PacketToEncode?>,
     val description: String? = null,
     val version: VersionRange = VersionRange(Version.V1_7_2, Version.max)
 ) {

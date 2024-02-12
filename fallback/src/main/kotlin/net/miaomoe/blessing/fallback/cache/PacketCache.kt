@@ -20,12 +20,13 @@ package net.miaomoe.blessing.fallback.cache
 import net.miaomoe.blessing.fallback.packet.ByteArrayHolder
 import net.miaomoe.blessing.protocol.direction.PacketDirection
 import net.miaomoe.blessing.protocol.packet.type.PacketBidirectional
+import net.miaomoe.blessing.protocol.packet.type.PacketToEncode
 import net.miaomoe.blessing.protocol.util.ByteMessage
 import net.miaomoe.blessing.protocol.version.Version
 import kotlin.reflect.KClass
 
 class PacketCache(
-    val kClass: KClass<out PacketBidirectional>,
+    val kClass: KClass<out PacketToEncode>,
     override val byteArray: ByteArray? = null,
     val description: String? = null,
     val direction: PacketDirection = PacketDirection.TO_CLIENT
