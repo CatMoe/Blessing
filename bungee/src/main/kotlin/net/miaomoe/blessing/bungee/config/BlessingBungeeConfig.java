@@ -18,13 +18,11 @@
 package net.miaomoe.blessing.bungee.config;
 
 import net.miaomoe.blessing.bungee.BlessingBungee;
-import net.miaomoe.blessing.config.AbstractConfig;
-import net.miaomoe.blessing.config.ConfigUtil;
+import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.annotation.Description;
-import net.miaomoe.blessing.config.annotation.Path;
-import net.miaomoe.blessing.config.annotation.Priority;
-import net.miaomoe.blessing.config.hook.ReplaceHook;
-import net.miaomoe.blessing.placeholder.PlaceholderManager;
+import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.type.ConfigType;
+import net.miaomoe.blessing.config.util.SimpleConfigUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -40,9 +38,9 @@ public class BlessingBungeeConfig extends AbstractConfig {
 
     public void reload(@NotNull final BlessingBungee plugin) throws IOException {
         final File folder = plugin.getDataFolder();
-        ConfigUtil.saveAndRead(folder, "config", this);
+        SimpleConfigUtil.saveAndRead(folder, "config", this, ConfigType.HOCON);
+        final Logger logger = plugin.getLogger();
         if (!this.version.equals(plugin.getDescription().getVersion())) {
-            final Logger logger = plugin.getLogger();
             final String[] logs = {
                     "The existing config is inconsistent with the plugin version.",
                     "Plugin will attempt to automatically be compatible with existing config.",
@@ -55,18 +53,12 @@ public class BlessingBungeeConfig extends AbstractConfig {
         }
     }
 
-    @Priority(priority = 5.0)
-    @Path(path = "version")
+    @ConfigValue
     @Description(description = "Plugin version. (DO NOT EDIT THIS!)")
     public String version;
 
-    @Priority(priority = 5.0)
-    @Path(path = "debug")
+    @ConfigValue
     @Description(description = "Enable debug log & feature.")
     @SuppressWarnings("unused")
     public boolean debug;
-
-    static {
-        ReplaceHook.INSTANCE.register((it -> PlaceholderManager.INSTANCE.getPlaceholders(null, it)));
-    }
 }
