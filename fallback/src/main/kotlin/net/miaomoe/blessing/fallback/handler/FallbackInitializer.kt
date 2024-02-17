@@ -21,7 +21,7 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import net.miaomoe.blessing.fallback.cache.ChunksCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
-import net.miaomoe.blessing.fallback.cache.PacketsToCache
+import net.miaomoe.blessing.fallback.cache.FallbackPacketsCache
 import net.miaomoe.blessing.fallback.config.FallbackSettings
 import net.miaomoe.blessing.protocol.handlers.TimeoutHandler
 import net.miaomoe.blessing.protocol.handlers.VarintFrameDecoder
@@ -34,7 +34,7 @@ class FallbackInitializer @JvmOverloads constructor(
     val settings: FallbackSettings = FallbackSettings.create()
 ) : ChannelInitializer<Channel>() {
 
-    val cache: MutableMap<PacketsToCache, PacketCacheGroup> = settings.cacheMap
+    val cache: MutableMap<FallbackPacketsCache, PacketCacheGroup> = settings.cacheMap
 
     var chunksCache: ChunksCache? = null
 
@@ -44,7 +44,7 @@ class FallbackInitializer @JvmOverloads constructor(
 
     fun refreshCache() {
         cache.clear()
-        for (enum in PacketsToCache.entries) {
+        for (enum in FallbackPacketsCache.entries) {
             if (cache.containsKey(enum)) continue
             enum.getCacheGroup(settings)?.let { cache[enum] = it }
         }

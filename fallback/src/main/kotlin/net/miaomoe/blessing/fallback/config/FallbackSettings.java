@@ -19,7 +19,7 @@ package net.miaomoe.blessing.fallback.config;
 
 import io.netty.channel.Channel;
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup;
-import net.miaomoe.blessing.fallback.cache.PacketsToCache;
+import net.miaomoe.blessing.fallback.cache.FallbackPacketsCache;
 import net.miaomoe.blessing.fallback.handler.FallbackHandler;
 import net.miaomoe.blessing.fallback.handler.FallbackInitializer;
 import net.miaomoe.blessing.fallback.handler.exception.ExceptionHandler;
@@ -186,9 +186,9 @@ public class FallbackSettings {
     /**
      * A map of save some PacketCacheGroup.
      */
-    private final @NotNull Map<PacketsToCache, PacketCacheGroup> cacheMap = new EnumMap<>(PacketsToCache.class);
+    private final @NotNull Map<FallbackPacketsCache, PacketCacheGroup> cacheMap = new EnumMap<>(FallbackPacketsCache.class);
 
-    public final @NotNull Map<PacketsToCache, PacketCacheGroup> getCacheMap() {
+    public final @NotNull Map<FallbackPacketsCache, PacketCacheGroup> getCacheMap() {
         return cacheMap;
     }
 

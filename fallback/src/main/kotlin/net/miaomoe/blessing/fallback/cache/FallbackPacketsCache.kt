@@ -32,7 +32,7 @@ import net.miaomoe.blessing.protocol.version.VersionRange
 import java.util.function.BiFunction
 import java.util.logging.Level
 
-enum class PacketsToCache(
+enum class FallbackPacketsCache(
     val packet: BiFunction<FallbackSettings, Version, PacketToEncode?>,
     val description: String? = null,
     val version: VersionRange = VersionRange(Version.V1_7_2, Version.max)

@@ -22,9 +22,10 @@ import io.netty.channel.*
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import net.kyori.adventure.text.Component
+import net.miaomoe.blessing.fallback.cache.CachedMessage
 import net.miaomoe.blessing.fallback.cache.ChunksCache
+import net.miaomoe.blessing.fallback.cache.FallbackPacketsCache
 import net.miaomoe.blessing.fallback.cache.PacketCacheGroup
-import net.miaomoe.blessing.fallback.cache.PacketsToCache
 import net.miaomoe.blessing.nbt.chat.MixedComponent
 import net.miaomoe.blessing.protocol.message.Title
 import net.miaomoe.blessing.protocol.message.TitleAction
@@ -149,7 +150,7 @@ class FallbackHandler(
                 require(!it.recvLogin) { "Duplicated PacketLoginRequest!" }
                 it.recvLogin=true
             }
-            write(PacketsToCache.LOGIN_RESPONSE, true)
+            write(FallbackPacketsCache.LOGIN_RESPONSE, true)
             if (version.less(Version.V1_20_2)) {
                 if (version.less(Version.V1_8)) {
                     updateState(State.PLAY)
@@ -163,8 +164,8 @@ class FallbackHandler(
     private fun handle(packet: PacketLoginAcknowledged) {
         if (processLogic) {
             updateState(State.CONFIGURATION)
-            write(PacketsToCache.REGISTRY_DATA)
-            write(PacketsToCache.PLUGIN_MESSAGE)
+            write(FallbackPacketsCache.REGISTRY_DATA)
+            write(FallbackPacketsCache.PLUGIN_MESSAGE)
             write(PacketFinishConfiguration(), true)
         }
     }
@@ -227,15 +228,15 @@ class FallbackHandler(
 
     fun spawn() {
         updateState(State.PLAY)
-        write(PacketsToCache.JOIN_GAME)
-        if (version.moreOrEqual(Version.V1_19_3)) write(PacketsToCache.SPAWN_POSITION)
-        if (version.less(Version.V1_20_2)) write(PacketsToCache.PLUGIN_MESSAGE)
-        write(PacketsToCache.JOIN_POSITION)
-        if (version.moreOrEqual(Version.V1_20_3)) write(PacketsToCache.GAME_EVENT)
+        write(FallbackPacketsCache.JOIN_GAME)
+        if (version.moreOrEqual(Version.V1_19_3)) write(FallbackPacketsCache.SPAWN_POSITION)
+        if (version.less(Version.V1_20_2)) write(FallbackPacketsCache.PLUGIN_MESSAGE)
+        write(FallbackPacketsCache.JOIN_POSITION)
+        if (version.moreOrEqual(Version.V1_20_3)) write(FallbackPacketsCache.GAME_EVENT)
         val chunks = initializer.chunksCache ?: ChunksCache.surround(settings.joinPosition.position, 1)
         chunks.write(this)
         if (chunks != initializer.chunksCache) chunks.caches.clear()
-        if (settings.isDisableFall) write(PacketsToCache.PLAYER_ABILITIES)
+        if (settings.isDisableFall) write(FallbackPacketsCache.PLAYER_ABILITIES)
         write(PacketKeepAlive(), true)
     }
 
@@ -254,6 +255,11 @@ class FallbackHandler(
     fun sendMessage(component: MixedComponent, flush: Boolean = true) {
         require(state == State.PLAY) { "Only can send chat when state is State.PLAY!" }
         this.write(PacketServerChat(component), flush)
+    }
+
+    @JvmOverloads
+    fun sendMessage(group: CachedMessage, flush: Boolean = true) {
+        this.write(group.group, flush)
     }
 
     @JvmOverloads
@@ -331,7 +337,7 @@ class FallbackHandler(
     }
 
     @JvmOverloads
-    fun write(enum: PacketsToCache, flush: Boolean = false) {
+    fun write(enum: FallbackPacketsCache, flush: Boolean = false) {
         if (settings.isUseCache) {
             initializer.cache[enum]?.let { this.write(it, flush) } ?: throw NullPointerException("Cached group for ${enum.name} is null!")
         } else { enum.packet.apply(settings, this.version)?.let { this.write(it, flush) } }

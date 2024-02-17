@@ -30,7 +30,6 @@ class PacketCacheGroup @JvmOverloads constructor(
     val description: String? = null,
     val copySame: Boolean = false,
     initVersions: VersionRange? = null,
-    val direction: PacketDirection = PacketDirection.TO_CLIENT
 ) {
 
     private val map = LazyInit<MutableMap<Version, PacketCache>> { mutableMapOf() }
@@ -61,7 +60,7 @@ class PacketCacheGroup @JvmOverloads constructor(
 
     fun cacheAndGet(version: Version): PacketCache {
         val bytes = ByteMessage.create().use {
-            packet.encode(it, version, direction)
+            packet.encode(it, version, PacketDirection.TO_CLIENT)
             it.toByteArray()
         }.takeUnless { it.isEmpty() }
         val mapOrNull = this.mapOrNull
