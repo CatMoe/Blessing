@@ -26,7 +26,6 @@ import net.miaomoe.blessing.config.parser.AbstractConfig;
 import net.miaomoe.blessing.config.parser.DefaultConfigParser;
 import net.miaomoe.blessing.config.parser.ParsedConfigValue;
 import net.miaomoe.blessing.config.util.ClassTypeHolder;
-import net.miaomoe.blessing.config.util.ReflectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,20 +52,20 @@ abstract class TypesafeWriterAdapter {
             final @NotNull String path = (parent == null ? "" : parent) + value.getPath();
             final @Nullable Object result = value.getGetter().getValue();
             if (result == null) continue;
-            write(map, path, result, value.getDescription(), fixPrefixSpace);
+            write(map, value, path, result, fixPrefixSpace);
         }
     }
 
     protected void write(
             final @NotNull Map<String, Object> map, // key, value
+            final @NotNull ParsedConfigValue info,
             final @NotNull String path,
             final @NotNull Object value,
-            final @Nullable List<String> description,
             final boolean fixPrefixSpace
     ) {
-        String desc = json ? null : getDesc(description, fixPrefixSpace);
+        String desc = json ? null : getDesc(info.getDescription(), fixPrefixSpace);
         if (value instanceof List) {
-            if (new ClassTypeHolder(ReflectionUtil.getListGenericType((List<?>) value)).isConfig()) {
+            if (new ClassTypeHolder(info.getGetter().getHoldingGenericType()).isConfig()) {
                 final List<Map<String, Object>> list = new ArrayList<>();
                 for (final Object element : (List<?>) value) {
                     final AbstractConfig subConfig = (AbstractConfig) element;
@@ -86,7 +85,7 @@ abstract class TypesafeWriterAdapter {
                 write(map, subConfig, path + ".", false);
             else  {
                 final Map<String, Object> anotherMap = new LinkedHashMap<>();
-                write(anotherMap, subConfig, path, false);
+                write(anotherMap, subConfig, null, false);
                 map.put(path, fromAnyRef(anotherMap, desc));
             }
         } else if (value instanceof Map) {

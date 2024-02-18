@@ -18,10 +18,11 @@
 package net.miaomoe.blessing.config.getter;
 
 import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.parser.HoldingGenericParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ConfigValueGetter {
+public interface ConfigValueGetter extends HoldingGenericParser {
     @NotNull AbstractConfig getConfig();
     @Nullable Object getValue();
 }

@@ -15,28 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.config.util;
+package net.miaomoe.blessing.config.parser;
 
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Objects;
 
-@UtilityClass
-public class ReflectionUtil {
+public interface HoldingGenericParser {
+    @NotNull Class<?> getHoldingGenericType();
+
     @SneakyThrows
-    public @NotNull Class<?> getListGenericType(final @NotNull Type genericType) {
+    static @NotNull Class<?> getSingleGenericType(final @NotNull Type genericType) {
         Objects.requireNonNull(genericType);
         final Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
         if (types.length != 1) throw new IllegalArgumentException("There must be only one generic type.");
         return (Class<?>) types[0];
-    }
-
-    public @NotNull Class<?> getListGenericType(final @NotNull List<?> list) {
-        return getListGenericType(list.getClass().getGenericSuperclass());
     }
 }

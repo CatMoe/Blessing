@@ -18,9 +18,10 @@
 package net.miaomoe.blessing.config.setter;
 
 import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.parser.HoldingGenericParser;
 import org.jetbrains.annotations.NotNull;
 
-public interface ConfigValueSetter {
+public interface ConfigValueSetter extends HoldingGenericParser {
     @NotNull AbstractConfig getConfig();
     void setValue(final @NotNull Object value);
 }

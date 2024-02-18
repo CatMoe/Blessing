@@ -26,7 +26,6 @@ import net.miaomoe.blessing.config.parser.ParsedConfigValue;
 import net.miaomoe.blessing.config.reader.ConfigReader;
 import net.miaomoe.blessing.config.setter.ConfigSetException;
 import net.miaomoe.blessing.config.util.ClassTypeHolder;
-import net.miaomoe.blessing.config.util.ReflectionUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +64,7 @@ abstract class TypesafeConfigReader implements ConfigReader {
             return method.invoke(null, config.getString(value.getPath()).toUpperCase(Locale.ROOT));
         } else if (value.isList()) {
             final Class<?> originalClass = value.getHoldingClassType();
-            final ClassTypeHolder genericType = new ClassTypeHolder(ReflectionUtil.getListGenericType(originalClass.getGenericSuperclass()));
+            final ClassTypeHolder genericType = new ClassTypeHolder(value.getSetter().getHoldingGenericType());
             if (genericType.isConfig()) {
                 final Constructor<?> constructor;
                 try {

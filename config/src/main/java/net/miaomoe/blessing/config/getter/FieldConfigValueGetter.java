@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.parser.HoldingGenericParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,5 +47,10 @@ public class FieldConfigValueGetter implements ConfigValueGetter {
         } catch (final Exception exception) {
             throw new ConfigGetException("Failed get value from " + getConfig() + " (on method " + getField().getName() + ")", exception);
         }
+    }
+
+    @Override
+    public @NotNull Class<?> getHoldingGenericType() {
+        return HoldingGenericParser.getSingleGenericType(field.getGenericType());
     }
 }

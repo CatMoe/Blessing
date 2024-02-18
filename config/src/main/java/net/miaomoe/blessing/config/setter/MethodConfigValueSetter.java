@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.parser.HoldingGenericParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -44,5 +45,10 @@ public class MethodConfigValueSetter implements ConfigValueSetter {
         } catch (final Exception exception) {
             throw new ConfigSetException("Failed to set value " + value + " for config " + getConfig() + " (on method " + getMethod().getName() + ")", exception);
         }
+    }
+
+    @Override
+    public @NotNull Class<?> getHoldingGenericType() {
+        return HoldingGenericParser.getSingleGenericType(method.getGenericParameterTypes()[0]);
     }
 }
