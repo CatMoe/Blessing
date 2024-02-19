@@ -58,7 +58,7 @@ abstract class TypesafeConfigReader implements ConfigReader {
             final AbstractConfig subConfig = (AbstractConfig) Objects.requireNonNull(value.getGetter().getValue());
             DefaultConfigParser.getInstance().parse(subConfig);
             this.read(config.getConfig(value.getPath()), subConfig);
-            return config;
+            return null; // Don't set AbstractConfig for them.
         } else if (value.isEnum()) {
             final Method method = value.getHoldingClassType().getMethod("valueOf", String.class);
             return method.invoke(null, config.getString(value.getPath()).toUpperCase(Locale.ROOT));
