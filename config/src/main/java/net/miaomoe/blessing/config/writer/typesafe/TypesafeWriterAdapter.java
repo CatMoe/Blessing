@@ -84,7 +84,7 @@ abstract class TypesafeWriterAdapter {
                 map.put(path, fromAnyRef(castedList, description));
             }
         } else if (value instanceof Enum)
-            map.put(path, ((Enum<?>) value).name().toUpperCase(Locale.ROOT));
+            map.put(path, fromAnyRef(((Enum<?>) value).name().toUpperCase(Locale.ROOT), description));
         else if (value instanceof AbstractConfig) {
             final AbstractConfig subConfig = (AbstractConfig) value;
             DefaultConfigParser.getInstance().parse(subConfig);

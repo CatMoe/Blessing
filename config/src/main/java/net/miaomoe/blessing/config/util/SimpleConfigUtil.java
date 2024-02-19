@@ -45,10 +45,10 @@ public class SimpleConfigUtil {
             for (final @NotNull String line : Files.readAllLines(file.toPath(), StandardCharsets.UTF_8)) {
                 sb.append(line).append(lineSeparator);
             }
-            type.getReader().read(sb.toString(), config);
+            type.getReader().get().read(sb.toString(), config);
         } else {
             file.createNewFile();
-            Files.write(file.toPath(), type.getWriter().write(config).getBytes(StandardCharsets.UTF_8));
+            Files.write(file.toPath(), type.getWriter().get().write(config).getBytes(StandardCharsets.UTF_8));
         }
     }
 

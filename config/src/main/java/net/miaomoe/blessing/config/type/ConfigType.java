@@ -28,26 +28,38 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 @SuppressWarnings("unused")
 @Getter
 public enum ConfigType {
-    HOCON(TypesafeHoconWriter.getInstance(), TypesafeHoconReader.getInstance(), "conf"),
+    HOCON(TypesafeHoconWriter::getInstance, TypesafeHoconReader::getInstance, "conf"),
     @ApiStatus.Experimental
-    JSON(TypesafeJsonWriter.getInstance(), TypesafeJsonReader.getInstance(), "json"),
+    JSON(TypesafeJsonWriter::getInstance, TypesafeJsonReader::getInstance, "json"),
     @Deprecated
     UNKNOWN(null, null, "");
 
-    private final ConfigWriter writer;
-    private final ConfigReader reader;
+    private final Supplier<ConfigWriter> writer;
+    private final Supplier<ConfigReader> reader;
     private final String suffix;
 
     ConfigType(
-            final @Nullable ConfigWriter writer,
-            final @Nullable ConfigReader reader,
+            final @Nullable Supplier<ConfigWriter> writer,
+            final @Nullable Supplier<ConfigReader> reader,
             final @NotNull String suffix
     ) {
         this.writer=writer;
         this.reader=reader;
+        if (!System.getProperties().contains("config.ignore-check-default-processor")) {
+            try {
+                if (writer != null) writer.get();
+                if (reader != null) reader.get();
+            } catch (final NoClassDefFoundError error) {
+                System.out.println("The default writer or reader is invalid because you are not loading the specified package.");
+                //noinspection CallToPrintStackTrace
+                error.printStackTrace();
+            }
+        }
         this.suffix=suffix;
     }
 }
