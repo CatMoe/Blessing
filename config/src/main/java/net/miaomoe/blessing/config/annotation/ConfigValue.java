@@ -27,4 +27,5 @@ public @interface ConfigValue {
     @NotNull String path() default "";
     boolean useGetter() default true;
     boolean useSetter() default true;
+    boolean autoFormat() default true;
 }

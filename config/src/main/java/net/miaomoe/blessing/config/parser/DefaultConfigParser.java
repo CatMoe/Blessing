@@ -38,6 +38,9 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.Character.isUpperCase;
+import static java.lang.Character.toLowerCase;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultConfigParser implements ConfigParser {
 
@@ -57,9 +60,10 @@ public class DefaultConfigParser implements ConfigParser {
             field.setAccessible(true);
             final @Nullable ConfigValue annotation = field.getAnnotation(ConfigValue.class);
             if (Modifier.isStatic(field.getModifiers()) || (annotation == null && !(parseAll && !ignore.contains(field.getName())))) continue;
-            final String path = annotation != null
-                    ? annotation.path().isEmpty() ? field.getName() : annotation.path()
-                    : field.getName();
+            final @NotNull String path = annotation != null
+                    ? (annotation.path().isEmpty() ? (annotation.autoFormat() ? this.formatPath(field.getName()) : field.getName()) : annotation.path())
+                    : this.formatPath(field.getName());
+            if (!isValidPath(path)) throw new IllegalArgumentException("Invalid path: \"" + (path.isEmpty() ? "[empty]" : path) + "\"! The path must contain only English characters or numbers.");
             final Description description = field.getAnnotation(Description.class);
             list.add(new ParsedConfigValue(
                     path, field.getType(),
@@ -103,5 +107,27 @@ public class DefaultConfigParser implements ConfigParser {
 
     private @NotNull String capitalizeFirstLetter(final @NotNull String input) {
         return input.isEmpty() ? input : Character.toUpperCase(input.charAt(0)) + input.substring(1);
+    }
+
+    private @NotNull String formatPath(final @NotNull String input) {
+        if (input.length() <= 1) { return input; }
+        final StringBuilder result = new StringBuilder();
+        final char firstChar = input.charAt(0);
+        final char secondChar = input.charAt(1);
+        result.append((isUpperCase(firstChar) && !isUpperCase(secondChar)) ? toLowerCase(firstChar) : firstChar);
+        for (int i = 1; i < input.length(); i++) {
+            final char currentChar = input.charAt(i);
+            final char prevChar = input.charAt(i - 1);
+            final char nextChar = (i < input.length() - 1) ? input.charAt(i + 1) : '\0';
+            if (isUpperCase(currentChar) && !isUpperCase(prevChar) && !isUpperCase(nextChar)) {
+                result.append("-");
+                result.append(toLowerCase(currentChar));
+            } else result.append(currentChar);
+        }
+        return result.toString();
+    }
+
+    private boolean isValidPath(final @NotNull String string) {
+        return !string.isEmpty() && string.matches("[a-zA-Z0-9-]+");
     }
 }
