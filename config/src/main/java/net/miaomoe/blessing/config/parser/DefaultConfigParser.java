@@ -76,7 +76,7 @@ public class DefaultConfigParser implements ConfigParser {
     ) {
         if (useGetter) {
             try {
-                final String name = "get" + capitalizeFirstLetter(field.getName());
+                final String name = (field.getType() == Boolean.class ? "is" : "get") + capitalizeFirstLetter(field.getName());
                 return new MethodConfigValueGetter(config, config.getClass().getMethod(name));
             } catch (final NoSuchMethodException ignore) {
                 return getValueGetter(config, field, false);
