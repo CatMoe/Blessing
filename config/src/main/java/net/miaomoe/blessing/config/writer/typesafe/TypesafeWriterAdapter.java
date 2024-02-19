@@ -20,6 +20,7 @@ package net.miaomoe.blessing.config.writer.typesafe;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
+import com.typesafe.config.ConfigValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
@@ -33,6 +34,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.typesafe.config.ConfigValueFactory.fromAnyRef;
+import static com.typesafe.config.ConfigValueFactory.fromMap;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class TypesafeWriterAdapter {
@@ -45,25 +47,23 @@ abstract class TypesafeWriterAdapter {
     protected void write(
             final @NotNull Map<String, Object> map,
             final @NotNull AbstractConfig config,
-            final @Nullable String parent,
             final boolean fixPrefixSpace
     ) {
         for (final @NotNull ParsedConfigValue value : config.getParsedValues()) {
-            final @NotNull String path = (parent == null ? "" : parent) + value.getPath();
             final @Nullable Object result = value.getGetter().getValue();
             if (result == null) continue;
-            write(map, value, path, result, fixPrefixSpace);
+            write(map, value, result, fixPrefixSpace);
         }
     }
 
     protected void write(
             final @NotNull Map<String, Object> map, // key, value
             final @NotNull ParsedConfigValue info,
-            final @NotNull String path,
             final @NotNull Object value,
             final boolean fixPrefixSpace
     ) {
-        String desc = json ? null : getDesc(info.getDescription(), fixPrefixSpace);
+        String description = json ? null : getDesc(info.getDescription(), fixPrefixSpace);
+        final String path = info.getPath();
         if (value instanceof List) {
             if (new ClassTypeHolder(info.getGetter().getHoldingGenericType()).isConfig()) {
                 final List<Map<String, Object>> list = new ArrayList<>();
@@ -71,27 +71,30 @@ abstract class TypesafeWriterAdapter {
                     final AbstractConfig subConfig = (AbstractConfig) element;
                     DefaultConfigParser.getInstance().parse(subConfig);
                     final Map<String, Object> subMap = new LinkedHashMap<>();
-                    write(subMap, subConfig, null, false);
+                    write(subMap, subConfig, false);
                     list.add(subMap);
                 }
                 if (!list.isEmpty()) map.put(path, list);
-            } else map.put(path, desc == null ? value : fromAnyRef(value, desc));
+            } else {
+                final List<ConfigValue> castedList = new ArrayList<>();
+                for (final Object object : (List<?>) value) {
+                    if (object == null) continue;
+                    castedList.add(fromAnyRef(object, null));
+                }
+                map.put(path, fromAnyRef(castedList, description));
+            }
         } else if (value instanceof Enum)
             map.put(path, ((Enum<?>) value).name().toUpperCase(Locale.ROOT));
         else if (value instanceof AbstractConfig) {
             final AbstractConfig subConfig = (AbstractConfig) value;
             DefaultConfigParser.getInstance().parse(subConfig);
-            if (desc == null)
-                write(map, subConfig, path + ".", false);
-            else  {
-                final Map<String, Object> anotherMap = new LinkedHashMap<>();
-                write(anotherMap, subConfig, null, false);
-                map.put(path, fromAnyRef(anotherMap, desc));
-            }
+            final Map<String, Object> anotherMap = new LinkedHashMap<>();
+            write(anotherMap, subConfig, false);
+            map.put(path, fromMap(anotherMap, description));
         } else if (value instanceof Map) {
             throw new UnsupportedOperationException("Unsupported Map object now. Please create AbstractConfig to replace.");
         } else
-            map.put(path, desc == null ? value : fromAnyRef(value, desc));
+            map.put(path, fromAnyRef(value, description));
     }
 
     @Nullable
@@ -141,7 +144,7 @@ abstract class TypesafeWriterAdapter {
 
     protected @NotNull String toString(final @NotNull AbstractConfig config) {
         final Map<String, Object> map = new LinkedHashMap<>();
-        write(map, config, null, true);
+        write(map, config, true);
         return toString(ConfigFactory.parseMap(map));
     }
 
