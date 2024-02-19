@@ -50,11 +50,13 @@ public class DefaultConfigParser implements ConfigParser {
         final List<ParsedConfigValue> list = config.getParsedValues();
         list.clear();
         final Class<? extends AbstractConfig> configClass = config.getClass();
-        final boolean parseAll = configClass.isAnnotationPresent(ParseAllField.class);
+        final ParseAllField a = configClass.getAnnotation(ParseAllField.class);
+        final boolean parseAll = a != null;
+        final List<String> ignore = parseAll ? Arrays.asList(a.ignore()) : null;
         for (Field field : config.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             final @Nullable ConfigValue annotation = field.getAnnotation(ConfigValue.class);
-            if (Modifier.isStatic(field.getModifiers()) || (annotation == null && !parseAll)) continue;
+            if (Modifier.isStatic(field.getModifiers()) || (annotation == null && !(parseAll && !ignore.contains(field.getName())))) continue;
             final String path = annotation != null
                     ? annotation.path().isEmpty() ? field.getName() : annotation.path()
                     : field.getName();
