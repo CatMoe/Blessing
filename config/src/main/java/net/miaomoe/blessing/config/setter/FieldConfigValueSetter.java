@@ -49,6 +49,6 @@ public class FieldConfigValueSetter implements ConfigValueSetter {
 
     @Override
     public @NotNull Class<?> getHoldingGenericType() {
-        return HoldingGenericParser.getSingleGenericType(field.getType());
+        return HoldingGenericParser.getSingleGenericType(field.getGenericType());
     }
 }

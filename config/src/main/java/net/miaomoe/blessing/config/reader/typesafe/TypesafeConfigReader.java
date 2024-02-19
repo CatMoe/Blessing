@@ -63,12 +63,11 @@ abstract class TypesafeConfigReader implements ConfigReader {
             final Method method = value.getHoldingClassType().getMethod("valueOf", String.class);
             return method.invoke(null, config.getString(value.getPath()).toUpperCase(Locale.ROOT));
         } else if (value.isList()) {
-            final Class<?> originalClass = value.getHoldingClassType();
             final ClassTypeHolder genericType = new ClassTypeHolder(value.getSetter().getHoldingGenericType());
             if (genericType.isConfig()) {
                 final Constructor<?> constructor;
                 try {
-                    constructor=originalClass.getConstructor();
+                    constructor=genericType.getHoldingClassType().getDeclaredConstructor();
                     constructor.setAccessible(true);
                 } catch (final Exception exception) {
                     throw new ConfigSetException("Target must be have a empty constructor!", exception);
@@ -78,6 +77,7 @@ abstract class TypesafeConfigReader implements ConfigReader {
                     final AbstractConfig newConfig = (AbstractConfig) constructor.newInstance();
                     DefaultConfigParser.getInstance().parse(newConfig);
                     this.read(subConfig, newConfig);
+                    list.add(newConfig);
                 }
                 return list;
             } else return config.getAnyRefList(value.getPath());
