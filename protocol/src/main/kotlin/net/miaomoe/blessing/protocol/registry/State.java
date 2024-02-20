@@ -284,7 +284,7 @@ public enum State {
                     .addMapping(0x63, V1_19_1)
                     .addMapping(0x61, V1_19_3)
                     .addMapping(0x65, V1_19_4, V1_20)
-                    .addMapping(0x60, V1_20_2)
+                    .addMapping(0x68, V1_20_2)
                     .addMapping(0x6A, V1_20_3)
                     .getMapping()
             );
