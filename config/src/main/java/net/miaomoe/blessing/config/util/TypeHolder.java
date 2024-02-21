@@ -15,13 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.config.getter;
+package net.miaomoe.blessing.config.util;
 
-import net.miaomoe.blessing.config.parser.HoldingGenericParser;
-import net.miaomoe.blessing.config.util.ConfigHolder;
-import net.miaomoe.blessing.config.util.TypeHolder;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-public interface ConfigValueGetter extends HoldingGenericParser, ConfigHolder, TypeHolder {
-    @Nullable Object getValue();
+public interface TypeHolder {
+    @NotNull ClassTypeHolder getHoldingType();
 }

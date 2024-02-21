@@ -17,12 +17,15 @@
 
 package net.miaomoe.blessing.config.util;
 
+import lombok.Getter;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings({"unused"})
 public class ClassTypeHolder {
@@ -37,7 +40,7 @@ public class ClassTypeHolder {
     }
 
     public @NotNull Class<?> getHoldingClassType() {
-        return Objects.requireNonNull(holdingClassType);
+        return primitiveToWrapper(Objects.requireNonNull(holdingClassType));
     }
 
     public boolean isString() {
@@ -73,4 +76,31 @@ public class ClassTypeHolder {
     }
 
     public boolean isEnum() { return Enum.class.isAssignableFrom(this.getHoldingClassType()); }
+
+    public boolean isNumber() {
+        return Number.class.isAssignableFrom(this.getHoldingClassType());
+    }
+
+    public static @NotNull Class<?> primitiveToWrapper(final @NotNull Class<?> primitive) {
+        return PrimitiveUtil.getInstance().primitiveToWrapper(primitive);
+    }
+
+    private static class PrimitiveUtil {
+        @Getter private static final @NotNull PrimitiveUtil instance = new PrimitiveUtil();
+        private final Map<Class<?>, Class<?>> primitiveMap = new ConcurrentHashMap<>();
+        private PrimitiveUtil() {
+            primitiveMap.put(boolean.class, Boolean.class);
+            primitiveMap.put(char.class, Character.class);
+            primitiveMap.put(short.class, Short.class);
+            primitiveMap.put(float.class, Float.class);
+            primitiveMap.put(int.class, Integer.class);
+            primitiveMap.put(double.class, Double.class);
+            primitiveMap.put(long.class, Long.class);
+        }
+
+        private @NotNull Class<?> primitiveToWrapper(final @NotNull Class<?> primitive) {
+            return this.primitiveMap.getOrDefault(primitive, primitive);
+        }
+
+    }
 }

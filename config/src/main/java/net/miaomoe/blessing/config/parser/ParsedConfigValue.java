@@ -40,6 +40,6 @@ public class ParsedConfigValue extends ClassTypeHolder {
 
     @Override
     public @NotNull Class<?> getHoldingClassType() {
-        return this.type;
+        return ClassTypeHolder.primitiveToWrapper(this.type);
     }
 }

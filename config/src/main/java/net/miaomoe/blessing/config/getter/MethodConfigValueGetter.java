@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.ToString;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
 import net.miaomoe.blessing.config.parser.HoldingGenericParser;
+import net.miaomoe.blessing.config.util.ClassTypeHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,5 +55,10 @@ public class MethodConfigValueGetter implements ConfigValueGetter {
     @Override
     public @NotNull Class<?> getHoldingGenericType() {
         return HoldingGenericParser.getSingleGenericType(method.getGenericReturnType());
+    }
+
+    @Override
+    public @NotNull ClassTypeHolder getHoldingType() {
+        return new ClassTypeHolder(method.getReturnType());
     }
 }
