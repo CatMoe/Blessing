@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.annotation.Comment;
+import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.annotation.ParseAllField;
 import net.miaomoe.blessing.config.getter.ConfigValueGetter;
 import net.miaomoe.blessing.config.getter.FieldConfigValueGetter;
@@ -34,9 +34,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
@@ -75,6 +77,16 @@ public class DefaultConfigParser implements ConfigParser {
         }
     }
 
+    private static <T> @NotNull T getMethod(
+            final @NotNull AbstractConfig config,
+            final @NotNull String name,
+            final BiFunction<AbstractConfig, Method, T> instance
+    ) throws NoSuchMethodException {
+        final Method method = config.getClass().getDeclaredMethod(name);
+        method.setAccessible(true);
+        return instance.apply(config, method);
+    }
+
     private @NotNull ConfigValueGetter getValueGetter(
             final @NotNull AbstractConfig config,
             final @NotNull Field field,
@@ -82,8 +94,11 @@ public class DefaultConfigParser implements ConfigParser {
     ) {
         if (useGetter) {
             try {
-                final String name = (field.getType() == Boolean.class ? "is" : "get") + capitalizeFirstLetter(field.getName());
-                return new MethodConfigValueGetter(config, config.getClass().getMethod(name));
+                return getMethod(
+                        config,
+                        (field.getType() == Boolean.class ? "is" : "get") + capitalizeFirstLetter(field.getName()),
+                        MethodConfigValueGetter::new
+                );
             } catch (final NoSuchMethodException ignore) {
                 return getValueGetter(config, field, false);
             }
@@ -97,8 +112,11 @@ public class DefaultConfigParser implements ConfigParser {
     ) {
         if (useSetter) {
             try {
-                final String name = "set" + capitalizeFirstLetter(field.getName());
-                return new MethodConfigValueSetter(config, config.getClass().getMethod(name, field.getType()));
+                return getMethod(
+                        config,
+                        "set" + capitalizeFirstLetter(field.getName()),
+                        MethodConfigValueSetter::new
+                );
             } catch (final NoSuchMethodException ignore) {
                 return getValueSetter(config, field, false);
             }
