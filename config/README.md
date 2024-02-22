@@ -72,10 +72,10 @@ import net.miaomoe.blessing.config.parser.AbstractConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class FooConfig extends AbstractConfig {
-    @ConfigValue
-    public @NotNull /* 可选 */ String foo = "Foo!";
-    @ConfigValue
-    public boolean debug = true;
+  @ConfigValue
+  public @NotNull /* 可选 */ String foo = "Foo!";
+  @ConfigValue
+  public boolean debug = true;
 }
 ```
 
@@ -88,8 +88,8 @@ import org.jetbrains.annotations.NotNull;
 
 @ParseAllField
 public class FooConfig extends AbstractConfig {
-    public @NotNull String foo = "Foo!";
-    public boolean debug = true;
+  public @NotNull String foo = "Foo!";
+  public boolean debug = true;
 }
 ```
 
@@ -113,8 +113,8 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 public class FooConfig extends AbstractConfig {
-    @ConfigValue
-    private @NotNull String foo = "Foo!";
+  @ConfigValue
+  private @NotNull String foo = "Foo!";
 }
 ```
 
@@ -128,16 +128,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class FooConfig extends AbstractConfig {
-    @ConfigValue
-    private @NotNull String foo = "Foo!";
+  @ConfigValue
+  private @NotNull String foo = "Foo!";
 
-    public @NotNull String getFoo() {
-        return foo;
-    }
+  public @NotNull String getFoo() {
+    return foo;
+  }
 
-    public void setFoo(@NotNull String foo) {
-        this.foo = Objects.requireNonNull(foo);
-    }
+  public void setFoo(@NotNull String foo) {
+    this.foo = Objects.requireNonNull(foo);
+  }
 }
 ```
 
@@ -158,8 +158,8 @@ import org.jetbrains.annotations.NotNull;
 
 @ParseAllField(ignore = {"exempt"})
 public class FooConfig extends AbstractConfig {
-    private @NotNull String exempt = "This is exempted field!";
-    public @NotNull String foo = "Foo!";
+  private @NotNull String exempt = "This is exempted field!";
+  public @NotNull String foo = "Foo!";
 }
 ```
 
@@ -195,6 +195,39 @@ public class FooConfig extends AbstractConfig {
 尽管这会丢失所有(非默认)的注释. 
 以及被忽略的内容(即类不包含对应的那个值的路径的字段)
 
+## 在配置文件中添加注释
+
+添加注释非常简单. 只需在字段上添加`@Comment`注解
+
+例如:
+
+```java
+import net.miaomoe.blessing.config.annotation.Comment;
+import net.miaomoe.blessing.config.annotation.ParseAllField;
+import net.miaomoe.blessing.config.parser.AbstractConfig;
+
+@ParseAllField
+public class Foo extends AbstractConfig {
+  @Comment(description = "这是什么? Foo! 碰一下")
+  public String foo = "Foo!";
+  @Comment(description = {
+    "这是另一个Foo!",
+    "碰这一个Foo并不会导致你失忆."
+  })
+  public String anotherFoo = "This is a foo!";
+}
+```
+
+生成的hocon配置文件将是这样的:
+
+```hocon
+# 这是什么? Foo! 碰一下
+foo="Foo!"
+# 这是另一个Foo!
+# 碰这一个Foo并不会导致你失忆.
+another-foo="This is a foo!"
+```
+
 ## 嵌套`AbstractConfig`
 
 你可以在AbstractConfig中声明另一个AbstractConfig对象  
@@ -211,18 +244,17 @@ public class FooConfig extends AbstractConfig {
 >
 > @ParseAllField
 > public class Example extends AbstractConfig {
+>   public final Foo foo = new Foo();
+>   public final AnotherFoo anotherFoo = new AnotherFoo();
 >
->     public final Foo foo = new Foo();
->     public final AnotherFoo anotherFoo = new AnotherFoo();
+>   public class Foo extends AbstractConfig {
+>     @ConfigValue
+>     public String foo = "Foo!";
+>   }
 >
->     public class Foo extends AbstractConfig {
->         @ConfigValue
->         public String foo = "Foo!";
->     }
->
->     public class AnotherFoo extends Foo {
->         public String anotherFoo = "I am foo!";
->     }
+>   public class AnotherFoo extends Foo {
+>     public String anotherFoo = "I am foo!";
+>   }
 > }
 > ```
 > `AnotherFoo`在实际应用中实际上不持有`foo`, 而是仅持有`anotherFoo`.
