@@ -15,31 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.miaomoe.blessing.config.parser;
+package net.miaomoe.blessing.config.parser.adapter;
 
-import lombok.*;
-import net.miaomoe.blessing.config.getter.ConfigValueGetter;
-import net.miaomoe.blessing.config.setter.ConfigValueSetter;
-import net.miaomoe.blessing.config.util.ClassTypeHolder;
+import net.miaomoe.blessing.config.parser.AbstractConfig;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-@Value
-@Getter
-@ToString
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-public class ParsedConfigValue extends ClassTypeHolder {
-    @NotNull String path;
-    @NotNull Class<?> type;
-    @Nullable List<String> comment;
-    @NotNull ConfigValueGetter getter;
-    @NotNull ConfigValueSetter setter;
-
-    @Override
-    public @NotNull Class<?> getHoldingClassType() {
-        return ClassTypeHolder.primitiveToWrapper(this.type);
-    }
+@FunctionalInterface
+@SuppressWarnings("unused")
+public interface ParserAdapter<T> {
+    @NotNull T conversion(final @NotNull AbstractConfig from);
 }

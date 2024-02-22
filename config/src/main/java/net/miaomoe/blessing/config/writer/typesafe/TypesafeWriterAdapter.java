@@ -62,7 +62,7 @@ abstract class TypesafeWriterAdapter {
             final @NotNull Object value,
             final boolean fixPrefixSpace
     ) {
-        String description = json ? null : getDesc(info.getDescription(), fixPrefixSpace);
+        String description = json ? null : getDesc(info.getComment(), fixPrefixSpace);
         final String path = info.getPath();
         if (value instanceof List) {
             if (new ClassTypeHolder(info.getGetter().getHoldingGenericType()).isConfig()) {

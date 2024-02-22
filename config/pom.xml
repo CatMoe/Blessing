@@ -71,6 +71,7 @@
     </build>
 
     <dependencies>
+        <!-- https://github.com/lightbend/config -->
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>

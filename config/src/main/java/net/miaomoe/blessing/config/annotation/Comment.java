@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
 
 @Retention(value= RetentionPolicy.RUNTIME)
 @Target(value = ElementType.FIELD)
-public @interface Description {
+public @interface Comment {
     @NotNull String[] description() default {};
 }

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import net.miaomoe.blessing.config.annotation.ConfigValue;
-import net.miaomoe.blessing.config.annotation.Description;
+import net.miaomoe.blessing.config.annotation.Comment;
 import net.miaomoe.blessing.config.annotation.ParseAllField;
 import net.miaomoe.blessing.config.getter.ConfigValueGetter;
 import net.miaomoe.blessing.config.getter.FieldConfigValueGetter;
@@ -64,10 +64,10 @@ public class DefaultConfigParser implements ConfigParser {
                     ? (annotation.path().isEmpty() ? (annotation.autoFormat() ? this.formatPath(field.getName()) : field.getName()) : annotation.path())
                     : this.formatPath(field.getName());
             if (!isValidPath(path)) throw new IllegalArgumentException("Invalid path: \"" + (path.isEmpty() ? "[empty]" : path) + "\"! The path must contain only English characters or numbers.");
-            final Description description = field.getAnnotation(Description.class);
+            final Comment comment = field.getAnnotation(Comment.class);
             list.add(new ParsedConfigValue(
                     path, field.getType(),
-                    description == null ? null : Arrays.asList(description.description()),
+                    comment == null ? null : Arrays.asList(comment.description()),
                     // it like annotation == null ? true : annotation#useGetter/Setter
                     getValueGetter(config, field, annotation == null || annotation.useGetter()),
                     getValueSetter(config, field, annotation == null || annotation.useSetter())

@@ -19,7 +19,7 @@ package net.miaomoe.blessing.bungee.config;
 
 import net.miaomoe.blessing.bungee.BlessingBungee;
 import net.miaomoe.blessing.config.annotation.ConfigValue;
-import net.miaomoe.blessing.config.annotation.Description;
+import net.miaomoe.blessing.config.annotation.Comment;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
 import net.miaomoe.blessing.config.type.ConfigType;
 import net.miaomoe.blessing.config.util.SimpleConfigUtil;
@@ -54,11 +54,11 @@ public class BlessingBungeeConfig extends AbstractConfig {
     }
 
     @ConfigValue
-    @Description(description = "Plugin version. (DO NOT EDIT THIS!)")
+    @Comment(description = "Plugin version. (DO NOT EDIT THIS!)")
     public String version;
 
     @ConfigValue
-    @Description(description = "Enable debug log & feature.")
+    @Comment(description = "Enable debug log & feature.")
     @SuppressWarnings("unused")
     public boolean debug;
 }

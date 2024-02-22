@@ -25,7 +25,7 @@ import net.miaomoe.blessing.config.parser.DefaultConfigParser;
 import net.miaomoe.blessing.config.parser.ParsedConfigValue;
 import net.miaomoe.blessing.config.reader.ConfigReader;
 import net.miaomoe.blessing.config.setter.ConfigSetException;
-import net.miaomoe.blessing.config.setter.ConfigValueSetter;
+import net.miaomoe.blessing.config.setter.ConfigValueSetter.NumberSetterUtil;
 import net.miaomoe.blessing.config.util.ClassTypeHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,41 +83,8 @@ abstract class TypesafeConfigReader implements ConfigReader {
                 return list;
             } else return config.getAnyRefList(value.getPath());
         } else if (value.isNumber()) {
-            setNumber(value, config.getNumber(value.getPath()));
+            NumberSetterUtil.setNumber(value, config.getNumber(value.getPath()));
             return null;
         } else return config.getAnyRef(value.getPath());
-    }
-
-    private static void setNumber(
-            final @NotNull ParsedConfigValue info,
-            final @NotNull Number value
-    ) {
-        final @NotNull ConfigValueSetter setter = info.getSetter();
-        final ClassTypeHolder typeHolder = setter.getHoldingType();
-        final double result = value.doubleValue();
-        if (typeHolder.isDouble()) {
-            setter.setValue(result);
-        } else if (typeHolder.isInt()) {
-            checkArgument(isValid(result, Integer.MAX_VALUE, Integer.MIN_VALUE), "Integer", result);
-            setter.setValue((int) result);
-        } else if (typeHolder.isFloat()) {
-            checkArgument(isValid(result, Float.MAX_VALUE, Float.MIN_VALUE), "Float", result);
-            setter.setValue((float) result);
-        } else if (typeHolder.isShort()) {
-            checkArgument(isValid(result, Short.MAX_VALUE, Short.MIN_VALUE), "Short", result);
-            setter.setValue((short) result);
-        } else if (typeHolder.isLong()) {
-            setter.setValue((long) result);
-        } else {
-            throw new IllegalArgumentException("Unknown number type: " + value.getClass().getSimpleName());
-        }
-    }
-
-    private static boolean isValid(final double number, final double maxValue, final double minValue) {
-        return number <= maxValue && number >= minValue;
-    }
-
-    private static void checkArgument(final boolean result, final @NotNull String type, final @NotNull Object value) {
-        if (!result) throw new IllegalArgumentException("Accept " + type + " but the value is outside the supported range. (" + value + ")");
     }
 }
