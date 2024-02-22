@@ -220,12 +220,12 @@ public class FooConfig extends AbstractConfig {
 >         public String foo = "Foo!";
 >     }
 >
->     public class AnotherFoo extends A {
+>     public class AnotherFoo extends Foo {
 >         public String anotherFoo = "I am foo!";
 >     }
 > }
 > ```
-> AnotherFoo在实际应用中实际上不持有`foo`, 而是仅持有`anotherFoo`.
+> `AnotherFoo`在实际应用中实际上不持有`foo`, 而是仅持有`anotherFoo`.
 
 ### 引用单个`AbstractConfig`对象
 
