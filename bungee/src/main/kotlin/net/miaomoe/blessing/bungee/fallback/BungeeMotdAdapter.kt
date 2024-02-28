@@ -85,7 +85,7 @@ object BungeeMotdAdapter : FallbackMotdHandler {
         return MotdInfo(protocol, players, description, favicon, modType)
     }
 
-    @Suppress("OVERRIDE_DEPRECATION", "MemberVisibilityCanBePrivate")
+    @Suppress("OVERRIDE_DEPRECATION", "MemberVisibilityCanBePrivate", "UnstableApiUsage")
     class PingConnectionAdapter(
         private val fallback: FallbackHandler,
         var fakeLegacy: Boolean = true
@@ -112,6 +112,8 @@ object BungeeMotdAdapter : FallbackMotdHandler {
         override fun setUniqueId(p0: UUID?) = throw exception
         override fun isOnlineMode() = throw exception
         override fun setOnlineMode(p0: Boolean) = throw exception
+        override fun isTransferred() = false
+        override fun retrieveCookie(p0: String?) = throw exception
     }
 
 }
