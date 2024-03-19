@@ -61,7 +61,7 @@ public class DefaultConfigParser implements ConfigParser {
         for (Field field : config.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             final @Nullable ConfigValue annotation = field.getAnnotation(ConfigValue.class);
-            if (Modifier.isStatic(field.getModifiers()) || (annotation == null && !(parseAll && !ignore.contains(field.getName())))) continue;
+            if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers()) || (annotation == null && !(parseAll && !ignore.contains(field.getName())))) continue;
             final @NotNull String path = annotation != null
                     ? (annotation.path().isEmpty() ? (annotation.autoFormat() ? this.formatPath(field.getName()) : field.getName()) : annotation.path())
                     : this.formatPath(field.getName());
