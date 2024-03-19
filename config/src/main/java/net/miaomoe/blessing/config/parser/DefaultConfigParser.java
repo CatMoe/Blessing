@@ -55,17 +55,14 @@ public class DefaultConfigParser implements ConfigParser {
         final List<ParsedConfigValue> list = config.getParsedValues();
         list.clear();
         final Class<? extends AbstractConfig> configClass = config.getClass();
-        final ParseAllField a = configClass.getAnnotation(ParseAllField.class);
-        final boolean parseAll = a != null;
-        final List<String> ignore = parseAll ? Arrays.asList(a.ignore()) : null;
+        final ParseAllField parseAll = configClass.getAnnotation(ParseAllField.class);
+        final List<String> ignore = parseAll == null ? null : Arrays.asList(parseAll.ignore());
         for (Field field : config.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             final @Nullable ConfigValue annotation = field.getAnnotation(ConfigValue.class);
-            if (Modifier.isStatic(field.getModifiers()) || (annotation == null && !(parseAll && !ignore.contains(field.getName())))) continue;
-            final @NotNull String path = annotation != null
-                    ? (annotation.path().isEmpty() ? (annotation.autoFormat() ? this.formatPath(field.getName()) : field.getName()) : annotation.path())
-                    : this.formatPath(field.getName());
-            if (!isValidPath(path)) throw new IllegalArgumentException("Invalid path: \"" + (path.isEmpty() ? "[empty]" : path) + "\"! The path must contain only English characters or numbers.");
+            if (isIgnore(field, ignore, annotation)) continue;
+            final @NotNull String path = path(field, annotation);
+            checkValidPath(path);
             final Comment comment = field.getAnnotation(Comment.class);
             list.add(new ParsedConfigValue(
                     path, field.getType(),
@@ -75,6 +72,27 @@ public class DefaultConfigParser implements ConfigParser {
                     getValueSetter(config, field, annotation == null || annotation.useSetter())
             ));
         }
+    }
+
+    private boolean isIgnore(
+            final @NotNull Field field,
+            final @Nullable List<String> ignore,
+            final @Nullable ConfigValue configValue
+    ) {
+        final int modifiers = field.getModifiers();
+        if (Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers)) return true;
+        //return configValue == null && !(parseAll && !ignore.contains(field.getName()));
+        final boolean parseAll = ignore != null;
+        return configValue == null && !(parseAll && !ignore.contains(field.getName()));
+    }
+
+    private @NotNull String path(final @NotNull Field field, final @Nullable ConfigValue annotation) {
+        final @NotNull String fieldName = field.getName();
+        if (annotation == null) return this.formatPath(fieldName);
+        final boolean autoFormat = annotation.autoFormat();
+        final String path = annotation.path();
+        if (!path.isEmpty()) return path;
+        return autoFormat ? this.formatPath(fieldName) : fieldName;
     }
 
     private static <T> @NotNull T getMethod(
@@ -145,7 +163,8 @@ public class DefaultConfigParser implements ConfigParser {
         return result.toString();
     }
 
-    private boolean isValidPath(final @NotNull String string) {
-        return !string.isEmpty() && string.matches("[a-zA-Z0-9-]+");
+    private void checkValidPath(final @NotNull String path) {
+        final boolean result =  !path.isEmpty() && path.matches("[a-zA-Z0-9-]+");
+        if (!result) throw new IllegalArgumentException("Invalid path: \"" + (path.isEmpty() ? "[empty]" : path) + "\"! The path must contain only English characters or numbers.");
     }
 }
