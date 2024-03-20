@@ -47,7 +47,10 @@ abstract class TypesafeConfigReader implements ConfigReader {
     public void read(@NotNull final Config context, @NotNull AbstractConfig config) {
         for (final @NotNull ParsedConfigValue value : config.getParsedValues()) {
             Objects.requireNonNull(value);
-            if (!context.hasPath(value.getPath())) continue;
+            if (!context.hasPath(value.getPath())) {
+                if (value.isRequired()) throw new NullPointerException("Unknown path " +value.getPath() + " for parsing " + config + ". (config outdated or broken?)");
+                continue;
+            }
             Object setValue = getSetValue(value, context);
             if (setValue != null) value.getSetter().setValue(setValue);
         }

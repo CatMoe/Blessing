@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import net.miaomoe.blessing.config.annotation.Comment;
 import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.annotation.ParseAllField;
+import net.miaomoe.blessing.config.annotation.RequiredOrThrows;
 import net.miaomoe.blessing.config.getter.ConfigValueGetter;
 import net.miaomoe.blessing.config.getter.FieldConfigValueGetter;
 import net.miaomoe.blessing.config.getter.MethodConfigValueGetter;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -56,6 +58,7 @@ public class DefaultConfigParser implements ConfigParser {
         list.clear();
         final Class<? extends AbstractConfig> configClass = config.getClass();
         final ParseAllField parseAll = configClass.getAnnotation(ParseAllField.class);
+        final boolean requiredAll = configClass.isAnnotationPresent(RequiredOrThrows.class);
         final List<String> ignore = parseAll == null ? null : Arrays.asList(parseAll.ignore());
         for (Field field : config.getClass().getDeclaredFields()) {
             field.setAccessible(true);
@@ -69,7 +72,8 @@ public class DefaultConfigParser implements ConfigParser {
                     comment == null ? null : Arrays.asList(comment.description()),
                     // it like annotation == null ? true : annotation#useGetter/Setter
                     getValueGetter(config, field, annotation == null || annotation.useGetter()),
-                    getValueSetter(config, field, annotation == null || annotation.useSetter())
+                    getValueSetter(config, field, annotation == null || annotation.useSetter()),
+                    requiredAll || field.isAnnotationPresent(RequiredOrThrows.class)
             ));
         }
     }
@@ -91,8 +95,7 @@ public class DefaultConfigParser implements ConfigParser {
         if (annotation == null) return this.formatPath(fieldName);
         final boolean autoFormat = annotation.autoFormat();
         final String path = annotation.path();
-        if (!path.isEmpty()) return path;
-        return autoFormat ? this.formatPath(fieldName) : fieldName;
+        return autoFormat ? this.formatPath(path.isEmpty() ? fieldName : path) : fieldName;
     }
 
     private static <T> @NotNull T getMethod(
@@ -112,9 +115,11 @@ public class DefaultConfigParser implements ConfigParser {
     ) {
         if (useGetter) {
             try {
+                final Type type = field.getType();
+                final boolean isBoolean = type == Boolean.class || type == boolean.class;
                 return getMethod(
                         config,
-                        (field.getType() == Boolean.class ? "is" : "get") + capitalizeFirstLetter(field.getName()),
+                        (isBoolean ? "is" : "get") + capitalizeFirstLetter(field.getName()),
                         MethodConfigValueGetter::new
                 );
             } catch (final NoSuchMethodException ignore) {
@@ -164,7 +169,7 @@ public class DefaultConfigParser implements ConfigParser {
     }
 
     private void checkValidPath(final @NotNull String path) {
-        final boolean result =  !path.isEmpty() && path.matches("[a-zA-Z0-9-]+");
+        final boolean result =  !path.isEmpty() && path.matches("[a-zA-Z0-9-.]+");
         if (!result) throw new IllegalArgumentException("Invalid path: \"" + (path.isEmpty() ? "[empty]" : path) + "\"! The path must contain only English characters or numbers.");
     }
 }

@@ -37,6 +37,7 @@ public class ParsedConfigValue extends ClassTypeHolder {
     @Nullable List<String> comment;
     @NotNull ConfigValueGetter getter;
     @NotNull ConfigValueSetter setter;
+    boolean required;
 
     @Override
     public @NotNull Class<?> getHoldingClassType() {

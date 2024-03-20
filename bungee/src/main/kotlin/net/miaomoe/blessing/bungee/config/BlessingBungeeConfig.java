@@ -18,15 +18,15 @@
 package net.miaomoe.blessing.bungee.config;
 
 import net.miaomoe.blessing.bungee.BlessingBungee;
-import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.annotation.Comment;
+import net.miaomoe.blessing.config.annotation.ConfigValue;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
+import net.miaomoe.blessing.config.parser.exception.ParsedFailedException;
 import net.miaomoe.blessing.config.type.ConfigType;
 import net.miaomoe.blessing.config.util.SimpleConfigUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +36,7 @@ public class BlessingBungeeConfig extends AbstractConfig {
         this.version=plugin.getDescription().getVersion();
     }
 
-    public void reload(@NotNull final BlessingBungee plugin) throws IOException {
+    public void reload(@NotNull final BlessingBungee plugin) throws ParsedFailedException {
         final File folder = plugin.getDataFolder();
         SimpleConfigUtil.saveAndRead(folder, "config", this, ConfigType.HOCON);
         final Logger logger = plugin.getLogger();

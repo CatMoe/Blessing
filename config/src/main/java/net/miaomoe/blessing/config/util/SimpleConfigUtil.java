@@ -20,11 +20,11 @@ package net.miaomoe.blessing.config.util;
 import lombok.experimental.UtilityClass;
 import net.miaomoe.blessing.config.parser.AbstractConfig;
 import net.miaomoe.blessing.config.parser.DefaultConfigParser;
+import net.miaomoe.blessing.config.parser.exception.ParsedFailedException;
 import net.miaomoe.blessing.config.type.ConfigType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -36,19 +36,23 @@ public class SimpleConfigUtil {
             final @NotNull File file,
             final @NotNull AbstractConfig config,
             final @NotNull ConfigType type
-    ) throws IOException {
-        DefaultConfigParser.getInstance().parse(config);
-        if (config.getParsedValues().isEmpty()) throw new NullPointerException("Parsed values list is empty!");
-        if (file.exists()) {
-            final StringBuilder sb = new StringBuilder();
-            final String lineSeparator = System.lineSeparator();
-            for (final @NotNull String line : Files.readAllLines(file.toPath(), StandardCharsets.UTF_8)) {
-                sb.append(line).append(lineSeparator);
+    ) throws ParsedFailedException {
+        try {
+            DefaultConfigParser.getInstance().parse(config);
+            if (config.getParsedValues().isEmpty()) throw new NullPointerException("Parsed values list is empty!");
+            if (file.exists()) {
+                final StringBuilder sb = new StringBuilder();
+                final String lineSeparator = System.lineSeparator();
+                for (final @NotNull String line : Files.readAllLines(file.toPath(), StandardCharsets.UTF_8)) {
+                    sb.append(line).append(lineSeparator);
+                }
+                type.getReader().get().read(sb.toString(), config);
+            } else {
+                file.createNewFile();
+                Files.write(file.toPath(), type.getWriter().get().write(config).getBytes(StandardCharsets.UTF_8));
             }
-            type.getReader().get().read(sb.toString(), config);
-        } else {
-            file.createNewFile();
-            Files.write(file.toPath(), type.getWriter().get().write(config).getBytes(StandardCharsets.UTF_8));
+        } catch (final Throwable throwable) {
+            throw new ParsedFailedException(throwable);
         }
     }
 
@@ -57,7 +61,7 @@ public class SimpleConfigUtil {
             final @NotNull String name,
             final @NotNull AbstractConfig config,
             final @NotNull ConfigType type
-    ) throws IOException {
+    ) throws ParsedFailedException {
         if (!folder.exists()) folder.mkdirs();
         saveAndRead(new File(folder, name + "." + type.getSuffix()), config, type);
     }
