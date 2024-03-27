@@ -243,10 +243,16 @@ class FallbackHandler(
     fun disconnect(reason: MixedComponent) {
         require(state != State.HANDSHAKE && state != State.STATUS)
         { "Only can send disconnect message when connection try to joining!" }
-        channel
-            .writeAndFlush(PacketDisconnect(reason, this.state == State.LOGIN))
-            .addListener(ChannelFutureListener.CLOSE)
         markDisconnect=true
+        val packet = PacketDisconnect(reason, this.state == State.LOGIN)
+        if (version.less(Version.V1_8)) { // delay for 1.7
+            channel.eventLoop().schedule({disconnect(packet)}, 150, TimeUnit.MILLISECONDS)
+        } else
+            disconnect(packet)
+    }
+
+    private fun disconnect(packet: PacketDisconnect) {
+        channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE)
     }
 
     fun disconnect(reason: Component) = disconnect(MixedComponent(reason))
