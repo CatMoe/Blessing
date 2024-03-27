@@ -39,9 +39,14 @@ class FallbackDecoder(
 ) : MessageToMessageDecoder<ByteBuf>() {
 
     override fun decode(ctx: ChannelHandlerContext, byteBuf: ByteBuf, list: MutableList<Any>) {
-        val unreadReadable = byteBuf.readableBytes()
-        handler?.debug { "[Decoder] Processing ByteBuf with $unreadReadable bytes." }
-        (unreadReadable == 0).ifTrue {
+        val handler = this.handler
+        val readable = byteBuf.readableBytes()
+        if (handler?.markDisconnect == true) {
+            handler.debug { "[Decoder] Handler is marked disconnected. Ignoring $readable bytes received." }
+            return
+        }
+        handler?.debug { "[Decoder] Processing ByteBuf with $readable bytes." }
+        (readable == 0).ifTrue {
             require(throwWhenEmptyBuffer) { "Null byte buffers are not acceptable!" }
             return
         }
